@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 
-ORCHESTRATOR_VERSION = "1.0"
+ORCHESTRATOR_VERSION = "1.1"
 
 REQUIRED_SCRIPTS = (
     "session_history.py",
@@ -58,6 +58,8 @@ def session_signature(
         normalized.append({
             "session_id": int(row["session_id"]),
             "track": str(row.get("track") or ""),
+            "vehicle_family": str(row.get("vehicle_family") or ""),
+            "vehicle_variant": str(row.get("vehicle_variant") or ""),
             "source_json_sha256": str(
                 row.get("source_json_sha256") or ""
             ),
@@ -84,9 +86,19 @@ def build_batch_paths(
     output_root: Path,
     track: str,
     signature: str,
+    vehicle_variant: str | None = None,
 ) -> dict[str, Path]:
+    context_slug = slugify(track)
+
+    if vehicle_variant:
+        context_slug = (
+            context_slug
+            + "--"
+            + slugify(vehicle_variant)
+        )
+
     batch_name = (
-        f"{slugify(track)}-"
+        f"{context_slug}-"
         f"{signature[:10]}"
     )
 
@@ -203,12 +215,18 @@ def load_history_rows(
             SELECT
                 session_id,
                 track,
+                vehicle_family,
+                vehicle_variant,
+                car_class_raw,
+                car_name_raw,
+                vehicle_supported_domain,
                 source_json_sha256,
                 source_analysis_version,
                 timestamp_utc
             FROM sessions
             ORDER BY
                 track,
+                vehicle_variant,
                 session_id
             """
         ).fetchall()
@@ -219,9 +237,18 @@ def load_history_rows(
         {
             "session_id": row[0],
             "track": row[1],
-            "source_json_sha256": row[2],
-            "source_analysis_version": row[3],
-            "timestamp_utc": row[4],
+            "vehicle_family": row[2],
+            "vehicle_variant": row[3],
+            "car_class_raw": row[4],
+            "car_name_raw": row[5],
+            "vehicle_supported_domain": (
+                bool(row[6])
+                if row[6] is not None
+                else None
+            ),
+            "source_json_sha256": row[7],
+            "source_analysis_version": row[8],
+            "timestamp_utc": row[9],
         }
         for row in rows
     ]
@@ -253,6 +280,104 @@ def group_history_by_track(
         )
 
     return result
+
+
+def group_history_by_context(
+    rows: list[dict[str, Any]],
+) -> dict[tuple[str, str], list[dict[str, Any]]]:
+    result: dict[
+        tuple[str, str],
+        list[dict[str, Any]],
+    ] = {}
+
+    for row in rows:
+        track = str(
+            row.get("track")
+            or
+            ""
+        ).strip()
+
+        variant = str(
+            row.get("vehicle_variant")
+            or
+            ""
+        ).strip()
+
+        if (
+            not track
+            or
+            not variant
+            or
+            row.get("vehicle_supported_domain") is not True
+        ):
+            continue
+
+        result.setdefault(
+            (track, variant),
+            [],
+        ).append(
+            row
+        )
+
+    return result
+
+
+def choose_context(
+    grouped: dict[tuple[str, str], list[dict[str, Any]]],
+    requested_track: str | None,
+    requested_variant: str | None,
+    *,
+    min_sessions: int = 2,
+) -> tuple[tuple[str, str] | None, str | None]:
+    if min_sessions < 2:
+        raise ValueError(
+            "min_sessions no puede ser menor que 2."
+        )
+
+    candidates = []
+
+    for key, context_rows in grouped.items():
+        track, variant = key
+
+        if requested_track is not None and track != requested_track:
+            continue
+
+        if requested_variant is not None and variant != requested_variant:
+            continue
+
+        if len(context_rows) >= min_sessions:
+            candidates.append(
+                key
+            )
+
+    candidates.sort()
+
+    if len(candidates) == 1:
+        return candidates[0], None
+
+    if not candidates:
+        return (
+            None,
+            (
+                "insufficient_vehicle_context_data: "
+                "no track + vehicle_variant context has "
+                f">= {min_sessions} sessions"
+            ),
+        )
+
+    choices = ", ".join(
+        f"{track} | {variant}"
+        for track, variant in candidates
+    )
+
+    return (
+        None,
+        (
+            "multiple_eligible_vehicle_contexts: "
+            "use --track and/or --vehicle-variant; choices="
+            + choices
+        ),
+    )
 
 
 def choose_track(
@@ -589,6 +714,8 @@ def new_status(
         ),
         "overall_status": "STARTING",
         "track": None,
+        "vehicle_family": None,
+        "vehicle_variant": None,
         "batch_id": None,
         "batch_dir": None,
         "steps": {},
@@ -1048,53 +1175,57 @@ def run_pipeline(
         db_path
     )
 
-    grouped = group_history_by_track(
+    grouped_context = group_history_by_context(
         rows
     )
 
-    track_summary = {
-        track: len(
-            track_rows
+    context_summary = {
+        f"{track} | {variant}": len(
+            context_rows
         )
-        for track, track_rows in grouped.items()
+        for (track, variant), context_rows
+        in grouped_context.items()
     }
 
-    chosen_track, reason = choose_track(
-        grouped,
+    chosen_context, reason = choose_context(
+        grouped_context,
         args.track,
+        args.vehicle_variant,
         min_sessions=2,
     )
 
-    if chosen_track is None:
+    if chosen_context is None:
         set_step(
             status,
-            "track_selection",
+            "vehicle_context_selection",
             "BLOCKED",
             reason=reason,
-            sessions_by_track=track_summary,
+            sessions_by_vehicle_context=context_summary,
         )
 
         status[
             "overall_status"
-        ] = "BLOCKED_TRACK_SELECTION"
+        ] = "BLOCKED_VEHICLE_CONTEXT_SELECTION"
 
         if (
             reason is not None
             and
             reason.startswith(
-                "multiple_eligible_tracks"
+                "multiple_eligible_vehicle_contexts"
             )
         ):
             status[
                 "next_action"
             ] = (
-                "Run again with --track <exact track name>."
+                "Run again with --track <exact track name> "
+                "and/or --vehicle-variant <exact variant>."
             )
         else:
             status[
                 "next_action"
             ] = (
-                "Import at least two sessions from the same track."
+                "Import at least two sessions with the same track "
+                "and supported vehicle_variant."
             )
 
         write_status(
@@ -1108,18 +1239,21 @@ def run_pipeline(
             bootstrap_status_path,
         )
 
-    track_rows = grouped[
-        chosen_track
+    chosen_track, chosen_variant = chosen_context
+    context_rows = grouped_context[
+        chosen_context
     ]
 
+
     signature = session_signature(
-        track_rows
+        context_rows
     )
 
     paths = build_batch_paths(
         output_root,
         chosen_track,
         signature,
+        chosen_variant,
     )
 
     batch_dir = paths[
@@ -1145,6 +1279,24 @@ def run_pipeline(
     ] = chosen_track
 
     status[
+        "vehicle_variant"
+    ] = chosen_variant
+
+    families = sorted({
+        str(row.get("vehicle_family"))
+        for row in context_rows
+        if row.get("vehicle_family")
+    })
+
+    status[
+        "vehicle_family"
+    ] = (
+        families[0]
+        if len(families) == 1
+        else None
+    )
+
+    status[
         "batch_id"
     ] = signature[:10]
 
@@ -1156,11 +1308,13 @@ def run_pipeline(
 
     set_step(
         status,
-        "track_selection",
+        "vehicle_context_selection",
         "PASS",
         selected_track=chosen_track,
+        selected_vehicle_variant=chosen_variant,
+        vehicle_family=status.get("vehicle_family"),
         session_count=len(
-            track_rows
+            context_rows
         ),
         session_ids=[
             int(
@@ -1168,10 +1322,10 @@ def run_pipeline(
                     "session_id"
                 ]
             )
-            for row in track_rows
+            for row in context_rows
         ],
         session_signature=signature,
-        sessions_by_track=track_summary,
+        sessions_by_vehicle_context=context_summary,
     )
 
     batch_status_path = paths[
@@ -1216,6 +1370,8 @@ def run_pipeline(
                 ),
                 "--track",
                 chosen_track,
+                "--vehicle-variant",
+                chosen_variant,
                 "--format",
                 "json",
                 "--output",
@@ -1854,8 +2010,17 @@ def build_parser() -> argparse.ArgumentParser:
         "--track",
         default=None,
         help=(
-            "Nombre exacto del circuito. "
-            "Obligatorio sólo si hay varios circuitos elegibles."
+            "Nombre exacto del circuito. Puede combinarse con "
+            "--vehicle-variant."
+        ),
+    )
+
+    parser.add_argument(
+        "--vehicle-variant",
+        default=None,
+        help=(
+            "Variante normalizada exacta, por ejemplo "
+            "LMP2_ELMS o LMP2_WEC."
         ),
     )
 
@@ -1933,6 +2098,13 @@ def print_summary(
     ):
         print(
             f"Track: {status['track']}"
+        )
+
+    if status.get(
+        "vehicle_variant"
+    ):
+        print(
+            f"Vehicle variant: {status['vehicle_variant']}"
         )
 
     if status.get(

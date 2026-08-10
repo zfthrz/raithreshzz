@@ -1,4 +1,4 @@
-# Calibration Batch Orchestrator v1.0
+# Calibration Batch Orchestrator v1.1
 
 `prepare_calibration_batch.py` automatiza la preparación de datos reales hasta
 el punto seguro anterior al matcher.
@@ -45,14 +45,15 @@ python prepare_calibration_batch.py data/generated \
 3. importa los JSON de análisis;
 4. valida History DB;
 5. exige al menos dos sesiones del mismo circuito;
-6. genera `episode_pair_features.json`;
-7. genera `pair_review_queue.json`;
-8. se detiene para revisión humana;
-9. valida labels cuando existan;
-10. exige que toda la queue esté revisada;
-11. genera `calibration_dataset.json`;
-12. genera `calibration_feature_report.json`;
-13. informa si el split tiene pares de evaluación utilizables.
+6. selecciona un contexto `track + vehicle_variant`;
+7. genera `episode_pair_features.json` sólo dentro de ese contexto;
+8. genera `pair_review_queue.json`;
+9. se detiene para revisión humana;
+10. valida labels cuando existan;
+11. exige que toda la queue esté revisada;
+12. genera `calibration_dataset.json`;
+13. genera `calibration_feature_report.json`;
+14. informa si el split tiene pares de evaluación utilizables.
 
 ## Batches inmutables por conjunto de sesiones
 

@@ -9,7 +9,7 @@ import duckdb
 
 
 # ============================================================
-# RACE ENGINEER - EPISODE PAIR FEATURES v1.0
+# RACE ENGINEER - EPISODE PAIR FEATURES v1.1
 # ============================================================
 #
 # Extrae features neutrales entre episodios de distintas
@@ -405,18 +405,35 @@ def load_channel_metrics(
 def load_episodes(
     connection,
     track=None,
+    vehicle_variant=None,
 ):
     params = []
-
-    where = ""
+    clauses = []
 
     if track:
-        where = (
-            "WHERE s.track = ?"
+        clauses.append(
+            "s.track = ?"
         )
-
         params.append(
             track
+        )
+
+    if vehicle_variant:
+        clauses.append(
+            "s.vehicle_variant = ?"
+        )
+        params.append(
+            vehicle_variant
+        )
+
+    where = ""
+    if clauses:
+        where = (
+            "WHERE "
+            +
+            " AND ".join(
+                clauses
+            )
         )
 
     rows = connection.execute(
@@ -432,6 +449,19 @@ def load_episodes(
             s.session_type,
             s.timestamp_utc,
             s.reference_distance_m,
+
+            s.vehicle_family,
+            s.vehicle_variant,
+            s.car_class_raw,
+            s.car_name_raw,
+            s.vehicle_identity_source,
+            s.vehicle_supported_domain,
+            s.weather_conditions,
+            s.setup_sha256,
+            s.setup_raw_sha256,
+            s.setup_available,
+            s.lmu_session_type,
+            s.lmu_track_name,
 
             c.reference_lap,
             c.comparison_lap,
@@ -457,6 +487,7 @@ def load_episodes(
         {where}
         ORDER BY
             s.track,
+            s.vehicle_variant,
             s.timestamp_utc,
             e.session_id,
             e.episode_pk
@@ -468,75 +499,57 @@ def load_episodes(
 
     for row in rows:
         result.append({
-            "episode_pk":
-                safe_int(row[0]),
+            "episode_pk": safe_int(row[0]),
+            "session_id": safe_int(row[1]),
+            "comparison_id": safe_int(row[2]),
+            "episode_id": safe_int(row[3]),
+            "python_global_rank": safe_int(row[4]),
 
-            "session_id":
-                safe_int(row[1]),
+            "track": row[5],
+            "session_type": row[6],
+            "timestamp_utc": row[7],
+            "reference_distance_m": safe_float(row[8]),
 
-            "comparison_id":
-                safe_int(row[2]),
+            "vehicle_family": row[9],
+            "vehicle_variant": row[10],
+            "car_class_raw": row[11],
+            "car_name_raw": row[12],
+            "vehicle_identity_source": row[13],
+            "vehicle_supported_domain": (
+                bool(row[14])
+                if row[14] is not None
+                else None
+            ),
+            "weather_conditions": row[15],
+            "setup_sha256": row[16],
+            "setup_raw_sha256": row[17],
+            "setup_available": (
+                bool(row[18])
+                if row[18] is not None
+                else None
+            ),
+            "lmu_session_type": row[19],
+            "lmu_track_name": row[20],
 
-            "episode_id":
-                safe_int(row[3]),
+            "reference_lap": safe_int(row[21]),
+            "comparison_lap": safe_int(row[22]),
+            "driver_analysis_priority_rank": safe_int(row[23]),
 
-            "python_global_rank":
-                safe_int(row[4]),
+            "start_distance_m": safe_float(row[24]),
+            "end_distance_m": safe_float(row[25]),
+            "center_distance_m": safe_float(row[26]),
+            "length_m": safe_float(row[27]),
 
-            "track":
-                row[5],
+            "start_lap_fraction": safe_float(row[28]),
+            "end_lap_fraction": safe_float(row[29]),
+            "center_lap_fraction": safe_float(row[30]),
 
-            "session_type":
-                row[6],
-
-            "timestamp_utc":
-                row[7],
-
-            "reference_distance_m":
-                safe_float(row[8]),
-
-            "reference_lap":
-                safe_int(row[9]),
-
-            "comparison_lap":
-                safe_int(row[10]),
-
-            "driver_analysis_priority_rank":
-                safe_int(row[11]),
-
-            "start_distance_m":
-                safe_float(row[12]),
-
-            "end_distance_m":
-                safe_float(row[13]),
-
-            "center_distance_m":
-                safe_float(row[14]),
-
-            "length_m":
-                safe_float(row[15]),
-
-            "start_lap_fraction":
-                safe_float(row[16]),
-
-            "end_lap_fraction":
-                safe_float(row[17]),
-
-            "center_lap_fraction":
-                safe_float(row[18]),
-
-            "action_time_loss_s":
-                safe_float(row[19]),
-
-            "evidence_strength":
-                row[20],
-
-            "has_speed_propagation":
-                bool(row[21]),
+            "action_time_loss_s": safe_float(row[31]),
+            "evidence_strength": row[32],
+            "has_speed_propagation": bool(row[33]),
         })
 
     return result
-
 
 def jaccard(
     set_a,
@@ -866,6 +879,64 @@ def build_pair_record(
         "track":
             a["track"],
 
+        "vehicle_family":
+            a.get("vehicle_family"),
+
+        "vehicle_variant":
+            a.get("vehicle_variant"),
+
+        "car_class_raw_a":
+            a.get("car_class_raw"),
+
+        "car_class_raw_b":
+            b.get("car_class_raw"),
+
+        "car_name_raw_a":
+            a.get("car_name_raw"),
+
+        "car_name_raw_b":
+            b.get("car_name_raw"),
+
+        "same_car_name_raw":
+            (
+                a.get("car_name_raw") is not None
+                and
+                a.get("car_name_raw") == b.get("car_name_raw")
+            ),
+
+        "setup_sha256_a":
+            a.get("setup_sha256"),
+
+        "setup_sha256_b":
+            b.get("setup_sha256"),
+
+        "same_setup_sha256":
+            (
+                a.get("setup_sha256") is not None
+                and
+                a.get("setup_sha256") == b.get("setup_sha256")
+            ),
+
+        "weather_conditions_a":
+            a.get("weather_conditions"),
+
+        "weather_conditions_b":
+            b.get("weather_conditions"),
+
+        "same_weather_conditions":
+            (
+                a.get("weather_conditions") is not None
+                and
+                a.get("weather_conditions") == b.get("weather_conditions")
+            ),
+
+        "same_session_type":
+            (
+                a.get("session_type") is not None
+                and
+                a.get("session_type") == b.get("session_type")
+            ),
+
         "session_a":
             a["session_id"],
 
@@ -1088,6 +1159,31 @@ def build_all_cross_session_pairs(
             ):
                 continue
 
+            variant_a = a.get(
+                "vehicle_variant"
+            )
+            variant_b = b.get(
+                "vehicle_variant"
+            )
+
+            if (
+                not variant_a
+                or
+                not variant_b
+                or
+                variant_a != variant_b
+            ):
+                continue
+
+            if (
+                a.get("vehicle_supported_domain")
+                is not True
+                or
+                b.get("vehicle_supported_domain")
+                is not True
+            ):
+                continue
+
             pairs.append(
                 build_pair_record(
                     a,
@@ -1203,6 +1299,15 @@ def build_parser():
     )
 
     parser.add_argument(
+        "--vehicle-variant",
+        default=None,
+        help=(
+            "Filtro de variante normalizada, por ejemplo "
+            "LMP2_ELMS o LMP2_WEC."
+        ),
+    )
+
+    parser.add_argument(
         "--format",
         choices=(
             "json",
@@ -1244,6 +1349,7 @@ def main():
         episodes = load_episodes(
             connection,
             track=args.track,
+            vehicle_variant=args.vehicle_variant,
         )
 
         channel_sets = (
@@ -1296,6 +1402,15 @@ def main():
         print(
             f"Track filter: {args.track}"
         )
+
+    if args.vehicle_variant:
+        print(
+            f"Vehicle variant filter: {args.vehicle_variant}"
+        )
+
+    print(
+        "Pair hard gate: same track + same known supported vehicle variant"
+    )
 
     output = args.output
 

@@ -1,13 +1,14 @@
 import argparse
 import math
 import os
+import re
 import sys
 
 import duckdb
 
 
 # ============================================================
-# RACE ENGINEER - HISTORY DB VALIDATOR v1.0
+# RACE ENGINEER - HISTORY DB VALIDATOR v1.1
 # ============================================================
 #
 # Valida integridad interna de race_engineer_history.duckdb.
@@ -27,7 +28,7 @@ import duckdb
 
 DEFAULT_DB_NAME = "race_engineer_history.duckdb"
 
-EXPECTED_SCHEMA_VERSION = 1
+EXPECTED_SCHEMA_VERSION = 2
 
 ALLOWED_ACTION_CHANNELS = {
     "throttle",
@@ -145,6 +146,171 @@ def require_tables(
         ):
             errors.append(
                 f"Falta tabla: {table_name}"
+            )
+
+
+VEHICLE_CONTEXT_COLUMNS = {
+    "vehicle_family",
+    "vehicle_variant",
+    "car_class_raw",
+    "car_name_raw",
+    "vehicle_identity_source",
+    "vehicle_supported_domain",
+    "weather_conditions",
+    "setup_sha256",
+    "setup_raw_sha256",
+    "setup_available",
+    "lmu_session_type",
+    "lmu_track_name",
+}
+
+
+def validate_vehicle_context_columns(
+    connection,
+    errors,
+):
+    rows = connection.execute(
+        "DESCRIBE sessions"
+    ).fetchall()
+
+    columns = {
+        str(row[0])
+        for row in rows
+    }
+
+    missing = sorted(
+        VEHICLE_CONTEXT_COLUMNS
+        -
+        columns
+    )
+
+    for name in missing:
+        errors.append(
+            f"Falta columna de vehicle context: sessions.{name}"
+        )
+
+
+def validate_vehicle_context(
+    connection,
+    errors,
+    warnings,
+):
+    rows = connection.execute(
+        """
+        SELECT
+            session_id,
+            vehicle_family,
+            vehicle_variant,
+            car_class_raw,
+            car_name_raw,
+            vehicle_identity_source,
+            vehicle_supported_domain,
+            setup_sha256,
+            setup_raw_sha256,
+            setup_available,
+            lmu_track_name,
+            track
+        FROM sessions
+        ORDER BY session_id
+        """
+    ).fetchall()
+
+    sha_pattern = re.compile(
+        r"^[0-9a-f]{64}$"
+    )
+
+    for row in rows:
+        (
+            session_id,
+            family,
+            variant,
+            class_raw,
+            car_name,
+            source,
+            supported,
+            setup_hash,
+            setup_raw_hash,
+            setup_available,
+            lmu_track_name,
+            track,
+        ) = row
+
+        if not any((
+            family,
+            variant,
+            class_raw,
+            car_name,
+            source,
+        )):
+            warnings.append(
+                f"session {session_id}: legacy session without vehicle context; "
+                "excluded from cross-session matching."
+            )
+            continue
+
+        if class_raw and not variant:
+            errors.append(
+                f"session {session_id}: car_class_raw existe pero "
+                "vehicle_variant es NULL."
+            )
+
+        if variant and not family:
+            errors.append(
+                f"session {session_id}: vehicle_variant existe pero "
+                "vehicle_family es NULL."
+            )
+
+        if variant and supported is not True:
+            errors.append(
+                f"session {session_id}: variante conocida sin "
+                "vehicle_supported_domain=true."
+            )
+
+        raw_token = (
+            str(class_raw).strip().upper()
+            if class_raw
+            else None
+        )
+
+        if raw_token == "LMP2_ELMS":
+            if family != "LMP2" or variant != "LMP2_ELMS":
+                errors.append(
+                    f"session {session_id}: LMP2_ELMS debe conservarse "
+                    "como family=LMP2, variant=LMP2_ELMS."
+                )
+
+        if raw_token == "LMP2":
+            if family != "LMP2" or variant != "LMP2_WEC":
+                errors.append(
+                    f"session {session_id}: LMP2 raw debe mapear a "
+                    "family=LMP2, variant=LMP2_WEC."
+                )
+
+        for label, value in (
+            ("setup_sha256", setup_hash),
+            ("setup_raw_sha256", setup_raw_hash),
+        ):
+            if value is not None and not sha_pattern.match(str(value)):
+                errors.append(
+                    f"session {session_id}: {label} inválido."
+                )
+
+        if setup_hash is not None and setup_available is not True:
+            errors.append(
+                f"session {session_id}: setup hash presente pero "
+                "setup_available no es true."
+            )
+
+        if (
+            lmu_track_name
+            and
+            track
+            and
+            str(lmu_track_name).strip() != str(track).strip()
+        ):
+            warnings.append(
+                f"session {session_id}: track filename/context difiere: "
+                f"track={track!r}, lmu_track_name={lmu_track_name!r}."
             )
 
 
@@ -1204,6 +1370,20 @@ def validate_database(
     validate_schema_version(
         connection,
         errors,
+    )
+
+    validate_vehicle_context_columns(
+        connection,
+        errors,
+    )
+
+    if errors:
+        return errors, warnings
+
+    validate_vehicle_context(
+        connection,
+        errors,
+        warnings,
     )
 
     validate_unique_hashes(

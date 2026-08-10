@@ -1,0 +1,20 @@
+Race Engineer - Vehicle Context Layer v1.0
+
+Replacements/new files:
+- vehicle_context.py
+- analyze_telemetry.py
+- session_history.py
+- episode_pair_features.py
+- validate_history_db.py
+- prepare_calibration_batch.py
+- inspect_lmu_metadata.py
+- scripts/check_project.py
+- tests/test_project_contract.py
+- tests/test_vehicle_context_pure.py
+- tests/test_vehicle_context_layer.py
+- docs/VEHICLE_CONTEXT_LAYER_v1_0.md
+- docs/CALIBRATION_BATCH_ORCHESTRATOR_v1_0.md
+
+Key invariant:
+LMP2_ELMS != LMP2_WEC for cross-session matching.
+Raw LMU CarClass=LMP2 maps to normalized vehicle_variant=LMP2_WEC.

@@ -10,6 +10,7 @@ from telemetry import Telemetry
 from laps import LapAnalyzer
 from delta_comparison import DeltaComparison
 from sector_analysis import SectorAnalysis
+from vehicle_context import extract_lmu_context_from_duckdb
 
 
 # ============================================================
@@ -189,6 +190,7 @@ def parse_telemetry_filename(db_path):
 
 
 FILE_INFO = parse_telemetry_filename(DB_PATH)
+LMU_CONTEXT = extract_lmu_context_from_duckdb(DB_PATH)
 
 
 # ============================================================
@@ -2582,6 +2584,13 @@ def main():
     print("Fecha/hora UTC:")
     print(f"  {FILE_INFO['timestamp_utc']}")
     print()
+    print("Vehículo LMU:")
+    vehicle_identity = LMU_CONTEXT["vehicle_identity"]
+    print(f"  family={vehicle_identity.get('family')}")
+    print(f"  variant={vehicle_identity.get('variant')}")
+    print(f"  class_raw={vehicle_identity.get('car_class_raw')}")
+    print(f"  car_name={vehicle_identity.get('car_name_raw')}")
+    print()
     print("JSON de salida:")
     print(f"  {OUTPUT_PATH}")
 
@@ -2835,6 +2844,12 @@ def main():
                 "lap_comparison_model": (
                     "same_vehicle_different_laps"
                 ),
+                "vehicle_identity": LMU_CONTEXT[
+                    "vehicle_identity"
+                ],
+                "session_context": LMU_CONTEXT[
+                    "session_context"
+                ],
                 "reference_lap": reference_lap,
                 "reference_lap_role": "fastest_valid_lap",
                 "comparison_laps": comparable_laps,

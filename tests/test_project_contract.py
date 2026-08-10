@@ -19,6 +19,7 @@ def test_active_python_files_compile():
         "validate_history_db.py",
         "validate_llm_analysis_output.py",
         "compare_llm_analysis_outputs.py",
+        "vehicle_context.py",
     ]
     for name in names:
         path = ROOT / name

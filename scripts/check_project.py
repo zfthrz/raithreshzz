@@ -14,6 +14,7 @@ ACTIVE_PYTHON = [
     "validate_history_db.py",
     "validate_llm_analysis_output.py",
     "compare_llm_analysis_outputs.py",
+    "vehicle_context.py",
 ]
 
 CORE_MODULES = [

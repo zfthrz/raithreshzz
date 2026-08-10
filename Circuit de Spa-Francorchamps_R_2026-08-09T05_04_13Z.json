@@ -1,0 +1,142 @@
+{
+  "metadata": {
+    "analysis_version": "3.8",
+    "source_file": "Circuit de Spa-Francorchamps_R_2026-08-09T05_04_13Z.duckdb",
+    "track": "Circuit de Spa-Francorchamps",
+    "session_type": "R",
+    "timestamp_utc": "2026-08-09T05:04:13Z",
+    "database": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\Circuit de Spa-Francorchamps_R_2026-08-09T05_04_13Z.duckdb",
+    "output_file": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\Circuit de Spa-Francorchamps_R_2026-08-09T05_04_13Z.json",
+    "same_vehicle": true,
+    "vehicle_count": 1,
+    "lap_comparison_model": "same_vehicle_different_laps",
+    "vehicle_identity": {
+      "schema_version": "1.0",
+      "family": "LMP2",
+      "variant": "LMP2_ELMS",
+      "car_class_raw": "LMP2_ELMS",
+      "car_name_raw": "IDEC Sport #18:ELMS25",
+      "supported_domain": true,
+      "identity_source": "lmu_metadata"
+    },
+    "session_context": {
+      "schema_version": "1.0",
+      "lmu_track_name": "Circuit de Spa-Francorchamps",
+      "lmu_track_layout": "Circuit de Spa-Francorchamps",
+      "lmu_session_type": "Race",
+      "recording_time": "2026-08-09T05_04_13Z",
+      "weather_conditions": "Partially Cloudy",
+      "setup_available": true,
+      "setup_sha256": "2427d79a812cc4cd7500aada8dc075ba2edeeb2a3bd982687bbcd098f0db480e",
+      "setup_raw_sha256": "050fd4aa8602d84f4075d84f90e7c9e178aa40554b69b3c8645af4bfc8ec4169",
+      "setup_hash_basis": "effective_current_values"
+    },
+    "reference_lap": 1,
+    "reference_lap_role": "fastest_valid_lap",
+    "comparison_laps": [],
+    "driver_analysis_priority": {},
+    "ignored_initial_laps": [
+      0
+    ],
+    "reference_distance_m": 6971.63671875,
+    "valid_laps": [
+      1
+    ],
+    "discarded_laps": [
+      2
+    ],
+    "lap_times_s": {
+      "0": 211.53500000000003,
+      "1": 128.45999999999998,
+      "2": 46.36500000000001
+    },
+    "configuration": {
+      "ignore_initial_laps": 1,
+      "resolution_m": 1.0,
+      "smoothing_window": 21,
+      "min_zone_distance_m": 10.0,
+      "valid_distance_ratio": 0.95,
+      "min_lap_duration_s": 60.0,
+      "max_zones_per_comparison": 15,
+      "max_driver_analysis_comparisons": 2,
+      "temporal_validation_tolerance_s": 0.05,
+      "zone_coverage_tolerance_m": 2.0,
+      "min_zone_time_delta_s": 0.005,
+      "objective_v38": {
+        "min_sustained_event_distance_m": 15.0,
+        "max_sustained_event_gap_m": 4.0,
+        "min_loss_cluster_distance_m": 20.0,
+        "max_loss_cluster_gap_m": 6.0,
+        "min_loss_cluster_time_s": 0.03,
+        "loss_gradient_smoothing_m": 21,
+        "driver_action_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "driver_action_episode_merge_gap_m": 12.0,
+        "min_driver_action_episode_time_s": 0.02,
+        "min_driver_action_episode_distance_m": 15.0,
+        "speed_link_gap_m": 25.0,
+        "min_speed_propagation_distance_m": 15.0,
+        "speed_propagation_neutral_time_s": 0.005,
+        "speed_can_merge_driver_actions": false,
+        "driver_action_episodes_are_primary": true,
+        "legacy_loss_episode_merge_gap_m": 12.0
+      },
+      "event_thresholds": {
+        "speed_kmh": 5.0,
+        "throttle_percent": 10.0,
+        "brake_percent": 10.0,
+        "steering": 5.0
+      }
+    },
+    "temporal_validation_status": "WARNING",
+    "objective_analysis_validation": "WARNING"
+  },
+  "laps": [
+    {
+      "lap": 0.0,
+      "start_time": 47.685,
+      "end_time": 259.22,
+      "duration": 211.53500000000003,
+      "samples": 21154.0,
+      "max_rpm": 8815.16015625,
+      "max_speed": 295.2757263183594,
+      "avg_throttle": 47.9602165222168,
+      "max_throttle": 100.0,
+      "max_brake": 100.0,
+      "max_steering": 93.59996032714844,
+      "lap_distance": 13916.1103515625
+    },
+    {
+      "lap": 1.0,
+      "start_time": 259.22,
+      "end_time": 387.68,
+      "duration": 128.45999999999998,
+      "samples": 12846.0,
+      "max_rpm": 8796.427734375,
+      "max_speed": 291.8790283203125,
+      "avg_throttle": 69.60441589355469,
+      "max_throttle": 100.0,
+      "max_brake": 100.0,
+      "max_steering": 99.40838623046875,
+      "lap_distance": 6971.63671875
+    },
+    {
+      "lap": 2.0,
+      "start_time": 387.68,
+      "end_time": 434.045,
+      "duration": 46.36500000000001,
+      "samples": 4636.0,
+      "max_rpm": 8668.671875,
+      "max_speed": 270.9648742675781,
+      "avg_throttle": 43.343196868896484,
+      "max_throttle": 100.0,
+      "max_brake": 100.0,
+      "max_steering": 100.0,
+      "lap_distance": 1411.21484375
+    }
+  ],
+  "comparisons": []
+}

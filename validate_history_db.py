@@ -555,6 +555,7 @@ def validate_comparison_temporal_math(
             calculated_delta_s,
             gross_loss_s,
             gross_gain_s,
+            neutral_delta_s,
             net_from_components_s,
             accounting_error_s
         FROM comparisons
@@ -570,6 +571,7 @@ def validate_comparison_temporal_math(
             calculated_delta,
             gross_loss,
             gross_gain,
+            neutral_delta,
             net_components,
             accounting_error,
         ) = row
@@ -640,6 +642,10 @@ def validate_comparison_temporal_math(
             gross_gain
         )
 
+        neutral_delta = safe_float(
+            neutral_delta
+        )
+
         net_components = safe_float(
             net_components
         )
@@ -649,12 +655,16 @@ def validate_comparison_temporal_math(
             and
             gross_gain is not None
             and
+            neutral_delta is not None
+            and
             net_components is not None
         ):
             expected_net = (
                 gross_loss
                 -
                 gross_gain
+                +
+                neutral_delta
             )
 
             if not approx_equal(
@@ -664,7 +674,7 @@ def validate_comparison_temporal_math(
             ):
                 errors.append(
                     f"comparison {comparison_id}: "
-                    "gross_loss - gross_gain "
+                    "gross_loss - gross_gain + neutral_delta "
                     "no coincide con net_from_components."
                 )
 

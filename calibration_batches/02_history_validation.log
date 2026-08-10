@@ -1,0 +1,40 @@
+$ 'C:\Users\thres\AppData\Local\Python\pythoncore-3.14-64\python.exe' 'C:\Users\thres\Documents\GitHub\raithreshzz\validate_history_db.py' --db 'C:\Users\thres\Documents\GitHub\raithreshzz\race_engineer_history.duckdb'
+
+--- STDOUT ---
+
+======================================================================
+RACE ENGINEER - HISTORY DB VALIDATOR v1.0
+======================================================================
+
+DB: C:\Users\thres\Documents\GitHub\raithreshzz\race_engineer_history.duckdb
+
+DB SUMMARY
+------------------------------------------------------------
+sessions: 6
+laps: 41
+comparisons: 25
+episodes: 270
+episode_channels: 484
+speed_propagations: 155
+import_log: 6
+
+HISTORY VALIDATION: FAIL
+------------------------------------------------------------
+- comparison 2: gross_loss - gross_gain no coincide con net_from_components.
+- comparison 3: gross_loss - gross_gain no coincide con net_from_components.
+- comparison 6: gross_loss - gross_gain no coincide con net_from_components.
+- comparison 7: gross_loss - gross_gain no coincide con net_from_components.
+- comparison 9: gross_loss - gross_gain no coincide con net_from_components.
+- comparison 11: gross_loss - gross_gain no coincide con net_from_components.
+- comparison 14: gross_loss - gross_gain no coincide con net_from_components.
+- comparison 15: gross_loss - gross_gain no coincide con net_from_components.
+- comparison 16: gross_loss - gross_gain no coincide con net_from_components.
+- comparison 17: gross_loss - gross_gain no coincide con net_from_components.
+- comparison 22: gross_loss - gross_gain no coincide con net_from_components.
+
+Errors: 11
+
+--- STDERR ---
+
+--- RETURN CODE ---
+1

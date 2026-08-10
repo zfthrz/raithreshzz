@@ -1,0 +1,12 @@
+$ 'C:\Users\thres\AppData\Local\Python\pythoncore-3.14-64\python.exe' 'C:\Users\thres\Documents\GitHub\raithreshzz\session_history.py' --db 'C:\Users\thres\Documents\GitHub\raithreshzz\race_engineer_history.duckdb' init
+
+--- STDOUT ---
+
+History DB inicializada:
+c:\users\thres\documents\github\raithreshzz\race_engineer_history.duckdb
+Schema version: 2
+
+--- STDERR ---
+
+--- RETURN CODE ---
+0

@@ -408,7 +408,14 @@ def load_episodes(
     vehicle_variant=None,
 ):
     params = []
-    clauses = []
+
+    # History conserva todas las comparaciones para auditoría,
+    # pero la calibración sólo puede usar comparaciones que
+    # analyze_telemetry marcó explícitamente como apropiadas
+    # para análisis del piloto.
+    clauses = [
+        "c.recommended_for_driver_analysis IS TRUE"
+    ]
 
     if track:
         clauses.append(
@@ -1410,6 +1417,10 @@ def main():
 
     print(
         "Pair hard gate: same track + same known supported vehicle variant"
+    )
+
+    print(
+        "Source eligibility gate: recommended_for_driver_analysis = true"
     )
 
     output = args.output

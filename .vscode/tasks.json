@@ -1,0 +1,35 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Project: check",
+      "type": "shell",
+      "command": "python scripts/check_project.py",
+      "problemMatcher": []
+    },
+    {
+      "label": "History: init",
+      "type": "shell",
+      "command": "python session_history.py init",
+      "problemMatcher": []
+    },
+    {
+      "label": "History: import example",
+      "type": "shell",
+      "command": "python session_history.py import examples/monza_analyze_v3_8.json",
+      "problemMatcher": []
+    },
+    {
+      "label": "History: validate",
+      "type": "shell",
+      "command": "python validate_history_db.py",
+      "problemMatcher": []
+    },
+    {
+      "label": "Python: compile all",
+      "type": "shell",
+      "command": "python -m compileall -q .",
+      "problemMatcher": []
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+
+# Race Engineer runtime data
+*.duckdb
+*.duckdb.wal
+*_llm/
+*_llm_analysis_v3_8_2.json
+
+# Keep raw telemetry / generated outputs out of Git by default
+data/raw/*
+!data/raw/.gitkeep
+data/generated/*
+!data/generated/.gitkeep
+
+# Local secrets / overrides
+.env
+.env.*
+!.env.example

@@ -1,0 +1,276 @@
+{
+  "schema_version": 1,
+  "track": {
+    "canonical_name": "Circuit de Spa-Francorchamps",
+    "centreline_length_m_official": 7004,
+    "layout_note": "Current Grand Prix / WEC full circuit."
+  },
+  "numbering": {
+    "canonical_scheme": "FIA_2026_19_turn",
+    "canonical_turn_count": 19,
+    "wec_published_turn_count": 20,
+    "policy": "Use FIA 2026 corner numbers as the deterministic numbering scheme until an authoritative WEC/LMU map demonstrates a different numbered mapping. Keep WEC's published 20-turn count as metadata only, not as a remapping.",
+    "status": "semantic_mapping_ready_distance_calibration_pending"
+  },
+  "sources": [
+    {
+      "id": "fia_2026_circuit_map",
+      "authority": "FIA",
+      "title": "Circuit Map - Updated - Spa Francorchamps 2026",
+      "date": "2026-07-18",
+      "url": "https://www.fia.com/system/files/decision-document/2026_spa_francorchamps_event_-_circuit_map_-_updated_-_spa_francorchamps_2026.pdf"
+    },
+    {
+      "id": "spa_corner_names",
+      "authority": "Circuit de Spa-Francorchamps",
+      "title": "The corners of the Spa-Francorchamps Circuit",
+      "date": "2018-08-23",
+      "url": "https://www.spa-francorchamps.be/en/news/96_the-corners-of-the-spa-francorchamps-circuit"
+    },
+    {
+      "id": "spa_workingprogress",
+      "authority": "Circuit de Spa-Francorchamps",
+      "title": "#workingprogress",
+      "url": "https://www.spa-francorchamps.be/nl/news/248_workingprogress"
+    },
+    {
+      "id": "fia_wec_2026_spa",
+      "authority": "FIA WEC",
+      "title": "TotalEnergies 6 Hours of Spa-Francorchamps 2026",
+      "url": "https://www.fiawec.com/en/race/totalenergies-6-hours-of-spa-francorchamps-2026"
+    }
+  ],
+  "turns": [
+    {
+      "number": 1,
+      "name": "La Source",
+      "aliases": [
+        "Source"
+      ],
+      "direction": "right",
+      "confidence": "verified"
+    },
+    {
+      "number": 2,
+      "name": "Eau Rouge",
+      "aliases": [],
+      "direction": "left",
+      "confidence": "verified"
+    },
+    {
+      "number": 3,
+      "name": "Raidillon",
+      "aliases": [
+        "Raidillon left"
+      ],
+      "direction": "left",
+      "confidence": "verified"
+    },
+    {
+      "number": 4,
+      "name": "Raidillon",
+      "aliases": [
+        "Raidillon top"
+      ],
+      "direction": "right",
+      "confidence": "verified"
+    },
+    {
+      "number": 5,
+      "name": "Les Combes",
+      "aliases": [
+        "Les Combes entry"
+      ],
+      "direction": "right",
+      "confidence": "sequence_inferred"
+    },
+    {
+      "number": 6,
+      "name": "Les Combes",
+      "aliases": [
+        "Les Combes left"
+      ],
+      "direction": "left",
+      "confidence": "sequence_inferred"
+    },
+    {
+      "number": 7,
+      "name": "Malmedy",
+      "aliases": [],
+      "direction": "right",
+      "confidence": "sequence_inferred"
+    },
+    {
+      "number": 8,
+      "name": "Bruxelles",
+      "aliases": [
+        "Rivage"
+      ],
+      "direction": "right",
+      "confidence": "verified"
+    },
+    {
+      "number": 9,
+      "name": "Speaker Corner",
+      "aliases": [
+        "No Name"
+      ],
+      "direction": "left",
+      "confidence": "sequence_inferred"
+    },
+    {
+      "number": 10,
+      "name": "Double Gauche de Pouhon",
+      "aliases": [
+        "Pouhon",
+        "Double Gauche"
+      ],
+      "direction": "left",
+      "confidence": "verified_complex"
+    },
+    {
+      "number": 11,
+      "name": "Double Gauche de Pouhon",
+      "aliases": [
+        "Pouhon",
+        "Double Gauche"
+      ],
+      "direction": "left",
+      "confidence": "verified_complex"
+    },
+    {
+      "number": 12,
+      "name": "Fagnes",
+      "aliases": [],
+      "direction": "right",
+      "confidence": "sequence_inferred"
+    },
+    {
+      "number": 13,
+      "name": "Fagnes",
+      "aliases": [],
+      "direction": "left",
+      "confidence": "sequence_inferred"
+    },
+    {
+      "number": 14,
+      "name": "Campus",
+      "aliases": [],
+      "direction": "right",
+      "confidence": "sequence_inferred"
+    },
+    {
+      "number": 15,
+      "name": "Paul Frère",
+      "aliases": [
+        "Courbe Paul Frère"
+      ],
+      "direction": "right",
+      "confidence": "sequence_inferred"
+    },
+    {
+      "number": 16,
+      "name": "Blanchimont",
+      "aliases": [
+        "Blanchimont 1"
+      ],
+      "direction": "left",
+      "confidence": "verified_complex"
+    },
+    {
+      "number": 17,
+      "name": "Blanchimont",
+      "aliases": [
+        "Blanchimont 2"
+      ],
+      "direction": "left",
+      "confidence": "verified_complex"
+    },
+    {
+      "number": 18,
+      "name": "Chicane",
+      "aliases": [
+        "Bus Stop",
+        "Bus Stop Chicane"
+      ],
+      "direction": "right",
+      "confidence": "verified_complex"
+    },
+    {
+      "number": 19,
+      "name": "Chicane",
+      "aliases": [
+        "Bus Stop",
+        "Bus Stop Chicane"
+      ],
+      "direction": "left",
+      "confidence": "verified_complex"
+    }
+  ],
+  "complexes": [
+    {
+      "label": "Eau Rouge / Raidillon",
+      "turns": [
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "label": "Les Combes / Malmedy",
+      "turns": [
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "label": "Double Gauche de Pouhon",
+      "turns": [
+        10,
+        11
+      ]
+    },
+    {
+      "label": "Fagnes",
+      "turns": [
+        12,
+        13
+      ]
+    },
+    {
+      "label": "Blanchimont",
+      "turns": [
+        16,
+        17
+      ]
+    },
+    {
+      "label": "Chicane / Bus Stop",
+      "turns": [
+        18,
+        19
+      ]
+    }
+  ],
+  "distance_calibration": {
+    "status": "pending_lmu_gps",
+    "per_turn_fields": [
+      "start_m",
+      "apex_m",
+      "end_m"
+    ],
+    "source_required": "Validated full-lap LMU GPS telemetry",
+    "values": {}
+  },
+  "integration_policy": {
+    "llm_may_invent_track_location": false,
+    "fallback_when_distance_not_calibrated": "distance_only",
+    "preferred_render_order": [
+      "turn_number_and_name",
+      "turn_number",
+      "complex_name",
+      "distance_only"
+    ]
+  }
+}

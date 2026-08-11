@@ -1,0 +1,382 @@
+{
+  "schema_version": 1,
+  "track": {
+    "canonical_name": "Autodromo Nazionale Monza",
+    "aliases": [
+      "Monza"
+    ],
+    "centreline_length_m_official": 5793,
+    "direction": "clockwise",
+    "layout_note": "Current Grand Prix full circuit."
+  },
+  "numbering": {
+    "canonical_scheme": "FIA_2025_11_turn",
+    "canonical_turn_count": 11,
+    "right_turn_count": 7,
+    "left_turn_count": 4,
+    "policy": "Use FIA corner numbers T1-T11 as the deterministic numbering scheme. Named bends that are not assigned a FIA corner number, such as Curva del Serraglio, are stored as landmarks and must not shift the FIA turn numbering.",
+    "status": "semantic_mapping_ready_distance_calibration_pending"
+  },
+  "sources": [
+    {
+      "id": "fia_monza_2025_circuit_map",
+      "authority": "FIA",
+      "title": "Circuit Map - Monza 2025",
+      "date": "2025-09-04",
+      "url": "https://www.fia.com/system/files/decision-document/2025_monza_event_-_circuit_map_-_monza_2025.pdf",
+      "supports": [
+        "FIA corner numbering T1-T11",
+        "circuit centreline length 5.793 km",
+        "current geometric order of corners"
+      ]
+    },
+    {
+      "id": "monza_official_circuit",
+      "authority": "Autodromo Nazionale Monza",
+      "title": "Il tracciato del circuito di Monza",
+      "url": "https://www.monzanet.it/tracciato-pista-monza/",
+      "supports": [
+        "official current corner names and historical aliases",
+        "5.793 km circuit length",
+        "clockwise direction",
+        "7 right / 4 left turns",
+        "Curva del Serraglio as a named slight bend",
+        "Ascari as left-right-left",
+        "Curva Alboreto as current name for Parabolica"
+      ]
+    }
+  ],
+  "turns": [
+    {
+      "number": 1,
+      "name": "Variante del Rettifilo",
+      "display_name": "Prima Variante — Rettifilo",
+      "aliases": [
+        "Prima Variante",
+        "Variante del Rettifilo",
+        "Rettifilo"
+      ],
+      "direction": "right",
+      "complex": "Prima Variante",
+      "name_mapping_confidence": "verified_combined",
+      "verification": [
+        "fia_monza_2025_circuit_map",
+        "monza_official_circuit"
+      ],
+      "distance_lmu": {
+        "start_m": null,
+        "apex_m": null,
+        "end_m": null
+      }
+    },
+    {
+      "number": 2,
+      "name": "Variante del Rettifilo",
+      "display_name": "Prima Variante — Rettifilo",
+      "aliases": [
+        "Prima Variante",
+        "Variante del Rettifilo",
+        "Rettifilo"
+      ],
+      "direction": "left",
+      "complex": "Prima Variante",
+      "name_mapping_confidence": "verified_combined",
+      "verification": [
+        "fia_monza_2025_circuit_map",
+        "monza_official_circuit"
+      ],
+      "distance_lmu": {
+        "start_m": null,
+        "apex_m": null,
+        "end_m": null
+      }
+    },
+    {
+      "number": 3,
+      "name": "Curva Biassono",
+      "display_name": "Curva Biassono",
+      "aliases": [
+        "Curva Grande",
+        "Biassono"
+      ],
+      "direction": "right",
+      "complex": null,
+      "name_mapping_confidence": "verified_combined",
+      "verification": [
+        "fia_monza_2025_circuit_map",
+        "monza_official_circuit"
+      ],
+      "distance_lmu": {
+        "start_m": null,
+        "apex_m": null,
+        "end_m": null
+      }
+    },
+    {
+      "number": 4,
+      "name": "Variante della Roggia",
+      "display_name": "Seconda Variante — Roggia",
+      "aliases": [
+        "Seconda Variante",
+        "Variante della Roggia",
+        "Roggia"
+      ],
+      "direction": "left",
+      "complex": "Seconda Variante",
+      "name_mapping_confidence": "verified_combined",
+      "verification": [
+        "fia_monza_2025_circuit_map",
+        "monza_official_circuit"
+      ],
+      "distance_lmu": {
+        "start_m": null,
+        "apex_m": null,
+        "end_m": null
+      }
+    },
+    {
+      "number": 5,
+      "name": "Variante della Roggia",
+      "display_name": "Seconda Variante — Roggia",
+      "aliases": [
+        "Seconda Variante",
+        "Variante della Roggia",
+        "Roggia"
+      ],
+      "direction": "right",
+      "complex": "Seconda Variante",
+      "name_mapping_confidence": "verified_combined",
+      "verification": [
+        "fia_monza_2025_circuit_map",
+        "monza_official_circuit"
+      ],
+      "distance_lmu": {
+        "start_m": null,
+        "apex_m": null,
+        "end_m": null
+      }
+    },
+    {
+      "number": 6,
+      "name": "Prima Curva di Lesmo",
+      "display_name": "Lesmo 1",
+      "aliases": [
+        "Lesmo 1",
+        "Prima di Lesmo",
+        "First Lesmo"
+      ],
+      "direction": "right",
+      "complex": "Lesmo",
+      "name_mapping_confidence": "verified_combined",
+      "verification": [
+        "fia_monza_2025_circuit_map",
+        "monza_official_circuit"
+      ],
+      "distance_lmu": {
+        "start_m": null,
+        "apex_m": null,
+        "end_m": null
+      }
+    },
+    {
+      "number": 7,
+      "name": "Seconda Curva di Lesmo",
+      "display_name": "Lesmo 2",
+      "aliases": [
+        "Lesmo 2",
+        "Seconda di Lesmo",
+        "Second Lesmo"
+      ],
+      "direction": "right",
+      "complex": "Lesmo",
+      "name_mapping_confidence": "verified_combined",
+      "verification": [
+        "fia_monza_2025_circuit_map",
+        "monza_official_circuit"
+      ],
+      "distance_lmu": {
+        "start_m": null,
+        "apex_m": null,
+        "end_m": null
+      }
+    },
+    {
+      "number": 8,
+      "name": "Variante Ascari",
+      "display_name": "Ascari — T8",
+      "aliases": [
+        "Ascari",
+        "Ascari entry"
+      ],
+      "direction": "left",
+      "complex": "Variante Ascari",
+      "name_mapping_confidence": "verified_combined",
+      "verification": [
+        "fia_monza_2025_circuit_map",
+        "monza_official_circuit"
+      ],
+      "distance_lmu": {
+        "start_m": null,
+        "apex_m": null,
+        "end_m": null
+      }
+    },
+    {
+      "number": 9,
+      "name": "Variante Ascari",
+      "display_name": "Ascari — T9",
+      "aliases": [
+        "Ascari"
+      ],
+      "direction": "right",
+      "complex": "Variante Ascari",
+      "name_mapping_confidence": "verified_combined",
+      "verification": [
+        "fia_monza_2025_circuit_map",
+        "monza_official_circuit"
+      ],
+      "distance_lmu": {
+        "start_m": null,
+        "apex_m": null,
+        "end_m": null
+      }
+    },
+    {
+      "number": 10,
+      "name": "Variante Ascari",
+      "display_name": "Ascari — T10",
+      "aliases": [
+        "Ascari",
+        "Ascari exit"
+      ],
+      "direction": "left",
+      "complex": "Variante Ascari",
+      "name_mapping_confidence": "verified_combined",
+      "verification": [
+        "fia_monza_2025_circuit_map",
+        "monza_official_circuit"
+      ],
+      "distance_lmu": {
+        "start_m": null,
+        "apex_m": null,
+        "end_m": null
+      }
+    },
+    {
+      "number": 11,
+      "name": "Curva Alboreto",
+      "display_name": "Curva Alboreto (Parabolica)",
+      "aliases": [
+        "Parabolica",
+        "Curva Parabolica",
+        "Alboreto"
+      ],
+      "direction": "right",
+      "complex": null,
+      "name_mapping_confidence": "verified_combined",
+      "verification": [
+        "fia_monza_2025_circuit_map",
+        "monza_official_circuit"
+      ],
+      "distance_lmu": {
+        "start_m": null,
+        "apex_m": null,
+        "end_m": null
+      }
+    }
+  ],
+  "complexes": [
+    {
+      "label": "Prima Variante — Variante del Rettifilo",
+      "turns": [
+        1,
+        2
+      ],
+      "sequence": [
+        "right",
+        "left"
+      ]
+    },
+    {
+      "label": "Seconda Variante — Variante della Roggia",
+      "turns": [
+        4,
+        5
+      ],
+      "sequence": [
+        "left",
+        "right"
+      ]
+    },
+    {
+      "label": "Lesmo",
+      "turns": [
+        6,
+        7
+      ],
+      "sequence": [
+        "right",
+        "right"
+      ]
+    },
+    {
+      "label": "Variante Ascari",
+      "turns": [
+        8,
+        9,
+        10
+      ],
+      "sequence": [
+        "left",
+        "right",
+        "left"
+      ]
+    }
+  ],
+  "landmarks": [
+    {
+      "name": "Curva del Serraglio",
+      "aliases": [
+        "Serraglio"
+      ],
+      "direction": "left",
+      "fia_turn_number": null,
+      "location_order": {
+        "after_turn": 7,
+        "before_turn": 8
+      },
+      "description": "Officially named slight left bend with radius over 600 m. It is not assigned a corner number on the FIA 2025 T1-T11 circuit map and therefore must not increment the deterministic turn numbering.",
+      "verification": [
+        "fia_monza_2025_circuit_map",
+        "monza_official_circuit"
+      ],
+      "distance_lmu": {
+        "start_m": null,
+        "apex_m": null,
+        "end_m": null
+      }
+    }
+  ],
+  "distance_calibration": {
+    "status": "pending_lmu_gps",
+    "per_turn_fields": [
+      "start_m",
+      "apex_m",
+      "end_m"
+    ],
+    "source_required": "Validated full-lap LMU GPS telemetry",
+    "values": {}
+  },
+  "integration_policy": {
+    "llm_may_invent_track_location": false,
+    "fallback_when_distance_not_calibrated": "distance_only",
+    "unnumbered_landmarks_do_not_shift_turn_numbers": true,
+    "preferred_render_order": [
+      "turn_number_and_name",
+      "turn_number",
+      "complex_name",
+      "landmark_name",
+      "distance_only"
+    ]
+  }
+}

@@ -11,11 +11,6 @@ venv/
 Thumbs.db
 *.swp
 
-# Race Engineer runtime data
-*.duckdb
-*.duckdb.wal
-*_llm/
-*_llm_analysis_v3_8_2.json
 
 # Keep raw telemetry / generated outputs out of Git by default
 data/raw/*

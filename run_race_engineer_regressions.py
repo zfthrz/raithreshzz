@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 
 
-SUITE_VERSION = "1.1"
+SUITE_VERSION = "1.2"
 
 
 class RegressionFailure(Exception):
@@ -197,6 +197,9 @@ def main():
     sustained = load_local_module(
         "throttle_sustained_modulation_v1_0"
     )
+    recurrence = load_local_module(
+        "full_throttle_recurrence_v1_0"
+    )
     recovery = load_local_module(
         "apply_objective_python_recovery_2026_08_13"
     )
@@ -302,6 +305,43 @@ def main():
             ),
             assert_equal(
                 sustained.sustained_modulation_config_summary()[
+                    "authorizes_coaching"
+                ],
+                False,
+                "authorizes_coaching",
+            ),
+        ),
+    )
+
+    runner.run(
+        "Full-throttle recurrence = 1.0 / session observational",
+        lambda: (
+            assert_equal(
+                recurrence.FULL_THROTTLE_RECURRENCE_VERSION,
+                "1.0",
+                "FULL_THROTTLE_RECURRENCE_VERSION",
+            ),
+            assert_equal(
+                recurrence.FULL_THROTTLE_RECURRENCE_SCHEMA_VERSION,
+                "1.0",
+                "FULL_THROTTLE_RECURRENCE_SCHEMA_VERSION",
+            ),
+            assert_equal(
+                recurrence.full_throttle_recurrence_config_summary()[
+                    "observational_only"
+                ],
+                True,
+                "observational_only",
+            ),
+            assert_equal(
+                recurrence.full_throttle_recurrence_config_summary()[
+                    "affects_session_priority"
+                ],
+                False,
+                "affects_session_priority",
+            ),
+            assert_equal(
+                recurrence.full_throttle_recurrence_config_summary()[
                     "authorizes_coaching"
                 ],
                 False,
@@ -1199,6 +1239,375 @@ def main():
         sustained_enrichment_preserves_ranking,
     )
 
+
+    # ========================================================
+    # FULL-THROTTLE ATTAINMENT RECURRENCE 1.0
+    # ========================================================
+    section("FULL-THROTTLE ATTAINMENT RECURRENCE 1.0")
+
+    def _ft_result(
+        reference_event_id,
+        direction,
+        delta_m=None,
+        status="VALID",
+        reference_attained=True,
+        comparison_attained=True,
+        reference_attainment_m=1000.0,
+        comparison_attainment_m=None,
+        reason=None,
+    ):
+        if comparison_attainment_m is None and delta_m is not None:
+            comparison_attainment_m = reference_attainment_m + delta_m
+
+        return {
+            "status": status,
+            "throttle_pair_id": (
+                f"{reference_event_id}|cmp"
+                if reference_event_id
+                else None
+            ),
+            "reference_event_id": reference_event_id,
+            "comparison_event_id": "cmp",
+            "reference_attainment_confirmed": reference_attained,
+            "comparison_attainment_confirmed": comparison_attained,
+            "reference_attainment_m": (
+                reference_attainment_m
+                if reference_attained
+                else None
+            ),
+            "comparison_attainment_m": (
+                comparison_attainment_m
+                if comparison_attained
+                else None
+            ),
+            "reference_onset_to_full_throttle_m": (
+                80.0 if reference_attained else None
+            ),
+            "comparison_onset_to_full_throttle_m": (
+                80.0 + delta_m
+                if comparison_attained and delta_m is not None
+                else None
+            ),
+            "comparison_minus_reference_m": delta_m,
+            "relative_direction": direction,
+            "authorized_numeric_coaching": False,
+            "observational_only": True,
+            "reason": reason,
+        }
+
+    def _ft_comparison(
+        comparison_lap,
+        results,
+        reference_lap=4,
+    ):
+        episodes = []
+        for index, result in enumerate(results, start=1):
+            episodes.append({
+                "episode_id": index,
+                "global_rank": index,
+                "zone_id": index,
+                "start_distance_m": 900.0 + index * 10.0,
+                "end_distance_m": 950.0 + index * 10.0,
+                "action_time_loss_s": 0.1 / index,
+                "action_channels": ["throttle"],
+                "throttle_full_throttle_attainment_comparison": result,
+            })
+        return {
+            "reference_lap": reference_lap,
+            "comparison_lap": comparison_lap,
+            "objective_analysis": {
+                "driver_action_episode_ranking": episodes,
+            },
+        }
+
+    def recurrence_repeated_timing():
+        analysis = {
+            "comparisons": [
+                _ft_comparison(
+                    3,
+                    [
+                        _ft_result(
+                            "throttle_a:08",
+                            "earlier_in_comparison_lap",
+                            -24.0,
+                            reference_attainment_m=3243.0,
+                        )
+                    ],
+                ),
+                _ft_comparison(
+                    2,
+                    [
+                        _ft_result(
+                            "throttle_a:08",
+                            "earlier_in_comparison_lap",
+                            -10.0,
+                            reference_attainment_m=3243.0,
+                        )
+                    ],
+                ),
+                _ft_comparison(1, []),
+            ]
+        }
+
+        recurrence.enrich_analysis_with_full_throttle_attainment_recurrence(
+            analysis
+        )
+        result = analysis["full_throttle_attainment_recurrence"]
+        assert_equal(result["repeated_pattern_count"], 1, "repeated count")
+        pattern = result["patterns"][0]
+        assert_equal(
+            pattern["selected_direction"],
+            "earlier_in_comparison_lap",
+            "selected direction",
+        )
+        assert_equal(
+            pattern["recurrence_status"],
+            "REPEATED_CONSISTENT",
+            "recurrence status",
+        )
+        assert_equal(pattern["support_count"], 2, "support count")
+        assert_equal(
+            pattern["comparison_minus_reference_m_median"],
+            -17.0,
+            "median delta",
+        )
+        assert_equal(pattern["missing_comparison_count"], 1, "missing comparisons")
+        assert_equal(pattern["authorized_coaching"], False, "coaching")
+
+    runner.run(
+        "repeated timing direction across comparisons",
+        recurrence_repeated_timing,
+    )
+
+    def recurrence_repeated_attainment_state():
+        analysis = {
+            "comparisons": [
+                _ft_comparison(
+                    3,
+                    [
+                        _ft_result(
+                            "throttle_a:04",
+                            "comparison_attained_reference_not_confirmed",
+                            None,
+                            reference_attained=False,
+                            comparison_attained=True,
+                            reference_attainment_m=None,
+                            comparison_attainment_m=2605.0,
+                        )
+                    ],
+                ),
+                _ft_comparison(
+                    2,
+                    [
+                        _ft_result(
+                            "throttle_a:04",
+                            None,
+                            None,
+                            status="UNAVAILABLE",
+                            reference_attained=False,
+                            comparison_attained=False,
+                            reference_attainment_m=None,
+                            comparison_attainment_m=None,
+                            reason="full_throttle_not_confirmed_in_either_event",
+                        )
+                    ],
+                ),
+                _ft_comparison(
+                    1,
+                    [
+                        _ft_result(
+                            "throttle_a:04",
+                            "comparison_attained_reference_not_confirmed",
+                            None,
+                            reference_attained=False,
+                            comparison_attained=True,
+                            reference_attainment_m=None,
+                            comparison_attainment_m=2588.0,
+                        )
+                    ],
+                ),
+            ]
+        }
+
+        result = recurrence.build_full_throttle_attainment_recurrence(
+            analysis["comparisons"]
+        )
+        pattern = result["patterns"][0]
+        assert_equal(pattern["is_repeated"], True, "is_repeated")
+        assert_equal(pattern["pattern_kind"], "attainment_state", "pattern kind")
+        assert_equal(pattern["support_count"], 2, "support count")
+        assert_equal(
+            pattern["unavailable_observation_count"],
+            1,
+            "unavailable count",
+        )
+        assert_equal(
+            pattern["recurrence_status"],
+            "REPEATED_CONSISTENT",
+            "recurrence status",
+        )
+
+    runner.run(
+        "repeated attained/not-attained state ignores unavailable evidence",
+        recurrence_repeated_attainment_state,
+    )
+
+    def recurrence_mixed_not_repeated():
+        comparisons = [
+            _ft_comparison(
+                3,
+                [
+                    _ft_result(
+                        "throttle_a:07",
+                        "earlier_in_comparison_lap",
+                        -11.0,
+                    )
+                ],
+            ),
+            _ft_comparison(
+                1,
+                [
+                    _ft_result(
+                        "throttle_a:07",
+                        "later_in_comparison_lap",
+                        42.0,
+                    )
+                ],
+            ),
+        ]
+
+        result = recurrence.build_full_throttle_attainment_recurrence(comparisons)
+        pattern = result["patterns"][0]
+        assert_equal(pattern["is_repeated"], False, "is_repeated")
+        assert_equal(pattern["recurrence_status"], "NOT_REPEATED", "status")
+        assert_equal(
+            pattern["direction_counts"],
+            {
+                "earlier_in_comparison_lap": 1,
+                "later_in_comparison_lap": 1,
+            },
+            "direction counts",
+        )
+
+    runner.run(
+        "mixed earlier/later evidence is not promoted to recurrence",
+        recurrence_mixed_not_repeated,
+    )
+
+    def recurrence_duplicate_episode_dedup():
+        repeated = _ft_result(
+            "throttle_a:09",
+            "later_in_comparison_lap",
+            26.0,
+            reference_attainment_m=3737.0,
+        )
+        comparison3 = _ft_comparison(3, [dict(repeated), dict(repeated)])
+        comparison2 = _ft_comparison(
+            2,
+            [
+                _ft_result(
+                    "throttle_a:09",
+                    "later_in_comparison_lap",
+                    44.0,
+                    reference_attainment_m=3737.0,
+                )
+            ],
+        )
+
+        result = recurrence.build_full_throttle_attainment_recurrence(
+            [comparison3, comparison2]
+        )
+        pattern = result["patterns"][0]
+        assert_equal(pattern["support_count"], 2, "support count")
+        assert_equal(pattern["valid_observation_count"], 2, "valid observations")
+        duplicate_counts = [
+            item["duplicate_episode_count"]
+            for item in pattern["observations"]
+        ]
+        assert_true(max(duplicate_counts) == 1, "duplicate episode recorded")
+
+    runner.run(
+        "duplicate episode assignment cannot inflate recurrence",
+        recurrence_duplicate_episode_dedup,
+    )
+
+    def recurrence_enrichment_preserves_session():
+        comparisons = [
+            _ft_comparison(
+                3,
+                [
+                    _ft_result(
+                        "throttle_a:08",
+                        "earlier_in_comparison_lap",
+                        -24.0,
+                    )
+                ],
+            ),
+            _ft_comparison(
+                2,
+                [
+                    _ft_result(
+                        "throttle_a:08",
+                        "earlier_in_comparison_lap",
+                        -10.0,
+                    )
+                ],
+            ),
+        ]
+
+        analysis = {
+            "metadata": {"sentinel": "keep"},
+            "comparisons": comparisons,
+        }
+
+        before_laps = [
+            comp["comparison_lap"]
+            for comp in analysis["comparisons"]
+        ]
+        before_episode_ids = [
+            [
+                episode["episode_id"]
+                for episode in comp["objective_analysis"][
+                    "driver_action_episode_ranking"
+                ]
+            ]
+            for comp in analysis["comparisons"]
+        ]
+
+        recurrence.enrich_analysis_with_full_throttle_attainment_recurrence(
+            analysis
+        )
+
+        after_laps = [
+            comp["comparison_lap"]
+            for comp in analysis["comparisons"]
+        ]
+        after_episode_ids = [
+            [
+                episode["episode_id"]
+                for episode in comp["objective_analysis"][
+                    "driver_action_episode_ranking"
+                ]
+            ]
+            for comp in analysis["comparisons"]
+        ]
+
+        assert_equal(after_laps, before_laps, "comparison order")
+        assert_equal(after_episode_ids, before_episode_ids, "episode ranking")
+        assert_equal(analysis["metadata"]["sentinel"], "keep", "metadata sentinel")
+        config = analysis["full_throttle_attainment_recurrence"]["config"]
+        assert_equal(config["affects_ranking"], False, "affects ranking")
+        assert_equal(
+            config["affects_session_priority"],
+            False,
+            "affects session priority",
+        )
+
+    runner.run(
+        "session recurrence enrichment preserves comparisons/ranking",
+        recurrence_enrichment_preserves_session,
+    )
+
     # ========================================================
     # RECOVERY PATCHER
     # ========================================================
@@ -1209,12 +1618,18 @@ def main():
 from sector_analysis import SectorAnalysis
 
 def demo(zones, real_delta, comparison):
+    if True:
+        if True:
             objective_analysis = build_objective_analysis(
                 zones,
                 real_delta,
                 comparison,
             )
             return objective_analysis
+
+        # ====================================================
+        # VALIDACIÓN GLOBAL
+        # ====================================================
 """
         patched = recovery.patch_text(
             sample
@@ -1240,6 +1655,8 @@ from braking_point_v2_0 import enrich_objective_with_braking_points
 from throttle_point_v1_1 import enrich_objective_with_throttle_points
 
 def demo(zones, real_delta, comparison):
+    if True:
+        if True:
             objective_analysis = build_objective_analysis(
                 zones,
                 real_delta,
@@ -1254,6 +1671,10 @@ def demo(zones, real_delta, comparison):
                 objective_analysis,
             )
             return objective_analysis
+
+        # ====================================================
+        # VALIDACIÓN GLOBAL
+        # ====================================================
 """
         patched = recovery.patch_text(
             sample
@@ -1289,12 +1710,18 @@ def demo(zones, real_delta, comparison):
 from sector_analysis import SectorAnalysis
 
 def demo(zones, real_delta, comparison):
+    if True:
+        if True:
             objective_analysis = build_objective_analysis(
                 zones,
                 real_delta,
                 comparison,
             )
             return objective_analysis
+
+        # ====================================================
+        # VALIDACIÓN GLOBAL
+        # ====================================================
 """
         once = recovery.patch_text(
             sample

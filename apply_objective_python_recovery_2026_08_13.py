@@ -4,7 +4,7 @@ import shutil
 import sys
 
 
-RECOVERY_PATCH_VERSION = "2026.08.13-v2"
+RECOVERY_PATCH_VERSION = "2026.08.13-v3"
 
 BRAKE_IMPORT = (
     "from braking_point_v2_1 import enrich_objective_with_braking_points\n"
@@ -19,6 +19,10 @@ SEQUENCE_IMPORT = (
 SUSTAINED_IMPORT = (
     "from throttle_sustained_modulation_v1_0 import "
     "enrich_objective_with_sustained_throttle_modulations\n"
+)
+RECURRENCE_IMPORT = (
+    "from full_throttle_recurrence_v1_0 import "
+    "enrich_analysis_with_full_throttle_attainment_recurrence\n"
 )
 
 IMPORT_ANCHOR = (
@@ -64,11 +68,25 @@ CANONICAL_HOOKS = """
             )
 """
 
+CANONICAL_SESSION_HOOK = """        # Recurrencia de full-throttle attainment entre vueltas.
+        # Observacional: no modifica ranking, prioridad ni coaching.
+        enrich_analysis_with_full_throttle_attainment_recurrence(
+            analysis_output,
+        )
+
+"""
+
+GLOBAL_VALIDATION_ANCHOR = """        # ====================================================
+        # VALIDACIÓN GLOBAL
+        # ====================================================
+"""
+
 TARGET_IMPORTS = (
     BRAKE_IMPORT,
     THROTTLE_IMPORT,
     SEQUENCE_IMPORT,
     SUSTAINED_IMPORT,
+    RECURRENCE_IMPORT,
 )
 
 HOOK_NAMES = (
@@ -76,6 +94,10 @@ HOOK_NAMES = (
     "enrich_objective_with_throttle_points",
     "enrich_objective_with_throttle_event_sequences",
     "enrich_objective_with_sustained_throttle_modulations",
+)
+
+SESSION_HOOK_NAME = (
+    "enrich_analysis_with_full_throttle_attainment_recurrence"
 )
 
 
@@ -89,6 +111,8 @@ def _remove_versioned_imports(text):
         r"enrich_objective_with_throttle_event_sequences\s*$",
         r"^from\s+throttle_sustained_modulation[^\s]*\s+import\s+"
         r"enrich_objective_with_sustained_throttle_modulations\s*$",
+        r"^from\s+full_throttle_recurrence[^\s]*\s+import\s+"
+        r"enrich_analysis_with_full_throttle_attainment_recurrence\s*$",
     )
 
     for pattern in patterns:
@@ -121,6 +145,26 @@ def _remove_hook_calls(text):
     return text
 
 
+def _remove_session_hook_call(text):
+    text = text.replace(
+        CANONICAL_SESSION_HOOK,
+        "",
+    )
+
+    pattern = re.compile(
+        r"\n(?P<indent>[ \t]*)"
+        + re.escape(SESSION_HOOK_NAME)
+        + r"\(\n"
+        r"(?P=indent)[ \t]+analysis_output,\n"
+        r"(?P=indent)\)\n"
+    )
+
+    return pattern.sub(
+        "\n",
+        text,
+    )
+
+
 def patch_text(original):
     text = original
 
@@ -138,6 +182,7 @@ def patch_text(original):
         + THROTTLE_IMPORT
         + SEQUENCE_IMPORT
         + SUSTAINED_IMPORT
+        + RECURRENCE_IMPORT
     )
 
     # Normalizar el espacio vertical alrededor del bloque de imports para
@@ -177,6 +222,21 @@ def patch_text(original):
         1,
     )
 
+    text = _remove_session_hook_call(
+        text
+    )
+
+    if GLOBAL_VALIDATION_ANCHOR not in text:
+        raise ValueError(
+            "No encontré el bloque VALIDACIÓN GLOBAL esperado."
+        )
+
+    text = text.replace(
+        GLOBAL_VALIDATION_ANCHOR,
+        CANONICAL_SESSION_HOOK + GLOBAL_VALIDATION_ANCHOR,
+        1,
+    )
+
     compile(
         text,
         "<patched_analyze_telemetry>",
@@ -209,6 +269,14 @@ def verify_text(text):
             errors.append(
                 f"hook {hook_name} aparece {count} veces"
             )
+
+    session_count = text.count(
+        SESSION_HOOK_NAME + "("
+    )
+    if session_count != 1:
+        errors.append(
+            f"hook {SESSION_HOOK_NAME} aparece {session_count} veces"
+        )
 
     return errors
 
@@ -319,6 +387,9 @@ def main():
     )
     print(
         "  Throttle Sustained Modulation: 1.0"
+    )
+    print(
+        "  Full Throttle Attainment Recurrence: 1.0"
     )
     print(
         "  LLM Analysis: NO MODIFICADO"

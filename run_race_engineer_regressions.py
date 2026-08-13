@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 
 
-SUITE_VERSION = "1.4"
+SUITE_VERSION = "1.5"
 
 
 class RegressionFailure(Exception):
@@ -205,6 +205,9 @@ def main():
     )
     physical_profile = load_local_module(
         "throttle_physical_point_profile_v1_0"
+    )
+    coaching_gate = load_local_module(
+        "throttle_coaching_evidence_gate_v1_0"
     )
     recovery = load_local_module(
         "apply_objective_python_recovery_2026_08_13"
@@ -432,6 +435,43 @@ def main():
                 ],
                 False,
                 "authorizes_new_coaching",
+            ),
+        ),
+    )
+
+    runner.run(
+        "Throttle coaching evidence gate = 1.0 / shadow mode",
+        lambda: (
+            assert_equal(
+                coaching_gate.THROTTLE_COACHING_EVIDENCE_GATE_VERSION,
+                "1.0",
+                "THROTTLE_COACHING_EVIDENCE_GATE_VERSION",
+            ),
+            assert_equal(
+                coaching_gate.THROTTLE_COACHING_EVIDENCE_GATE_SCHEMA_VERSION,
+                "1.0",
+                "THROTTLE_COACHING_EVIDENCE_GATE_SCHEMA_VERSION",
+            ),
+            assert_equal(
+                coaching_gate.throttle_coaching_evidence_gate_config_summary()[
+                    "mode"
+                ],
+                "shadow_evaluation",
+                "mode",
+            ),
+            assert_equal(
+                coaching_gate.throttle_coaching_evidence_gate_config_summary()[
+                    "activates_coaching"
+                ],
+                False,
+                "activates_coaching",
+            ),
+            assert_equal(
+                coaching_gate.throttle_coaching_evidence_gate_config_summary()[
+                    "affects_session_priority"
+                ],
+                False,
+                "affects_session_priority",
             ),
         ),
     )
@@ -2661,6 +2701,274 @@ def main():
     runner.run(
         "profile enrichment preserves ranking/session priorities",
         profile_enrichment_preserves_session_decisions,
+    )
+
+    # ========================================================
+    # THROTTLE COACHING EVIDENCE GATE 1.0
+    # ========================================================
+    section("THROTTLE COACHING EVIDENCE GATE 1.0")
+
+    def _gate_point_observation(
+        lap,
+        direction,
+        magnitude=20,
+        delta=None,
+        authorized=True,
+        duplicate_conflict=False,
+        status="VALID",
+    ):
+        if delta is None:
+            delta = magnitude if direction == "earlier" else -magnitude
+        return {
+            "reference_lap": 4,
+            "comparison_lap": lap,
+            "reference_event_id": "throttle_a:01",
+            "comparison_event_id": f"throttle_b:{lap}",
+            "duplicate_conflict": duplicate_conflict,
+            "status": status,
+            "source_result": {
+                "status": status,
+                "reference_event_id": "throttle_a:01",
+                "comparison_event_id": f"throttle_b:{lap}",
+                "authorized_numeric_coaching": authorized,
+                "coaching_direction": direction if authorized else None,
+                "coaching_magnitude_m": magnitude if authorized else None,
+                "comparison_minus_reference_m": delta,
+            },
+        }
+
+    def _gate_profile(onset_rows=None, release_rows=None, recurrence=None):
+        return {
+            "physical_point_id": "throttle:throttle_a:01",
+            "reference_lap": 4,
+            "reference_event_id": "throttle_a:01",
+            "reference_event_snapshot_consistent": True,
+            "features": {
+                "onset": {"observations": list(onset_rows or [])},
+                "release": {"observations": list(release_rows or [])},
+            },
+            "recurrence": dict(recurrence or {}),
+        }
+
+    def gate_repeated_consistent_onset_authorizes_shadow():
+        profile = _gate_profile(onset_rows=[
+            _gate_point_observation(3, "earlier", magnitude=14, delta=14.0),
+            _gate_point_observation(2, "earlier", magnitude=16, delta=16.0),
+        ])
+        analysis = {
+            "throttle_physical_point_profiles": {
+                "profiles": [profile]
+            }
+        }
+        result = coaching_gate.build_throttle_coaching_evidence_gate(analysis)
+        gate = result["profiles"][0]["feature_gates"]["onset"]
+        assert_equal(
+            gate["gate_status"],
+            "SHADOW_AUTHORIZED_EXISTING_POINT_COACHING",
+            "gate status",
+        )
+        assert_equal(gate["coaching_direction"], "earlier", "direction")
+        assert_equal(gate["coaching_magnitude_median_m"], 15, "median magnitude")
+        assert_equal(gate["support_count"], 2, "support count")
+        assert_equal(gate["activates_coaching"], False, "active coaching")
+
+    runner.run(
+        "repeated consistent source-authorized onset passes shadow gate",
+        gate_repeated_consistent_onset_authorizes_shadow,
+    )
+
+    def gate_single_support_withheld():
+        profile = _gate_profile(onset_rows=[
+            _gate_point_observation(3, "earlier", magnitude=14),
+        ])
+        analysis = {"throttle_physical_point_profiles": {"profiles": [profile]}}
+        gate = coaching_gate.build_throttle_coaching_evidence_gate(analysis)[
+            "profiles"
+        ][0]["feature_gates"]["onset"]
+        assert_equal(
+            gate["gate_status"],
+            "WITHHELD_INSUFFICIENT_REPEATED_SUPPORT",
+            "gate status",
+        )
+        assert_equal(gate["shadow_authorized"], False, "shadow auth")
+
+    runner.run(
+        "single source-authorized point is withheld",
+        gate_single_support_withheld,
+    )
+
+    def gate_opposite_authorized_directions_block():
+        profile = _gate_profile(onset_rows=[
+            _gate_point_observation(3, "earlier", magnitude=14, delta=14.0),
+            _gate_point_observation(2, "earlier", magnitude=16, delta=16.0),
+            _gate_point_observation(1, "later", magnitude=18, delta=-18.0),
+        ])
+        analysis = {"throttle_physical_point_profiles": {"profiles": [profile]}}
+        gate = coaching_gate.build_throttle_coaching_evidence_gate(analysis)[
+            "profiles"
+        ][0]["feature_gates"]["onset"]
+        assert_equal(
+            gate["gate_status"],
+            "WITHHELD_MIXED_AUTHORIZED_DIRECTION",
+            "gate status",
+        )
+        assert_equal(gate["coaching_direction"], None, "direction")
+
+    runner.run(
+        "opposite authorized point directions block shadow authorization",
+        gate_opposite_authorized_directions_block,
+    )
+
+    def gate_neutral_observation_not_contradiction():
+        profile = _gate_profile(onset_rows=[
+            _gate_point_observation(3, "earlier", magnitude=14, delta=14.0),
+            _gate_point_observation(2, "earlier", magnitude=16, delta=16.0),
+            _gate_point_observation(
+                1,
+                "earlier",
+                magnitude=0,
+                delta=2.0,
+                authorized=False,
+            ),
+        ])
+        analysis = {"throttle_physical_point_profiles": {"profiles": [profile]}}
+        gate = coaching_gate.build_throttle_coaching_evidence_gate(analysis)[
+            "profiles"
+        ][0]["feature_gates"]["onset"]
+        assert_equal(
+            gate["gate_status"],
+            "SHADOW_AUTHORIZED_EXISTING_POINT_COACHING",
+            "gate status",
+        )
+        assert_equal(gate["neutral_valid_observation_count"], 1, "neutral count")
+
+    runner.run(
+        "neutral valid point observation is not a contradiction",
+        gate_neutral_observation_not_contradiction,
+    )
+
+    def gate_duplicate_conflict_blocks():
+        profile = _gate_profile(onset_rows=[
+            _gate_point_observation(3, "earlier", magnitude=14),
+            _gate_point_observation(
+                2,
+                "earlier",
+                magnitude=16,
+                duplicate_conflict=True,
+            ),
+        ])
+        analysis = {"throttle_physical_point_profiles": {"profiles": [profile]}}
+        gate = coaching_gate.build_throttle_coaching_evidence_gate(analysis)[
+            "profiles"
+        ][0]["feature_gates"]["onset"]
+        assert_equal(
+            gate["gate_status"],
+            "WITHHELD_PHYSICAL_CONFLICT",
+            "gate status",
+        )
+
+    runner.run(
+        "physical duplicate conflict blocks shadow authorization",
+        gate_duplicate_conflict_blocks,
+    )
+
+    def gate_new_features_held_out():
+        common = {
+            "reference_lap": 4,
+            "reference_event_id": "throttle_a:01",
+            "is_repeated": True,
+            "recurrence_status": "REPEATED_CONSISTENT",
+            "support_count": 2,
+        }
+        profile = _gate_profile(recurrence={
+            "full_throttle_attainment": dict(
+                common,
+                selected_direction="later_in_comparison_lap",
+            ),
+            "partial_lift": dict(
+                common,
+                selected_state="additional_in_comparison",
+            ),
+            "sustained_throttle_modulation": dict(
+                common,
+                selected_state="additional_in_comparison",
+                dominant_classification="deep_and_long",
+            ),
+        })
+        analysis = {"throttle_physical_point_profiles": {"profiles": [profile]}}
+        gated = coaching_gate.build_throttle_coaching_evidence_gate(analysis)
+        gates = gated["profiles"][0]["feature_gates"]
+        for feature in (
+            "full_throttle_attainment",
+            "partial_lift",
+            "sustained_throttle_modulation",
+        ):
+            assert_equal(
+                gates[feature]["gate_status"],
+                "HELD_OUT_PENDING_MULTITRACK_VALIDATION",
+                f"{feature} status",
+            )
+            assert_equal(gates[feature]["shadow_authorized"], False, feature)
+        assert_equal(
+            gated["profiles"][0]["held_out_repeated_feature_count"],
+            3,
+            "held-out repeated feature count",
+        )
+
+    runner.run(
+        "new observational throttle features stay held out pending multitrack validation",
+        gate_new_features_held_out,
+    )
+
+    def gate_enrichment_preserves_decisions_and_source_coaching():
+        episode = {
+            "episode_id": 1,
+            "global_rank": 1,
+            "throttle_onset_point_comparison": {
+                "status": "VALID",
+                "authorized_numeric_coaching": True,
+                "coaching_direction": "earlier",
+                "coaching_magnitude_m": 14,
+            },
+        }
+        analysis = {
+            "next_session_priorities": [{"priority": "A", "sentinel": 1}],
+            "comparisons": [
+                {
+                    "objective_analysis": {
+                        "driver_action_episode_ranking": [episode]
+                    }
+                }
+            ],
+            "throttle_physical_point_profiles": {
+                "profiles": [
+                    _gate_profile(onset_rows=[
+                        _gate_point_observation(3, "earlier", magnitude=14),
+                        _gate_point_observation(2, "earlier", magnitude=16),
+                    ])
+                ]
+            },
+        }
+        before_priorities = [dict(x) for x in analysis["next_session_priorities"]]
+        before_source = dict(episode["throttle_onset_point_comparison"])
+        coaching_gate.enrich_analysis_with_throttle_coaching_evidence_gate(analysis)
+        assert_equal(
+            analysis["next_session_priorities"],
+            before_priorities,
+            "session priorities",
+        )
+        assert_equal(
+            episode["throttle_onset_point_comparison"],
+            before_source,
+            "existing source coaching",
+        )
+        config = analysis["throttle_coaching_evidence_gate"]["config"]
+        assert_equal(config["activates_coaching"], False, "active coaching")
+        assert_equal(config["mutates_existing_coaching"], False, "mutates coaching")
+
+    runner.run(
+        "shadow gate enrichment preserves priorities and existing coaching",
+        gate_enrichment_preserves_decisions_and_source_coaching,
     )
 
     # ========================================================

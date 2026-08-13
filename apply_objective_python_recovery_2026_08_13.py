@@ -4,7 +4,7 @@ import shutil
 import sys
 
 
-RECOVERY_PATCH_VERSION = "2026.08.13-v5"
+RECOVERY_PATCH_VERSION = "2026.08.13-v6"
 
 BRAKE_IMPORT = (
     "from braking_point_v2_1 import enrich_objective_with_braking_points\n"
@@ -31,6 +31,10 @@ MODULATION_RECURRENCE_IMPORT = (
 PROFILE_IMPORT = (
     "from throttle_physical_point_profile_v1_0 import "
     "enrich_analysis_with_throttle_physical_point_profiles\n"
+)
+GATE_IMPORT = (
+    "from throttle_coaching_evidence_gate_v1_0 import "
+    "enrich_analysis_with_throttle_coaching_evidence_gate\n"
 )
 
 IMPORT_ANCHOR = (
@@ -94,6 +98,12 @@ CANONICAL_SESSION_HOOKS = """        # Recurrencia de full-throttle attainment e
             analysis_output,
         )
 
+        # Gate de evidencia para coaching de acelerador.
+        # Shadow mode: no modifica ranking, prioridad ni coaching activo.
+        enrich_analysis_with_throttle_coaching_evidence_gate(
+            analysis_output,
+        )
+
 """
 
 GLOBAL_VALIDATION_ANCHOR = """        # ====================================================
@@ -109,6 +119,7 @@ TARGET_IMPORTS = (
     RECURRENCE_IMPORT,
     MODULATION_RECURRENCE_IMPORT,
     PROFILE_IMPORT,
+    GATE_IMPORT,
 )
 
 HOOK_NAMES = (
@@ -122,6 +133,7 @@ SESSION_HOOK_NAMES = (
     "enrich_analysis_with_full_throttle_attainment_recurrence",
     "enrich_analysis_with_throttle_modulation_recurrence",
     "enrich_analysis_with_throttle_physical_point_profiles",
+    "enrich_analysis_with_throttle_coaching_evidence_gate",
 )
 
 
@@ -141,6 +153,8 @@ def _remove_versioned_imports(text):
         r"enrich_analysis_with_throttle_modulation_recurrence\s*$",
         r"^from\s+throttle_physical_point_profile[^\s]*\s+import\s+"
         r"enrich_analysis_with_throttle_physical_point_profiles\s*$",
+        r"^from\s+throttle_coaching_evidence_gate[^\s]*\s+import\s+"
+        r"enrich_analysis_with_throttle_coaching_evidence_gate\s*$",
     )
 
     for pattern in patterns:
@@ -215,6 +229,7 @@ def patch_text(original):
         + RECURRENCE_IMPORT
         + MODULATION_RECURRENCE_IMPORT
         + PROFILE_IMPORT
+        + GATE_IMPORT
     )
 
     # Normalizar el espacio vertical alrededor del bloque de imports para
@@ -429,6 +444,9 @@ def main():
     )
     print(
         "  Throttle Physical Point Profile: 1.0"
+    )
+    print(
+        "  Throttle Coaching Evidence Gate: 1.0 / SHADOW"
     )
     print(
         "  LLM Analysis: NO MODIFICADO"

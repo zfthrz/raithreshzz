@@ -1,0 +1,30 @@
+
+Sintetizá únicamente las evaluaciones ya validadas que siguen.
+No reinterpretes telemetría ni agregues conceptos nuevos.
+
+EVALUACIONES VALIDADAS:
+[{"classification":"PRIORITARIO","interpretation":"en la comparación, se observó una mayor magnitud de dirección/volante y una menor aplicación del acelerador en relación con la referencia","hypotheses":["la combinación de mayor dirección/volante y menor acelerador podría contribuir a la reducción de velocidad observada"],"recommendation":"reducí la magnitud de dirección/volante y aumentá la aplicación del acelerador para acercarse a la referencia"},{"classification":"PRIORITARIO","interpretation":"la magnitud de dirección fue menor en la comparación, mientras que el acelerador mostró una evolución mixta, con momentos de menor y mayor aplicación en distintos tramos","hypotheses":["la reducción en la magnitud de dirección podría contribuir a la menor velocidad observada en algunos tramos","la variación en el uso del acelerador podría estar relacionada con la modulación de la velocidad"],"recommendation":"aumentá la magnitud de dirección en los tramos donde fue menor, y replicá mejor la secuencia de modulación del acelerador respecto de la referencia"},{"classification":"PRIORITARIO","interpretation":"en la comparación, la dirección/volante fue más intensa y el acelerador fue menos utilizado en relación con la referencia","hypotheses":["la combinación de mayor uso de dirección/volante y menor uso de acelerador podría contribuir a una reducción en la velocidad"],"recommendation":"reducí la intensidad de la dirección/volante y aumentá el uso del acelerador para acercar la ejecución a la referencia"},{"classification":"PRIORITARIO","interpretation":"la dirección/volante mostró variaciones mixtas en comparación con la referencia, mientras que el acelerador fue consistentemente más alto en la comparación","hypotheses":["la modulación de la dirección/volante podría contribuir a la variación observada en la velocidad","la mayor aplicación del acelerador podría estar relacionada con la menor velocidad registrada"],"recommendation":"replicá mejor la secuencia de modulación de la dirección/volante y reducí la aplicación del acelerador hacia la referencia"},{"classification":"SECUNDARIO","interpretation":"la magnitud de dirección fue mayor en la vuelta comparada durante un tramo sostenido","hypotheses":["una modulación más intensa en dirección podría contribuir a la diferencia observada"],"recommendation":"reducí la magnitud de dirección en ese tramo para acercarla a la referencia"},{"classification":"SECUNDARIO","interpretation":"la magnitud de dirección fue mayor en la vuelta comparada durante un tramo sostenido","hypotheses":["podría contribuir una modulación más suave de la dirección"],"recommendation":"reducí la magnitud de dirección en ese tramo para acercarla a la referencia"},{"classification":"SECUNDARIO","interpretation":"en la comparación, el acelerador se mantuvo consistentemente más elevado durante un tramo de la vuelta, lo que se asoció con una velocidad menor en ese mismo periodo","hypotheses":["la modulación del acelerador podría contribuir a la diferencia de velocidad observada"],"recommendation":"reducí el acelerador en ese tramo para acercarlo al nivel de referencia"},{"classification":"SECUNDARIO","interpretation":"en la comparación, el uso del acelerador fue menor en este episodio, lo que se asoció con una reducción sostenida en la velocidad","hypotheses":["la modulación del acelerador podría contribuir a la diferencia de velocidad observada"],"recommendation":"aumentá el uso del acelerador en esta secuencia para acercar la velocidad a la referencia"}]
+
+CONTRATO JSON EXACTO:
+- comparison_observations: lista de strings;
+- limitations: lista de strings;
+- conclusion: string.
+
+Las listas pueden ser [].
+No escribas cifras.
+No agregues ni omitas claves.
+La conclusion debe resumir la acción de coaching más importante ya presente
+en las evaluaciones, no limitarse a decir que existen diferencias.
+Conservá verbos operativos como reducir, aumentar o replicar cuando estén
+respaldados por las recomendaciones validadas.
+No sustituyas una recomendación concreta por "revisar", "comparar",
+"ajustar", "trabajar" o "mejorar".
+Las limitaciones deben ser neutrales y referirse sólo a lo que no
+puede inferirse de la evidencia disponible.
+
+Ejemplo de FORMA:
+{"comparison_observations":["observación cualitativa apoyada por evaluaciones validadas"],"limitations":["la causa no puede determinarse con la evidencia disponible"],"conclusion":"síntesis cualitativa sin cifras"}
+
+
+
+Respondé únicamente con el objeto JSON completo.

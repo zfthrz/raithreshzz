@@ -359,6 +359,54 @@ def valid_gps(lat, lon):
     return True
 
 
+
+def repair_lap_distance_boundary_sample(
+    indices: list[int],
+    lap_dist: list[float | None],
+    reset_threshold_m: float = 500.0,
+    expected_start_max_m: float = 100.0,
+):
+    """
+    Corrige el artefacto de interpolación de Lap Dist justo en Lap.ts.
+
+    Lap Dist es discontinuo en el cruce de meta. Si se interpola linealmente
+    exactamente sobre el reset, el primer sample de una vuelta puede quedar
+    con un valor espurio intermedio mientras el segundo sample ya está cerca
+    de 0 m.
+
+    Sólo repara el primer sample cuando:
+      - hay al menos dos samples;
+      - ambos Lap Dist son finitos;
+      - el segundo está cerca del inicio de vuelta;
+      - el primero está > reset_threshold_m por encima del segundo.
+
+    El GPS no se descarta: únicamente Lap Dist del primer sample se fija a 0.
+    """
+    if len(indices) < 2:
+        return None
+
+    i0, i1 = indices[0], indices[1]
+    d0 = lap_dist[i0]
+    d1 = lap_dist[i1]
+
+    if d0 is None or d1 is None or not finite(d0) or not finite(d1):
+        return None
+
+    d0 = float(d0)
+    d1 = float(d1)
+
+    if d1 <= expected_start_max_m and (d0 - d1) > reset_threshold_m:
+        lap_dist[i0] = 0.0
+        return {
+            "sample_index": int(i0),
+            "original_lap_dist_m": d0,
+            "repaired_lap_dist_m": 0.0,
+            "next_sample_lap_dist_m": d1,
+            "reason": "boundary_linear_interpolation_across_lap_dist_reset",
+        }
+
+    return None
+
 def group_indices_by_lap(laps: list[int]) -> dict[int, list[int]]:
     result: dict[int, list[int]] = {}
     for i, lap in enumerate(laps):
@@ -616,6 +664,13 @@ def main():
             lap_source = "Lap Dist reset"
 
         groups = group_indices_by_lap(laps)
+
+        lap_distance_boundary_repairs = {}
+        for lap, idx in groups.items():
+            repair = repair_lap_distance_boundary_sample(idx, lap_dist)
+            if repair is not None:
+                lap_distance_boundary_repairs[str(lap)] = repair
+
         metrics = {
             lap: lap_metrics(idx, lat, lon, lap_dist, master_times)
             for lap, idx in groups.items()
@@ -700,6 +755,7 @@ def main():
             "selected_lap": selected_lap,
             "time_source": time_source,
             "lap_boundary_source": lap_source,
+            "lap_distance_boundary_repairs": lap_distance_boundary_repairs,
             "target_hz": args.target_hz,
             "channel_modes": {
                 name: {

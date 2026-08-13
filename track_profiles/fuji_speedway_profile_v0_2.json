@@ -1,0 +1,419 @@
+{
+  "schema_version": 1,
+  "profile_id": "fuji-speedway-lmu-wec16-v0.2",
+  "status": "VALIDATED_MULTI_SESSION",
+  "track": "Fuji Speedway",
+  "layout": "Fuji Speedway",
+  "distance_coordinate": "LMU Lap Dist",
+  "calibration": {
+    "source_session": "Fuji Speedway_P_2026-08-13T21_40_16Z",
+    "source_lap_internal_index": 7,
+    "source_lap_time_s_approx": 99.3,
+    "source_lap_dist_max_m": 4526.014428247615,
+    "source_gps_path_m_approx": 4524.241816860409,
+    "geometry_method": "GPS trajectory + signed curvature + WEC/LMU 16-turn direction-sequence constrained calibration",
+    "numbering_scheme": "WEC/LMU Fuji 16-turn scheme",
+    "numbering_warning": "Fuji is also described with 12 named-corner and 17-turn schemes in other series. This profile deliberately uses the WEC/LMU 16-turn scheme.",
+    "lap_distance_boundary_repair": {
+      "original_first_sample_m": 1981.386334722917,
+      "repaired_first_sample_m": 0.0,
+      "next_sample_m": 4.377621566426125,
+      "reason": "linear interpolation across Lap Dist reset at Lap.ts"
+    },
+    "requires_cross_session_validation": false,
+    "validation_status": "PASS",
+    "validation_summary": {
+      "calibration_session": {
+        "session": "Fuji Speedway_P_2026-08-13T21_40_16Z",
+        "lap_internal_index": 7,
+        "lap_dist_max_m": 4526.014428247615
+      },
+      "independent_sessions": [
+        {
+          "session": "Fuji Speedway_P_2026-08-13T22_40_32Z",
+          "lap_internal_index": 2,
+          "lap_time_s_approx": 92.4,
+          "lap_dist_max_m": 4526.201534513212,
+          "gps_path_m_approx": 4494.63121406211,
+          "method": "same-direction nearest local extremum on signed curvature; 2 m resampling, 20 m heading window, 14 m smoothing",
+          "apex_pass_tolerance_m": 35.0,
+          "apex_warning_tolerance_m": 70.0,
+          "pass_count": 15,
+          "warning_count": 1,
+          "failure_count": 0,
+          "median_abs_offset_m": 4.0,
+          "max_abs_offset_m": 56.0,
+          "overall_status": "PASS",
+          "turn_results": [
+            {
+              "turn": 1,
+              "name": "TGR Corner",
+              "direction": "right",
+              "expected_apex_m": 770.0,
+              "observed_apex_m": 782.0,
+              "offset_m": 12.0,
+              "observed_signed_curvature_rad_per_m": -0.02221122401179037,
+              "status": "PASS"
+            },
+            {
+              "turn": 2,
+              "name": "Turn 2",
+              "direction": "right",
+              "expected_apex_m": 910.0,
+              "observed_apex_m": 910.0,
+              "offset_m": 0.0,
+              "observed_signed_curvature_rad_per_m": -0.004087741170909191,
+              "status": "PASS"
+            },
+            {
+              "turn": 3,
+              "name": "Coca-Cola Corner",
+              "direction": "left",
+              "expected_apex_m": 1310.0,
+              "observed_apex_m": 1302.0,
+              "offset_m": -8.0,
+              "observed_signed_curvature_rad_per_m": 0.009180426538842138,
+              "status": "PASS"
+            },
+            {
+              "turn": 4,
+              "name": "100R",
+              "direction": "right",
+              "expected_apex_m": 1620.0,
+              "observed_apex_m": 1624.0,
+              "offset_m": 4.0,
+              "observed_signed_curvature_rad_per_m": -0.007773712428490873,
+              "status": "PASS"
+            },
+            {
+              "turn": 5,
+              "name": "100R",
+              "direction": "right",
+              "expected_apex_m": 1772.0,
+              "observed_apex_m": 1762.0,
+              "offset_m": -10.0,
+              "observed_signed_curvature_rad_per_m": -0.00949722373633789,
+              "status": "PASS"
+            },
+            {
+              "turn": 6,
+              "name": "Hairpin",
+              "direction": "left",
+              "expected_apex_m": 2026.0,
+              "observed_apex_m": 2022.0,
+              "offset_m": -4.0,
+              "observed_signed_curvature_rad_per_m": 0.017088180133271846,
+              "status": "PASS"
+            },
+            {
+              "turn": 7,
+              "name": "Turn 7",
+              "direction": "left",
+              "expected_apex_m": 2140.0,
+              "observed_apex_m": 2084.0,
+              "offset_m": -56.0,
+              "observed_signed_curvature_rad_per_m": 0.010242515800488109,
+              "status": "WARNING"
+            },
+            {
+              "turn": 8,
+              "name": "Turn 8",
+              "direction": "right",
+              "expected_apex_m": 2340.0,
+              "observed_apex_m": 2322.0,
+              "offset_m": -18.0,
+              "observed_signed_curvature_rad_per_m": -0.006051280140115356,
+              "status": "PASS"
+            },
+            {
+              "turn": 9,
+              "name": "300R",
+              "direction": "right",
+              "expected_apex_m": 2644.0,
+              "observed_apex_m": 2632.0,
+              "offset_m": -12.0,
+              "observed_signed_curvature_rad_per_m": -0.001639339040646812,
+              "status": "PASS"
+            },
+            {
+              "turn": 10,
+              "name": "Dunlop Corner",
+              "direction": "right",
+              "expected_apex_m": 2838.0,
+              "observed_apex_m": 2836.0,
+              "offset_m": -2.0,
+              "observed_signed_curvature_rad_per_m": -0.044584364204017866,
+              "status": "PASS"
+            },
+            {
+              "turn": 11,
+              "name": "Dunlop",
+              "direction": "left",
+              "expected_apex_m": 2916.0,
+              "observed_apex_m": 2916.0,
+              "offset_m": 0.0,
+              "observed_signed_curvature_rad_per_m": 0.024866957005202077,
+              "status": "PASS"
+            },
+            {
+              "turn": 12,
+              "name": "Dunlop",
+              "direction": "right",
+              "expected_apex_m": 3000.0,
+              "observed_apex_m": 3000.0,
+              "offset_m": 0.0,
+              "observed_signed_curvature_rad_per_m": -0.006280326238492506,
+              "status": "PASS"
+            },
+            {
+              "turn": 13,
+              "name": "13th Corner",
+              "direction": "right",
+              "expected_apex_m": 3174.0,
+              "observed_apex_m": 3176.0,
+              "offset_m": 2.0,
+              "observed_signed_curvature_rad_per_m": -0.016261783996834447,
+              "status": "PASS"
+            },
+            {
+              "turn": 14,
+              "name": "Turn 14",
+              "direction": "left",
+              "expected_apex_m": 3300.0,
+              "observed_apex_m": 3300.0,
+              "offset_m": 0.0,
+              "observed_signed_curvature_rad_per_m": 0.010576694001940033,
+              "status": "PASS"
+            },
+            {
+              "turn": 15,
+              "name": "GR Supra Corner",
+              "direction": "left",
+              "expected_apex_m": 3396.0,
+              "observed_apex_m": 3392.0,
+              "offset_m": -4.0,
+              "observed_signed_curvature_rad_per_m": 0.025811738230881884,
+              "status": "PASS"
+            },
+            {
+              "turn": 16,
+              "name": "Panasonic Corner",
+              "direction": "right",
+              "expected_apex_m": 3676.0,
+              "observed_apex_m": 3672.0,
+              "offset_m": -4.0,
+              "observed_signed_curvature_rad_per_m": -0.023498853703721758,
+              "status": "PASS"
+            }
+          ]
+        }
+      ],
+      "interpretation": "0 direction failures across independent validation. 15 of 16 turns passed the ±35 m apex tolerance. The only warning was T7 (-56 m), a low-curvature continuation after the Hairpin where a unique maximum-curvature apex is not stable. The calibrated interval mapping remains the authoritative location primitive."
+    }
+  },
+  "ignored_geometric_features_m": [
+    {
+      "center_m": 1696.0,
+      "reason": "secondary strong-curvature point inside continuous T4-T5 100R complex"
+    },
+    {
+      "center_m": 3238.0,
+      "reason": "entry curvature inside T14-T15 region, not a separate WEC/LMU turn"
+    },
+    {
+      "center_m": 3586.0,
+      "reason": "early curvature inside T16 Panasonic region, not a separate WEC/LMU turn"
+    }
+  ],
+  "manual_low_curvature_turns": [
+    {
+      "turn": 2,
+      "reason": "below automatic top-16 curvature selection"
+    },
+    {
+      "turn": 7,
+      "reason": "gentle continuation after Hairpin"
+    },
+    {
+      "turn": 8,
+      "reason": "flat-out right bend below automatic selection"
+    },
+    {
+      "turn": 9,
+      "reason": "300R low curvature displaced by duplicate strong peaks"
+    }
+  ],
+  "turns": [
+    {
+      "turn": 1,
+      "name": "TGR Corner",
+      "group": "TGR Corner",
+      "direction": "right",
+      "start_m": 718.0,
+      "apex_m": 770.0,
+      "end_m": 814.0
+    },
+    {
+      "turn": 2,
+      "name": "Turn 2",
+      "group": "Turn 2",
+      "direction": "right",
+      "start_m": 830.0,
+      "apex_m": 910.0,
+      "end_m": 1050.0,
+      "aliases": [
+        "75R"
+      ]
+    },
+    {
+      "turn": 3,
+      "name": "Coca-Cola Corner",
+      "group": "Coca-Cola Corner",
+      "direction": "left",
+      "start_m": 1256.0,
+      "apex_m": 1310.0,
+      "end_m": 1388.0
+    },
+    {
+      "turn": 4,
+      "name": "100R",
+      "group": "100R",
+      "direction": "right",
+      "start_m": 1482.0,
+      "apex_m": 1620.0,
+      "end_m": 1701.0,
+      "aliases": [
+        "Toyopet 100R"
+      ]
+    },
+    {
+      "turn": 5,
+      "name": "100R",
+      "group": "100R",
+      "direction": "right",
+      "start_m": 1701.0,
+      "apex_m": 1772.0,
+      "end_m": 1882.0,
+      "aliases": [
+        "Toyopet 100R"
+      ]
+    },
+    {
+      "turn": 6,
+      "name": "Hairpin",
+      "group": "Hairpin",
+      "direction": "left",
+      "start_m": 1954.0,
+      "apex_m": 2026.0,
+      "end_m": 2100.0,
+      "aliases": [
+        "ADVAN Corner"
+      ]
+    },
+    {
+      "turn": 7,
+      "name": "Turn 7",
+      "group": "Turn 7",
+      "direction": "left",
+      "start_m": 2100.0,
+      "apex_m": 2140.0,
+      "end_m": 2210.0,
+      "aliases": [
+        "120R"
+      ]
+    },
+    {
+      "turn": 8,
+      "name": "Turn 8",
+      "group": "Turn 8",
+      "direction": "right",
+      "start_m": 2220.0,
+      "apex_m": 2340.0,
+      "end_m": 2470.0
+    },
+    {
+      "turn": 9,
+      "name": "300R",
+      "group": "300R",
+      "direction": "right",
+      "start_m": 2470.0,
+      "apex_m": 2644.0,
+      "end_m": 2780.0
+    },
+    {
+      "turn": 10,
+      "name": "Dunlop Corner",
+      "group": "Dunlop",
+      "direction": "right",
+      "start_m": 2800.0,
+      "apex_m": 2838.0,
+      "end_m": 2872.0
+    },
+    {
+      "turn": 11,
+      "name": "Dunlop",
+      "group": "Dunlop",
+      "direction": "left",
+      "start_m": 2872.0,
+      "apex_m": 2916.0,
+      "end_m": 2950.0
+    },
+    {
+      "turn": 12,
+      "name": "Dunlop",
+      "group": "Dunlop",
+      "direction": "right",
+      "start_m": 2950.0,
+      "apex_m": 3000.0,
+      "end_m": 3078.0
+    },
+    {
+      "turn": 13,
+      "name": "13th Corner",
+      "group": "13th Corner",
+      "direction": "right",
+      "start_m": 3078.0,
+      "apex_m": 3174.0,
+      "end_m": 3214.0,
+      "aliases": [
+        "Corner 13"
+      ]
+    },
+    {
+      "turn": 14,
+      "name": "Turn 14",
+      "group": "Turn 14",
+      "direction": "left",
+      "start_m": 3218.0,
+      "apex_m": 3300.0,
+      "end_m": 3352.0
+    },
+    {
+      "turn": 15,
+      "name": "GR Supra Corner",
+      "group": "GR Supra Corner",
+      "direction": "left",
+      "start_m": 3352.0,
+      "apex_m": 3396.0,
+      "end_m": 3458.0,
+      "aliases": [
+        "Netz Corner"
+      ]
+    },
+    {
+      "turn": 16,
+      "name": "Panasonic Corner",
+      "group": "Panasonic Corner",
+      "direction": "right",
+      "start_m": 3542.0,
+      "apex_m": 3676.0,
+      "end_m": 3760.0
+    }
+  ],
+  "display_policy": {
+    "prefer_corner_name": true,
+    "turn_number_is_secondary": false,
+    "turn_number_suffix": "WEC/LMU",
+    "always_preserve_lmu_distance_m": true
+  }
+}

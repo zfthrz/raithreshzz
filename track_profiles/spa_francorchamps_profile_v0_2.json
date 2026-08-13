@@ -1,0 +1,276 @@
+{
+  "schema_version": 1,
+  "profile_id": "spa-francorchamps-lmu-fia2026-v0.2",
+  "status": "VALIDATED_MULTI_SESSION",
+  "track": "Circuit de Spa-Francorchamps",
+  "layout": "Circuit de Spa-Francorchamps",
+  "distance_coordinate": "LMU Lap Dist",
+  "calibration": {
+    "source_session": "Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z",
+    "source_lap_internal_index": 3,
+    "source_lap_time_s_approx": 124.2,
+    "source_lap_dist_max_m": 6972.0,
+    "geometry_method": "GPS trajectory + signed curvature",
+    "numbering_scheme": "FIA/F1 Spa 2026 19-turn map",
+    "numbering_warning": "FIA WEC 2026 event material describes Spa as 20 corners. Until a WEC-specific turn-number crosswalk is verified, downstream reports should prefer corner names; FIA/F1 turn numbers are secondary.",
+    "requires_cross_session_validation": false,
+    "validation_status": "PASS",
+    "validation_summary": {
+      "calibration_session": {
+        "session": "Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z",
+        "lap_internal_index": 3,
+        "lap_dist_max_m": 6972.0
+      },
+      "independent_sessions": [
+        {
+          "session": "Circuit de Spa-Francorchamps_Q_2026-08-09T04_52_43Z",
+          "pass_count": 17,
+          "warning_count": 2,
+          "failure_count": 0,
+          "median_abs_offset_m": 4.308,
+          "max_abs_offset_m": 58.308,
+          "overall_status": "PASS"
+        },
+        {
+          "session": "Circuit de Spa-Francorchamps_P_2026-08-10T00_34_34Z",
+          "pass_count": 17,
+          "warning_count": 2,
+          "failure_count": 0,
+          "median_abs_offset_m": 10.81,
+          "max_abs_offset_m": 54.81,
+          "overall_status": "PASS"
+        }
+      ],
+      "interpretation": "0 direction failures across independent validations. Large apex offsets were confined to long/multi-apex complexes; interval mapping remains the authoritative location primitive."
+    }
+  },
+  "ignored_geometric_features_m": [
+    {
+      "center_m": 638.5,
+      "reason": "geometric bend not part of FIA/F1 2026 19-turn numbering"
+    },
+    {
+      "center_m": 1474.5,
+      "reason": "Kemmel curvature not separately numbered in FIA/F1 2026 map"
+    },
+    {
+      "center_m": 3392.5,
+      "reason": "low-curvature geometric feature"
+    },
+    {
+      "center_m": 5444.5,
+      "reason": "secondary curvature feature within run toward Blanchimont"
+    },
+    {
+      "center_m": 6414.5,
+      "reason": "approach curvature before Bus Stop; not separately numbered"
+    }
+  ],
+  "turns": [
+    {
+      "turn": 1,
+      "name": "La Source",
+      "group": "La Source",
+      "direction": "right",
+      "start_m": 234.5,
+      "apex_m": 272.5,
+      "end_m": 294.5
+    },
+    {
+      "turn": 2,
+      "name": "Le Raidillon de l'Eau Rouge",
+      "group": "Le Raidillon de l'Eau Rouge",
+      "direction": "left",
+      "start_m": 838.5,
+      "apex_m": 916.5,
+      "end_m": 946.5
+    },
+    {
+      "turn": 3,
+      "name": "Le Raidillon de l'Eau Rouge",
+      "group": "Le Raidillon de l'Eau Rouge",
+      "direction": "right",
+      "start_m": 956.5,
+      "apex_m": 1008.5,
+      "end_m": 1116.5
+    },
+    {
+      "turn": 4,
+      "name": "Le Raidillon de l'Eau Rouge",
+      "group": "Le Raidillon de l'Eau Rouge",
+      "direction": "left",
+      "start_m": 1132.5,
+      "apex_m": 1162.5,
+      "end_m": 1278.5
+    },
+    {
+      "turn": 5,
+      "name": "Les Combes",
+      "group": "Les Combes",
+      "direction": "right",
+      "start_m": 2236.5,
+      "apex_m": 2300.5,
+      "end_m": 2336.5
+    },
+    {
+      "turn": 6,
+      "name": "Les Combes",
+      "group": "Les Combes",
+      "direction": "left",
+      "start_m": 2348.5,
+      "apex_m": 2376.5,
+      "end_m": 2450.5
+    },
+    {
+      "turn": 7,
+      "name": "Malmedy",
+      "group": "Malmedy",
+      "direction": "right",
+      "start_m": 2462.5,
+      "apex_m": 2520.5,
+      "end_m": 2604.5
+    },
+    {
+      "turn": 8,
+      "name": "Bruxelles",
+      "aliases": [
+        "Rivage"
+      ],
+      "group": "Bruxelles",
+      "direction": "right",
+      "start_m": 2836.5,
+      "apex_m": 2944.5,
+      "end_m": 3058.5
+    },
+    {
+      "turn": 9,
+      "name": "Jacky Ickx Curve",
+      "aliases": [
+        "Speakers Corner",
+        "Corner With No Name"
+      ],
+      "group": "Jacky Ickx Curve",
+      "direction": "left",
+      "start_m": 3092.5,
+      "apex_m": 3166.5,
+      "end_m": 3248.5
+    },
+    {
+      "turn": 10,
+      "name": "Pouhon",
+      "aliases": [
+        "Double Gauche"
+      ],
+      "group": "Pouhon",
+      "direction": "left",
+      "start_m": 3612.5,
+      "apex_m": 3744.5,
+      "end_m": 3874.5
+    },
+    {
+      "turn": 11,
+      "name": "Pouhon",
+      "aliases": [
+        "Double Gauche"
+      ],
+      "group": "Pouhon",
+      "direction": "left",
+      "start_m": 3874.5,
+      "apex_m": 3950.5,
+      "end_m": 4062.5
+    },
+    {
+      "turn": 12,
+      "name": "Fagnes",
+      "aliases": [
+        "Pif-Paf"
+      ],
+      "group": "Fagnes",
+      "direction": "right",
+      "start_m": 4292.5,
+      "apex_m": 4400.5,
+      "end_m": 4456.5
+    },
+    {
+      "turn": 13,
+      "name": "Fagnes",
+      "aliases": [
+        "Pif-Paf"
+      ],
+      "group": "Fagnes",
+      "direction": "left",
+      "start_m": 4468.5,
+      "apex_m": 4532.5,
+      "end_m": 4646.5
+    },
+    {
+      "turn": 14,
+      "name": "Campus",
+      "aliases": [
+        "Stavelot"
+      ],
+      "group": "Campus",
+      "direction": "right",
+      "start_m": 4752.5,
+      "apex_m": 4840.5,
+      "end_m": 4896.5
+    },
+    {
+      "turn": 15,
+      "name": "Curve Paul Frere",
+      "group": "Curve Paul Frere",
+      "direction": "right",
+      "start_m": 4940.5,
+      "apex_m": 5058.5,
+      "end_m": 5328.5
+    },
+    {
+      "turn": 16,
+      "name": "Blanchimont",
+      "group": "Blanchimont",
+      "direction": "left",
+      "start_m": 5608.5,
+      "apex_m": 5802.5,
+      "end_m": 5910.5
+    },
+    {
+      "turn": 17,
+      "name": "Blanchimont",
+      "group": "Blanchimont",
+      "direction": "left",
+      "start_m": 5910.5,
+      "apex_m": 6050.5,
+      "end_m": 6176.5
+    },
+    {
+      "turn": 18,
+      "name": "Bus Stop",
+      "aliases": [
+        "Chicane"
+      ],
+      "group": "Bus Stop",
+      "direction": "right",
+      "start_m": 6574.5,
+      "apex_m": 6612.5,
+      "end_m": 6632.5
+    },
+    {
+      "turn": 19,
+      "name": "Bus Stop",
+      "aliases": [
+        "Chicane"
+      ],
+      "group": "Bus Stop",
+      "direction": "left",
+      "start_m": 6646.5,
+      "apex_m": 6666.5,
+      "end_m": 6708.5
+    }
+  ],
+  "display_policy": {
+    "prefer_corner_name": true,
+    "turn_number_is_secondary": true,
+    "turn_number_suffix": "FIA",
+    "always_preserve_lmu_distance_m": true
+  }
+}

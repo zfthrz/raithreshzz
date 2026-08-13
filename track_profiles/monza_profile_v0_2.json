@@ -1,0 +1,326 @@
+{
+  "schema_version": 1,
+  "profile_id": "monza-lmu-f1-11turn-v0.2",
+  "status": "VALIDATED_MULTI_SESSION",
+  "track": "Autodromo Nazionale Monza",
+  "layout": "Autodromo Nazionale Monza",
+  "distance_coordinate": "LMU Lap Dist",
+  "calibration": {
+    "source_session": "Autodromo Nazionale Monza_P_2026-08-09T17_11_58Z",
+    "source_lap_internal_index": 1,
+    "source_lap_time_s_approx": 116.3,
+    "source_lap_dist_max_m": 5779.35,
+    "source_gps_path_m_approx": 5763.24,
+    "geometry_method": "GPS trajectory + signed curvature",
+    "numbering_scheme": "Formula 1 Monza 11-turn numbering",
+    "requires_cross_session_validation": false,
+    "validation_status": "PASS",
+    "validation_summary": {
+      "calibration_session": {
+        "session": "Autodromo Nazionale Monza_P_2026-08-09T17_11_58Z",
+        "lap_internal_index": 1,
+        "lap_dist_max_m": 5779.35
+      },
+      "independent_sessions": [
+        {
+          "session": "Autodromo Nazionale Monza_P_2026-08-11T00_49_35Z",
+          "lap_internal_index": 1,
+          "lap_time_s_approx": 99.1,
+          "lap_dist_max_m": 5775.675,
+          "gps_path_m_approx": 5771.32,
+          "pass_count": 10,
+          "warning_count": 1,
+          "failure_count": 0,
+          "median_abs_offset_m": 2.0,
+          "max_abs_offset_m": 52.0,
+          "overall_status": "PASS",
+          "turn_results": [
+            {
+              "turn": 1,
+              "name": "Variante del Rettifilo",
+              "direction": "right",
+              "expected_apex_m": 930.0,
+              "observed_apex_m": 930.0,
+              "offset_m": 0.0,
+              "status": "PASS"
+            },
+            {
+              "turn": 2,
+              "name": "Variante del Rettifilo",
+              "direction": "left",
+              "expected_apex_m": 974.0,
+              "observed_apex_m": 974.0,
+              "offset_m": 0.0,
+              "status": "PASS"
+            },
+            {
+              "turn": 3,
+              "name": "Curva Grande",
+              "direction": "right",
+              "expected_apex_m": 1334.0,
+              "observed_apex_m": 1368.0,
+              "offset_m": 34.0,
+              "status": "PASS"
+            },
+            {
+              "turn": 4,
+              "name": "Variante della Roggia",
+              "direction": "left",
+              "expected_apex_m": 2148.0,
+              "observed_apex_m": 2148.0,
+              "offset_m": 0.0,
+              "status": "PASS"
+            },
+            {
+              "turn": 5,
+              "name": "Variante della Roggia",
+              "direction": "right",
+              "expected_apex_m": 2192.0,
+              "observed_apex_m": 2190.0,
+              "offset_m": -2.0,
+              "status": "PASS"
+            },
+            {
+              "turn": 6,
+              "name": "Lesmo 1",
+              "direction": "right",
+              "expected_apex_m": 2536.0,
+              "observed_apex_m": 2514.0,
+              "offset_m": -22.0,
+              "status": "PASS"
+            },
+            {
+              "turn": 7,
+              "name": "Lesmo 2",
+              "direction": "right",
+              "expected_apex_m": 2878.0,
+              "observed_apex_m": 2878.0,
+              "offset_m": 0.0,
+              "status": "PASS"
+            },
+            {
+              "turn": 8,
+              "name": "Variante Ascari",
+              "direction": "left",
+              "expected_apex_m": 3942.0,
+              "observed_apex_m": 3942.0,
+              "offset_m": 0.0,
+              "status": "PASS"
+            },
+            {
+              "turn": 9,
+              "name": "Variante Ascari",
+              "direction": "right",
+              "expected_apex_m": 4052.0,
+              "observed_apex_m": 4050.0,
+              "offset_m": -2.0,
+              "status": "PASS"
+            },
+            {
+              "turn": 10,
+              "name": "Variante Ascari",
+              "direction": "left",
+              "expected_apex_m": 4132.0,
+              "observed_apex_m": 4128.0,
+              "offset_m": -4.0,
+              "status": "PASS"
+            },
+            {
+              "turn": 11,
+              "name": "Curva Alboreto",
+              "direction": "right",
+              "expected_apex_m": 5156.0,
+              "observed_apex_m": 5208.0,
+              "offset_m": 52.0,
+              "status": "WARNING"
+            }
+          ]
+        }
+      ],
+      "interpretation": "0 direction failures across independent validation. 10 of 11 turns passed the ±35 m apex tolerance. The only warning was Curva Alboreto (+52 m), a long corner where the maximum-curvature point is sensitive to driving line; interval mapping remains the authoritative location primitive."
+    }
+  },
+  "ignored_geometric_features_m": [
+    {
+      "center_m": 1106.0,
+      "reason": "low-curvature transition after Rettifilo; not a separately numbered turn"
+    },
+    {
+      "center_m": 2248.0,
+      "reason": "exit/transition curvature after Variante della Roggia; not separately numbered"
+    },
+    {
+      "center_m": 2308.0,
+      "reason": "low-curvature geometric feature between Roggia and Lesmo 1"
+    },
+    {
+      "center_m": 2968.0,
+      "reason": "post-Lesmo 2 trajectory curvature; not separately numbered"
+    },
+    {
+      "center_m": 3026.0,
+      "reason": "post-Lesmo 2 trajectory curvature; not separately numbered"
+    },
+    {
+      "center_m": 3092.0,
+      "reason": "post-Lesmo 2 low-curvature feature; not separately numbered"
+    },
+    {
+      "center_m": 3236.0,
+      "reason": "low-curvature geometric feature on the run toward Ascari"
+    },
+    {
+      "center_m": 3490.0,
+      "reason": "low-curvature geometric feature on the run toward Ascari"
+    },
+    {
+      "center_m": 5722.0,
+      "reason": "low-curvature feature near the end of the lap; not separately numbered"
+    }
+  ],
+  "turns": [
+    {
+      "turn": 1,
+      "name": "Variante del Rettifilo",
+      "aliases": [
+        "Rettifilo",
+        "Prima Variante"
+      ],
+      "group": "Variante del Rettifilo",
+      "direction": "right",
+      "start_m": 890.0,
+      "apex_m": 930.0,
+      "end_m": 950.0
+    },
+    {
+      "turn": 2,
+      "name": "Variante del Rettifilo",
+      "aliases": [
+        "Rettifilo",
+        "Prima Variante"
+      ],
+      "group": "Variante del Rettifilo",
+      "direction": "left",
+      "start_m": 950.0,
+      "apex_m": 974.0,
+      "end_m": 1020.0
+    },
+    {
+      "turn": 3,
+      "name": "Curva Grande",
+      "aliases": [
+        "Curva Biassono"
+      ],
+      "group": "Curva Grande",
+      "direction": "right",
+      "start_m": 1180.0,
+      "apex_m": 1334.0,
+      "end_m": 1760.0
+    },
+    {
+      "turn": 4,
+      "name": "Variante della Roggia",
+      "aliases": [
+        "Roggia",
+        "Seconda Variante"
+      ],
+      "group": "Variante della Roggia",
+      "direction": "left",
+      "start_m": 2098.0,
+      "apex_m": 2148.0,
+      "end_m": 2170.0
+    },
+    {
+      "turn": 5,
+      "name": "Variante della Roggia",
+      "aliases": [
+        "Roggia",
+        "Seconda Variante"
+      ],
+      "group": "Variante della Roggia",
+      "direction": "right",
+      "start_m": 2170.0,
+      "apex_m": 2192.0,
+      "end_m": 2230.0
+    },
+    {
+      "turn": 6,
+      "name": "Lesmo 1",
+      "aliases": [
+        "Prima Curva di Lesmo"
+      ],
+      "group": "Lesmo",
+      "direction": "right",
+      "start_m": 2460.0,
+      "apex_m": 2536.0,
+      "end_m": 2660.0
+    },
+    {
+      "turn": 7,
+      "name": "Lesmo 2",
+      "aliases": [
+        "Seconda Curva di Lesmo"
+      ],
+      "group": "Lesmo",
+      "direction": "right",
+      "start_m": 2815.0,
+      "apex_m": 2878.0,
+      "end_m": 2945.0
+    },
+    {
+      "turn": 8,
+      "name": "Variante Ascari",
+      "aliases": [
+        "Ascari"
+      ],
+      "group": "Variante Ascari",
+      "direction": "left",
+      "start_m": 3885.0,
+      "apex_m": 3942.0,
+      "end_m": 3990.0
+    },
+    {
+      "turn": 9,
+      "name": "Variante Ascari",
+      "aliases": [
+        "Ascari"
+      ],
+      "group": "Variante Ascari",
+      "direction": "right",
+      "start_m": 3990.0,
+      "apex_m": 4052.0,
+      "end_m": 4105.0
+    },
+    {
+      "turn": 10,
+      "name": "Variante Ascari",
+      "aliases": [
+        "Ascari"
+      ],
+      "group": "Variante Ascari",
+      "direction": "left",
+      "start_m": 4105.0,
+      "apex_m": 4132.0,
+      "end_m": 4225.0
+    },
+    {
+      "turn": 11,
+      "name": "Curva Alboreto",
+      "aliases": [
+        "Parabolica",
+        "Curva Parabolica"
+      ],
+      "group": "Curva Alboreto",
+      "direction": "right",
+      "start_m": 5060.0,
+      "apex_m": 5156.0,
+      "end_m": 5535.0
+    }
+  ],
+  "display_policy": {
+    "prefer_corner_name": true,
+    "turn_number_is_secondary": true,
+    "turn_number_suffix": "F1",
+    "always_preserve_lmu_distance_m": true
+  }
+}

@@ -1,0 +1,157 @@
+{
+  "source_file": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\telemetria\\Fuji Speedway_P_2026-08-13T21_40_16Z.duckdb",
+  "track_name": "Fuji Speedway",
+  "track_layout": "Fuji Speedway",
+  "selected_lap": 7,
+  "time_source": "GPS Time.value",
+  "lap_boundary_source": "Lap.ts",
+  "target_hz": 10.0,
+  "channel_modes": {
+    "GPS Time": {
+      "mode": "rowid",
+      "row_count": 99907,
+      "columns": [
+        "value"
+      ]
+    },
+    "GPS Latitude": {
+      "mode": "rowid",
+      "row_count": 9991,
+      "columns": [
+        "value"
+      ]
+    },
+    "GPS Longitude": {
+      "mode": "rowid",
+      "row_count": 9991,
+      "columns": [
+        "value"
+      ]
+    },
+    "Lap Dist": {
+      "mode": "rowid",
+      "row_count": 9991,
+      "columns": [
+        "value"
+      ]
+    }
+  },
+  "selected_lap_metrics": {
+    "sample_count": 994,
+    "duration_s": 99.29999999999995,
+    "gps_coverage": 1.0,
+    "gps_path_m": 4524.241816860409,
+    "lap_dist_min_m": 4.377621566426125,
+    "lap_dist_max_m": 4526.014428247615,
+    "lap_dist_span_m": 4521.636806681188
+  },
+  "exported_point_count": 994,
+  "bounds": {
+    "latitude_min": 59.99271011352539,
+    "latitude_max": 60.004127502441406,
+    "longitude_min": -0.011746805009564305,
+    "longitude_max": 0.01126329694965418,
+    "x_east_min_m": -642.6772341848358,
+    "x_east_max_m": 636.6349536567305,
+    "y_north_min_m": -819.1622930217503,
+    "y_north_max_m": 450.39518355223237,
+    "lap_distance_min_m": 4.377621566426125,
+    "lap_distance_max_m": 4526.014428247615
+  },
+  "laps": {
+    "0": {
+      "sample_count": 1196,
+      "duration_s": 119.5,
+      "gps_coverage": 1.0,
+      "gps_path_m": 4399.134209100679,
+      "lap_dist_min_m": 116.84802279587758,
+      "lap_dist_max_m": 4527.421871217146,
+      "lap_dist_span_m": 4410.573848421268
+    },
+    "1": {
+      "sample_count": 937,
+      "duration_s": 93.6,
+      "gps_coverage": 1.0,
+      "gps_path_m": 4508.455464353836,
+      "lap_dist_min_m": 6.923948269076546,
+      "lap_dist_max_m": 4531.727106116468,
+      "lap_dist_span_m": 4524.803157847392
+    },
+    "2": {
+      "sample_count": 1076,
+      "duration_s": 107.5,
+      "gps_coverage": 1.0,
+      "gps_path_m": 4517.582683116026,
+      "lap_dist_min_m": 11.214731733387106,
+      "lap_dist_max_m": 4533.570302646988,
+      "lap_dist_span_m": 4522.355570913601
+    },
+    "3": {
+      "sample_count": 1695,
+      "duration_s": 169.39999999999998,
+      "gps_coverage": 1.0,
+      "gps_path_m": 4503.104475307711,
+      "lap_dist_min_m": 0.0010814182460308075,
+      "lap_dist_max_m": 4530.886432961338,
+      "lap_dist_span_m": 4530.885351543092
+    },
+    "4": {
+      "sample_count": 941,
+      "duration_s": 94.0,
+      "gps_coverage": 1.0,
+      "gps_path_m": 4505.554449577597,
+      "lap_dist_min_m": 10.339198265745775,
+      "lap_dist_max_m": 4527.51294921083,
+      "lap_dist_span_m": 4517.173750945084
+    },
+    "5": {
+      "sample_count": 937,
+      "duration_s": 93.60000000000002,
+      "gps_coverage": 1.0,
+      "gps_path_m": 4489.089946929487,
+      "lap_dist_min_m": 6.373883026820661,
+      "lap_dist_max_m": 4526.662708971833,
+      "lap_dist_span_m": 4520.288825945013
+    },
+    "6": {
+      "sample_count": 920,
+      "duration_s": 91.89999999999998,
+      "gps_coverage": 1.0,
+      "gps_path_m": 4484.624453073283,
+      "lap_dist_min_m": 5.603868824288329,
+      "lap_dist_max_m": 4524.9620342560465,
+      "lap_dist_span_m": 4519.358165431759
+    },
+    "7": {
+      "sample_count": 994,
+      "duration_s": 99.29999999999995,
+      "gps_coverage": 1.0,
+      "gps_path_m": 4524.241816860409,
+      "lap_dist_min_m": 4.377621566426125,
+      "lap_dist_max_m": 4526.014428247615,
+      "lap_dist_span_m": 4521.636806681188
+    },
+    "8": {
+      "sample_count": 910,
+      "duration_s": 90.89999999999998,
+      "gps_coverage": 1.0,
+      "gps_path_m": 4493.183191858293,
+      "lap_dist_min_m": 4.705535237707609,
+      "lap_dist_max_m": 4526.274693275153,
+      "lap_dist_span_m": 4521.569158037446
+    },
+    "9": {
+      "sample_count": 385,
+      "duration_s": 38.39999999999998,
+      "gps_coverage": 1.0,
+      "gps_path_m": 2076.179660585006,
+      "lap_dist_min_m": 4.500170267216073,
+      "lap_dist_max_m": 2500.4014660315383,
+      "lap_dist_span_m": 2495.901295764322
+    }
+  },
+  "outputs": {
+    "csv": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\track_exports\\Fuji Speedway_P_2026-08-13T21_40_16Z_track_gps.csv",
+    "geojson": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\track_exports\\Fuji Speedway_P_2026-08-13T21_40_16Z_track_gps.geojson"
+  }
+}

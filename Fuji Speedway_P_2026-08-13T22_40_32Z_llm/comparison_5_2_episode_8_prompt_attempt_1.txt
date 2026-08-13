@@ -1,0 +1,81 @@
+
+Interpretá únicamente ESTE episodio.
+
+No uses información de otros episodios.
+No clasifiques su prioridad; otra etapa comparará todos los episodios.
+No completes información por conocimiento general del circuito,
+del vehículo ni de conducción.
+
+VOCABULARIO DE ACCIÓN AUTORIZADO PARA ESTE EPISODIO:
+["acelerador"]
+
+Si una palabra o concepto de acción no está representado por esa
+whitelist, no lo introduzcas.
+
+El payload incluye contexto explícito de velocidad. Podés describir coexistencia temporal o posible propagación, pero no afirmar que una acción causó la velocidad observada.
+
+EPISODIO SANEADO POR PYTHON:
+{"episode_id":8,"action_channels":["throttle"],"allowed_action_language":["acelerador"],"channel_direction_contract":{"throttle":{"observed_relation":"lower_in_comparison_lap","interpretation_relation":"lower","coaching_direction":"increase"}},"action_evidence_by_channel":{"throttle":{"event_count":1,"supported_length_m":58.0,"mean_of_event_mean_differences":-49.781224463022376,"largest_abs_peak_difference":-100.0,"events":[{"type":"sustained_throttle_difference","direction":"lower_in_comparison_lap","start_distance_m":1525.0,"end_distance_m":1583.0,"length_m":58.0,"mean_difference":-49.781224463022376,"peak_difference":-100.0,"time_delta_change_during_event_s":0.03556986052678823,"persistent":true}]}},"speed_context":{"concurrent_speed_events":[{"type":"sustained_speed_difference","direction":"lower_in_comparison_lap","start_distance_m":1546.0,"end_distance_m":1646.0,"length_m":100.0,"mean_difference":-12.058660292123047,"peak_difference":-15.727666831952575,"time_delta_change_during_event_s":0.0897252168880307,"persistent":true}],"speed_propagation":[{"start_distance_m":1583.0,"end_distance_m":1605.0,"length_m":22.0,"time_delta_change_s":0.025352830192471032,"status":"continues_losing_time","speed_event":{"type":"sustained_speed_difference","direction":"lower_in_comparison_lap","start_distance_m":1546.0,"end_distance_m":1646.0,"length_m":100.0,"mean_difference":-12.058660292123047,"peak_difference":-15.727666831952575,"time_delta_change_during_event_s":0.0897252168880307,"persistent":true}}]}}
+
+CONTRATO DIRECCIONAL DETERMINISTA:
+{"throttle":{"observed_relation":"lower_in_comparison_lap","interpretation_relation":"lower","coaching_direction":"increase"}}
+
+Este contrato es AUTORITATIVO:
+- observed_relation describe lo medido por Python en la vuelta comparada;
+- interpretation debe respetar interpretation_relation;
+- si coaching_direction es increase, una orden explícita sólo puede aumentar
+  ese input hacia la referencia;
+- si coaching_direction es decrease, una orden explícita sólo puede reducir
+  ese input hacia la referencia;
+- si coaching_direction es replicate_sequence, no fuerces aumentar/reducir:
+  describí la variación como mixta y recomendá replicar su secuencia,
+  evolución o modulación respecto de la referencia.
+
+COACHING OPERATIVO:
+- interpretation debe describir qué diferencia observable existe;
+- recommendation debe convertir esa diferencia en una prueba concreta para
+  la próxima vuelta;
+- si el canal es consistentemente mayor en la comparación, recomendá reducir
+  ese input hacia la referencia;
+- si es consistentemente menor, recomendá aumentarlo hacia la referencia;
+- si dentro del canal aparecen direcciones opuestas, recomendá reproducir su
+  secuencia, evolución o modulación respecto de la referencia;
+- evitá como recomendación final "revisar", "comparar", "ajustar",
+  "trabajar" o "mejorar" si no están seguidos por una acción concreta;
+- no inventes punto de frenada, momento de aceleración, ápice, trayectoria
+  ni línea;
+- no introduzcas tracción, demanda de tracción, agarre/grip, balance,
+  transferencia de carga ni dinámica del vehículo, tampoco como hipótesis;
+- no deduzcas una distancia de coaching desde los límites de los eventos;
+- si hay varios canales, no inventes una jerarquía entre ellos que el payload
+  no contenga. Priorizá una instrucción principal sólo cuando la evidencia lo
+  permita claramente.
+
+CAUSALIDAD:
+- describí coexistencia, asociación o compatibilidad;
+- podés usar expresiones prudentes como "podría contribuir";
+- no uses "causó", "generó", "provocó", "produjo", "se debe a",
+  "debido a" ni "como consecuencia directa".
+
+CONTRATO JSON EXACTO:
+- episode_id: entero idéntico al recibido;
+- interpretation: string ESTRICTAMENTE CUALITATIVO, sin ningún dígito;
+- hypotheses: lista de strings ESTRICTAMENTE CUALITATIVOS, sin ningún dígito;
+- recommendation: string ESTRICTAMENTE CUALITATIVO, sin ningún dígito.
+
+REGLA DE CIFRAS PARA ESTE CALL:
+- el ÚNICO número permitido en toda tu respuesta es episode_id;
+- no copies metros, segundos, porcentajes, número de curva ni ninguna otra
+  magnitud del payload dentro de interpretation, hypotheses o recommendation;
+- aunque exista un onset/release numérico autorizado en el payload, Python lo
+  renderiza por separado: NO lo repitas en estos tres campos de texto.
+
+No agregues ni omitas claves.
+Si no podés formular una hipótesis grounded, usá hypotheses: [].
+
+Ejemplo de FORMA:
+{"episode_id":8,"interpretation":"descripción cualitativa sin cifras","hypotheses":["hipótesis prudente limitada a la evidencia"],"recommendation":"recomendación cualitativa sin cifras"}
+
+
+
+Respondé únicamente con el objeto JSON completo.

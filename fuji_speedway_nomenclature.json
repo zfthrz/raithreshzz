@@ -1,0 +1,319 @@
+{
+  "schema_version": 1,
+  "track": {
+    "canonical_name": "Fuji Speedway",
+    "centreline_length_m_official": 4563,
+    "layout_note": "Current full circuit used by FIA WEC / Le Mans Ultimate."
+  },
+  "numbering": {
+    "canonical_scheme": "WEC_LMU_16_turn",
+    "canonical_turn_count": 16,
+    "right_turn_count": 10,
+    "left_turn_count": 6,
+    "policy": "Use the FIA WEC / LMU 16-turn sequence as the deterministic scheme. Fuji materials from other series may use 12 named-corner or 17-turn schemes; those must not shift this profile's numbering.",
+    "status": "semantic_mapping_ready_single_lap_distance_calibration"
+  },
+  "sources": [
+    {
+      "id": "fia_wec_fuji_2026",
+      "authority": "FIA WEC",
+      "title": "6 Hours of Fuji 2026",
+      "supports": [
+        "4.563 km",
+        "16 turns",
+        "6 left / 10 right"
+      ]
+    },
+    {
+      "id": "racecontrol_lmu_fuji",
+      "authority": "RaceControl / Le Mans Ultimate guide",
+      "title": "Le Mans Ultimate: Fuji Speedway Track Guide",
+      "supports": [
+        "LMU T1-T16 sequence",
+        "T3 Coca-Cola",
+        "T4-T5 100R",
+        "T6 Hairpin",
+        "T9 300R",
+        "T10-T12 Dunlop complex",
+        "T13 13th Corner",
+        "T16 Panasonic"
+      ]
+    },
+    {
+      "id": "supergt_fuji",
+      "authority": "SUPER GT official site",
+      "title": "Fuji Speedway race/event reporting",
+      "supports": [
+        "TGR Corner = Turn 1",
+        "Coca-Cola Corner",
+        "Dunlop Corner",
+        "current Fuji corner naming usage"
+      ]
+    }
+  ],
+  "turns": [
+    {
+      "number": 1,
+      "name": "TGR Corner",
+      "aliases": [],
+      "direction": "right",
+      "complex": null,
+      "name_mapping_confidence": "verified_current",
+      "distance_lmu": {
+        "start_m": null,
+        "apex_m": null,
+        "end_m": null
+      }
+    },
+    {
+      "number": 2,
+      "name": "Turn 2",
+      "aliases": [
+        "75R"
+      ],
+      "direction": "right",
+      "complex": null,
+      "name_mapping_confidence": "sequence_conservative",
+      "distance_lmu": {
+        "start_m": null,
+        "apex_m": null,
+        "end_m": null
+      }
+    },
+    {
+      "number": 3,
+      "name": "Coca-Cola Corner",
+      "aliases": [],
+      "direction": "left",
+      "complex": null,
+      "name_mapping_confidence": "verified_current",
+      "distance_lmu": {
+        "start_m": null,
+        "apex_m": null,
+        "end_m": null
+      }
+    },
+    {
+      "number": 4,
+      "name": "100R",
+      "aliases": [
+        "Toyopet 100R"
+      ],
+      "direction": "right",
+      "complex": null,
+      "name_mapping_confidence": "verified_lmu_sequence",
+      "distance_lmu": {
+        "start_m": null,
+        "apex_m": null,
+        "end_m": null
+      }
+    },
+    {
+      "number": 5,
+      "name": "100R",
+      "aliases": [
+        "Toyopet 100R"
+      ],
+      "direction": "right",
+      "complex": null,
+      "name_mapping_confidence": "verified_lmu_sequence",
+      "distance_lmu": {
+        "start_m": null,
+        "apex_m": null,
+        "end_m": null
+      }
+    },
+    {
+      "number": 6,
+      "name": "Hairpin",
+      "aliases": [
+        "ADVAN Corner"
+      ],
+      "direction": "left",
+      "complex": null,
+      "name_mapping_confidence": "verified_lmu_sequence",
+      "distance_lmu": {
+        "start_m": null,
+        "apex_m": null,
+        "end_m": null
+      }
+    },
+    {
+      "number": 7,
+      "name": "Turn 7",
+      "aliases": [
+        "120R"
+      ],
+      "direction": "left",
+      "complex": null,
+      "name_mapping_confidence": "sequence_conservative",
+      "distance_lmu": {
+        "start_m": null,
+        "apex_m": null,
+        "end_m": null
+      }
+    },
+    {
+      "number": 8,
+      "name": "Turn 8",
+      "aliases": [],
+      "direction": "right",
+      "complex": null,
+      "name_mapping_confidence": "sequence_conservative",
+      "distance_lmu": {
+        "start_m": null,
+        "apex_m": null,
+        "end_m": null
+      }
+    },
+    {
+      "number": 9,
+      "name": "300R",
+      "aliases": [],
+      "direction": "right",
+      "complex": null,
+      "name_mapping_confidence": "verified_lmu_sequence",
+      "distance_lmu": {
+        "start_m": null,
+        "apex_m": null,
+        "end_m": null
+      }
+    },
+    {
+      "number": 10,
+      "name": "Dunlop Corner",
+      "aliases": [],
+      "direction": "right",
+      "complex": "Dunlop",
+      "name_mapping_confidence": "verified_current",
+      "distance_lmu": {
+        "start_m": null,
+        "apex_m": null,
+        "end_m": null
+      }
+    },
+    {
+      "number": 11,
+      "name": "Dunlop",
+      "aliases": [],
+      "direction": "left",
+      "complex": null,
+      "name_mapping_confidence": "sequence_conservative",
+      "distance_lmu": {
+        "start_m": null,
+        "apex_m": null,
+        "end_m": null
+      }
+    },
+    {
+      "number": 12,
+      "name": "Dunlop",
+      "aliases": [],
+      "direction": "right",
+      "complex": null,
+      "name_mapping_confidence": "sequence_conservative",
+      "distance_lmu": {
+        "start_m": null,
+        "apex_m": null,
+        "end_m": null
+      }
+    },
+    {
+      "number": 13,
+      "name": "13th Corner",
+      "aliases": [
+        "Corner 13"
+      ],
+      "direction": "right",
+      "complex": null,
+      "name_mapping_confidence": "verified_lmu_sequence",
+      "distance_lmu": {
+        "start_m": null,
+        "apex_m": null,
+        "end_m": null
+      }
+    },
+    {
+      "number": 14,
+      "name": "Turn 14",
+      "aliases": [],
+      "direction": "left",
+      "complex": null,
+      "name_mapping_confidence": "sequence_conservative",
+      "distance_lmu": {
+        "start_m": null,
+        "apex_m": null,
+        "end_m": null
+      }
+    },
+    {
+      "number": 15,
+      "name": "GR Supra Corner",
+      "aliases": [
+        "Netz Corner"
+      ],
+      "direction": "left",
+      "complex": null,
+      "name_mapping_confidence": "verified_current",
+      "distance_lmu": {
+        "start_m": null,
+        "apex_m": null,
+        "end_m": null
+      }
+    },
+    {
+      "number": 16,
+      "name": "Panasonic Corner",
+      "aliases": [],
+      "direction": "right",
+      "complex": null,
+      "name_mapping_confidence": "verified_current",
+      "distance_lmu": {
+        "start_m": null,
+        "apex_m": null,
+        "end_m": null
+      }
+    }
+  ],
+  "complexes": [
+    {
+      "label": "100R",
+      "turns": [
+        4,
+        5
+      ],
+      "sequence": [
+        "right",
+        "right"
+      ]
+    },
+    {
+      "label": "Dunlop",
+      "turns": [
+        10,
+        11,
+        12
+      ],
+      "sequence": [
+        "right",
+        "left",
+        "right"
+      ]
+    }
+  ],
+  "distance_calibration": {
+    "status": "single_lap_provisional",
+    "source_required": "Validated full-lap LMU GPS telemetry",
+    "requires_cross_session_validation": true
+  },
+  "integration_policy": {
+    "llm_may_invent_track_location": false,
+    "fallback_when_distance_not_calibrated": "distance_only",
+    "preferred_render_order": [
+      "turn_number_and_name",
+      "turn_number",
+      "complex_name",
+      "distance_only"
+    ]
+  }
+}

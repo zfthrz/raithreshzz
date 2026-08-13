@@ -1,0 +1,180 @@
+{
+  "source_csv": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\track_exports\\Fuji Speedway_P_2026-08-13T22_40_32Z_track_gps.csv",
+  "algorithm": {
+    "step_m": 2.0,
+    "heading_window_m": 20.0,
+    "smooth_window_m": 14.0,
+    "min_separation_m": 45.0,
+    "threshold_percentile": 0.7,
+    "global_abs_curvature_threshold_rad_per_m": 0.007153796936156413,
+    "requested_turn_count": 16
+  },
+  "track_distance_range_m": [
+    0.0,
+    4526.201534513212
+  ],
+  "candidate_count": 16,
+  "candidates": [
+    {
+      "candidate_number": 1,
+      "start_distance_m": 714.0,
+      "center_distance_m": 744.0,
+      "end_distance_m": 822.0,
+      "direction": "right",
+      "peak_abs_curvature_rad_per_m": 0.02900674672328573,
+      "mean_abs_curvature_rad_per_m": 0.020706947246852913,
+      "estimated_heading_change_deg": -130.81274063015962
+    },
+    {
+      "candidate_number": 2,
+      "start_distance_m": 1250.0,
+      "center_distance_m": 1284.0,
+      "end_distance_m": 1376.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.009533272732018217,
+      "mean_abs_curvature_rad_per_m": 0.007603700081122835,
+      "estimated_heading_change_deg": 55.44838459795569
+    },
+    {
+      "candidate_number": 3,
+      "start_distance_m": 1442.0,
+      "center_distance_m": 1798.0,
+      "end_distance_m": 1876.0,
+      "direction": "right",
+      "peak_abs_curvature_rad_per_m": 0.009560689619403769,
+      "mean_abs_curvature_rad_per_m": 0.00697855311061666,
+      "estimated_heading_change_deg": -173.9021112612413
+    },
+    {
+      "candidate_number": 4,
+      "start_distance_m": 1950.0,
+      "center_distance_m": 1988.0,
+      "end_distance_m": 2146.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.01892596159715687,
+      "mean_abs_curvature_rad_per_m": 0.012673686741828389,
+      "estimated_heading_change_deg": 143.61291072124124
+    },
+    {
+      "candidate_number": 5,
+      "start_distance_m": 1952.0,
+      "center_distance_m": 2036.0,
+      "end_distance_m": 2142.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.01892596159715687,
+      "mean_abs_curvature_rad_per_m": 0.012895937929210649,
+      "estimated_heading_change_deg": 141.50477578111412
+    },
+    {
+      "candidate_number": 6,
+      "start_distance_m": 1948.0,
+      "center_distance_m": 2084.0,
+      "end_distance_m": 2152.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.01892596159715687,
+      "mean_abs_curvature_rad_per_m": 0.012373063751338976,
+      "estimated_heading_change_deg": 145.96921220265452
+    },
+    {
+      "candidate_number": 7,
+      "start_distance_m": 2808.0,
+      "center_distance_m": 2836.0,
+      "end_distance_m": 2864.0,
+      "direction": "right",
+      "peak_abs_curvature_rad_per_m": 0.04458436420401776,
+      "mean_abs_curvature_rad_per_m": 0.03195371336935662,
+      "estimated_heading_change_deg": -107.26198813472658
+    },
+    {
+      "candidate_number": 8,
+      "start_distance_m": 2800.0,
+      "center_distance_m": 2902.0,
+      "end_distance_m": 2946.0,
+      "direction": "right",
+      "peak_abs_curvature_rad_per_m": 0.04458436420401776,
+      "mean_abs_curvature_rad_per_m": 0.023725388684165172,
+      "estimated_heading_change_deg": -27.99306691835575
+    },
+    {
+      "candidate_number": 9,
+      "start_distance_m": 2796.0,
+      "center_distance_m": 2978.0,
+      "end_distance_m": 3492.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.04458436420401776,
+      "mean_abs_curvature_rad_per_m": 0.014192958468562127,
+      "estimated_heading_change_deg": 15.053296191769837
+    },
+    {
+      "candidate_number": 10,
+      "start_distance_m": 2796.0,
+      "center_distance_m": 3118.0,
+      "end_distance_m": 3492.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.04458436420401776,
+      "mean_abs_curvature_rad_per_m": 0.014192958468562127,
+      "estimated_heading_change_deg": 15.053296191769837
+    },
+    {
+      "candidate_number": 11,
+      "start_distance_m": 2958.0,
+      "center_distance_m": 3176.0,
+      "end_distance_m": 3490.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.025811738230881787,
+      "mean_abs_curvature_rad_per_m": 0.011812115402073053,
+      "estimated_heading_change_deg": 42.789835953225435
+    },
+    {
+      "candidate_number": 12,
+      "start_distance_m": 2796.0,
+      "center_distance_m": 3258.0,
+      "end_distance_m": 3492.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.04458436420401776,
+      "mean_abs_curvature_rad_per_m": 0.014192958468562127,
+      "estimated_heading_change_deg": 15.053296191769837
+    },
+    {
+      "candidate_number": 13,
+      "start_distance_m": 2796.0,
+      "center_distance_m": 3312.0,
+      "end_distance_m": 3492.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.04458436420401776,
+      "mean_abs_curvature_rad_per_m": 0.014192958468562127,
+      "estimated_heading_change_deg": 15.053296191769837
+    },
+    {
+      "candidate_number": 14,
+      "start_distance_m": 3240.0,
+      "center_distance_m": 3392.0,
+      "end_distance_m": 3474.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.025811738230881787,
+      "mean_abs_curvature_rad_per_m": 0.013935481081349075,
+      "estimated_heading_change_deg": 187.53010145466567
+    },
+    {
+      "candidate_number": 15,
+      "start_distance_m": 3534.0,
+      "center_distance_m": 3584.0,
+      "end_distance_m": 3776.0,
+      "direction": "right",
+      "peak_abs_curvature_rad_per_m": 0.02349885370372186,
+      "mean_abs_curvature_rad_per_m": 0.013616976318978602,
+      "estimated_heading_change_deg": -190.1946924465577
+    },
+    {
+      "candidate_number": 16,
+      "start_distance_m": 3564.0,
+      "center_distance_m": 3672.0,
+      "end_distance_m": 3746.0,
+      "direction": "right",
+      "peak_abs_curvature_rad_per_m": 0.02349885370372186,
+      "mean_abs_curvature_rad_per_m": 0.01610369696722743,
+      "estimated_heading_change_deg": -169.16994694284966
+    }
+  ],
+  "warning": "Estos son candidatos geométricos. No son nombres/números oficiales hasta completar la calibración contra una referencia verificada."
+}

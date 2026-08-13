@@ -4,7 +4,7 @@ import shutil
 import sys
 
 
-RECOVERY_PATCH_VERSION = "2026.08.13"
+RECOVERY_PATCH_VERSION = "2026.08.13-v2"
 
 BRAKE_IMPORT = (
     "from braking_point_v2_1 import enrich_objective_with_braking_points\n"
@@ -15,6 +15,10 @@ THROTTLE_IMPORT = (
 SEQUENCE_IMPORT = (
     "from throttle_episode_sequence_v1_0 import "
     "enrich_objective_with_throttle_event_sequences\n"
+)
+SUSTAINED_IMPORT = (
+    "from throttle_sustained_modulation_v1_0 import "
+    "enrich_objective_with_sustained_throttle_modulations\n"
 )
 
 IMPORT_ANCHOR = (
@@ -51,18 +55,27 @@ CANONICAL_HOOKS = """
                 comparison,
                 objective_analysis,
             )
+
+            # Modulación sostenida de acelerador.
+            # Observacional: no modifica ranking ni coaching.
+            enrich_objective_with_sustained_throttle_modulations(
+                comparison,
+                objective_analysis,
+            )
 """
 
 TARGET_IMPORTS = (
     BRAKE_IMPORT,
     THROTTLE_IMPORT,
     SEQUENCE_IMPORT,
+    SUSTAINED_IMPORT,
 )
 
 HOOK_NAMES = (
     "enrich_objective_with_braking_points",
     "enrich_objective_with_throttle_points",
     "enrich_objective_with_throttle_event_sequences",
+    "enrich_objective_with_sustained_throttle_modulations",
 )
 
 
@@ -74,6 +87,8 @@ def _remove_versioned_imports(text):
         r"enrich_objective_with_throttle_points\s*$",
         r"^from\s+throttle_episode_sequence[^\s]*\s+import\s+"
         r"enrich_objective_with_throttle_event_sequences\s*$",
+        r"^from\s+throttle_sustained_modulation[^\s]*\s+import\s+"
+        r"enrich_objective_with_sustained_throttle_modulations\s*$",
     )
 
     for pattern in patterns:
@@ -122,6 +137,7 @@ def patch_text(original):
         BRAKE_IMPORT
         + THROTTLE_IMPORT
         + SEQUENCE_IMPORT
+        + SUSTAINED_IMPORT
     )
 
     # Normalizar el espacio vertical alrededor del bloque de imports para
@@ -300,6 +316,9 @@ def main():
     )
     print(
         "  Throttle Episode Sequence: 1.0"
+    )
+    print(
+        "  Throttle Sustained Modulation: 1.0"
     )
     print(
         "  LLM Analysis: NO MODIFICADO"

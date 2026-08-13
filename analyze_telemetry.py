@@ -13,6 +13,7 @@ from sector_analysis import SectorAnalysis
 from braking_point_v2_1 import enrich_objective_with_braking_points
 from throttle_point_v1_2_1 import enrich_objective_with_throttle_points
 from throttle_episode_sequence_v1_0 import enrich_objective_with_throttle_event_sequences
+from throttle_sustained_modulation_v1_0 import enrich_objective_with_sustained_throttle_modulations
 
 from vehicle_context import extract_lmu_context_from_duckdb
 
@@ -3085,6 +3086,24 @@ def main():
                 comparison,
                 objective_analysis,
             )
+
+            # Modulación sostenida de acelerador.
+            # Observacional: no modifica ranking ni coaching.
+            enrich_objective_with_sustained_throttle_modulations(
+                comparison,
+                objective_analysis,
+            )
+
+            # Punto de frenada determinista (braking_point_v2_1.py).
+            # Sólo enriquece episodios; no modifica ranking ni deltas.
+
+            # Puntos de acelerador deterministas
+            # (throttle_point_v1_2_1.py).
+            # Onset/release mantienen la lógica 1.1; full-throttle y
+            # partial-lift son observacionales.
+
+            # Secuencia física de eventos de acelerador por episodio.
+            # Observacional: no modifica ranking ni coaching.
 
             loss_ranking = objective_analysis[
                 "loss_ranking"

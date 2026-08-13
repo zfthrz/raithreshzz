@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 
 
-SUITE_VERSION = "1.0"
+SUITE_VERSION = "1.1"
 
 
 class RegressionFailure(Exception):
@@ -194,6 +194,9 @@ def main():
     sequence = load_local_module(
         "throttle_episode_sequence_v1_0"
     )
+    sustained = load_local_module(
+        "throttle_sustained_modulation_v1_0"
+    )
     recovery = load_local_module(
         "apply_objective_python_recovery_2026_08_13"
     )
@@ -264,6 +267,43 @@ def main():
                 sequence
                 .throttle_episode_sequence_config_summary()
                 ["authorizes_coaching"],
+                False,
+                "authorizes_coaching",
+            ),
+        ),
+    )
+
+    runner.run(
+        "Throttle sustained modulation = 1.0 / observational",
+        lambda: (
+            assert_equal(
+                sustained.THROTTLE_SUSTAINED_MODULATION_VERSION,
+                "1.0",
+                "THROTTLE_SUSTAINED_MODULATION_VERSION",
+            ),
+            assert_equal(
+                sustained.THROTTLE_SUSTAINED_MODULATION_SCHEMA_VERSION,
+                "1.0",
+                "THROTTLE_SUSTAINED_MODULATION_SCHEMA_VERSION",
+            ),
+            assert_equal(
+                sustained.sustained_modulation_config_summary()[
+                    "observational_only"
+                ],
+                True,
+                "observational_only",
+            ),
+            assert_equal(
+                sustained.sustained_modulation_config_summary()[
+                    "affects_ranking"
+                ],
+                False,
+                "affects_ranking",
+            ),
+            assert_equal(
+                sustained.sustained_modulation_config_summary()[
+                    "authorizes_coaching"
+                ],
                 False,
                 "authorizes_coaching",
             ),
@@ -986,6 +1026,177 @@ def main():
     runner.run(
         "sequence enrichment preserves ranking/order",
         enrichment_does_not_change_ranking,
+    )
+
+    # ========================================================
+    # THROTTLE SUSTAINED MODULATION 1.0
+    # ========================================================
+    section("THROTTLE SUSTAINED MODULATION 1.0")
+
+    def _single_event_trace(body, prefix=10, suffix=16):
+        return (
+            [0.0] * prefix
+            + [6.0, 24.0, 55.0, 80.0, 96.0]
+            + list(body)
+            + [70.0, 45.0, 20.0, 5.0, 1.0]
+            + [0.0] * suffix
+        )
+
+    def sustained_deep_long_detected():
+        body = (
+            [98.0] * 8
+            + [80.0, 60.0, 40.0, 25.0, 12.0]
+            + [10.0] * 65
+            + [20.0, 35.0, 50.0, 65.0, 80.0, 92.0, 98.0]
+            + [98.0] * 8
+        )
+        trace = _single_event_trace(body)
+        df = make_two_lap_dataframe(trace, trace)
+        events = throttle.detect_throttle_events(df, "throttle_a")
+        assert_equal(len(events), 1, "event_count")
+        mods = sustained.detect_sustained_modulations_in_event(
+            df,
+            "throttle_a",
+            events[0],
+        )
+        assert_equal(len(mods), 1, "modulation_count")
+        assert_equal(mods[0]["classification"], "deep_and_long", "classification")
+        assert_true(mods[0]["length_m"] > 60.0, "length > partial-lift max")
+        assert_true(mods[0]["minimum_throttle_percent"] < 20.0, "minimum < partial-lift floor")
+
+    runner.run(
+        "deep/long recovered modulation detected",
+        sustained_deep_long_detected,
+    )
+
+    def sustained_does_not_duplicate_partial_lift():
+        body = (
+            [98.0] * 6
+            + [78.0, 68.0, 60.0]
+            + [60.0] * 18
+            + [65.0, 72.0, 80.0, 88.0, 94.0, 98.0]
+            + [98.0] * 8
+        )
+        trace = _single_event_trace(body)
+        df = make_two_lap_dataframe(trace, trace)
+        events = throttle.detect_throttle_events(df, "throttle_a")
+        assert_equal(len(events), 1, "event_count")
+        partial = events[0].get("partial_lifts", [])
+        assert_true(len(partial) >= 1, "partial lift detected")
+        mods = sustained.detect_sustained_modulations_in_event(
+            df,
+            "throttle_a",
+            events[0],
+        )
+        assert_equal(len(mods), 0, "sustained modulation count")
+
+    runner.run(
+        "partial-lift envelope is not duplicated",
+        sustained_does_not_duplicate_partial_lift,
+    )
+
+    def sustained_release_rejected():
+        body = (
+            [98.0] * 8
+            + [80.0, 60.0, 35.0, 15.0]
+            + [10.0] * 35
+            + [5.0, 1.0]
+            + [0.0] * 12
+            + [20.0, 50.0, 80.0, 98.0]
+        )
+        trace = _single_event_trace(body, suffix=8)
+        df = make_two_lap_dataframe(trace, trace)
+        events = throttle.detect_throttle_events(df, "throttle_a")
+        assert_true(len(events) >= 1, "event_count")
+        all_mods = []
+        for event in events:
+            all_mods.extend(
+                sustained.detect_sustained_modulations_in_event(
+                    df,
+                    "throttle_a",
+                    event,
+                )
+            )
+        assert_equal(len(all_mods), 0, "release must not become modulation")
+
+    runner.run(
+        "confirmed release is not sustained modulation",
+        sustained_release_rejected,
+    )
+
+    def sustained_enrichment_preserves_ranking():
+        reference = _single_event_trace(
+            [98.0] * 100
+        )
+        comparison = _single_event_trace(
+            [98.0] * 8
+            + [80.0, 60.0, 40.0, 25.0, 12.0]
+            + [10.0] * 65
+            + [20.0, 35.0, 50.0, 65.0, 80.0, 92.0, 98.0]
+            + [98.0] * 15
+        )
+        df = make_two_lap_dataframe(reference, comparison)
+        throttle_episode = {
+            "episode_id": 20,
+            "zone_id": 1,
+            "start_distance_m": 10.0,
+            "end_distance_m": 120.0,
+            "action_channels": ["throttle"],
+        }
+        brake_episode = {
+            "episode_id": 21,
+            "zone_id": 2,
+            "start_distance_m": 130.0,
+            "end_distance_m": 150.0,
+            "action_channels": ["brake"],
+        }
+        objective = {
+            "driver_action_episode_ranking": [
+                dict(throttle_episode),
+                dict(brake_episode),
+            ],
+            "loss_ranking": [
+                {
+                    "driver_action_episodes": [
+                        dict(throttle_episode),
+                        dict(brake_episode),
+                    ]
+                }
+            ],
+        }
+        before_ids = [
+            item["episode_id"]
+            for item in objective["driver_action_episode_ranking"]
+        ]
+        sustained.enrich_objective_with_sustained_throttle_modulations(
+            df,
+            objective,
+        )
+        after_ids = [
+            item["episode_id"]
+            for item in objective["driver_action_episode_ranking"]
+        ]
+        assert_equal(after_ids, before_ids, "ranking order")
+        assert_equal(
+            objective["throttle_sustained_modulation_detection"]["version"],
+            "1.0",
+            "metadata version",
+        )
+        assert_equal(
+            objective["throttle_sustained_modulation_detection"]["config"]["affects_ranking"],
+            False,
+            "metadata affects_ranking",
+        )
+        assert_equal(
+            "throttle_sustained_modulation_comparison"
+            in objective["driver_action_episode_ranking"][1],
+            False,
+            "brake-only episode untouched",
+        )
+
+    runner.run(
+        "sustained modulation enrichment preserves ranking/order",
+        sustained_enrichment_preserves_ranking,
     )
 
     # ========================================================

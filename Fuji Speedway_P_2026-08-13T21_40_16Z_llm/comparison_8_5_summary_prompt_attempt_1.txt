@@ -1,0 +1,30 @@
+
+Sintetizá únicamente las evaluaciones ya validadas que siguen.
+No reinterpretes telemetría ni agregues conceptos nuevos.
+
+EVALUACIONES VALIDADAS:
+[{"classification":"PRIORITARIO","interpretation":"El volante se mantiene con mayor magnitud en dos tramos consecutivos, mientras el acelerador alterna entre menor y mayor aplicación en la misma zona. La velocidad es consistentemente menor durante todo el episodio.","hypotheses":["La mayor magnitud de volante podría estar asociada a la menor velocidad observada.","La secuencia mixta del acelerador podría estar relacionada con la variación de velocidad."],"recommendation":"Reducí la magnitud del volante hacia la referencia y replicá la secuencia del acelerador tal como se observa en la vuelta de comparación."},{"classification":"SECUNDARIO","interpretation":"La magnitud de dirección se mantiene por debajo de la referencia en varios tramos sostenidos, mientras el acelerador alterna entre valores menores y mayores a lo largo del episodio. La velocidad concurrente también es inferior durante gran parte del recorrido.","hypotheses":["La menor magnitud de dirección podría estar asociada a una modulación más suave del volante en esos tramos.","La alternancia en el acelerador sugiere una secuencia de aplicación distinta a la referencia, con momentos de menor y mayor apertura."],"recommendation":"Aumentá la magnitud de dirección hacia la referencia en los tramos donde se mantiene baja y replicá la secuencia de acelerador de la vuelta de referencia, respetando sus variaciones de menor y mayor apertura."},{"classification":"SECUNDARIO","interpretation":"La vuelta muestra una dirección con mayor magnitud sostenida y un acelerador con menor aplicación en el mismo sector, coexistiendo con una velocidad inferior que se prolonga más allá del episodio de inputs.","hypotheses":["La mayor magnitud de dirección podría estar asociada a una corrección más amplia del volante, mientras que la menor aplicación de acelerador podría contribuir a la velocidad reducida observada."],"recommendation":"Reducí la magnitud de dirección hacia la referencia y aumentá la aplicación de acelerador en ese sector, manteniendo la secuencia de inputs coordinada."},{"classification":"SECUNDARIO","interpretation":"La dirección muestra una variación mixta: primero menor y luego mayor que la referencia, mientras el acelerador se mantiene por debajo de la referencia en un tramo extenso. La velocidad también es menor en ese sector, lo que coincide temporalmente con la menor aplicación de acelerador.","hypotheses":["La menor aplicación de acelerador podría contribuir a la menor velocidad observada en el sector.","La variación mixta en la dirección podría indicar una secuencia de inputs distinta a la referencia."],"recommendation":"Aumentá la aplicación de acelerador hacia la referencia en el sector donde se mantiene por debajo, y reproducí la secuencia de dirección de la referencia, alternando menor y mayor magnitud según el tramo."},{"classification":"SECUNDARIO","interpretation":"En el tramo analizado, la magnitud de dirección se mantiene por encima de la referencia mientras el acelerador se mantiene por debajo, coincidiendo con una velocidad sostenidamente menor.","hypotheses":["La mayor magnitud de dirección podría estar asociada a una corrección más amplia del volante en ese sector.","El menor acelerador podría contribuir a la menor velocidad observada en el mismo tramo."],"recommendation":"Reducí la magnitud de dirección hacia la referencia y aumentá el acelerador hacia la referencia en ese sector, manteniendo la secuencia de inputs."},{"classification":"SECUNDARIO","interpretation":"El volante presenta una magnitud sostenida mayor que la referencia en un tramo, y el acelerador también se mantiene más alto poco después, mientras la velocidad es menor en parte de ese sector.","hypotheses":["La mayor magnitud de volante podría estar asociada a una corrección más amplia en ese tramo, coexistiendo con una velocidad menor.","El acelerador más alto podría estar relacionado con una demanda de avance en un punto donde la velocidad aún es inferior a la referencia."],"recommendation":"Reducí la magnitud del volante hacia la referencia en ese tramo y, apenas después, reducí también la aplicación del acelerador para acercarte a la referencia."},{"classification":"NO_ACCIONABLE","interpretation":"El freno se mantiene por debajo de la referencia durante un tramo sostenido, coincidiendo con una velocidad también menor.","hypotheses":["Una menor aplicación de freno podría estar asociada a la velocidad reducida observada en ese sector."],"recommendation":"Aumentá la intensidad del freno en ese sector para acercarte a la referencia."}]
+
+CONTRATO JSON EXACTO:
+- comparison_observations: lista de strings;
+- limitations: lista de strings;
+- conclusion: string.
+
+Las listas pueden ser [].
+No escribas cifras.
+No agregues ni omitas claves.
+La conclusion debe resumir la acción de coaching más importante ya presente
+en las evaluaciones, no limitarse a decir que existen diferencias.
+Conservá verbos operativos como reducir, aumentar o replicar cuando estén
+respaldados por las recomendaciones validadas.
+No sustituyas una recomendación concreta por "revisar", "comparar",
+"ajustar", "trabajar" o "mejorar".
+Las limitaciones deben ser neutrales y referirse sólo a lo que no
+puede inferirse de la evidencia disponible.
+
+Ejemplo de FORMA:
+{"comparison_observations":["observación cualitativa apoyada por evaluaciones validadas"],"limitations":["la causa no puede determinarse con la evidencia disponible"],"conclusion":"síntesis cualitativa sin cifras"}
+
+
+
+Respondé únicamente con el objeto JSON completo.

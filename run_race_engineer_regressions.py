@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 
 
-SUITE_VERSION = "1.3"
+SUITE_VERSION = "1.4"
 
 
 class RegressionFailure(Exception):
@@ -203,6 +203,9 @@ def main():
     modulation_recurrence = load_local_module(
         "throttle_modulation_recurrence_v1_0"
     )
+    physical_profile = load_local_module(
+        "throttle_physical_point_profile_v1_0"
+    )
     recovery = load_local_module(
         "apply_objective_python_recovery_2026_08_13"
     )
@@ -389,6 +392,46 @@ def main():
                 ],
                 False,
                 "authorizes_coaching",
+            ),
+        ),
+    )
+
+    runner.run(
+        "Throttle physical point profile = 1.0 / session observational",
+        lambda: (
+            assert_equal(
+                physical_profile.THROTTLE_PHYSICAL_POINT_PROFILE_VERSION,
+                "1.0",
+                "THROTTLE_PHYSICAL_POINT_PROFILE_VERSION",
+            ),
+            assert_equal(
+                physical_profile.THROTTLE_PHYSICAL_POINT_PROFILE_SCHEMA_VERSION,
+                "1.0",
+                "THROTTLE_PHYSICAL_POINT_PROFILE_SCHEMA_VERSION",
+            ),
+            assert_equal(
+                physical_profile
+                .throttle_physical_point_profile_config_summary()[
+                    "source_only_no_redetection"
+                ],
+                True,
+                "source_only_no_redetection",
+            ),
+            assert_equal(
+                physical_profile
+                .throttle_physical_point_profile_config_summary()[
+                    "affects_session_priority"
+                ],
+                False,
+                "affects_session_priority",
+            ),
+            assert_equal(
+                physical_profile
+                .throttle_physical_point_profile_config_summary()[
+                    "authorizes_new_coaching"
+                ],
+                False,
+                "authorizes_new_coaching",
             ),
         ),
     )
@@ -2148,6 +2191,476 @@ def main():
     runner.run(
         "sustained recurrence dedups and session enrichment preserves ranking",
         sustained_duplicate_and_enrichment_preserve_session,
+    )
+
+
+    # ========================================================
+    # THROTTLE PHYSICAL POINT PROFILE 1.0
+    # ========================================================
+    section("THROTTLE PHYSICAL POINT PROFILE 1.0")
+
+    def _profile_sequence_item(
+        reference_event_id,
+        comparison_event_id="throttle_b:01",
+        onset_m=1000.0,
+    ):
+        return {
+            "pair_status": "PAIRED_IN_EPISODE",
+            "throttle_pair_id": (
+                f"{reference_event_id}|{comparison_event_id}"
+            ),
+            "pair_cost": 2.0,
+            "sequence_index": 1,
+            "reference_event": {
+                "event_id": reference_event_id,
+                "onset_distance_m": onset_m,
+                "confirmation_distance_m": onset_m + 4.0,
+                "release_distance_m": onset_m + 150.0,
+                "release_confirmed": True,
+                "peak_throttle_percent": 99.0,
+                "peak_distance_m": onset_m + 25.0,
+                "full_throttle_attainment_confirmed": True,
+                "full_throttle_attainment_distance_m": onset_m + 30.0,
+                "distance_from_onset_to_full_throttle_m": 30.0,
+                "partial_lift_count": 1,
+                "association": {"overlap": True},
+            },
+            "comparison_event": {
+                "event_id": comparison_event_id,
+                "onset_distance_m": onset_m + 10.0,
+                "confirmation_distance_m": onset_m + 14.0,
+                "release_distance_m": onset_m + 162.0,
+                "release_confirmed": True,
+                "peak_throttle_percent": 99.0,
+                "peak_distance_m": onset_m + 35.0,
+                "full_throttle_attainment_confirmed": True,
+                "full_throttle_attainment_distance_m": onset_m + 45.0,
+                "distance_from_onset_to_full_throttle_m": 35.0,
+                "partial_lift_count": 2,
+                "association": {"overlap": True},
+            },
+            "differences": {
+                "comparison_minus_reference_onset_m": 10.0,
+                "comparison_minus_reference_release_m": 12.0,
+                "comparison_minus_reference_full_throttle_m": 15.0,
+            },
+        }
+
+    def _profile_episode(reference_event_id="throttle_a:01"):
+        comparison_event_id = "throttle_b:01"
+        return {
+            "episode_id": 1,
+            "global_rank": 1,
+            "zone_id": 7,
+            "start_distance_m": 980.0,
+            "end_distance_m": 1180.0,
+            "action_time_loss_s": 0.25,
+            "action_channels": ["throttle"],
+            "throttle_event_sequence": {
+                "status": "VALID",
+                "sequence_items": [
+                    _profile_sequence_item(
+                        reference_event_id,
+                        comparison_event_id,
+                    )
+                ],
+            },
+            "throttle_onset_point_comparison": {
+                "status": "VALID",
+                "throttle_pair_id": f"{reference_event_id}|{comparison_event_id}",
+                "reference_event_id": reference_event_id,
+                "comparison_event_id": comparison_event_id,
+                "reference_onset_m": 1000.0,
+                "comparison_onset_m": 1010.0,
+                "comparison_minus_reference_m": 10.0,
+                "relative_direction": "later_in_comparison_lap",
+                "coaching_direction": "earlier",
+                "coaching_magnitude_m": 10,
+                "authorized_numeric_coaching": True,
+            },
+            "throttle_release_point_comparison": {
+                "status": "VALID",
+                "throttle_pair_id": f"{reference_event_id}|{comparison_event_id}",
+                "reference_event_id": reference_event_id,
+                "comparison_event_id": comparison_event_id,
+                "reference_release_m": 1150.0,
+                "comparison_release_m": 1162.0,
+                "comparison_minus_reference_m": 12.0,
+                "relative_direction": "later_in_comparison_lap",
+                "coaching_direction": "earlier",
+                "coaching_magnitude_m": 12,
+                "authorized_numeric_coaching": True,
+            },
+            "throttle_full_throttle_attainment_comparison": {
+                "status": "VALID",
+                "throttle_pair_id": f"{reference_event_id}|{comparison_event_id}",
+                "reference_event_id": reference_event_id,
+                "comparison_event_id": comparison_event_id,
+                "reference_attainment_confirmed": True,
+                "comparison_attainment_confirmed": True,
+                "reference_attainment_m": 1030.0,
+                "comparison_attainment_m": 1045.0,
+                "comparison_minus_reference_m": 15.0,
+                "relative_direction": "later_in_comparison_lap",
+                "authorized_numeric_coaching": False,
+                "observational_only": True,
+            },
+            "throttle_partial_lift_comparison": {
+                "status": "VALID",
+                "throttle_pair_id": f"{reference_event_id}|{comparison_event_id}",
+                "reference_event_id": reference_event_id,
+                "comparison_event_id": comparison_event_id,
+                "reference_partial_lift_count": 1,
+                "comparison_partial_lift_count": 2,
+                "count_difference": 1,
+                "reference_partial_lifts": [],
+                "comparison_partial_lifts": [],
+                "authorized_numeric_coaching": False,
+                "observational_only": True,
+            },
+            "throttle_sustained_modulation_comparison": {
+                "status": "VALID",
+                "reference_modulation_count": 0,
+                "comparison_modulation_count": 1,
+                "count_difference": 1,
+                "reference_modulations": [],
+                "comparison_modulations": [
+                    {
+                        "throttle_event_id": comparison_event_id,
+                        "classification": "deep_and_long",
+                        "start_distance_m": 1070.0,
+                        "recovery_distance_m": 1140.0,
+                    }
+                ],
+                "paired_event_context": [
+                    {
+                        "throttle_pair_id": f"{reference_event_id}|{comparison_event_id}",
+                        "reference_event_id": reference_event_id,
+                        "comparison_event_id": comparison_event_id,
+                        "reference_modulation_count": 0,
+                        "comparison_modulation_count": 1,
+                        "pair_cost": 2.0,
+                    }
+                ],
+                "observational_only": True,
+                "affects_ranking": False,
+                "authorized_coaching": False,
+            },
+        }
+
+    def profile_unifies_features_same_event():
+        analysis = {
+            "comparisons": [
+                {
+                    "reference_lap": 4,
+                    "comparison_lap": 3,
+                    "objective_analysis": {
+                        "driver_action_episode_ranking": [
+                            _profile_episode()
+                        ]
+                    },
+                }
+            ]
+        }
+        result = physical_profile.build_throttle_physical_point_profiles(
+            analysis
+        )
+        assert_equal(result["physical_point_count"], 1, "point count")
+        profile = result["profiles"][0]
+        assert_equal(profile["reference_event_id"], "throttle_a:01", "event id")
+        assert_equal(
+            profile["reference_event"]["onset_distance_m"],
+            1000.0,
+            "reference onset",
+        )
+        for feature in physical_profile.FEATURE_ORDER:
+            assert_equal(
+                profile["features"][feature]["observation_count"],
+                1,
+                f"{feature} observation count",
+            )
+        assert_equal(profile["authorized_coaching"], False, "profile coaching")
+
+    runner.run(
+        "one physical event unifies sequence/onset/release/full/lift/modulation",
+        profile_unifies_features_same_event,
+    )
+
+    def profile_keeps_two_events_separate():
+        first = _profile_episode("throttle_a:01")
+        second = _profile_episode("throttle_a:02")
+        second["episode_id"] = 2
+        second["global_rank"] = 2
+        second["zone_id"] = 8
+        second["throttle_event_sequence"]["sequence_items"][0] = (
+            _profile_sequence_item(
+                "throttle_a:02",
+                "throttle_b:02",
+                onset_m=1500.0,
+            )
+        )
+        for field in (
+            "throttle_onset_point_comparison",
+            "throttle_release_point_comparison",
+            "throttle_full_throttle_attainment_comparison",
+            "throttle_partial_lift_comparison",
+        ):
+            second[field]["reference_event_id"] = "throttle_a:02"
+            second[field]["comparison_event_id"] = "throttle_b:02"
+        second["throttle_sustained_modulation_comparison"][
+            "paired_event_context"
+        ][0]["reference_event_id"] = "throttle_a:02"
+        second["throttle_sustained_modulation_comparison"][
+            "paired_event_context"
+        ][0]["comparison_event_id"] = "throttle_b:02"
+        second["throttle_sustained_modulation_comparison"][
+            "comparison_modulations"
+        ][0]["throttle_event_id"] = "throttle_b:02"
+
+        analysis = {
+            "comparisons": [
+                {
+                    "reference_lap": 4,
+                    "comparison_lap": 3,
+                    "objective_analysis": {
+                        "driver_action_episode_ranking": [first, second]
+                    },
+                }
+            ]
+        }
+        result = physical_profile.build_throttle_physical_point_profiles(
+            analysis
+        )
+        assert_equal(result["physical_point_count"], 2, "point count")
+        assert_equal(
+            [p["reference_event_id"] for p in result["profiles"]],
+            ["throttle_a:01", "throttle_a:02"],
+            "physical identities",
+        )
+
+    runner.run(
+        "two reference throttle events remain separate physical profiles",
+        profile_keeps_two_events_separate,
+    )
+
+    def profile_attaches_existing_recurrence():
+        event_id = "throttle_a:08"
+        common = {
+            "reference_lap": 4,
+            "reference_event_id": event_id,
+            "is_repeated": True,
+            "recurrence_status": "REPEATED_CONSISTENT",
+            "support_count": 2,
+            "observational_only": True,
+            "authorized_coaching": False,
+        }
+        analysis = {
+            "comparisons": [],
+            "full_throttle_attainment_recurrence": {
+                "patterns": [dict(common, selected_direction="later_in_comparison_lap")]
+            },
+            "throttle_modulation_recurrence": {
+                "partial_lift": {
+                    "patterns": [dict(common, selected_state="additional_in_comparison")]
+                },
+                "sustained_throttle_modulation": {
+                    "patterns": [dict(common, selected_state="additional_in_comparison")]
+                },
+            },
+        }
+        result = physical_profile.build_throttle_physical_point_profiles(
+            analysis
+        )
+        assert_equal(result["physical_point_count"], 1, "point count")
+        profile = result["profiles"][0]
+        assert_equal(
+            profile["repeated_observational_feature_count"],
+            3,
+            "repeated feature count",
+        )
+        assert_equal(
+            profile["recurrence"]["full_throttle_attainment"]["support_count"],
+            2,
+            "full recurrence attached",
+        )
+        assert_equal(
+            profile["recurrence"]["partial_lift"]["support_count"],
+            2,
+            "partial recurrence attached",
+        )
+        assert_equal(
+            profile["recurrence"]["sustained_throttle_modulation"]["support_count"],
+            2,
+            "sustained recurrence attached",
+        )
+
+    runner.run(
+        "existing recurrence blocks attach by reference_event_id",
+        profile_attaches_existing_recurrence,
+    )
+
+    def profile_comparison_only_not_promoted():
+        analysis = {
+            "comparisons": [
+                {
+                    "reference_lap": 4,
+                    "comparison_lap": 3,
+                    "objective_analysis": {
+                        "driver_action_episode_ranking": [
+                            {
+                                "episode_id": 1,
+                                "global_rank": 1,
+                                "zone_id": 1,
+                                "start_distance_m": 100.0,
+                                "end_distance_m": 200.0,
+                                "action_channels": ["throttle"],
+                                "throttle_event_sequence": {
+                                    "status": "VALID",
+                                    "sequence_items": [
+                                        {
+                                            "pair_status": "COMPARISON_ONLY_IN_EPISODE",
+                                            "reference_event": None,
+                                            "comparison_event": {
+                                                "event_id": "throttle_b:99",
+                                                "onset_distance_m": 120.0,
+                                            },
+                                        }
+                                    ],
+                                },
+                            }
+                        ]
+                    },
+                }
+            ]
+        }
+        result = physical_profile.build_throttle_physical_point_profiles(
+            analysis
+        )
+        assert_equal(result["physical_point_count"], 0, "point count")
+        assert_equal(
+            result["comparison_only_sequence_event_observation_count"],
+            1,
+            "comparison-only count",
+        )
+
+    runner.run(
+        "comparison-only sequence event is not promoted to reference profile",
+        profile_comparison_only_not_promoted,
+    )
+
+    def profile_duplicate_assignment_dedup():
+        result = {
+            "status": "VALID",
+            "throttle_pair_id": "throttle_a:03|throttle_b:03",
+            "reference_event_id": "throttle_a:03",
+            "comparison_event_id": "throttle_b:03",
+            "reference_onset_m": 500.0,
+            "comparison_onset_m": 520.0,
+            "comparison_minus_reference_m": 20.0,
+            "relative_direction": "later_in_comparison_lap",
+            "authorized_numeric_coaching": True,
+        }
+        episodes = []
+        for index in (1, 2):
+            episodes.append({
+                "episode_id": index,
+                "global_rank": index,
+                "zone_id": index,
+                "start_distance_m": 480.0,
+                "end_distance_m": 550.0,
+                "action_time_loss_s": 0.2 / index,
+                "action_channels": ["throttle"],
+                "throttle_onset_point_comparison": dict(result),
+            })
+        analysis = {
+            "comparisons": [
+                {
+                    "reference_lap": 4,
+                    "comparison_lap": 3,
+                    "objective_analysis": {
+                        "driver_action_episode_ranking": episodes,
+                    },
+                }
+            ]
+        }
+        profile = physical_profile.build_throttle_physical_point_profiles(
+            analysis
+        )["profiles"][0]
+        onset = profile["features"]["onset"]
+        assert_equal(onset["observation_count"], 1, "observation count")
+        assert_equal(
+            onset["observations"][0]["duplicate_episode_count"],
+            1,
+            "duplicate count",
+        )
+        assert_equal(
+            onset["observations"][0]["duplicate_conflict"],
+            False,
+            "duplicate conflict",
+        )
+
+    runner.run(
+        "duplicate episode assignment cannot duplicate profile evidence",
+        profile_duplicate_assignment_dedup,
+    )
+
+    def profile_enrichment_preserves_session_decisions():
+        analysis = {
+            "metadata": {"sentinel": "keep"},
+            "next_session_priorities": [
+                {"priority": "A", "sentinel": 1}
+            ],
+            "comparisons": [
+                {
+                    "reference_lap": 4,
+                    "comparison_lap": 3,
+                    "objective_analysis": {
+                        "driver_action_episode_ranking": [
+                            _profile_episode()
+                        ],
+                    },
+                }
+            ],
+        }
+        before_priorities = [dict(x) for x in analysis["next_session_priorities"]]
+        before_ids = [
+            episode["episode_id"]
+            for episode in analysis["comparisons"][0]["objective_analysis"][
+                "driver_action_episode_ranking"
+            ]
+        ]
+        physical_profile.enrich_analysis_with_throttle_physical_point_profiles(
+            analysis
+        )
+        after_ids = [
+            episode["episode_id"]
+            for episode in analysis["comparisons"][0]["objective_analysis"][
+                "driver_action_episode_ranking"
+            ]
+        ]
+        assert_equal(after_ids, before_ids, "ranking order")
+        assert_equal(
+            analysis["next_session_priorities"],
+            before_priorities,
+            "session priorities",
+        )
+        assert_equal(analysis["metadata"]["sentinel"], "keep", "metadata")
+        config = analysis["throttle_physical_point_profiles"]["config"]
+        assert_equal(config["affects_ranking"], False, "affects ranking")
+        assert_equal(
+            config["affects_session_priority"],
+            False,
+            "affects session priority",
+        )
+        assert_equal(
+            config["authorizes_new_coaching"],
+            False,
+            "new coaching",
+        )
+
+    runner.run(
+        "profile enrichment preserves ranking/session priorities",
+        profile_enrichment_preserves_session_decisions,
     )
 
     # ========================================================

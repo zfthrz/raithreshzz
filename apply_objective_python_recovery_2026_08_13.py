@@ -4,7 +4,7 @@ import shutil
 import sys
 
 
-RECOVERY_PATCH_VERSION = "2026.08.13-v4"
+RECOVERY_PATCH_VERSION = "2026.08.13-v5"
 
 BRAKE_IMPORT = (
     "from braking_point_v2_1 import enrich_objective_with_braking_points\n"
@@ -27,6 +27,10 @@ RECURRENCE_IMPORT = (
 MODULATION_RECURRENCE_IMPORT = (
     "from throttle_modulation_recurrence_v1_0 import "
     "enrich_analysis_with_throttle_modulation_recurrence\n"
+)
+PROFILE_IMPORT = (
+    "from throttle_physical_point_profile_v1_0 import "
+    "enrich_analysis_with_throttle_physical_point_profiles\n"
 )
 
 IMPORT_ANCHOR = (
@@ -84,6 +88,12 @@ CANONICAL_SESSION_HOOKS = """        # Recurrencia de full-throttle attainment e
             analysis_output,
         )
 
+        # Perfil unificado por punto físico de acelerador.
+        # Sólo reúne hechos ya detectados; no modifica decisiones.
+        enrich_analysis_with_throttle_physical_point_profiles(
+            analysis_output,
+        )
+
 """
 
 GLOBAL_VALIDATION_ANCHOR = """        # ====================================================
@@ -98,6 +108,7 @@ TARGET_IMPORTS = (
     SUSTAINED_IMPORT,
     RECURRENCE_IMPORT,
     MODULATION_RECURRENCE_IMPORT,
+    PROFILE_IMPORT,
 )
 
 HOOK_NAMES = (
@@ -110,6 +121,7 @@ HOOK_NAMES = (
 SESSION_HOOK_NAMES = (
     "enrich_analysis_with_full_throttle_attainment_recurrence",
     "enrich_analysis_with_throttle_modulation_recurrence",
+    "enrich_analysis_with_throttle_physical_point_profiles",
 )
 
 
@@ -127,6 +139,8 @@ def _remove_versioned_imports(text):
         r"enrich_analysis_with_full_throttle_attainment_recurrence\s*$",
         r"^from\s+throttle_modulation_recurrence[^\s]*\s+import\s+"
         r"enrich_analysis_with_throttle_modulation_recurrence\s*$",
+        r"^from\s+throttle_physical_point_profile[^\s]*\s+import\s+"
+        r"enrich_analysis_with_throttle_physical_point_profiles\s*$",
     )
 
     for pattern in patterns:
@@ -200,6 +214,7 @@ def patch_text(original):
         + SUSTAINED_IMPORT
         + RECURRENCE_IMPORT
         + MODULATION_RECURRENCE_IMPORT
+        + PROFILE_IMPORT
     )
 
     # Normalizar el espacio vertical alrededor del bloque de imports para
@@ -411,6 +426,9 @@ def main():
     )
     print(
         "  Throttle Modulation Recurrence: 1.0"
+    )
+    print(
+        "  Throttle Physical Point Profile: 1.0"
     )
     print(
         "  LLM Analysis: NO MODIFICADO"

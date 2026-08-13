@@ -16,6 +16,7 @@ from throttle_episode_sequence_v1_0 import enrich_objective_with_throttle_event_
 from throttle_sustained_modulation_v1_0 import enrich_objective_with_sustained_throttle_modulations
 from full_throttle_recurrence_v1_0 import enrich_analysis_with_full_throttle_attainment_recurrence
 from throttle_modulation_recurrence_v1_0 import enrich_analysis_with_throttle_modulation_recurrence
+from throttle_physical_point_profile_v1_0 import enrich_analysis_with_throttle_physical_point_profiles
 
 from vehicle_context import extract_lmu_context_from_duckdb
 
@@ -3391,6 +3392,12 @@ def main():
 
         # Recurrencia de full-throttle attainment entre vueltas.
         # Observacional: no modifica ranking, prioridad ni coaching.
+
+        # Recurrencia de partial lifts y modulaciones sostenidas.
+        # Observacional: no modifica ranking, prioridad ni coaching.
+
+        # Recurrencia de full-throttle attainment entre vueltas.
+        # Observacional: no modifica ranking, prioridad ni coaching.
         enrich_analysis_with_full_throttle_attainment_recurrence(
             analysis_output,
         )
@@ -3398,6 +3405,12 @@ def main():
         # Recurrencia de partial lifts y modulaciones sostenidas.
         # Observacional: no modifica ranking, prioridad ni coaching.
         enrich_analysis_with_throttle_modulation_recurrence(
+            analysis_output,
+        )
+
+        # Perfil unificado por punto físico de acelerador.
+        # Sólo reúne hechos ya detectados; no modifica decisiones.
+        enrich_analysis_with_throttle_physical_point_profiles(
             analysis_output,
         )
 

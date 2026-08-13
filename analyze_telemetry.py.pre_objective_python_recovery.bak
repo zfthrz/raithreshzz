@@ -10,10 +10,6 @@ from telemetry import Telemetry
 from laps import LapAnalyzer
 from delta_comparison import DeltaComparison
 from sector_analysis import SectorAnalysis
-from braking_point_v2_1 import enrich_objective_with_braking_points
-from throttle_point_v1_2_1 import enrich_objective_with_throttle_points
-from throttle_episode_sequence_v1_0 import enrich_objective_with_throttle_event_sequences
-
 from vehicle_context import extract_lmu_context_from_duckdb
 
 
@@ -3061,29 +3057,6 @@ def main():
                 zones,
                 real_delta,
                 comparison,
-            )
-
-            # Punto de frenada determinista (braking_point_v2_1.py).
-            # Sólo enriquece episodios; no modifica ranking ni deltas.
-            enrich_objective_with_braking_points(
-                comparison,
-                objective_analysis,
-            )
-
-            # Puntos de acelerador deterministas
-            # (throttle_point_v1_2_1.py).
-            # Onset/release mantienen la lógica 1.1; full-throttle y
-            # partial-lift son observacionales.
-            enrich_objective_with_throttle_points(
-                comparison,
-                objective_analysis,
-            )
-
-            # Secuencia física de eventos de acelerador por episodio.
-            # Observacional: no modifica ranking ni coaching.
-            enrich_objective_with_throttle_event_sequences(
-                comparison,
-                objective_analysis,
             )
 
             loss_ranking = objective_analysis[

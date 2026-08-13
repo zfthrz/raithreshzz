@@ -15,6 +15,7 @@ from throttle_point_v1_2_1 import enrich_objective_with_throttle_points
 from throttle_episode_sequence_v1_0 import enrich_objective_with_throttle_event_sequences
 from throttle_sustained_modulation_v1_0 import enrich_objective_with_sustained_throttle_modulations
 from full_throttle_recurrence_v1_0 import enrich_analysis_with_full_throttle_attainment_recurrence
+from throttle_modulation_recurrence_v1_0 import enrich_analysis_with_throttle_modulation_recurrence
 
 from vehicle_context import extract_lmu_context_from_duckdb
 
@@ -3387,7 +3388,16 @@ def main():
 
         # Recurrencia de full-throttle attainment entre vueltas.
         # Observacional: no modifica ranking, prioridad ni coaching.
+
+        # Recurrencia de full-throttle attainment entre vueltas.
+        # Observacional: no modifica ranking, prioridad ni coaching.
         enrich_analysis_with_full_throttle_attainment_recurrence(
+            analysis_output,
+        )
+
+        # Recurrencia de partial lifts y modulaciones sostenidas.
+        # Observacional: no modifica ranking, prioridad ni coaching.
+        enrich_analysis_with_throttle_modulation_recurrence(
             analysis_output,
         )
 

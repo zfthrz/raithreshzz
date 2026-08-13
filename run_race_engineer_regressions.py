@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 
 
-SUITE_VERSION = "1.2"
+SUITE_VERSION = "1.3"
 
 
 class RegressionFailure(Exception):
@@ -200,6 +200,9 @@ def main():
     recurrence = load_local_module(
         "full_throttle_recurrence_v1_0"
     )
+    modulation_recurrence = load_local_module(
+        "throttle_modulation_recurrence_v1_0"
+    )
     recovery = load_local_module(
         "apply_objective_python_recovery_2026_08_13"
     )
@@ -342,6 +345,46 @@ def main():
             ),
             assert_equal(
                 recurrence.full_throttle_recurrence_config_summary()[
+                    "authorizes_coaching"
+                ],
+                False,
+                "authorizes_coaching",
+            ),
+        ),
+    )
+
+    runner.run(
+        "Throttle modulation recurrence = 1.0 / session observational",
+        lambda: (
+            assert_equal(
+                modulation_recurrence.THROTTLE_MODULATION_RECURRENCE_VERSION,
+                "1.0",
+                "THROTTLE_MODULATION_RECURRENCE_VERSION",
+            ),
+            assert_equal(
+                modulation_recurrence.THROTTLE_MODULATION_RECURRENCE_SCHEMA_VERSION,
+                "1.0",
+                "THROTTLE_MODULATION_RECURRENCE_SCHEMA_VERSION",
+            ),
+            assert_equal(
+                modulation_recurrence
+                .throttle_modulation_recurrence_config_summary()[
+                    "observational_only"
+                ],
+                True,
+                "observational_only",
+            ),
+            assert_equal(
+                modulation_recurrence
+                .throttle_modulation_recurrence_config_summary()[
+                    "affects_session_priority"
+                ],
+                False,
+                "affects_session_priority",
+            ),
+            assert_equal(
+                modulation_recurrence
+                .throttle_modulation_recurrence_config_summary()[
                     "authorizes_coaching"
                 ],
                 False,
@@ -1606,6 +1649,505 @@ def main():
     runner.run(
         "session recurrence enrichment preserves comparisons/ranking",
         recurrence_enrichment_preserves_session,
+    )
+
+    # ========================================================
+    # THROTTLE MODULATION RECURRENCE 1.0
+    # ========================================================
+    section("THROTTLE MODULATION RECURRENCE 1.0")
+
+    def _partial_result(
+        reference_event_id,
+        reference_count,
+        comparison_count,
+        status="VALID",
+    ):
+        return {
+            "status": status,
+            "throttle_pair_id": f"{reference_event_id}|cmp",
+            "reference_event_id": reference_event_id,
+            "comparison_event_id": "cmp",
+            "reference_partial_lift_count": reference_count,
+            "comparison_partial_lift_count": comparison_count,
+            "count_difference": comparison_count - reference_count,
+            "comparison_has_additional_partial_lift": (
+                comparison_count > reference_count
+            ),
+            "comparison_has_fewer_partial_lifts": (
+                comparison_count < reference_count
+            ),
+            "reference_partial_lifts": [],
+            "comparison_partial_lifts": [],
+            "authorized_numeric_coaching": False,
+            "observational_only": True,
+        }
+
+    def _mod_comparison(
+        comparison_lap,
+        partial_results=None,
+        sustained_results=None,
+        reference_lap=4,
+    ):
+        partial_results = partial_results or []
+        sustained_results = sustained_results or []
+        count = max(len(partial_results), len(sustained_results))
+        episodes = []
+
+        for index in range(count):
+            episode = {
+                "episode_id": index + 1,
+                "global_rank": index + 1,
+                "zone_id": index + 1,
+                "start_distance_m": 1000.0 + index * 100.0,
+                "end_distance_m": 1080.0 + index * 100.0,
+                "action_time_loss_s": 0.2 / (index + 1),
+                "action_channels": ["throttle"],
+            }
+            if index < len(partial_results):
+                episode["throttle_partial_lift_comparison"] = (
+                    partial_results[index]
+                )
+            if index < len(sustained_results):
+                episode[
+                    "throttle_sustained_modulation_comparison"
+                ] = sustained_results[index]
+            episodes.append(episode)
+
+        return {
+            "reference_lap": reference_lap,
+            "comparison_lap": comparison_lap,
+            "objective_analysis": {
+                "driver_action_episode_ranking": episodes,
+            },
+        }
+
+    def partial_recurrence_repeated_additional():
+        comparisons = [
+            _mod_comparison(
+                3,
+                partial_results=[
+                    _partial_result("throttle_a:08", 0, 1)
+                ],
+            ),
+            _mod_comparison(
+                2,
+                partial_results=[
+                    _partial_result("throttle_a:08", 0, 2)
+                ],
+            ),
+            _mod_comparison(1),
+        ]
+
+        result = modulation_recurrence.build_partial_lift_recurrence(
+            comparisons
+        )
+        pattern = result["patterns"][0]
+        assert_equal(result["repeated_pattern_count"], 1, "repeated count")
+        assert_equal(
+            pattern["selected_state"],
+            "additional_in_comparison",
+            "selected state",
+        )
+        assert_equal(pattern["support_count"], 2, "support count")
+        assert_equal(pattern["count_difference_median"], 1.5, "median count")
+        assert_equal(pattern["missing_comparison_count"], 1, "missing count")
+        assert_equal(pattern["authorized_coaching"], False, "coaching")
+
+    runner.run(
+        "partial lift repeated additional count across comparisons",
+        partial_recurrence_repeated_additional,
+    )
+
+    def partial_recurrence_fewer_with_neutral():
+        comparisons = [
+            _mod_comparison(
+                3,
+                partial_results=[
+                    _partial_result("throttle_a:05", 1, 0)
+                ],
+            ),
+            _mod_comparison(
+                2,
+                partial_results=[
+                    _partial_result("throttle_a:05", 1, 1)
+                ],
+            ),
+            _mod_comparison(
+                1,
+                partial_results=[
+                    _partial_result("throttle_a:05", 2, 1)
+                ],
+            ),
+        ]
+        result = modulation_recurrence.build_partial_lift_recurrence(
+            comparisons
+        )
+        pattern = result["patterns"][0]
+        assert_equal(pattern["is_repeated"], True, "is repeated")
+        assert_equal(
+            pattern["selected_state"],
+            "fewer_in_comparison",
+            "selected state",
+        )
+        assert_equal(
+            pattern["neutral_same_count_observation_count"],
+            1,
+            "neutral count",
+        )
+        assert_equal(
+            pattern["recurrence_status"],
+            "REPEATED_CONSISTENT",
+            "status",
+        )
+
+    runner.run(
+        "partial lift neutral same-count evidence is not contradiction",
+        partial_recurrence_fewer_with_neutral,
+    )
+
+    def partial_recurrence_mixed_not_repeated():
+        comparisons = [
+            _mod_comparison(
+                3,
+                partial_results=[
+                    _partial_result("throttle_a:04", 0, 1)
+                ],
+            ),
+            _mod_comparison(
+                2,
+                partial_results=[
+                    _partial_result("throttle_a:04", 1, 0)
+                ],
+            ),
+        ]
+        pattern = modulation_recurrence.build_partial_lift_recurrence(
+            comparisons
+        )["patterns"][0]
+        assert_equal(pattern["is_repeated"], False, "is repeated")
+        assert_equal(pattern["recurrence_status"], "NOT_REPEATED", "status")
+        assert_equal(
+            pattern["state_counts"],
+            {
+                "additional_in_comparison": 1,
+                "fewer_in_comparison": 1,
+            },
+            "state counts",
+        )
+
+    runner.run(
+        "partial lift mixed additional/fewer evidence is not promoted",
+        partial_recurrence_mixed_not_repeated,
+    )
+
+    def partial_recurrence_duplicate_dedup():
+        repeated = _partial_result("throttle_a:09", 0, 1)
+        comparisons = [
+            _mod_comparison(
+                3,
+                partial_results=[dict(repeated), dict(repeated)],
+            ),
+            _mod_comparison(
+                2,
+                partial_results=[
+                    _partial_result("throttle_a:09", 0, 1)
+                ],
+            ),
+        ]
+        pattern = modulation_recurrence.build_partial_lift_recurrence(
+            comparisons
+        )["patterns"][0]
+        assert_equal(pattern["support_count"], 2, "support count")
+        assert_equal(
+            pattern["valid_observation_count"],
+            2,
+            "valid observations",
+        )
+        assert_true(
+            max(
+                row["duplicate_episode_count"]
+                for row in pattern["observations"]
+            ) == 1,
+            "duplicate recorded",
+        )
+
+    runner.run(
+        "partial lift duplicate episode assignment cannot inflate recurrence",
+        partial_recurrence_duplicate_dedup,
+    )
+
+    def _sustained_result(
+        reference_event_id,
+        reference_classes,
+        comparison_classes,
+        comparison_event_id="cmp",
+    ):
+        reference_records = [
+            {
+                "sustained_modulation_id": f"ref:{index}",
+                "classification": classification,
+                "throttle_event_id": reference_event_id,
+                "start_distance_m": 1000.0 + index * 5.0,
+                "recovery_distance_m": 1080.0 + index * 5.0,
+                "observational_only": True,
+            }
+            for index, classification in enumerate(
+                reference_classes,
+                start=1,
+            )
+        ]
+        comparison_records = [
+            {
+                "sustained_modulation_id": f"cmp:{index}",
+                "classification": classification,
+                "throttle_event_id": comparison_event_id,
+                "start_distance_m": 1000.0 + index * 5.0,
+                "recovery_distance_m": 1080.0 + index * 5.0,
+                "observational_only": True,
+            }
+            for index, classification in enumerate(
+                comparison_classes,
+                start=1,
+            )
+        ]
+        return {
+            "status": "VALID",
+            "reference_modulation_count": len(reference_records),
+            "comparison_modulation_count": len(comparison_records),
+            "count_difference": (
+                len(comparison_records) - len(reference_records)
+            ),
+            "comparison_has_additional_sustained_modulation": (
+                len(comparison_records) > len(reference_records)
+            ),
+            "comparison_has_fewer_sustained_modulations": (
+                len(comparison_records) < len(reference_records)
+            ),
+            "reference_modulations": reference_records,
+            "comparison_modulations": comparison_records,
+            "paired_event_context": [
+                {
+                    "throttle_pair_id": (
+                        f"{reference_event_id}|{comparison_event_id}"
+                    ),
+                    "reference_event_id": reference_event_id,
+                    "comparison_event_id": comparison_event_id,
+                    "reference_modulation_count": len(reference_records),
+                    "comparison_modulation_count": len(comparison_records),
+                    "pair_cost": 10.0,
+                }
+            ],
+            "observational_only": True,
+            "affects_ranking": False,
+            "authorized_coaching": False,
+        }
+
+    def sustained_recurrence_additional_classification():
+        comparisons = [
+            _mod_comparison(
+                3,
+                sustained_results=[
+                    _sustained_result(
+                        "throttle_a:06",
+                        [],
+                        ["deep_and_long"],
+                    )
+                ],
+            ),
+            _mod_comparison(
+                2,
+                sustained_results=[
+                    _sustained_result(
+                        "throttle_a:06",
+                        [],
+                        ["deep_and_long"],
+                    )
+                ],
+            ),
+            _mod_comparison(1),
+        ]
+        result = (
+            modulation_recurrence
+            .build_sustained_throttle_modulation_recurrence(comparisons)
+        )
+        pattern = result["patterns"][0]
+        assert_equal(pattern["is_repeated"], True, "is repeated")
+        assert_equal(
+            pattern["selected_state"],
+            "additional_in_comparison",
+            "selected state",
+        )
+        assert_equal(
+            pattern["dominant_classification"],
+            "deep_and_long",
+            "dominant classification",
+        )
+        assert_equal(
+            pattern["dominant_classification_support_count"],
+            2,
+            "classification support",
+        )
+        assert_equal(
+            pattern["repeated_classification"],
+            True,
+            "repeated classification",
+        )
+
+    runner.run(
+        "sustained modulation repeated additional state preserves type",
+        sustained_recurrence_additional_classification,
+    )
+
+    def sustained_recurrence_fewer():
+        comparisons = [
+            _mod_comparison(
+                3,
+                sustained_results=[
+                    _sustained_result(
+                        "throttle_a:10",
+                        ["long"],
+                        [],
+                    )
+                ],
+            ),
+            _mod_comparison(
+                2,
+                sustained_results=[
+                    _sustained_result(
+                        "throttle_a:10",
+                        ["long"],
+                        [],
+                    )
+                ],
+            ),
+        ]
+        pattern = (
+            modulation_recurrence
+            .build_sustained_throttle_modulation_recurrence(comparisons)
+            ["patterns"][0]
+        )
+        assert_equal(
+            pattern["selected_state"],
+            "fewer_in_comparison",
+            "selected state",
+        )
+        assert_equal(pattern["support_count"], 2, "support count")
+        assert_equal(pattern["dominant_classification"], "long", "class")
+        assert_equal(pattern["classification_consistent"], True, "consistent")
+
+    runner.run(
+        "sustained modulation repeated fewer state uses reference type",
+        sustained_recurrence_fewer,
+    )
+
+    def sustained_recurrence_mixed_not_repeated():
+        comparisons = [
+            _mod_comparison(
+                3,
+                sustained_results=[
+                    _sustained_result(
+                        "throttle_a:12",
+                        [],
+                        ["deep"],
+                    )
+                ],
+            ),
+            _mod_comparison(
+                2,
+                sustained_results=[
+                    _sustained_result(
+                        "throttle_a:12",
+                        ["deep"],
+                        [],
+                    )
+                ],
+            ),
+        ]
+        pattern = (
+            modulation_recurrence
+            .build_sustained_throttle_modulation_recurrence(comparisons)
+            ["patterns"][0]
+        )
+        assert_equal(pattern["is_repeated"], False, "is repeated")
+        assert_equal(pattern["recurrence_status"], "NOT_REPEATED", "status")
+
+    runner.run(
+        "sustained modulation mixed additional/fewer is not promoted",
+        sustained_recurrence_mixed_not_repeated,
+    )
+
+    def sustained_duplicate_and_enrichment_preserve_session():
+        repeated = _sustained_result(
+            "throttle_a:14",
+            [],
+            ["deep_and_long"],
+        )
+        analysis = {
+            "metadata": {"sentinel": "keep"},
+            "comparisons": [
+                _mod_comparison(
+                    3,
+                    sustained_results=[dict(repeated), dict(repeated)],
+                ),
+                _mod_comparison(
+                    2,
+                    sustained_results=[
+                        _sustained_result(
+                            "throttle_a:14",
+                            [],
+                            ["deep_and_long"],
+                        )
+                    ],
+                ),
+            ],
+        }
+        before = [
+            [
+                episode["episode_id"]
+                for episode in comparison["objective_analysis"][
+                    "driver_action_episode_ranking"
+                ]
+            ]
+            for comparison in analysis["comparisons"]
+        ]
+
+        modulation_recurrence.enrich_analysis_with_throttle_modulation_recurrence(
+            analysis
+        )
+
+        after = [
+            [
+                episode["episode_id"]
+                for episode in comparison["objective_analysis"][
+                    "driver_action_episode_ranking"
+                ]
+            ]
+            for comparison in analysis["comparisons"]
+        ]
+        pattern = analysis["throttle_modulation_recurrence"][
+            "sustained_throttle_modulation"
+        ]["patterns"][0]
+        assert_equal(after, before, "episode ranking")
+        assert_equal(analysis["metadata"]["sentinel"], "keep", "metadata")
+        assert_equal(pattern["support_count"], 2, "support count")
+        assert_equal(pattern["valid_observation_count"], 2, "valid count")
+        assert_true(
+            max(
+                row["duplicate_episode_count"]
+                for row in pattern["observations"]
+            ) == 1,
+            "duplicate recorded",
+        )
+        config = analysis["throttle_modulation_recurrence"]["config"]
+        assert_equal(config["affects_ranking"], False, "affects ranking")
+        assert_equal(
+            config["affects_session_priority"],
+            False,
+            "affects session priority",
+        )
+
+    runner.run(
+        "sustained recurrence dedups and session enrichment preserves ranking",
+        sustained_duplicate_and_enrichment_preserve_session,
     )
 
     # ========================================================

@@ -4,7 +4,7 @@ import shutil
 import sys
 
 
-RECOVERY_PATCH_VERSION = "2026.08.13-v3"
+RECOVERY_PATCH_VERSION = "2026.08.13-v4"
 
 BRAKE_IMPORT = (
     "from braking_point_v2_1 import enrich_objective_with_braking_points\n"
@@ -23,6 +23,10 @@ SUSTAINED_IMPORT = (
 RECURRENCE_IMPORT = (
     "from full_throttle_recurrence_v1_0 import "
     "enrich_analysis_with_full_throttle_attainment_recurrence\n"
+)
+MODULATION_RECURRENCE_IMPORT = (
+    "from throttle_modulation_recurrence_v1_0 import "
+    "enrich_analysis_with_throttle_modulation_recurrence\n"
 )
 
 IMPORT_ANCHOR = (
@@ -68,9 +72,15 @@ CANONICAL_HOOKS = """
             )
 """
 
-CANONICAL_SESSION_HOOK = """        # Recurrencia de full-throttle attainment entre vueltas.
+CANONICAL_SESSION_HOOKS = """        # Recurrencia de full-throttle attainment entre vueltas.
         # Observacional: no modifica ranking, prioridad ni coaching.
         enrich_analysis_with_full_throttle_attainment_recurrence(
+            analysis_output,
+        )
+
+        # Recurrencia de partial lifts y modulaciones sostenidas.
+        # Observacional: no modifica ranking, prioridad ni coaching.
+        enrich_analysis_with_throttle_modulation_recurrence(
             analysis_output,
         )
 
@@ -87,6 +97,7 @@ TARGET_IMPORTS = (
     SEQUENCE_IMPORT,
     SUSTAINED_IMPORT,
     RECURRENCE_IMPORT,
+    MODULATION_RECURRENCE_IMPORT,
 )
 
 HOOK_NAMES = (
@@ -96,8 +107,9 @@ HOOK_NAMES = (
     "enrich_objective_with_sustained_throttle_modulations",
 )
 
-SESSION_HOOK_NAME = (
-    "enrich_analysis_with_full_throttle_attainment_recurrence"
+SESSION_HOOK_NAMES = (
+    "enrich_analysis_with_full_throttle_attainment_recurrence",
+    "enrich_analysis_with_throttle_modulation_recurrence",
 )
 
 
@@ -113,6 +125,8 @@ def _remove_versioned_imports(text):
         r"enrich_objective_with_sustained_throttle_modulations\s*$",
         r"^from\s+full_throttle_recurrence[^\s]*\s+import\s+"
         r"enrich_analysis_with_full_throttle_attainment_recurrence\s*$",
+        r"^from\s+throttle_modulation_recurrence[^\s]*\s+import\s+"
+        r"enrich_analysis_with_throttle_modulation_recurrence\s*$",
     )
 
     for pattern in patterns:
@@ -145,24 +159,26 @@ def _remove_hook_calls(text):
     return text
 
 
-def _remove_session_hook_call(text):
+def _remove_session_hook_calls(text):
     text = text.replace(
-        CANONICAL_SESSION_HOOK,
+        CANONICAL_SESSION_HOOKS,
         "",
     )
 
-    pattern = re.compile(
-        r"\n(?P<indent>[ \t]*)"
-        + re.escape(SESSION_HOOK_NAME)
-        + r"\(\n"
-        r"(?P=indent)[ \t]+analysis_output,\n"
-        r"(?P=indent)\)\n"
-    )
+    for name in SESSION_HOOK_NAMES:
+        pattern = re.compile(
+            r"\n(?P<indent>[ \t]*)"
+            + re.escape(name)
+            + r"\(\n"
+            r"(?P=indent)[ \t]+analysis_output,\n"
+            r"(?P=indent)\)\n"
+        )
+        text = pattern.sub(
+            "\n",
+            text,
+        )
 
-    return pattern.sub(
-        "\n",
-        text,
-    )
+    return text
 
 
 def patch_text(original):
@@ -183,6 +199,7 @@ def patch_text(original):
         + SEQUENCE_IMPORT
         + SUSTAINED_IMPORT
         + RECURRENCE_IMPORT
+        + MODULATION_RECURRENCE_IMPORT
     )
 
     # Normalizar el espacio vertical alrededor del bloque de imports para
@@ -222,7 +239,7 @@ def patch_text(original):
         1,
     )
 
-    text = _remove_session_hook_call(
+    text = _remove_session_hook_calls(
         text
     )
 
@@ -233,7 +250,7 @@ def patch_text(original):
 
     text = text.replace(
         GLOBAL_VALIDATION_ANCHOR,
-        CANONICAL_SESSION_HOOK + GLOBAL_VALIDATION_ANCHOR,
+        CANONICAL_SESSION_HOOKS + GLOBAL_VALIDATION_ANCHOR,
         1,
     )
 
@@ -270,13 +287,14 @@ def verify_text(text):
                 f"hook {hook_name} aparece {count} veces"
             )
 
-    session_count = text.count(
-        SESSION_HOOK_NAME + "("
-    )
-    if session_count != 1:
-        errors.append(
-            f"hook {SESSION_HOOK_NAME} aparece {session_count} veces"
+    for session_hook_name in SESSION_HOOK_NAMES:
+        session_count = text.count(
+            session_hook_name + "("
         )
+        if session_count != 1:
+            errors.append(
+                f"hook {session_hook_name} aparece {session_count} veces"
+            )
 
     return errors
 
@@ -390,6 +408,9 @@ def main():
     )
     print(
         "  Full Throttle Attainment Recurrence: 1.0"
+    )
+    print(
+        "  Throttle Modulation Recurrence: 1.0"
     )
     print(
         "  LLM Analysis: NO MODIFICADO"

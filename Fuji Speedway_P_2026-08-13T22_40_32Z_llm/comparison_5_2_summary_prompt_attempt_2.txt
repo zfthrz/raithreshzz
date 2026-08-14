@@ -26,5 +26,11 @@ Ejemplo de FORMA:
 {"comparison_observations":["observación cualitativa apoyada por evaluaciones validadas"],"limitations":["la causa no puede determinarse con la evidencia disponible"],"conclusion":"síntesis cualitativa sin cifras"}
 
 
+REINTENTO OBLIGATORIO
+La respuesta anterior violó el contrato.
+Tipos de error:
+["grounding"]
+Regenerá el objeto raíz COMPLETO desde cero.
+
 
 Respondé únicamente con el objeto JSON completo.

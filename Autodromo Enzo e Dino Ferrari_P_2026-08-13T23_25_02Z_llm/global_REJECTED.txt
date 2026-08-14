@@ -1,0 +1,24 @@
+VALIDATION ERRORS
+=================
+limitations[1]: menciona dominio no observado (estabilidad/dinámica del vehículo).
+
+RAW RESPONSE
+============
+{
+  "opportunities": [
+    "En la zona A, reducí la magnitud de dirección/volante, aumentá la aplicación del freno y reducí el acelerador hacia la referencia. Primero freno, después acelerador.",
+    "En la zona B, aumentá la magnitud de dirección/volante hacia la referencia y replicá la secuencia y modulación del acelerador de la referencia.",
+    "En la zona C, aumentá la magnitud de dirección/volante hacia la referencia y replicá la secuencia y modulación del acelerador de la referencia."
+  ],
+  "repeated_observations": [
+    "En la zona A, se observó repetidamente mayor magnitud de dirección/volante, menos freno y más acelerador.",
+    "En la zona B, se observó repetidamente menor magnitud de dirección/volante y modulación distinta del acelerador.",
+    "En la zona C, se observó repetidamente menor magnitud de dirección/volante y modulación distinta del acelerador."
+  ],
+  "hypotheses": [],
+  "limitations": [
+    "No se puede determinar con certeza si la modulación del acelerador en la zona B influyó en la velocidad observada.",
+    "No se puede determinar con certeza si la magnitud de dirección/volante en la zona C afectó la estabilidad del vehículo."
+  ],
+  "conclusion": "En la próxima tanda, priorizá la zona A reduciendo la magnitud de dirección/volante, aumentando el freno y reduciendo el acelerador. En la zona B, ajustá la magnitud de dirección/volante y replicá la modulación del acelerador. En la zona C, ajustá la magnitud de dirección/volante y replicá la modulación del acelerador."
+}

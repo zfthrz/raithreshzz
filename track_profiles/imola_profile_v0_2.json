@@ -1,0 +1,470 @@
+{
+  "schema_version": 1,
+  "profile_id": "imola-lmu-19turn-v0.2",
+  "status": "VALIDATED_MULTI_SESSION",
+  "track": "Autodromo Enzo e Dino Ferrari",
+  "layout": "Autodromo Enzo e Dino Ferrari",
+  "distance_coordinate": "LMU Lap Dist",
+  "calibration": {
+    "source_session": "Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z",
+    "source_lap_internal_index": 2,
+    "source_lap_time_s_approx": 95.0,
+    "source_lap_dist_max_m": 4892.011727376877,
+    "source_gps_path_m_approx": 4869.830951363537,
+    "geometry_method": "GPS trajectory + signed curvature + LMU/RaceControl 19-turn sequence constrained calibration",
+    "numbering_scheme": "LMU/RaceControl Imola 19-turn numbering",
+    "requires_cross_session_validation": false,
+    "validation_status": "PASS",
+    "numbering_note": "FIA WEC lists the venue as 21 turns; the LMU/RaceControl guide uses 19 numbered turns. This profile deliberately uses the LMU convention.",
+    "validation_summary": {
+      "calibration_session": {
+        "session": "Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z",
+        "lap_internal_index": 2,
+        "lap_dist_max_m": 4892.011727376877
+      },
+      "independent_sessions": [
+        {
+          "session": "Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_34_47Z",
+          "lap_internal_index": 5,
+          "lap_time_s_approx": 95.5,
+          "lap_dist_max_m": 4892.078934744666,
+          "gps_path_m_approx": 4872.809596023837,
+          "method": "same-direction nearest local extremum on signed curvature; 2 m resampling, 20 m heading window, 14 m smoothing",
+          "apex_pass_tolerance_m": 35.0,
+          "apex_warning_tolerance_m": 70.0,
+          "pass_count": 19,
+          "warning_count": 0,
+          "failure_count": 0,
+          "median_abs_offset_m": 4.0,
+          "max_abs_offset_m": 22.0,
+          "overall_status": "PASS",
+          "turn_results": [
+            {
+              "turn": 1,
+              "name": "Turn 1",
+              "direction": "left",
+              "expected_apex_m": 600.0,
+              "observed_apex_m": 582.0,
+              "offset_m": -18.0,
+              "observed_signed_curvature_rad_per_m": 0.0021546314626243396,
+              "status": "PASS"
+            },
+            {
+              "turn": 2,
+              "name": "Variante Tamburello",
+              "direction": "left",
+              "expected_apex_m": 694.0,
+              "observed_apex_m": 702.0,
+              "offset_m": 8.0,
+              "observed_signed_curvature_rad_per_m": 0.011819763752876522,
+              "status": "PASS"
+            },
+            {
+              "turn": 3,
+              "name": "Variante Tamburello",
+              "direction": "right",
+              "expected_apex_m": 756.0,
+              "observed_apex_m": 758.0,
+              "offset_m": 2.0,
+              "observed_signed_curvature_rad_per_m": -0.01039529474084507,
+              "status": "PASS"
+            },
+            {
+              "turn": 4,
+              "name": "Variante Tamburello",
+              "direction": "left",
+              "expected_apex_m": 892.0,
+              "observed_apex_m": 888.0,
+              "offset_m": -4.0,
+              "observed_signed_curvature_rad_per_m": 0.00816512316220873,
+              "status": "PASS"
+            },
+            {
+              "turn": 5,
+              "name": "Variante Villeneuve",
+              "direction": "left",
+              "expected_apex_m": 1312.0,
+              "observed_apex_m": 1334.0,
+              "offset_m": 22.0,
+              "observed_signed_curvature_rad_per_m": 0.010216166834601569,
+              "status": "PASS"
+            },
+            {
+              "turn": 6,
+              "name": "Variante Villeneuve",
+              "direction": "right",
+              "expected_apex_m": 1418.0,
+              "observed_apex_m": 1418.0,
+              "offset_m": 0.0,
+              "observed_signed_curvature_rad_per_m": -0.011793232473716405,
+              "status": "PASS"
+            },
+            {
+              "turn": 7,
+              "name": "Tosa",
+              "direction": "left",
+              "expected_apex_m": 1716.0,
+              "observed_apex_m": 1720.0,
+              "offset_m": 4.0,
+              "observed_signed_curvature_rad_per_m": 0.030395372827292124,
+              "status": "PASS"
+            },
+            {
+              "turn": 8,
+              "name": "Turn 8",
+              "direction": "right",
+              "expected_apex_m": 2074.0,
+              "observed_apex_m": 2084.0,
+              "offset_m": 10.0,
+              "observed_signed_curvature_rad_per_m": -0.0034744538781730228,
+              "status": "PASS"
+            },
+            {
+              "turn": 9,
+              "name": "Piratella",
+              "direction": "left",
+              "expected_apex_m": 2316.0,
+              "observed_apex_m": 2306.0,
+              "offset_m": -10.0,
+              "observed_signed_curvature_rad_per_m": 0.011358995648368323,
+              "status": "PASS"
+            },
+            {
+              "turn": 10,
+              "name": "Turn 10",
+              "direction": "left",
+              "expected_apex_m": 2508.0,
+              "observed_apex_m": 2506.0,
+              "offset_m": -2.0,
+              "observed_signed_curvature_rad_per_m": 0.003922732826729576,
+              "status": "PASS"
+            },
+            {
+              "turn": 11,
+              "name": "Acque Minerali",
+              "direction": "right",
+              "expected_apex_m": 2708.0,
+              "observed_apex_m": 2708.0,
+              "offset_m": 0.0,
+              "observed_signed_curvature_rad_per_m": -0.007231237141261183,
+              "status": "PASS"
+            },
+            {
+              "turn": 12,
+              "name": "Acque Minerali",
+              "direction": "right",
+              "expected_apex_m": 2844.0,
+              "observed_apex_m": 2838.0,
+              "offset_m": -6.0,
+              "observed_signed_curvature_rad_per_m": -0.017836293000973794,
+              "status": "PASS"
+            },
+            {
+              "turn": 13,
+              "name": "Acque Minerali",
+              "direction": "left",
+              "expected_apex_m": 2908.0,
+              "observed_apex_m": 2904.0,
+              "offset_m": -4.0,
+              "observed_signed_curvature_rad_per_m": 0.006362906300839392,
+              "status": "PASS"
+            },
+            {
+              "turn": 14,
+              "name": "Gresini",
+              "direction": "right",
+              "expected_apex_m": 3336.0,
+              "observed_apex_m": 3342.0,
+              "offset_m": 6.0,
+              "observed_signed_curvature_rad_per_m": -0.017292135890077942,
+              "status": "PASS"
+            },
+            {
+              "turn": 15,
+              "name": "Gresini",
+              "direction": "left",
+              "expected_apex_m": 3378.0,
+              "observed_apex_m": 3382.0,
+              "offset_m": 4.0,
+              "observed_signed_curvature_rad_per_m": 0.021229228702781225,
+              "status": "PASS"
+            },
+            {
+              "turn": 16,
+              "name": "Turn 16",
+              "direction": "right",
+              "expected_apex_m": 3954.0,
+              "observed_apex_m": 3958.0,
+              "offset_m": 4.0,
+              "observed_signed_curvature_rad_per_m": -0.0032604625010955613,
+              "status": "PASS"
+            },
+            {
+              "turn": 17,
+              "name": "Rivazza 1",
+              "direction": "left",
+              "expected_apex_m": 4124.0,
+              "observed_apex_m": 4138.0,
+              "offset_m": 14.0,
+              "observed_signed_curvature_rad_per_m": 0.018891753371728253,
+              "status": "PASS"
+            },
+            {
+              "turn": 18,
+              "name": "Rivazza 2",
+              "direction": "left",
+              "expected_apex_m": 4242.0,
+              "observed_apex_m": 4244.0,
+              "offset_m": 2.0,
+              "observed_signed_curvature_rad_per_m": 0.014244003669253146,
+              "status": "PASS"
+            },
+            {
+              "turn": 19,
+              "name": "Turn 19",
+              "direction": "right",
+              "expected_apex_m": 4598.0,
+              "observed_apex_m": 4598.0,
+              "offset_m": 0.0,
+              "observed_signed_curvature_rad_per_m": -0.0031318729135130477,
+              "status": "PASS"
+            }
+          ]
+        }
+      ],
+      "interpretation": "0 direction failures. All 19 LMU-numbered turns passed the ±35 m apex tolerance in the independent session. Median absolute offset 4 m; maximum absolute offset 22 m. Interval mapping remains the authoritative location primitive."
+    }
+  },
+  "turns": [
+    {
+      "turn": 1,
+      "name": "Turn 1",
+      "aliases": [
+        "main-straight left kink"
+      ],
+      "group": "Turn 1",
+      "direction": "left",
+      "start_m": 500.0,
+      "apex_m": 600.0,
+      "end_m": 640.0
+    },
+    {
+      "turn": 2,
+      "name": "Variante Tamburello",
+      "aliases": [
+        "Tamburello"
+      ],
+      "group": "Variante Tamburello",
+      "direction": "left",
+      "start_m": 640.0,
+      "apex_m": 694.0,
+      "end_m": 730.0
+    },
+    {
+      "turn": 3,
+      "name": "Variante Tamburello",
+      "aliases": [
+        "Tamburello"
+      ],
+      "group": "Variante Tamburello",
+      "direction": "right",
+      "start_m": 730.0,
+      "apex_m": 756.0,
+      "end_m": 820.0
+    },
+    {
+      "turn": 4,
+      "name": "Variante Tamburello",
+      "aliases": [
+        "Tamburello"
+      ],
+      "group": "Variante Tamburello",
+      "direction": "left",
+      "start_m": 820.0,
+      "apex_m": 892.0,
+      "end_m": 980.0
+    },
+    {
+      "turn": 5,
+      "name": "Variante Villeneuve",
+      "aliases": [
+        "Villeneuve"
+      ],
+      "group": "Variante Villeneuve",
+      "direction": "left",
+      "start_m": 1260.0,
+      "apex_m": 1312.0,
+      "end_m": 1370.0
+    },
+    {
+      "turn": 6,
+      "name": "Variante Villeneuve",
+      "aliases": [
+        "Villeneuve"
+      ],
+      "group": "Variante Villeneuve",
+      "direction": "right",
+      "start_m": 1370.0,
+      "apex_m": 1418.0,
+      "end_m": 1480.0
+    },
+    {
+      "turn": 7,
+      "name": "Tosa",
+      "aliases": [
+        "Curva Tosa"
+      ],
+      "group": "Tosa",
+      "direction": "left",
+      "start_m": 1650.0,
+      "apex_m": 1716.0,
+      "end_m": 1770.0
+    },
+    {
+      "turn": 8,
+      "name": "Turn 8",
+      "aliases": [
+        "Piratella approach kink"
+      ],
+      "group": "Piratella",
+      "direction": "right",
+      "start_m": 2000.0,
+      "apex_m": 2074.0,
+      "end_m": 2200.0
+    },
+    {
+      "turn": 9,
+      "name": "Piratella",
+      "aliases": [
+        "Curva Piratella"
+      ],
+      "group": "Piratella",
+      "direction": "left",
+      "start_m": 2250.0,
+      "apex_m": 2316.0,
+      "end_m": 2400.0
+    },
+    {
+      "turn": 10,
+      "name": "Turn 10",
+      "aliases": [
+        "Piratella exit kink"
+      ],
+      "group": "Piratella",
+      "direction": "left",
+      "start_m": 2400.0,
+      "apex_m": 2508.0,
+      "end_m": 2580.0
+    },
+    {
+      "turn": 11,
+      "name": "Acque Minerali",
+      "aliases": [],
+      "group": "Acque Minerali",
+      "direction": "right",
+      "start_m": 2660.0,
+      "apex_m": 2708.0,
+      "end_m": 2790.0
+    },
+    {
+      "turn": 12,
+      "name": "Acque Minerali",
+      "aliases": [],
+      "group": "Acque Minerali",
+      "direction": "right",
+      "start_m": 2790.0,
+      "apex_m": 2844.0,
+      "end_m": 2885.0
+    },
+    {
+      "turn": 13,
+      "name": "Acque Minerali",
+      "aliases": [],
+      "group": "Acque Minerali",
+      "direction": "left",
+      "start_m": 2885.0,
+      "apex_m": 2908.0,
+      "end_m": 2990.0
+    },
+    {
+      "turn": 14,
+      "name": "Gresini",
+      "aliases": [
+        "Variante Alta",
+        "Curva Gresini"
+      ],
+      "group": "Gresini",
+      "direction": "right",
+      "start_m": 3300.0,
+      "apex_m": 3336.0,
+      "end_m": 3360.0
+    },
+    {
+      "turn": 15,
+      "name": "Gresini",
+      "aliases": [
+        "Variante Alta",
+        "Curva Gresini"
+      ],
+      "group": "Gresini",
+      "direction": "left",
+      "start_m": 3360.0,
+      "apex_m": 3378.0,
+      "end_m": 3430.0
+    },
+    {
+      "turn": 16,
+      "name": "Turn 16",
+      "aliases": [
+        "Rivazza approach kink"
+      ],
+      "group": "Rivazza approach",
+      "direction": "right",
+      "start_m": 3860.0,
+      "apex_m": 3954.0,
+      "end_m": 4010.0
+    },
+    {
+      "turn": 17,
+      "name": "Rivazza 1",
+      "aliases": [
+        "Rivazza"
+      ],
+      "group": "Rivazza",
+      "direction": "left",
+      "start_m": 4080.0,
+      "apex_m": 4124.0,
+      "end_m": 4190.0
+    },
+    {
+      "turn": 18,
+      "name": "Rivazza 2",
+      "aliases": [
+        "Rivazza"
+      ],
+      "group": "Rivazza",
+      "direction": "left",
+      "start_m": 4190.0,
+      "apex_m": 4242.0,
+      "end_m": 4330.0
+    },
+    {
+      "turn": 19,
+      "name": "Turn 19",
+      "aliases": [
+        "main-straight right kink"
+      ],
+      "group": "Final straight",
+      "direction": "right",
+      "start_m": 4430.0,
+      "apex_m": 4598.0,
+      "end_m": 4700.0
+    }
+  ],
+  "display_policy": {
+    "prefer_corner_name": true,
+    "turn_number_is_secondary": false,
+    "turn_number_suffix": "LMU",
+    "always_preserve_lmu_distance_m": true
+  }
+}

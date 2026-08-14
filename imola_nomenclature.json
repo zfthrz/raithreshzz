@@ -1,0 +1,181 @@
+{
+  "schema_version": 1,
+  "track": "Autodromo Enzo e Dino Ferrari",
+  "canonical_name": "Autodromo Internazionale Enzo e Dino Ferrari",
+  "official_length_m": 4909,
+  "numbering_scheme": "LMU_RACECONTROL_19_TURN",
+  "numbering_policy": {
+    "primary": "Use the 19-turn numbering used by the Le Mans Ultimate/RaceControl track guide.",
+    "wec_count_note": "FIA WEC event material advertises Imola as 21 turns (12 left / 9 right). That is a different corner-count convention and is not used for LMU turn labels in this profile.",
+    "detector_note": "The --turn-count value used by detect_track_turns.py is only a geometric peak-selection count; candidate_number is never treated as an official turn number."
+  },
+  "turns": [
+    {
+      "turn": 1,
+      "name": "Turn 1",
+      "aliases": [
+        "main-straight left kink"
+      ],
+      "group": "Turn 1",
+      "direction": "left"
+    },
+    {
+      "turn": 2,
+      "name": "Variante Tamburello",
+      "aliases": [
+        "Tamburello"
+      ],
+      "group": "Variante Tamburello",
+      "direction": "left"
+    },
+    {
+      "turn": 3,
+      "name": "Variante Tamburello",
+      "aliases": [
+        "Tamburello"
+      ],
+      "group": "Variante Tamburello",
+      "direction": "right"
+    },
+    {
+      "turn": 4,
+      "name": "Variante Tamburello",
+      "aliases": [
+        "Tamburello"
+      ],
+      "group": "Variante Tamburello",
+      "direction": "left"
+    },
+    {
+      "turn": 5,
+      "name": "Variante Villeneuve",
+      "aliases": [
+        "Villeneuve"
+      ],
+      "group": "Variante Villeneuve",
+      "direction": "left"
+    },
+    {
+      "turn": 6,
+      "name": "Variante Villeneuve",
+      "aliases": [
+        "Villeneuve"
+      ],
+      "group": "Variante Villeneuve",
+      "direction": "right"
+    },
+    {
+      "turn": 7,
+      "name": "Tosa",
+      "aliases": [
+        "Curva Tosa"
+      ],
+      "group": "Tosa",
+      "direction": "left"
+    },
+    {
+      "turn": 8,
+      "name": "Turn 8",
+      "aliases": [
+        "Piratella approach kink"
+      ],
+      "group": "Piratella",
+      "direction": "right"
+    },
+    {
+      "turn": 9,
+      "name": "Piratella",
+      "aliases": [
+        "Curva Piratella"
+      ],
+      "group": "Piratella",
+      "direction": "left"
+    },
+    {
+      "turn": 10,
+      "name": "Turn 10",
+      "aliases": [
+        "Piratella exit kink"
+      ],
+      "group": "Piratella",
+      "direction": "left"
+    },
+    {
+      "turn": 11,
+      "name": "Acque Minerali",
+      "aliases": [],
+      "group": "Acque Minerali",
+      "direction": "right"
+    },
+    {
+      "turn": 12,
+      "name": "Acque Minerali",
+      "aliases": [],
+      "group": "Acque Minerali",
+      "direction": "right"
+    },
+    {
+      "turn": 13,
+      "name": "Acque Minerali",
+      "aliases": [],
+      "group": "Acque Minerali",
+      "direction": "left"
+    },
+    {
+      "turn": 14,
+      "name": "Gresini",
+      "aliases": [
+        "Variante Alta",
+        "Curva Gresini"
+      ],
+      "group": "Gresini",
+      "direction": "right"
+    },
+    {
+      "turn": 15,
+      "name": "Gresini",
+      "aliases": [
+        "Variante Alta",
+        "Curva Gresini"
+      ],
+      "group": "Gresini",
+      "direction": "left"
+    },
+    {
+      "turn": 16,
+      "name": "Turn 16",
+      "aliases": [
+        "Rivazza approach kink"
+      ],
+      "group": "Rivazza approach",
+      "direction": "right"
+    },
+    {
+      "turn": 17,
+      "name": "Rivazza 1",
+      "aliases": [
+        "Rivazza"
+      ],
+      "group": "Rivazza",
+      "direction": "left"
+    },
+    {
+      "turn": 18,
+      "name": "Rivazza 2",
+      "aliases": [
+        "Rivazza"
+      ],
+      "group": "Rivazza",
+      "direction": "left"
+    },
+    {
+      "turn": 19,
+      "name": "Turn 19",
+      "aliases": [
+        "main-straight right kink"
+      ],
+      "group": "Final straight",
+      "direction": "right"
+    }
+  ]
+}

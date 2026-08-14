@@ -1,0 +1,230 @@
+{
+  "source_csv": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\track_exports\\Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_track_gps.csv",
+  "algorithm": {
+    "step_m": 2.0,
+    "heading_window_m": 20.0,
+    "smooth_window_m": 14.0,
+    "min_separation_m": 45.0,
+    "threshold_percentile": 0.7,
+    "global_abs_curvature_threshold_rad_per_m": 0.0036278409105387887,
+    "requested_turn_count": 21
+  },
+  "track_distance_range_m": [
+    0.0,
+    4892.011727376877
+  ],
+  "candidate_count": 21,
+  "candidates": [
+    {
+      "candidate_number": 1,
+      "start_distance_m": 650.0,
+      "center_distance_m": 694.0,
+      "end_distance_m": 808.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.014910870500950092,
+      "mean_abs_curvature_rad_per_m": 0.010429592608348165,
+      "estimated_heading_change_deg": 6.064409790429804
+    },
+    {
+      "candidate_number": 2,
+      "start_distance_m": 642.0,
+      "center_distance_m": 756.0,
+      "end_distance_m": 812.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.014910870500950092,
+      "mean_abs_curvature_rad_per_m": 0.009980954322975173,
+      "estimated_heading_change_deg": 6.752193455777055
+    },
+    {
+      "candidate_number": 3,
+      "start_distance_m": 826.0,
+      "center_distance_m": 858.0,
+      "end_distance_m": 960.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.007640970790454017,
+      "mean_abs_curvature_rad_per_m": 0.005663080565694331,
+      "estimated_heading_change_deg": 43.888391162561575
+    },
+    {
+      "candidate_number": 4,
+      "start_distance_m": 826.0,
+      "center_distance_m": 930.0,
+      "end_distance_m": 960.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.007640970790454017,
+      "mean_abs_curvature_rad_per_m": 0.005663080565694331,
+      "estimated_heading_change_deg": 43.888391162561575
+    },
+    {
+      "candidate_number": 5,
+      "start_distance_m": 1268.0,
+      "center_distance_m": 1312.0,
+      "end_distance_m": 1470.0,
+      "direction": "right",
+      "peak_abs_curvature_rad_per_m": 0.014856921545896264,
+      "mean_abs_curvature_rad_per_m": 0.0082561785035761,
+      "estimated_heading_change_deg": -30.48150357220026
+    },
+    {
+      "candidate_number": 6,
+      "start_distance_m": 1374.0,
+      "center_distance_m": 1418.0,
+      "end_distance_m": 1462.0,
+      "direction": "right",
+      "peak_abs_curvature_rad_per_m": 0.014856921545896264,
+      "mean_abs_curvature_rad_per_m": 0.011706719601867081,
+      "estimated_heading_change_deg": -60.56359355872343
+    },
+    {
+      "candidate_number": 7,
+      "start_distance_m": 1662.0,
+      "center_distance_m": 1716.0,
+      "end_distance_m": 1754.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.034898961673846284,
+      "mean_abs_curvature_rad_per_m": 0.024666510463209564,
+      "estimated_heading_change_deg": 132.21642776846826
+    },
+    {
+      "candidate_number": 8,
+      "start_distance_m": 2060.0,
+      "center_distance_m": 2074.0,
+      "end_distance_m": 2104.0,
+      "direction": "right",
+      "peak_abs_curvature_rad_per_m": 0.0035248094047613224,
+      "mean_abs_curvature_rad_per_m": 0.002972396754901831,
+      "estimated_heading_change_deg": -7.795863482872906
+    },
+    {
+      "candidate_number": 9,
+      "start_distance_m": 2260.0,
+      "center_distance_m": 2316.0,
+      "end_distance_m": 2538.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.011592768756566032,
+      "mean_abs_curvature_rad_per_m": 0.006630251690051842,
+      "estimated_heading_change_deg": 106.04876778480852
+    },
+    {
+      "candidate_number": 10,
+      "start_distance_m": 2256.0,
+      "center_distance_m": 2364.0,
+      "end_distance_m": 2552.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.011592768756566032,
+      "mean_abs_curvature_rad_per_m": 0.006418261002241265,
+      "estimated_heading_change_deg": 109.44712922238517
+    },
+    {
+      "candidate_number": 11,
+      "start_distance_m": 2254.0,
+      "center_distance_m": 2452.0,
+      "end_distance_m": 2558.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.011592768756566032,
+      "mean_abs_curvature_rad_per_m": 0.006317194403474403,
+      "estimated_heading_change_deg": 110.71235766062816
+    },
+    {
+      "candidate_number": 12,
+      "start_distance_m": 2254.0,
+      "center_distance_m": 2508.0,
+      "end_distance_m": 2558.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.011592768756566032,
+      "mean_abs_curvature_rad_per_m": 0.006317194403474403,
+      "estimated_heading_change_deg": 110.71235766062816
+    },
+    {
+      "candidate_number": 13,
+      "start_distance_m": 2668.0,
+      "center_distance_m": 2708.0,
+      "end_distance_m": 2946.0,
+      "direction": "right",
+      "peak_abs_curvature_rad_per_m": 0.023185647082523946,
+      "mean_abs_curvature_rad_per_m": 0.00837957803607822,
+      "estimated_heading_change_deg": -101.64877622999342
+    },
+    {
+      "candidate_number": 14,
+      "start_distance_m": 2800.0,
+      "center_distance_m": 2844.0,
+      "end_distance_m": 2876.0,
+      "direction": "right",
+      "peak_abs_curvature_rad_per_m": 0.023185647082523946,
+      "mean_abs_curvature_rad_per_m": 0.016262405044039474,
+      "estimated_heading_change_deg": -73.35251104874669
+    },
+    {
+      "candidate_number": 15,
+      "start_distance_m": 2668.0,
+      "center_distance_m": 2908.0,
+      "end_distance_m": 2946.0,
+      "direction": "right",
+      "peak_abs_curvature_rad_per_m": 0.023185647082523946,
+      "mean_abs_curvature_rad_per_m": 0.00837957803607822,
+      "estimated_heading_change_deg": -101.64877622999342
+    },
+    {
+      "candidate_number": 16,
+      "start_distance_m": 3314.0,
+      "center_distance_m": 3378.0,
+      "end_distance_m": 3420.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.0218520509358716,
+      "mean_abs_curvature_rad_per_m": 0.015652452208451618,
+      "estimated_heading_change_deg": 21.05163232166764
+    },
+    {
+      "candidate_number": 17,
+      "start_distance_m": 3904.0,
+      "center_distance_m": 3918.0,
+      "end_distance_m": 3934.0,
+      "direction": "right",
+      "peak_abs_curvature_rad_per_m": 0.003424651905598116,
+      "mean_abs_curvature_rad_per_m": 0.002956243943449424,
+      "estimated_heading_change_deg": -5.277835254598496
+    },
+    {
+      "candidate_number": 18,
+      "start_distance_m": 3938.0,
+      "center_distance_m": 3976.0,
+      "end_distance_m": 3984.0,
+      "direction": "right",
+      "peak_abs_curvature_rad_per_m": 0.003649850761952875,
+      "mean_abs_curvature_rad_per_m": 0.00309091631762766,
+      "estimated_heading_change_deg": -8.511102229909406
+    },
+    {
+      "candidate_number": 19,
+      "start_distance_m": 4090.0,
+      "center_distance_m": 4124.0,
+      "end_distance_m": 4176.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.02111834488547595,
+      "mean_abs_curvature_rad_per_m": 0.016631192468302504,
+      "estimated_heading_change_deg": 83.92980094874348
+    },
+    {
+      "candidate_number": 20,
+      "start_distance_m": 4210.0,
+      "center_distance_m": 4242.0,
+      "end_distance_m": 4314.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.01750137730251882,
+      "mean_abs_curvature_rad_per_m": 0.013035457022704113,
+      "estimated_heading_change_deg": 79.29396490078477
+    },
+    {
+      "candidate_number": 21,
+      "start_distance_m": 4204.0,
+      "center_distance_m": 4292.0,
+      "end_distance_m": 4322.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.01750137730251882,
+      "mean_abs_curvature_rad_per_m": 0.012040815904624,
+      "estimated_heading_change_deg": 82.52985775727842
+    }
+  ],
+  "warning": "Estos son candidatos geométricos. No son nombres/números oficiales hasta completar la calibración contra una referencia verificada."
+}

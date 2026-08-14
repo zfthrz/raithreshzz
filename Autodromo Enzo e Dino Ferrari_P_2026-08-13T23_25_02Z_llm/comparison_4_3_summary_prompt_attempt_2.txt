@@ -1,0 +1,36 @@
+
+Sintetizá únicamente las evaluaciones ya validadas que siguen.
+No reinterpretes telemetría ni agregues conceptos nuevos.
+
+EVALUACIONES VALIDADAS:
+[{"classification":"PRIORITARIO","interpretation":"en la comparación, el freno fue menor y el acelerador fue mayor en relación con la referencia","hypotheses":["la modulación del freno podría contribuir a una reducción en la velocidad","la modulación del acelerador podría contribuir a una mayor velocidad"],"recommendation":"aumentá el uso del freno y reducí el uso del acelerador para acercarlos a la referencia"},{"classification":"PRIORITARIO","interpretation":"en la comparación, se observó una mayor magnitud de dirección/volante y una menor aplicación del acelerador en relación con la referencia","hypotheses":["la combinación de mayor dirección/volante y menor acelerador podría contribuir a la menor velocidad registrada"],"recommendation":"reducí la magnitud de dirección/volante y aumentá la aplicación del acelerador para acercar el comportamiento al de la referencia"},{"classification":"PRIORITARIO","interpretation":"en la comparación, el freno fue menor, la dirección/volante fue más intensa y el acelerador fue más elevado en relación con la referencia","hypotheses":["la reducción del freno podría contribuir a una menor deceleración en el tramo analizado","la mayor intensidad en la dirección/volante podría estar relacionada con una modulación diferente en la curva","la mayor elevación del acelerador podría estar vinculada a una diferente apertura del mismo en el tramo"],"recommendation":"aumentá el freno, reducí la intensidad de la dirección/volante y reducí el acelerador para acercarlos a los valores de la referencia"},{"classification":"SECUNDARIO","interpretation":"en la comparación, se aplicó más freno y menos acelerador en el mismo tramo de la pista en comparación con la referencia","hypotheses":["la modulación del freno podría contribuir a una reducción de velocidad en ese tramo","la menor aplicación del acelerador podría estar relacionada con la reducción de velocidad observada"],"recommendation":"reducí la presión del freno y aumentá la aplicación del acelerador en ese tramo para acercarse a la referencia"},{"classification":"SECUNDARIO","interpretation":"en la comparación, se observó una mayor magnitud en dirección/volante y en acelerador en relación con la referencia","hypotheses":[],"recommendation":"reducí la magnitud de dirección/volante y de acelerador durante la secuencia para acercarla a la referencia"},{"classification":"SECUNDARIO","interpretation":"en la comparación, se aplicó más freno y menos acelerador en el mismo tramo de la pista en comparación con la referencia","hypotheses":["la combinación de freno y acelerador podría contribuir a la diferencia de velocidad observada"],"recommendation":"reducí la aplicación del freno y aumentá la entrada del acelerador en ese tramo para acercar la ejecución a la referencia"}]
+
+CONTRATO JSON EXACTO:
+- comparison_observations: lista de strings;
+- limitations: lista de strings;
+- conclusion: string.
+
+Las listas pueden ser [].
+No escribas cifras.
+No agregues ni omitas claves.
+La conclusion debe resumir la acción de coaching más importante ya presente
+en las evaluaciones, no limitarse a decir que existen diferencias.
+Conservá verbos operativos como reducir, aumentar o replicar cuando estén
+respaldados por las recomendaciones validadas.
+No sustituyas una recomendación concreta por "revisar", "comparar",
+"ajustar", "trabajar" o "mejorar".
+Las limitaciones deben ser neutrales y referirse sólo a lo que no
+puede inferirse de la evidencia disponible.
+
+Ejemplo de FORMA:
+{"comparison_observations":["observación cualitativa apoyada por evaluaciones validadas"],"limitations":["la causa no puede determinarse con la evidencia disponible"],"conclusion":"síntesis cualitativa sin cifras"}
+
+
+REINTENTO OBLIGATORIO
+La respuesta anterior violó el contrato.
+Tipos de error:
+["grounding"]
+Regenerá el objeto raíz COMPLETO desde cero.
+
+
+Respondé únicamente con el objeto JSON completo.

@@ -1,0 +1,80 @@
+
+Redactá el coaching final de esta sesión a partir de esta ficha determinista.
+
+CIRCUITO:
+Autodromo Enzo e Dino Ferrari
+
+SESIÓN:
+P
+
+FICHA DE COACHING VALIDADA POR PYTHON:
+
+{"next_stint_plan":[{"zone_label":"A","kind":"repeated_region","observed_differences":["mayor magnitud de dirección/volante","menos freno","más acelerador"],"coaching_targets":["reducir la magnitud de dirección/volante hacia la referencia","aumentar la aplicación del freno hacia la referencia","reducir el acelerador hacia la referencia"],"input_sequence":["la relación entre freno y acelerador cambió entre comparaciones; no se trata como un patrón temporal repetido"],"braking_point_coaching":{"authorized":true,"direction":"later"},"brake_release_coaching":{"authorized":true,"direction":"later"},"throttle_onset_coaching":null,"throttle_release_coaching":{"authorized":true,"direction":"earlier"},"repeated_across_multiple_comparisons":true,"speed_context":"velocidad inferior a la referencia"},{"zone_label":"B","kind":"repeated_region","observed_differences":["menor magnitud de dirección/volante","modulación distinta del acelerador"],"coaching_targets":["aumentar la magnitud de dirección/volante hacia la referencia","replicar la secuencia y modulación del acelerador de la referencia"],"input_sequence":[],"braking_point_coaching":null,"brake_release_coaching":{"authorized":true,"direction":"earlier"},"throttle_onset_coaching":{"authorized":true,"direction":"earlier"},"throttle_release_coaching":null,"repeated_across_multiple_comparisons":true,"speed_context":"velocidad inferior a la referencia; velocidad superior a la referencia; el delta siguió empeorando después de terminar la acción"},{"zone_label":"C","kind":"repeated_region","observed_differences":["mayor magnitud de dirección/volante","modulación distinta del acelerador"],"coaching_targets":["reducir la magnitud de dirección/volante hacia la referencia","replicar la secuencia y modulación del acelerador de la referencia"],"input_sequence":[],"braking_point_coaching":null,"brake_release_coaching":null,"throttle_onset_coaching":null,"throttle_release_coaching":null,"repeated_across_multiple_comparisons":true,"speed_context":"velocidad inferior a la referencia; el delta siguió empeorando después de terminar la acción"}],"spatially_repeated_input_patterns":[{"zone_label":"A","description":"mayor magnitud de dirección/volante","target":"reducir la magnitud de dirección/volante hacia la referencia","repeated_in_same_region":true},{"zone_label":"A","description":"menos freno","target":"aumentar la aplicación del freno hacia la referencia","repeated_in_same_region":true},{"zone_label":"A","description":"más acelerador","target":"reducir el acelerador hacia la referencia","repeated_in_same_region":true},{"zone_label":"C","description":"menor magnitud de dirección/volante","target":"aumentar la magnitud de dirección/volante hacia la referencia","repeated_in_same_region":true},{"zone_label":"C","description":"modulación distinta del acelerador","target":"replicar la secuencia y modulación del acelerador de la referencia","repeated_in_same_region":true},{"zone_label":"B","description":"mayor magnitud de dirección/volante","target":"reducir la magnitud de dirección/volante hacia la referencia","repeated_in_same_region":true}]}
+
+ETIQUETAS DE ZONA DEL PLAN:
+A, B, C
+
+OBJETIVO DE CADA CAMPO:
+
+opportunities:
+- resumí los focos del next_stint_plan como acciones concretas;
+- no generalices a todo el circuito;
+- si mencionás una zona, usá sólo las etiquetas provistas por Python;
+- nombrá el input y conservá la dirección del coaching_target;
+- preferí "reducí", "aumentá" o "replicá" según indique Python;
+- si input_sequence no está vacío, conservá explícitamente el orden de esa
+  secuencia en la redacción;
+- no transformes una secuencia temporal en una lista plana de inputs;
+- evitá "revisar", "comparar" o "ajustar" sin una dirección concreta;
+- no inventes fase de curva ni nombre de curva.
+
+repeated_observations:
+- sólo declaralas si aparecen en spatially_repeated_input_patterns;
+- deben quedar explícitamente como repeticiones de una misma zona;
+- cada item debe conservar exactamente los observed_differences de ESA zona;
+- no traslades dirección/freno/acelerador desde otra zona;
+- no inviertas mayor/menor respecto de los hechos suministrados por Python;
+- no conviertas una repetición local en un defecto global de conducción.
+
+hypotheses:
+- opcional;
+- preferí lista vacía antes que una hipótesis genérica.
+
+limitations:
+- máximo dos;
+- incluí únicamente información que NO puede determinarse con la evidencia;
+- NO pongas aquí observaciones medidas como velocidad inferior/superior,
+  propagación del delta, diferencias de input o patrones repetidos;
+- no repitas varias veces que no puede probarse causalidad;
+- si no hay una limitación necesaria, devolvé la lista vacía;
+- no pidas análisis adicional de trayectoria, tracción, agarre, balance ni
+  dinámica del vehículo si esos dominios no están autorizados en la ficha.
+
+next_session_priorities:
+- NO devuelvas este campo; Python lo renderiza de forma determinista desde next_stint_plan.
+
+conclusion:
+- una conclusión corta y operativa;
+- empezá por la acción principal que el piloto debe probar en la próxima tanda;
+- debe resumir el plan de zonas prioritarias sin volver a narrar toda la evidencia;
+- no uses una conclusión genérica como "ajustar los inputs";
+- no debe pedir "más análisis".
+
+No escribas NINGUNA cifra ni magnitud numérica en tu respuesta.
+No escribas metros, segundos, porcentajes, cantidades ni identificadores numéricos.
+Tampoco escribas una magnitud con palabras.
+Las direcciones cualitativas "más temprano" y "más tarde" sí están permitidas.
+Python insertará después, de forma determinista, todas las cifras autorizadas
+en next_session_priorities y en el informe visible.
+
+
+RESPUESTA ANTERIOR RECHAZADA.
+
+CORRECCIONES OBLIGATORIAS INDICADAS POR EL VALIDATOR DE PYTHON:
+["Regenerá el objeto completo respetando estrictamente el contrato del validator. Categorías: grounding."]
+
+Regenerá el objeto JSON COMPLETO desde cero.
+Conservá todo lo que ya cumplía el contrato y corregí exactamente esos puntos.
+
+
+Respondé únicamente JSON válido con las claves exigidas por el schema.

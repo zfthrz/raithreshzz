@@ -1,0 +1,158 @@
+{
+  "source_file": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\telemetria\\Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z.duckdb",
+  "track_name": "Autodromo Enzo e Dino Ferrari",
+  "track_layout": "Autodromo Enzo e Dino Ferrari",
+  "selected_lap": 2,
+  "time_source": "GPS Time.value",
+  "lap_boundary_source": "Lap.ts",
+  "lap_distance_boundary_repairs": {
+    "1": {
+      "sample_index": 1174,
+      "original_lap_dist_m": 922.4599559948078,
+      "repaired_lap_dist_m": 0.0,
+      "next_sample_lap_dist_m": 4.920788210010603,
+      "reason": "boundary_linear_interpolation_across_lap_dist_reset"
+    },
+    "2": {
+      "sample_index": 2130,
+      "original_lap_dist_m": 1675.7673098283421,
+      "repaired_lap_dist_m": 0.0,
+      "next_sample_lap_dist_m": 6.502110140735048,
+      "reason": "boundary_linear_interpolation_across_lap_dist_reset"
+    },
+    "3": {
+      "sample_index": 3081,
+      "original_lap_dist_m": 2423.7756712601454,
+      "repaired_lap_dist_m": 0.0,
+      "next_sample_lap_dist_m": 5.9404730416216145,
+      "reason": "boundary_linear_interpolation_across_lap_dist_reset"
+    },
+    "4": {
+      "sample_index": 4028,
+      "original_lap_dist_m": 3165.908008626993,
+      "repaired_lap_dist_m": 0.0,
+      "next_sample_lap_dist_m": 2.6403907118964525,
+      "reason": "boundary_linear_interpolation_across_lap_dist_reset"
+    },
+    "5": {
+      "sample_index": 4965,
+      "original_lap_dist_m": 3905.6048802071286,
+      "repaired_lap_dist_m": 0.0,
+      "next_sample_lap_dist_m": 4.8008926777108405,
+      "reason": "boundary_linear_interpolation_across_lap_dist_reset"
+    }
+  },
+  "target_hz": 10.0,
+  "channel_modes": {
+    "GPS Time": {
+      "mode": "rowid",
+      "row_count": 49809,
+      "columns": [
+        "value"
+      ]
+    },
+    "GPS Latitude": {
+      "mode": "rowid",
+      "row_count": 4981,
+      "columns": [
+        "value"
+      ]
+    },
+    "GPS Longitude": {
+      "mode": "rowid",
+      "row_count": 4981,
+      "columns": [
+        "value"
+      ]
+    },
+    "Lap Dist": {
+      "mode": "rowid",
+      "row_count": 4981,
+      "columns": [
+        "value"
+      ]
+    }
+  },
+  "selected_lap_metrics": {
+    "sample_count": 951,
+    "duration_s": 95.0,
+    "gps_coverage": 1.0,
+    "gps_path_m": 4869.830951363537,
+    "lap_dist_min_m": 0.0,
+    "lap_dist_max_m": 4892.011727376877,
+    "lap_dist_span_m": 4892.011727376877
+  },
+  "exported_point_count": 951,
+  "bounds": {
+    "latitude_min": 59.992164611816406,
+    "latitude_max": 60.001220703125,
+    "longitude_min": -0.020591581497584322,
+    "longitude_max": 0.012085654011425235,
+    "x_east_min_m": -1145.1630774098444,
+    "x_east_max_m": 671.7356345614608,
+    "y_north_min_m": -879.5950128251884,
+    "y_north_max_m": 127.39778683592789,
+    "lap_distance_min_m": 0.0,
+    "lap_distance_max_m": 4892.011727376877
+  },
+  "laps": {
+    "0": {
+      "sample_count": 1174,
+      "duration_s": 117.30000000000003,
+      "gps_coverage": 1.0,
+      "gps_path_m": 4837.128294430008,
+      "lap_dist_min_m": 21.427445093994926,
+      "lap_dist_max_m": 4890.6382784894,
+      "lap_dist_span_m": 4869.210833395406
+    },
+    "1": {
+      "sample_count": 956,
+      "duration_s": 95.5,
+      "gps_coverage": 1.0,
+      "gps_path_m": 4868.378201784785,
+      "lap_dist_min_m": 0.0,
+      "lap_dist_max_m": 4892.545454780733,
+      "lap_dist_span_m": 4892.545454780733
+    },
+    "2": {
+      "sample_count": 951,
+      "duration_s": 95.0,
+      "gps_coverage": 1.0,
+      "gps_path_m": 4869.830951363537,
+      "lap_dist_min_m": 0.0,
+      "lap_dist_max_m": 4892.011727376877,
+      "lap_dist_span_m": 4892.011727376877
+    },
+    "3": {
+      "sample_count": 947,
+      "duration_s": 94.60000000000002,
+      "gps_coverage": 1.0,
+      "gps_path_m": 4862.225342116677,
+      "lap_dist_min_m": 0.0,
+      "lap_dist_max_m": 4888.75832532864,
+      "lap_dist_span_m": 4888.75832532864
+    },
+    "4": {
+      "sample_count": 937,
+      "duration_s": 93.60000000000002,
+      "gps_coverage": 1.0,
+      "gps_path_m": 4855.550314858056,
+      "lap_dist_min_m": 0.0,
+      "lap_dist_max_m": 4890.8958127333935,
+      "lap_dist_span_m": 4890.8958127333935
+    },
+    "5": {
+      "sample_count": 16,
+      "duration_s": 1.5,
+      "gps_coverage": 1.0,
+      "gps_path_m": 111.36971312252467,
+      "lap_dist_min_m": 0.0,
+      "lap_dist_max_m": 109.66529153345056,
+      "lap_dist_span_m": 109.66529153345056
+    }
+  },
+  "outputs": {
+    "csv": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\track_exports\\Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_track_gps.csv",
+    "geojson": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\track_exports\\Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_track_gps.geojson"
+  }
+}

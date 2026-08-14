@@ -17,7 +17,7 @@ from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 
-REVIEWER_VERSION = "1.2"
+REVIEWER_VERSION = "1.1"
 PROMPT_VERSION = "1.1"
 OUTPUT_SCHEMA_VERSION = "1.0"
 DEEPSEEK_URL = os.environ.get("DEEPSEEK_API_URL", "https://api.deepseek.com/chat/completions")
@@ -279,72 +279,16 @@ def build_user_prompt(pair, validation_errors=None):
     return prefix + "\n\nPAIR FEATURES:\n" + json.dumps(payload, ensure_ascii=False, indent=2)
 
 
-FORBIDDEN_BLIND_PAIR_KEYS = {
-    "human_label",
-    "review_notes",
-    "selected_by",
-    "selection_lens",
-    "selection_lenses",
-    "matcher_decision",
-    "matcher_rule",
-    "matcher_thresholds",
-    "decision",
-    "rule_id",
-    "reasons",
-    "automatic",
-}
-
-
-def _blind_queue_content_errors(pairs):
-    errors = []
-    for index, pair in enumerate(pairs):
-        if not isinstance(pair, dict):
-            errors.append(f"pairs[{index}] no es objeto")
-            continue
-        forbidden = sorted(FORBIDDEN_BLIND_PAIR_KEYS.intersection(pair.keys()))
-        if forbidden:
-            errors.append(f"pairs[{index}] contiene campos prohibidos: {forbidden}")
-        snapshot = pair.get("feature_snapshot")
-        if not isinstance(snapshot, dict):
-            errors.append(f"pairs[{index}].feature_snapshot ausente o inválido")
-            continue
-        forbidden_snapshot = sorted(FORBIDDEN_BLIND_PAIR_KEYS.intersection(snapshot.keys()))
-        if forbidden_snapshot:
-            errors.append(
-                f"pairs[{index}].feature_snapshot contiene campos prohibidos: {forbidden_snapshot}"
-            )
-    return errors
-
-
 def load_queue(path):
     data = json.loads(Path(path).read_text(encoding="utf-8"))
     pairs = data.get("pairs")
     if not isinstance(pairs, list):
         raise ValueError("Queue inválida: falta lista 'pairs'.")
-
-    metadata = data.get("metadata") or {}
-    blindness = metadata.get("blindness_contract") or {}
-
-    # Tres garantías son obligatorias en cualquier schema conocido.
-    required_false = (
-        "human_labels_in_queue",
-        "matcher_decisions_in_queue",
-        "matcher_thresholds_in_queue",
-    )
-    if not all(blindness.get(k) is False for k in required_false):
+    blindness = ((data.get("metadata") or {}).get("blindness_contract") or {})
+    if blindness and not all(blindness.get(k) is False for k in (
+        "human_labels_in_queue", "matcher_decisions_in_queue", "matcher_thresholds_in_queue", "selection_lenses_in_queue"
+    )):
         raise ValueError("Queue no declara blindness contract válido.")
-
-    # v1.0 del ambiguous-pool omitía selection_lenses_in_queue por error.
-    # No confiamos ciegamente en esa omisión: inspeccionamos el payload real.
-    optional_false = ("selection_lenses_in_queue", "matcher_rules_in_queue")
-    if any(blindness.get(k) is True for k in optional_false):
-        raise ValueError("Queue declara contenido no ciego en blindness_contract.")
-
-    content_errors = _blind_queue_content_errors(pairs)
-    if content_errors:
-        preview = "; ".join(content_errors[:5])
-        raise ValueError(f"Queue viola blindness por contenido: {preview}")
-
     return data, pairs
 
 

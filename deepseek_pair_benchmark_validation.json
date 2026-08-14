@@ -1,0 +1,108 @@
+{
+  "status": "BENCHMARK_COMPLETE",
+  "human_pair_count": 40,
+  "evaluated_pair_count": 40,
+  "missing_pair_count": 0,
+  "invalid_pair_count": 0,
+  "duplicate_review_count": 0,
+  "exact_agreement_count": 32,
+  "exact_agreement_rate": 0.8,
+  "high_confidence_pair_count": 28,
+  "high_confidence_coverage": 0.7,
+  "high_confidence_exact_agreement_count": 26,
+  "high_confidence_exact_agreement_rate": 0.9285714285714286,
+  "direct_same_different_flip_count": 1,
+  "high_confidence_direct_same_different_flip_count": 0,
+  "safety_gate": "PASS",
+  "confusion_matrix": {
+    "SAME": {
+      "SAME": 9,
+      "DIFFERENT": 1,
+      "AMBIGUOUS": 3
+    },
+    "DIFFERENT": {
+      "SAME": 0,
+      "DIFFERENT": 19,
+      "AMBIGUOUS": 0
+    },
+    "AMBIGUOUS": {
+      "SAME": 2,
+      "DIFFERENT": 2,
+      "AMBIGUOUS": 4
+    }
+  },
+  "confidence_distribution": {
+    "MEDIUM": 9,
+    "HIGH": 28,
+    "LOW": 3
+  },
+  "mismatches": [
+    {
+      "pair_id": "49a7fb1c21ccca8af115",
+      "human_label": "AMBIGUOUS",
+      "deepseek_label": "SAME",
+      "confidence": "MEDIUM",
+      "reason": "The episodes share the same center position and have complete overlap of the shorter episode, strongly indicating the same physical track region. The shared steering channel shows high peak similarity and consistent direction, supporting the same driving-difference pattern. The presence of throttle only in B is a secondary channel difference that does not override the spatial and shape evidence.",
+      "source": "/mnt/data/pair_labels.json"
+    },
+    {
+      "pair_id": "3647b54060abf7621e2e",
+      "human_label": "SAME",
+      "deepseek_label": "AMBIGUOUS",
+      "confidence": "MEDIUM",
+      "reason": "The episodes are spatially almost identical, strongly suggesting the same track region. However, the channel set differs (brake present only in A) and throttle shape similarity is mixed, with low mean difference similarity and differing direction consistency. This conflicting evidence prevents a confident SAME or DIFFERENT classification.",
+      "source": "/mnt/data/pair_labels.json"
+    },
+    {
+      "pair_id": "bf5ad576f6b0acf9e932",
+      "human_label": "SAME",
+      "deepseek_label": "AMBIGUOUS",
+      "confidence": "LOW",
+      "reason": "Spatial evidence strongly supports same location (center diff 19.5 m, full overlap of shorter episode). However, channel set differs substantially (only brake shared) and brake shape metrics conflict (low mean similarity, mixed direction). Given the policy that spatial identity is primary but channel shape can be supporting, the conflicting channel evidence prevents a confident SAME, while spatial proximity prevents DIFFERENT. Thus AMBIGUOUS with low confidence.",
+      "source": "/mnt/data/boundary_pair_labels.json"
+    },
+    {
+      "pair_id": "d2540d2f5a9f8875e7fd",
+      "human_label": "SAME",
+      "deepseek_label": "AMBIGUOUS",
+      "confidence": "MEDIUM",
+      "reason": "Spatial evidence strongly supports same location (center diff 20 m, full overlap of shorter episode). However, channel set conflict (extra throttle in B) and low steering shape similarity (mean diff 0.142) introduce meaningful counter-evidence. The pair sits on a boundary, so AMBIGUOUS is appropriate.",
+      "source": "/mnt/data/boundary_pair_labels.json"
+    },
+    {
+      "pair_id": "f794fdafc99697c3a5ad",
+      "human_label": "SAME",
+      "deepseek_label": "DIFFERENT",
+      "confidence": "MEDIUM",
+      "reason": "The episodes have minimal spatial overlap (5 m) and a center separation of 46 m, indicating they are largely in different track regions. Although the channel set is identical, the per-channel shape metrics show notable differences, especially in throttle mean and peak similarity, and steering coverage. The low overlap and spatial separation support DIFFERENT, but the identical channel set and some shape similarities leave some ambiguity, hence medium confidence.",
+      "source": "/mnt/data/reject_boundary_pair_labels.json"
+    },
+    {
+      "pair_id": "767d449fb37cb23bef29",
+      "human_label": "AMBIGUOUS",
+      "deepseek_label": "SAME",
+      "confidence": "MEDIUM",
+      "reason": "The episodes are spatially close (60 m center separation) with substantial overlap, share identical channels, and have high per-channel shape similarity and consistent directions. Action time loss is also similar. This supports SAME, though overlap is not extremely high, so confidence is medium.",
+      "source": "/mnt/data/reject_boundary_pair_labels.json"
+    },
+    {
+      "pair_id": "787fb22598d4c062723f",
+      "human_label": "AMBIGUOUS",
+      "deepseek_label": "DIFFERENT",
+      "confidence": "HIGH",
+      "reason": "The episodes are spatially separated by 102 m with no overlap, and they involve different channel sets and throttle behavior, supporting that they represent different track regions and driving patterns.",
+      "source": "/mnt/data/reject_boundary_pair_labels.json"
+    },
+    {
+      "pair_id": "bbd8a831cda5e4cf7267",
+      "human_label": "AMBIGUOUS",
+      "deepseek_label": "DIFFERENT",
+      "confidence": "HIGH",
+      "reason": "The episodes are spatially separated by 194 m with no overlap, indicating they occur at different physical track locations. Despite identical channel sets and some shape similarities, spatial identity is the primary anchor and clearly differs.",
+      "source": "/mnt/data/reject_boundary_pair_labels.json"
+    }
+  ],
+  "missing_pair_ids": [],
+  "invalid_pair_ids": [],
+  "duplicate_pair_ids": []
+}

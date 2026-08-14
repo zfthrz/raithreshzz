@@ -13,7 +13,7 @@ from datetime import datetime, timezone
 
 
 # ============================================================
-# RACE ENGINEER - LLM ANALYSIS v3.10.5
+# RACE ENGINEER - LLM ANALYSIS v3.10.7
 # ============================================================
 #
 # Diseñado para:
@@ -71,6 +71,20 @@ TIMEOUT_SECONDS = 600
 # diez minutos antes de recuperar el intento. Los reintentos de transporte
 # son independientes de MAX_LLM_VALIDATION_ATTEMPTS.
 RANKER_TIMEOUT_SECONDS = 240
+
+# La síntesis global local es una respuesta estructurada corta.
+# No debe heredar el timeout genérico de 600 s ni generación ilimitada:
+# si el modelo entra en una salida runaway bajo JSON schema, el pipeline
+# debe recuperar el control en un plazo acotado.
+GLOBAL_TIMEOUT_SECONDS = 180
+
+# La síntesis global necesita un presupuesto acotado, pero 1024 tokens puede
+# truncar el JSON de Qwen antes del cierre. Escalamos sólo entre intentos de
+# validación global: el primer intento sigue siendo corto y los siguientes
+# reciben más margen únicamente si la salida anterior no pudo validarse.
+GLOBAL_NUM_PREDICT_SCHEDULE = (1536, 2048)
+GLOBAL_TRANSPORT_ATTEMPTS = 1
+
 MAX_OLLAMA_TRANSPORT_ATTEMPTS = 2
 OLLAMA_TRANSPORT_RETRY_DELAY_SECONDS = 2
 
@@ -1414,7 +1428,7 @@ def clean_driver_action_episode(
                 "throttle_release_point_comparison"
             ),
 
-        # Throttle 1.2: observacional. No se envía al LLM en v3.10.5.
+        # Throttle 1.2: observacional. No se envía al LLM en v3.10.7.
         "throttle_full_throttle_attainment_comparison":
             episode.get(
                 "throttle_full_throttle_attainment_comparison"
@@ -2013,6 +2027,7 @@ def ollama_chat(
     timeout_seconds=None,
     transport_attempts=None,
     format_schema=None,
+    num_predict=None,
 ):
     """
     Wrapper robusto para /api/chat.
@@ -2067,6 +2082,9 @@ def ollama_chat(
 
     if seed is not None:
         payload["options"]["seed"] = int(seed)
+
+    if num_predict is not None:
+        payload["options"]["num_predict"] = max(1, int(num_predict))
 
     body = json.dumps(
         payload,
@@ -2273,7 +2291,7 @@ def ollama_chat(
 
 
 # ============================================================
-# SYSTEM PROMPT v3.10.5
+# SYSTEM PROMPT v3.10.7
 # ============================================================
 
 SYSTEM_PROMPT = """
@@ -2613,7 +2631,7 @@ MAX_LLM_VALIDATION_ATTEMPTS = 2
 # La síntesis global integra varias restricciones simultáneas
 # (ranking + targets de onset/release + estilo). Le damos un intento extra,
 # sin aumentar los reintentos de cada episodio.
-MAX_GLOBAL_LLM_VALIDATION_ATTEMPTS = 3
+MAX_GLOBAL_LLM_VALIDATION_ATTEMPTS = 2
 
 
 # ============================================================
@@ -3718,7 +3736,7 @@ def validate_episode_coaching_direction(
     errors,
 ):
     """
-    Invariante factual v3.10.5.
+    Invariante factual v3.10.7.
 
     Canal objetivo unívoco:
       comparison LOWER  -> una orden explícita debe AUMENTAR
@@ -3776,7 +3794,7 @@ def validate_episode_coaching_direction(
 
 
 # ============================================================
-# DIRECCIÓN FACTUAL EXPLÍCITA v3.10.5
+# DIRECCIÓN FACTUAL EXPLÍCITA v3.10.7
 # ============================================================
 
 FACTUAL_HIGHER_SIGNAL_RE = re.compile(
@@ -3805,7 +3823,7 @@ def _directional_phrases_for_validation(
     normalized,
 ):
     """
-    v3.10.5
+    v3.10.7
 
     Divide el texto sólo en fronteras lingüísticas fuertes para validar
     dirección factual. No intenta reconstruir gramática completa.
@@ -3884,7 +3902,7 @@ def explicit_factual_direction_by_channel(
     value,
 ):
     """
-    v3.10.5
+    v3.10.7
 
     Extrae sólo afirmaciones factuales inequívocas.
 
@@ -3954,7 +3972,7 @@ def validate_episode_interpretation_direction(
     errors,
 ):
     """
-    Invariante factual v3.10.5.
+    Invariante factual v3.10.7.
 
     Si interpretation afirma explícitamente que un canal fue mayor/menor,
     esa dirección debe coincidir con los eventos persistentes suministrados
@@ -4656,7 +4674,7 @@ def channel_direction_contract_for_llm(
     episode,
 ):
     """
-    v3.10.5
+    v3.10.7
 
     Python resolves the factual direction of each action channel before the
     LLM sees the episode. This prevents the model from having to reconstruct
@@ -5263,7 +5281,7 @@ def build_deterministic_grounded_episode_fallback(episode):
     """
     Texto factual mínimo construido por Python.
 
-    En v3.10.5 también se usa como fuente de reparación selectiva: si una
+    En v3.10.7 también se usa como fuente de reparación selectiva: si una
     respuesta LLM tiene estructura correcta pero invierte un hecho o un target,
     Python reemplaza únicamente el campo narrativo inválido y conserva el resto.
     """
@@ -5305,7 +5323,7 @@ def build_deterministic_grounded_episode_fallback(episode):
 
 def repair_invalid_episode_semantic_fields(response, episode, errors):
     """
-    Reparación selectiva v3.10.5 antes de gastar un retry del LLM.
+    Reparación selectiva v3.10.7 antes de gastar un retry del LLM.
 
     Sólo actúa cuando schema, tipos e ID ya son correctos y TODOS los errores
     pertenecen a interpretation, recommendation o hypotheses[i]. Los campos
@@ -5553,7 +5571,7 @@ def get_validated_episode_response(
 
             print(
                 f"    Episodio {episode_id}: reparación determinista "
-                "v3.10.5 aplicada sin retry"
+                "v3.10.7 aplicada sin retry"
                 + (f" ({'; '.join(detail)})" if detail else "")
                 + "."
             )
@@ -7469,6 +7487,641 @@ def _priority_ranking_map(
     return result
 
 
+
+
+# ============================================================
+# PERFIL DE ACCIÓN DE REFERENCIA v3.10.7
+# ============================================================
+
+REFERENCE_ACTION_PROFILE_VERSION = "1.1"
+REFERENCE_THROTTLE_GAP_MIN_M = 8.0
+REFERENCE_THROTTLE_BRIEF_APPLICATION_MAX_M = 20.0
+REFERENCE_BRAKE_GAP_MIN_M = 8.0
+
+
+def _reference_lap_for_region(region):
+    if not isinstance(region, dict):
+        return None
+
+    findings = [
+        item
+        for item in (region.get("findings", []) or [])
+        if isinstance(item, dict)
+    ]
+    reference_laps = sorted({
+        safe_int(item.get("reference_lap"))
+        for item in findings
+        if safe_int(item.get("reference_lap")) is not None
+    })
+    return reference_laps[0] if len(reference_laps) == 1 else None
+
+
+def _reference_throttle_event_catalog(
+    source_data,
+    reference_lap=None,
+):
+    """
+    Extrae eventos físicos de acelerador de la vuelta de referencia.
+
+    La fuente es throttle_physical_point_profiles producida por Python.
+    No consulta al LLM y no convierte full-throttle attainment en coaching
+    numérico: ese dato conserva su política observacional.
+    """
+    if not isinstance(source_data, dict):
+        return []
+
+    container = source_data.get("throttle_physical_point_profiles") or {}
+    profiles = container.get("profiles", []) if isinstance(container, dict) else []
+    by_event_id = {}
+
+    for profile in profiles or []:
+        if not isinstance(profile, dict):
+            continue
+
+        profile_reference_lap = safe_int(profile.get("reference_lap"))
+        if (
+            reference_lap is not None
+            and profile_reference_lap is not None
+            and profile_reference_lap != reference_lap
+        ):
+            continue
+
+        event = profile.get("reference_event") or {}
+        if not isinstance(event, dict):
+            continue
+
+        event_id = str(
+            event.get("event_id")
+            or profile.get("reference_event_id")
+            or ""
+        ).strip()
+        onset = safe_float(event.get("onset_distance_m"))
+        if not event_id or onset is None:
+            continue
+
+        by_event_id[event_id] = {
+            "event_id": event_id,
+            "reference_lap": profile_reference_lap,
+            "onset_distance_m": onset,
+            "confirmation_distance_m": safe_float(event.get("confirmation_distance_m")),
+            "release_distance_m": safe_float(event.get("release_distance_m")),
+            "release_confirmed": bool(event.get("release_confirmed")),
+            "peak_throttle_percent": safe_float(event.get("peak_throttle_percent")),
+            "peak_distance_m": safe_float(event.get("peak_distance_m")),
+            "full_throttle_attainment_confirmed": bool(
+                event.get("full_throttle_attainment_confirmed")
+            ),
+            "full_throttle_attainment_distance_m": safe_float(
+                event.get("full_throttle_attainment_distance_m")
+            ),
+            "distance_from_onset_to_full_throttle_m": safe_float(
+                event.get("distance_from_onset_to_full_throttle_m")
+            ),
+            "partial_lift_count": safe_int(event.get("partial_lift_count")) or 0,
+        }
+
+    return sorted(
+        by_event_id.values(),
+        key=lambda item: (
+            item.get("onset_distance_m")
+            if item.get("onset_distance_m") is not None
+            else 999999.0,
+            item.get("event_id") or "",
+        ),
+    )
+
+
+def _reference_brake_event_catalog(
+    source_data,
+    reference_lap=None,
+):
+    """
+    Reconstruye los eventos físicos de freno de la vuelta de referencia.
+
+    analyze_telemetry 3.8 no expone todavía un catálogo top-level equivalente
+    a throttle_physical_point_profiles. Por eso el catálogo se deduplica desde
+    driver_action_episode_ranking, usando exclusivamente braking_point_comparison
+    y brake_release_point_comparison ya calculados por Python.
+    """
+    if not isinstance(source_data, dict):
+        return []
+
+    by_event_id = {}
+
+    for comparison in source_data.get("comparisons", []) or []:
+        if not isinstance(comparison, dict):
+            continue
+
+        comparison_reference_lap = safe_int(comparison.get("reference_lap"))
+        if (
+            reference_lap is not None
+            and comparison_reference_lap is not None
+            and comparison_reference_lap != reference_lap
+        ):
+            continue
+
+        objective = comparison.get("objective_analysis") or {}
+        ranking = (
+            objective.get("driver_action_episode_ranking", [])
+            if isinstance(objective, dict)
+            else []
+        )
+
+        for episode in ranking or []:
+            if not isinstance(episode, dict):
+                continue
+
+            onset_cmp = episode.get("braking_point_comparison") or {}
+            release_cmp = episode.get("brake_release_point_comparison") or {}
+            if not isinstance(onset_cmp, dict):
+                onset_cmp = {}
+            if not isinstance(release_cmp, dict):
+                release_cmp = {}
+
+            event_id = str(
+                onset_cmp.get("reference_event_id")
+                or release_cmp.get("reference_event_id")
+                or ""
+            ).strip()
+            if not event_id:
+                continue
+
+            onset_event = onset_cmp.get("reference_event") or {}
+            release_event = release_cmp.get("reference_event") or {}
+            if not isinstance(onset_event, dict):
+                onset_event = {}
+            if not isinstance(release_event, dict):
+                release_event = {}
+
+            item = by_event_id.setdefault(
+                event_id,
+                {
+                    "event_id": event_id,
+                    "reference_lap": comparison_reference_lap,
+                },
+            )
+
+            candidates = {
+                "onset_distance_m": onset_cmp.get("reference_onset_m"),
+                "confirmation_distance_m": (
+                    onset_event.get("confirmation_distance_m")
+                    if onset_event
+                    else release_event.get("confirmation_distance_m")
+                ),
+                "release_distance_m": (
+                    release_cmp.get("reference_release_m")
+                    if release_cmp.get("reference_release_m") is not None
+                    else onset_event.get("release_distance_m")
+                ),
+                "peak_brake_percent": (
+                    onset_event.get("peak_brake_percent")
+                    if onset_event.get("peak_brake_percent") is not None
+                    else release_event.get("peak_brake_percent")
+                ),
+            }
+
+            for key, value in candidates.items():
+                numeric = safe_float(value)
+                if numeric is not None:
+                    item[key] = numeric
+
+    events = [
+        item
+        for item in by_event_id.values()
+        if safe_float(item.get("onset_distance_m")) is not None
+    ]
+
+    return sorted(
+        events,
+        key=lambda item: (
+            item.get("onset_distance_m")
+            if item.get("onset_distance_m") is not None
+            else 999999.0,
+            item.get("event_id") or "",
+        ),
+    )
+
+
+def _reference_throttle_level_label(peak_percent):
+    peak_percent = safe_float(peak_percent)
+    if peak_percent is None:
+        return "aplicación"
+    if peak_percent < 60.0:
+        return "aplicación parcial"
+    if peak_percent < 85.0:
+        return "aplicación media"
+    return "aplicación alta"
+
+
+def _reference_brake_level_label(peak_percent):
+    peak_percent = safe_float(peak_percent)
+    if peak_percent is None:
+        return "aplicación de freno"
+    if peak_percent < 30.0:
+        return "aplicación ligera de freno"
+    if peak_percent < 60.0:
+        return "aplicación media de freno"
+    if peak_percent < 85.0:
+        return "aplicación alta de freno"
+    return "aplicación muy alta de freno"
+
+
+def _reference_throttle_profile_for_region(
+    region,
+    source_data,
+):
+    """
+    Describe la forma observada del acelerador de la vuelta de referencia.
+
+    Sólo usa eventos cuyo onset cae dentro de la región. Los metros y
+    porcentajes quedan en steps como respaldo descriptivo; el target textual
+    usa categorías de forma, no nuevos objetivos numéricos no calibrados.
+    """
+    if not isinstance(region, dict):
+        return None
+
+    start = safe_float(region.get("start_distance_m"))
+    end = safe_float(region.get("end_distance_m"))
+    if start is None or end is None:
+        return None
+    if end < start:
+        start, end = end, start
+
+    reference_lap = _reference_lap_for_region(region)
+
+    events = [
+        event
+        for event in _reference_throttle_event_catalog(
+            source_data,
+            reference_lap=reference_lap,
+        )
+        if (
+            event.get("onset_distance_m") is not None
+            and start <= event["onset_distance_m"] <= end
+        )
+    ]
+    if not events:
+        return None
+
+    steps = []
+    previous_release = None
+
+    for event in events:
+        onset = safe_float(event.get("onset_distance_m"))
+        release = safe_float(event.get("release_distance_m"))
+        peak = safe_float(event.get("peak_throttle_percent"))
+
+        if (
+            previous_release is not None
+            and onset is not None
+            and onset > previous_release
+        ):
+            gap = onset - previous_release
+            if gap >= REFERENCE_THROTTLE_GAP_MIN_M:
+                steps.append({
+                    "kind": "released_gap",
+                    "start_distance_m": previous_release,
+                    "end_distance_m": onset,
+                    "length_m": gap,
+                    "shape": (
+                        "liberación breve"
+                        if gap <= 20.0
+                        else "acelerador liberado"
+                    ),
+                    "descriptive_only": True,
+                })
+
+        duration = (
+            release - onset
+            if onset is not None
+            and release is not None
+            and release >= onset
+            else None
+        )
+
+        level = _reference_throttle_level_label(peak)
+        if event.get("full_throttle_attainment_confirmed"):
+            shape = (
+                "reaplicación sostenida sin volver a soltar dentro de la zona"
+                if release is not None and release > end
+                else "reaplicación sostenida"
+            )
+        elif duration is not None and duration <= REFERENCE_THROTTLE_BRIEF_APPLICATION_MAX_M:
+            shape = f"{level} breve"
+        else:
+            shape = level
+
+        steps.append({
+            "kind": "application",
+            "event_id": event.get("event_id"),
+            "shape": shape,
+            "onset_distance_m": onset,
+            "release_distance_m": release,
+            "duration_m": duration,
+            "peak_throttle_percent": peak,
+            "peak_distance_m": safe_float(event.get("peak_distance_m")),
+            "full_throttle_attainment_confirmed": bool(
+                event.get("full_throttle_attainment_confirmed")
+            ),
+            "full_throttle_attainment_distance_m": safe_float(
+                event.get("full_throttle_attainment_distance_m")
+            ),
+            "distance_from_onset_to_full_throttle_m": safe_float(
+                event.get("distance_from_onset_to_full_throttle_m")
+            ),
+            "descriptive_only": True,
+        })
+
+        if release is not None:
+            previous_release = release
+
+    shape_sequence = [
+        str(step.get("shape") or "").strip()
+        for step in steps
+        if str(step.get("shape") or "").strip()
+    ]
+    if not shape_sequence:
+        return None
+
+    detailed_sequence = []
+    for step in steps:
+        shape = str(step.get("shape") or "").strip()
+        if not shape:
+            continue
+
+        if step.get("kind") == "released_gap":
+            gap_start = safe_float(step.get("start_distance_m"))
+            gap_end = safe_float(step.get("end_distance_m"))
+            if gap_start is not None and gap_end is not None:
+                detailed_sequence.append(
+                    f"{shape} (~{gap_start:.0f}–{gap_end:.0f} m)"
+                )
+            else:
+                detailed_sequence.append(shape)
+            continue
+
+        onset = safe_float(step.get("onset_distance_m"))
+        release = safe_float(step.get("release_distance_m"))
+        peak = safe_float(step.get("peak_throttle_percent"))
+
+        detail = shape
+        if onset is not None:
+            if release is not None and release <= end:
+                detail += f" (~{onset:.0f}–{release:.0f} m"
+                if peak is not None and not step.get("full_throttle_attainment_confirmed"):
+                    detail += f"; pico ~{peak:.0f}%"
+                detail += ")"
+            else:
+                detail += f" desde ~{onset:.0f} m"
+
+        detailed_sequence.append(detail)
+
+    return {
+        "version": REFERENCE_ACTION_PROFILE_VERSION,
+        "channel": "throttle",
+        "reference_lap": reference_lap,
+        "region_start_m": start,
+        "region_end_m": end,
+        "event_count": len(events),
+        "steps": steps,
+        "shape_sequence": shape_sequence,
+        "shape_summary": " → ".join(shape_sequence),
+        "shape_summary_detailed": " → ".join(detailed_sequence),
+        "source": "throttle_physical_point_profiles.reference_event",
+        "descriptive_only": True,
+        "numeric_coaching_authorized": False,
+    }
+
+
+def _reference_brake_profile_for_region(
+    region,
+    source_data,
+):
+    """
+    Describe la secuencia física de freno de la vuelta de referencia.
+
+    No infiere trail braking, progresividad, balance ni dinámica. Sólo resume
+    onset, release, nivel pico y separaciones entre eventos ya detectados por
+    Python. Los metros/porcentajes son respaldo descriptivo y no nuevos targets.
+    """
+    if not isinstance(region, dict):
+        return None
+
+    start = safe_float(region.get("start_distance_m"))
+    end = safe_float(region.get("end_distance_m"))
+    if start is None or end is None:
+        return None
+    if end < start:
+        start, end = end, start
+
+    reference_lap = _reference_lap_for_region(region)
+    events = []
+    for event in _reference_brake_event_catalog(
+        source_data,
+        reference_lap=reference_lap,
+    ):
+        onset = safe_float(event.get("onset_distance_m"))
+        release = safe_float(event.get("release_distance_m"))
+        if onset is None:
+            continue
+        effective_release = release if release is not None else onset
+        if onset <= end and effective_release >= start:
+            events.append(event)
+
+    if not events:
+        return None
+
+    steps = []
+    previous_release = None
+
+    for event in events:
+        onset = safe_float(event.get("onset_distance_m"))
+        release = safe_float(event.get("release_distance_m"))
+        peak = safe_float(event.get("peak_brake_percent"))
+
+        if (
+            previous_release is not None
+            and onset is not None
+            and onset > previous_release
+        ):
+            gap = onset - previous_release
+            if gap >= REFERENCE_BRAKE_GAP_MIN_M:
+                steps.append({
+                    "kind": "released_gap",
+                    "start_distance_m": previous_release,
+                    "end_distance_m": onset,
+                    "length_m": gap,
+                    "shape": (
+                        "liberación breve del freno"
+                        if gap <= 20.0
+                        else "freno liberado"
+                    ),
+                    "descriptive_only": True,
+                })
+
+        duration = (
+            release - onset
+            if onset is not None
+            and release is not None
+            and release >= onset
+            else None
+        )
+        steps.append({
+            "kind": "application",
+            "event_id": event.get("event_id"),
+            "shape": _reference_brake_level_label(peak),
+            "onset_distance_m": onset,
+            "confirmation_distance_m": safe_float(event.get("confirmation_distance_m")),
+            "release_distance_m": release,
+            "duration_m": duration,
+            "peak_brake_percent": peak,
+            "descriptive_only": True,
+        })
+
+        if release is not None:
+            previous_release = release
+
+    # Si el último evento termina claramente antes del final de la región y no
+    # hay otra aplicación, esa ausencia de freno también forma parte de la forma.
+    if previous_release is not None and end > previous_release:
+        trailing_gap = end - previous_release
+        if trailing_gap >= REFERENCE_BRAKE_GAP_MIN_M:
+            steps.append({
+                "kind": "released_gap",
+                "start_distance_m": previous_release,
+                "end_distance_m": end,
+                "length_m": trailing_gap,
+                "shape": "freno liberado hasta salir de la zona",
+                "descriptive_only": True,
+            })
+
+    shape_sequence = [
+        str(step.get("shape") or "").strip()
+        for step in steps
+        if str(step.get("shape") or "").strip()
+    ]
+    if not shape_sequence:
+        return None
+
+    detailed_sequence = []
+    for step in steps:
+        shape = str(step.get("shape") or "").strip()
+        if not shape:
+            continue
+
+        if step.get("kind") == "released_gap":
+            gap_start = safe_float(step.get("start_distance_m"))
+            gap_end = safe_float(step.get("end_distance_m"))
+            if gap_start is not None and gap_end is not None:
+                detailed_sequence.append(
+                    f"{shape} (~{gap_start:.0f}–{gap_end:.0f} m)"
+                )
+            else:
+                detailed_sequence.append(shape)
+            continue
+
+        onset = safe_float(step.get("onset_distance_m"))
+        release = safe_float(step.get("release_distance_m"))
+        peak = safe_float(step.get("peak_brake_percent"))
+        detail = shape
+        if onset is not None:
+            if release is not None:
+                detail += f" (~{onset:.0f}–{release:.0f} m"
+                if peak is not None:
+                    detail += f"; pico ~{peak:.0f}%"
+                detail += ")"
+            else:
+                detail += f" desde ~{onset:.0f} m"
+        detailed_sequence.append(detail)
+
+    return {
+        "version": REFERENCE_ACTION_PROFILE_VERSION,
+        "channel": "brake",
+        "reference_lap": reference_lap,
+        "region_start_m": start,
+        "region_end_m": end,
+        "event_count": len(events),
+        "steps": steps,
+        "shape_sequence": shape_sequence,
+        "shape_summary": " → ".join(shape_sequence),
+        "shape_summary_detailed": " → ".join(detailed_sequence),
+        "source": "driver_action_episode_ranking.braking_point_comparison+brake_release_point_comparison",
+        "descriptive_only": True,
+        "numeric_coaching_authorized": False,
+    }
+
+
+def _reference_throttle_profile_target_text(profile):
+    if not isinstance(profile, dict):
+        return None
+    summary = str(profile.get("shape_summary") or "").strip()
+    if not summary:
+        return None
+    return "replicar la secuencia de acelerador de la referencia: " + summary
+
+
+def _reference_brake_profile_target_text(profile):
+    if not isinstance(profile, dict):
+        return None
+    summary = str(profile.get("shape_summary") or "").strip()
+    if not summary:
+        return None
+    return "replicar la secuencia de freno de la referencia: " + summary
+
+
+def _attach_reference_action_profiles(
+    regions,
+    source_data,
+):
+    """
+    Sustituye targets mixed genéricos por secuencias concretas de referencia.
+
+    Si Python no puede describir la forma física de la referencia, el target
+    queda en None. Es preferible omitirlo a decir sólo "replicá la modulación"
+    o "replicá la secuencia" sin explicar cuál es.
+    """
+    if not isinstance(regions, list):
+        return regions
+
+    for region in regions:
+        if not isinstance(region, dict):
+            continue
+
+        throttle_profile = _reference_throttle_profile_for_region(region, source_data)
+        brake_profile = _reference_brake_profile_for_region(region, source_data)
+
+        for repeated in region.get("repeated_differences", []) or []:
+            if not isinstance(repeated, dict):
+                continue
+            if repeated.get("direction") != "mixed_across_comparisons":
+                continue
+
+            channel = repeated.get("channel")
+            if channel == "throttle":
+                profile = throttle_profile
+                target = _reference_throttle_profile_target_text(profile)
+            elif channel == "brake":
+                profile = brake_profile
+                target = _reference_brake_profile_target_text(profile)
+            else:
+                continue
+
+            repeated["reference_action_profile"] = profile
+            repeated["target"] = target
+            repeated["target_source"] = (
+                "reference_action_profile"
+                if target
+                else "unavailable_reference_action_profile"
+            )
+
+        if throttle_profile is not None:
+            region["reference_throttle_profile"] = throttle_profile
+        if brake_profile is not None:
+            region["reference_brake_profile"] = brake_profile
+
+    return regions
+
+
 def _coaching_target_for_channel_direction(
     channel,
     direction,
@@ -7492,10 +8145,12 @@ def _coaching_target_for_channel_direction(
         return targets[(channel, direction)]
 
     fallback = {
+        # v3.10.7: throttle mixed se completa desde reference_action_profile.
+        # Sin perfil suficiente, no se emite el target genérico.
         "throttle":
-            "replicar la secuencia y modulación del acelerador de la referencia",
+            None,
         "brake":
-            "replicar la secuencia de aplicación del freno de la referencia",
+            None,
         "steering_magnitude":
             "replicar la evolución de la magnitud de dirección/volante de la referencia",
     }
@@ -10038,6 +10693,12 @@ def _build_next_stint_plan(
                         "target"
                     )
                 ],
+            "reference_action_profiles":
+                [
+                    item.get("reference_action_profile")
+                    for item in (region.get("repeated_differences", []) or [])
+                    if isinstance(item.get("reference_action_profile"), dict)
+                ],
             "quantitative_observations":
                 [
                     text
@@ -10181,10 +10842,10 @@ def _build_next_stint_plan(
 
 
 # ============================================================
-# PRIORIDAD DE SESIÓN POR RECURRENCIA v3.10.5
+# PRIORIDAD DE SESIÓN POR RECURRENCIA v3.10.7
 # ============================================================
 
-SESSION_PRIORITY_POLICY_VERSION = "1.2"
+SESSION_PRIORITY_POLICY_VERSION = "1.3"
 
 
 def _plan_overlap_m(
@@ -10686,7 +11347,7 @@ def _apply_recurrence_aware_session_priority(
     max_items=3,
 ):
     """
-    v3.10.5
+    v3.10.7
 
     Reordena únicamente el plan GLOBAL de próxima tanda.
 
@@ -10970,11 +11631,12 @@ def _attach_repeated_throttle_patterns_to_plan(
 def build_session_coaching_facts(
     valid_comparison_results,
     track_location_context=None,
+    source_data=None,
 ):
     """
     Convierte comparaciones ya validadas en una ficha determinista.
 
-    v3.10.5:
+    v3.10.7:
     - priority_findings conserva sólo episodios PRIORITARIOS para el tiebreak;
     - recurrence_findings usa TODOS los episodios coaching-eligible para que la
       recurrencia física no dependa de la clasificación elegida por el LLM;
@@ -11383,6 +12045,17 @@ def build_session_coaching_facts(
         track_location_context,
     )
 
+    # v3.10.7: el target mixed de acelerador sólo existe si Python puede
+    # explicar la forma observada de la vuelta de referencia.
+    _attach_reference_action_profiles(
+        priority_regions,
+        source_data,
+    )
+    _attach_reference_action_profiles(
+        recurrence_regions,
+        source_data,
+    )
+
     repeated_braking_point_patterns = (
         _build_repeated_braking_point_patterns(
             braking_point_findings,
@@ -11626,6 +12299,16 @@ def build_session_coaching_facts(
                 "recurrence_regions_plus_repeated_point_patterns",
             "temporal_observation_policy":
                 "descriptive_only_without_temporal_target",
+            "mixed_throttle_target_policy":
+                "reference_action_profile_or_omit",
+            "mixed_brake_target_policy":
+                "reference_action_profile_or_omit",
+            "reference_action_profile_source": {
+                "throttle":
+                    "throttle_physical_point_profiles.reference_event",
+                "brake":
+                    "driver_action_episode_ranking.braking_point_comparison+brake_release_point_comparison",
+            },
         },
         "priority_finding_count":
             len(
@@ -11727,7 +12410,7 @@ def compact_session_coaching_facts_for_llm(
     session_coaching_facts,
 ):
     """
-    v3.10.5
+    v3.10.7
 
     El LLM global recibe únicamente hechos CUALITATIVOS.
 
@@ -12265,6 +12948,9 @@ REGLAS:
   dirección concreta que Python ya decidió;
 - si Python entrega un target de secuencia o modulación, preservalo como tal y
   no lo simplifiques artificialmente a "más" o "menos";
+- reference_action_profiles describe la forma física observada de acelerador o
+  freno; podés usar sus categorías cualitativas, pero sus metros y porcentajes
+  son descriptivos y NO autorizan nuevos objetivos numéricos;
 - temporal_observations describe únicamente relaciones medidas entre inputs;
   NO las conviertas en órdenes, objetivos ni técnica de conducción;
 - sólo podés convertir una relación temporal en coaching si Python entrega un
@@ -12334,7 +13020,7 @@ No texto fuera del JSON.
 
 
 # ============================================================
-# PRIORIDADES GLOBALES DETERMINISTAS v3.10.5
+# PRIORIDADES GLOBALES DETERMINISTAS v3.10.7
 # ============================================================
 
 def _direct_coaching_target_text(
@@ -12439,7 +13125,7 @@ def deterministic_priority_for_plan_item(
       - secuencia;
       - magnitudes espaciales.
 
-    El LLM ya no vuelve a generar estos datos en v3.10.5.
+    El LLM ya no vuelve a generar estos datos en v3.10.7.
     """
     if not isinstance(
         item,
@@ -12577,7 +13263,7 @@ def build_deterministic_repeated_observations(
     session_coaching_facts,
 ):
     """
-    v3.10.5
+    v3.10.7
 
     repeated_observations is factual session accounting, not narrative model
     judgment. Build one item per selected repeated region from Python-owned
@@ -12668,7 +13354,7 @@ def global_correction_instructions(errors):
     """
     Traduce errores del validator global a instrucciones concretas y seguras.
 
-    En v3.10.5 las prioridades numéricas/direccionales son propiedad de Python. Este bloque sólo corrige campos narrativos del LLM.
+    En v3.10.7 las prioridades numéricas/direccionales son propiedad de Python. Este bloque sólo corrige campos narrativos del LLM.
     """
     instructions = []
 
@@ -12846,6 +13532,7 @@ ETIQUETAS DE ZONA DEL PLAN:
 OBJETIVO DE CADA CAMPO:
 
 opportunities:
+- devolvé como máximo una opportunity breve por cada zona prioritaria;
 - resumí los focos del next_stint_plan como acciones concretas;
 - no generalices a todo el circuito;
 - si mencionás una zona, usá sólo las etiquetas provistas por Python;
@@ -13082,7 +13769,7 @@ def _validate_global_priority_text_list(value, plan, errors):
 
 
 # ============================================================
-# CONSISTENCIA DIRECCIONAL GLOBAL v3.10.5
+# CONSISTENCIA DIRECCIONAL GLOBAL v3.10.7
 # ============================================================
 
 def _explicit_command_direction_map(
@@ -13307,7 +13994,7 @@ def validate_global_zone_list_consistency(
     errors,
 ):
     """
-    Invariante global por zona v3.10.5.
+    Invariante global por zona v3.10.7.
 
     - opportunities[A/B/C] no puede invertir targets deterministas de su zona.
     - repeated_observations[A/B/C] no puede invertir hechos observados ni
@@ -13486,7 +14173,7 @@ def validate_global_direction_consistency(
     errors,
 ):
     """
-    Invariante global v3.10.5.
+    Invariante global v3.10.7.
 
     1) Una prioridad de zona no puede invertir un target explícito de Python.
     2) Una conclusión que nombra una zona no puede invertir la dirección
@@ -13806,6 +14493,91 @@ def validate_global_llm_response(
 
 
 
+
+def repair_global_optional_list_overflow(
+    response,
+    session_coaching_facts,
+):
+    """
+    Reparación determinista v3.10.7 para exceso de items en listas globales.
+
+    Mantiene los límites estrictos del schema sin gastar un retry del LLM por
+    un problema puramente de cardinalidad. Para opportunities intenta conservar
+    primero una oportunidad por cada zona A/B/C presente en next_stint_plan y
+    luego completa por orden original hasta el máximo permitido. Las demás
+    listas opcionales se recortan por orden original.
+    """
+    if not isinstance(response, dict):
+        return response, {}
+
+    limits = {
+        "opportunities": 4,
+        "repeated_observations": 4,
+        "hypotheses": 3,
+        "limitations": 2,
+    }
+
+    repaired = dict(response)
+    repairs = {}
+
+    plan = (
+        session_coaching_facts.get("next_stint_plan", [])
+        if isinstance(session_coaching_facts, dict)
+        else []
+    )
+    plan_labels = []
+    for item in (plan or [])[:3]:
+        if not isinstance(item, dict):
+            continue
+        label = str(item.get("plan_label", "")).strip().upper()
+        if label and label not in plan_labels:
+            plan_labels.append(label)
+
+    for field, max_items in limits.items():
+        value = response.get(field)
+        if not isinstance(value, list) or len(value) <= max_items:
+            continue
+
+        if field == "opportunities":
+            selected = set()
+
+            # Garantiza cobertura de las zonas deterministas principales si el
+            # LLM devolvió al menos una opportunity claramente asociada a ellas.
+            for label in plan_labels:
+                for index, item in enumerate(value):
+                    if index in selected or not isinstance(item, str):
+                        continue
+                    labels = _zone_labels_in_text(item)
+                    if labels == {label}:
+                        selected.add(index)
+                        break
+
+            # Completa por orden original sin exceder el límite.
+            for index in range(len(value)):
+                if len(selected) >= max_items:
+                    break
+                selected.add(index)
+
+            kept_indexes = sorted(selected)[:max_items]
+        else:
+            kept_indexes = list(range(max_items))
+
+        removed_indexes = [
+            index for index in range(len(value))
+            if index not in kept_indexes
+        ]
+
+        repaired[field] = [value[index] for index in kept_indexes]
+        repairs[field] = {
+            "original_count": len(value),
+            "kept_count": len(kept_indexes),
+            "kept_indexes": kept_indexes,
+            "removed_indexes": removed_indexes,
+            "reason": "max_items_enforced_deterministically",
+        }
+
+    return repaired, repairs
+
 def prune_only_invalid_global_list_items(
     response,
     valid_comparison_results,
@@ -13813,7 +14585,7 @@ def prune_only_invalid_global_list_items(
     errors,
 ):
     """
-    Fallback determinista v3.10.5 para listas narrativas opcionales globales.
+    Fallback determinista v3.10.7 para listas narrativas opcionales globales.
 
     Tras agotar los reintentos del LLM, puede eliminar únicamente items
     concretos rechazados por el validator dentro de opportunities,
@@ -13877,6 +14649,132 @@ def prune_only_invalid_global_list_items(
 
     return pruned, removed
 
+
+def build_deterministic_global_fallback(
+    session_coaching_facts,
+):
+    """
+    Fallback global v3.10.7.
+
+    La síntesis narrativa del LLM nunca debe ser un punto único de fallo.
+    Si Ollama no logra entregar un JSON global válido, Python construye un
+    cierre mínimo únicamente desde next_stint_plan y los hechos recurrentes
+    ya validados. No inventa causas, dominios ni objetivos nuevos.
+    """
+    plan = (
+        session_coaching_facts.get("next_stint_plan", [])
+        if isinstance(session_coaching_facts, dict)
+        else []
+    ) or []
+
+    opportunities = []
+    qualitative_by_label = {}
+
+    for item in plan[:3]:
+        if not isinstance(item, dict):
+            continue
+
+        label = str(item.get("plan_label") or "").strip().upper()
+        if not label:
+            continue
+
+        parts = []
+        for target in item.get("targets", []) or []:
+            direct = _direct_coaching_target_text(target)
+            if not direct:
+                continue
+
+            # opportunities/conclusion no admiten cifras. Los targets de punto
+            # espacial permanecen exclusivamente en next_session_priorities.
+            if text_contains_forbidden_numeric_content(direct):
+                continue
+
+            if direct not in parts:
+                parts.append(direct)
+
+        if not parts:
+            continue
+
+        qualitative_by_label[label] = parts
+        opportunities.append(
+            f"Zona {label}: " + "; ".join(parts) + "."
+        )
+
+    if not opportunities:
+        opportunities = [
+            "Concentrá la próxima tanda en los inputs repetidos de las zonas prioritarias."
+        ]
+
+    repeated_observations = build_deterministic_repeated_observations(
+        session_coaching_facts
+    )
+
+    primary_label = None
+    primary_parts = None
+    for item in plan[:3]:
+        if not isinstance(item, dict):
+            continue
+        label = str(item.get("plan_label") or "").strip().upper()
+        parts = qualitative_by_label.get(label)
+        if label and parts:
+            primary_label = label
+            primary_parts = parts
+            break
+
+    if primary_label and primary_parts:
+        conclusion = (
+            f"Empezá la próxima tanda por la zona {primary_label}: "
+            + "; ".join(primary_parts)
+            + ". Después continuá con las demás zonas prioritarias."
+        )
+    else:
+        conclusion = (
+            "En la próxima tanda, concentrá la ejecución en los inputs repetidos "
+            "de las zonas prioritarias."
+        )
+
+    response = {
+        "opportunities": opportunities[:4],
+        "repeated_observations": repeated_observations[:4],
+        "hypotheses": [],
+        "limitations": [],
+        "conclusion": conclusion,
+    }
+
+    return response
+
+
+def _global_num_predict_for_attempt(attempt):
+    """Presupuesto de salida escalonado para la síntesis global local."""
+    try:
+        index = max(0, int(attempt) - 1)
+    except (TypeError, ValueError):
+        index = 0
+
+    index = min(
+        index,
+        len(GLOBAL_NUM_PREDICT_SCHEDULE) - 1,
+    )
+    return int(GLOBAL_NUM_PREDICT_SCHEDULE[index])
+
+
+def _looks_like_truncated_json(raw, exc=None):
+    """Heurística de transporte/salida: distingue JSON cortado de un fallo semántico."""
+    value = str(raw or "").strip()
+    error_text = str(exc or "").lower()
+
+    if value.startswith("{") and not value.endswith("}"):
+        return True
+
+    truncation_markers = (
+        "unterminated string",
+        "unterminated",
+        "unexpected end",
+        "end of data",
+    )
+    return any(marker in error_text for marker in truncation_markers)
+
+
 def get_validated_global_response(
     metadata,
     valid_comparison_results,
@@ -13885,6 +14783,8 @@ def get_validated_global_response(
 ):
     errors = None
     last_raw = None
+    last_parsed = None
+    last_parsed_errors = None
 
     for attempt in range(
         1,
@@ -13902,37 +14802,76 @@ def get_validated_global_response(
                 output_dir,
                 f"global_prompt_attempt_{attempt}.txt",
             )
+            save_text(prompt_path, prompt)
 
-            save_text(
-                prompt_path,
-                prompt,
-            )
+        global_num_predict = _global_num_predict_for_attempt(attempt)
+
+        print(
+            "Síntesis global local: "
+            f"timeout={GLOBAL_TIMEOUT_SECONDS}s, "
+            f"num_predict<={global_num_predict} "
+            f"(intento {attempt}/{MAX_GLOBAL_LLM_VALIDATION_ATTEMPTS})."
+        )
 
         raw = ollama_chat(
             GLOBAL_SYSTEM_PROMPT,
             prompt,
             temperature=0.0,
             seed=3815,
+            timeout_seconds=GLOBAL_TIMEOUT_SECONDS,
+            transport_attempts=GLOBAL_TRANSPORT_ATTEMPTS,
             format_schema=GLOBAL_RESPONSE_SCHEMA,
+            num_predict=global_num_predict,
         )
-
         last_raw = raw
 
         try:
-            parsed = parse_llm_json(
-                raw
-            )
+            parsed = parse_llm_json(raw)
         except Exception as exc:
-            errors = [
-                str(exc)
-            ]
+            truncated = _looks_like_truncated_json(raw, exc)
+            raw_attempt_path = os.path.join(
+                output_dir,
+                f"global_raw_attempt_{attempt}_INVALID.txt",
+            )
+            save_text(
+                raw_attempt_path,
+                raw if isinstance(raw, str) else repr(raw),
+            )
+
+            if truncated:
+                errors = [
+                    "LLM_JSON_TRUNCATED: la respuesta anterior quedó incompleta. "
+                    "Devolvé un JSON completo y conciso, cerrando todas las "
+                    "cadenas, arrays y el objeto raíz."
+                ]
+                if attempt < MAX_GLOBAL_LLM_VALIDATION_ATTEMPTS:
+                    next_budget = _global_num_predict_for_attempt(attempt + 1)
+                    print(
+                        "Síntesis global: JSON truncado; "
+                        f"se amplía num_predict a {next_budget} en el próximo intento."
+                    )
+            else:
+                errors = [str(exc)]
             continue
 
         if isinstance(parsed, dict) and "repeated_observations" in parsed:
             parsed["repeated_observations"] = (
-                build_deterministic_repeated_observations(
-                    session_coaching_facts
-                )
+                build_deterministic_repeated_observations(session_coaching_facts)
+            )
+
+        parsed, overflow_repairs = repair_global_optional_list_overflow(
+            parsed,
+            session_coaching_facts,
+        )
+
+        if overflow_repairs:
+            repaired_fields = ", ".join(
+                f"{field}({details['original_count']}→{details['kept_count']})"
+                for field, details in overflow_repairs.items()
+            )
+            print(
+                "Síntesis global: reparación determinista de cardinalidad "
+                f"aplicada sin retry: {repaired_fields}."
             )
 
         errors = validate_global_llm_response(
@@ -13942,110 +14881,126 @@ def get_validated_global_response(
         )
 
         if not errors:
-            parsed[
-                "next_session_priorities"
-            ] = (
-                build_deterministic_next_session_priorities(
-                    session_coaching_facts
-                )
+            parsed["next_session_priorities"] = (
+                build_deterministic_next_session_priorities(session_coaching_facts)
             )
-
             return {
-                "status":
-                    "VALID",
-
-                "attempts":
-                    attempt,
-
-                "response":
-                    parsed,
-
-                "validation_errors":
-                    [],
+                "status": "VALID",
+                "attempts": attempt,
+                "response": parsed,
+                "validation_errors": [],
+                "deterministic_repairs": {
+                    "optional_list_overflow": overflow_repairs
+                } if overflow_repairs else {},
             }
 
-    pruned_response, removed_items = (
-        prune_only_invalid_global_list_items(
-            parsed if 'parsed' in locals() else None,
+        # v3.10.7: no gastar otro request si el único problema está en
+        # items opcionales narrativos que Python puede eliminar y revalidar.
+        pruned_response, removed_items = prune_only_invalid_global_list_items(
+            parsed,
             valid_comparison_results,
             session_coaching_facts,
             errors,
         )
+        if pruned_response is not None:
+            removed_count = sum(len(indexes) for indexes in removed_items.values())
+            pruned_response["repeated_observations"] = (
+                build_deterministic_repeated_observations(session_coaching_facts)
+            )
+            pruned_response["next_session_priorities"] = (
+                build_deterministic_next_session_priorities(session_coaching_facts)
+            )
+            print(
+                "Síntesis global: reparación determinista v3.10.7 aplicada "
+                f"sin retry; se descartaron {removed_count} item(s) opcional(es) "
+                "no grounded."
+            )
+            return {
+                "status": "VALID",
+                "attempts": attempt,
+                "response": pruned_response,
+                "validation_errors": [],
+                "fallback": "PRUNED_INVALID_OPTIONAL_GLOBAL_ITEMS",
+                "pruned_global_items": removed_items,
+            }
+
+        last_parsed = parsed
+        last_parsed_errors = list(errors)
+
+    # Si hubo un candidato parseable en un intento anterior, intentamos una
+    # última poda con SUS propios errores (no con el error de un intento
+    # posterior truncado).
+    if last_parsed is not None and last_parsed_errors:
+        pruned_response, removed_items = prune_only_invalid_global_list_items(
+            last_parsed,
+            valid_comparison_results,
+            session_coaching_facts,
+            last_parsed_errors,
+        )
+        if pruned_response is not None:
+            removed_count = sum(len(indexes) for indexes in removed_items.values())
+            pruned_response["repeated_observations"] = (
+                build_deterministic_repeated_observations(session_coaching_facts)
+            )
+            pruned_response["next_session_priorities"] = (
+                build_deterministic_next_session_priorities(session_coaching_facts)
+            )
+            print(
+                "Síntesis global: recuperación del último JSON parseable; "
+                f"se descartaron {removed_count} item(s) opcional(es) no grounded."
+            )
+            return {
+                "status": "VALID",
+                "attempts": MAX_GLOBAL_LLM_VALIDATION_ATTEMPTS,
+                "response": pruned_response,
+                "validation_errors": [],
+                "fallback": "RECOVERED_LAST_PARSEABLE_GLOBAL",
+                "pruned_global_items": removed_items,
+            }
+
+    # Última barrera: la narrativa global nunca invalida hechos deterministas
+    # ya validados. Construimos una síntesis mínima sólo desde next_stint_plan.
+    fallback_response = build_deterministic_global_fallback(
+        session_coaching_facts
+    )
+    fallback_errors = validate_global_llm_response(
+        fallback_response,
+        valid_comparison_results,
+        session_coaching_facts,
     )
 
-    if pruned_response is not None:
-        removed_count = sum(
-            len(indexes)
-            for indexes in removed_items.values()
+    if not fallback_errors:
+        fallback_response["next_session_priorities"] = (
+            build_deterministic_next_session_priorities(session_coaching_facts)
         )
-
-        pruned_response["repeated_observations"] = (
-            build_deterministic_repeated_observations(
-                session_coaching_facts
-            )
-        )
-
-        pruned_response[
-            "next_session_priorities"
-        ] = (
-            build_deterministic_next_session_priorities(
-                session_coaching_facts
-            )
-        )
-
         print(
-            "Síntesis global: fallback determinista v3.10.5 "
-            f"aplicado; se descartaron {removed_count} items "
-            "opcionales no grounded."
+            "Síntesis global: fallback determinista v3.10.7 aplicado; "
+            "la respuesta narrativa local no pudo validarse, pero la sesión "
+            "se guarda desde next_stint_plan y recurrencia de Python."
         )
-
         return {
             "status": "VALID",
             "attempts": MAX_GLOBAL_LLM_VALIDATION_ATTEMPTS,
-            "response": pruned_response,
+            "response": fallback_response,
             "validation_errors": [],
-            "fallback": "PRUNED_INVALID_OPTIONAL_GLOBAL_ITEMS",
-            "pruned_global_items": removed_items,
+            "fallback": "DETERMINISTIC_GLOBAL_FROM_NEXT_STINT_PLAN",
+            "llm_validation_errors": errors or [],
         }
 
-    rejected_path = os.path.join(
-        output_dir,
-        "global_REJECTED.txt",
-    )
-
+    rejected_path = os.path.join(output_dir, "global_REJECTED.txt")
     save_text(
         rejected_path,
-        (
-            "VALIDATION ERRORS\n"
-            "=================\n"
-            + "\n".join(
-                errors or []
-            )
-            + "\n\nRAW RESPONSE\n"
-            "============\n"
-            + (
-                last_raw
-                if isinstance(
-                    last_raw,
-                    str,
-                )
-                else repr(last_raw)
-            )
-        ),
+        "VALIDATION ERRORS\n=================\n"
+        + "\n".join(fallback_errors or errors or [])
+        + "\n\nRAW RESPONSE\n============\n"
+        + (last_raw if isinstance(last_raw, str) else repr(last_raw)),
     )
 
     return {
-        "status":
-            "REJECTED",
-
-        "attempts":
-            MAX_GLOBAL_LLM_VALIDATION_ATTEMPTS,
-
-        "response":
-            None,
-
-        "validation_errors":
-            errors or [],
+        "status": "REJECTED",
+        "attempts": MAX_GLOBAL_LLM_VALIDATION_ATTEMPTS,
+        "response": None,
+        "validation_errors": fallback_errors or errors or [],
     }
 
 
@@ -14215,6 +15170,41 @@ def render_global_analysis(
         action_text = clean_priority(priority_text, label)
         if action_text:
             lines.append(f"**Objetivo de conducción:** {action_text}")
+            lines.append("")
+
+        reference_profiles = [
+            profile
+            for profile in (item.get("reference_action_profiles", []) or [])
+            if isinstance(profile, dict) and profile.get("shape_summary")
+        ]
+        if reference_profiles:
+            channel_labels = {
+                "throttle": "Acelerador",
+                "brake": "Freno",
+            }
+            profile_texts = []
+            for profile in reference_profiles[:2]:
+                summary = str(
+                    profile.get("shape_summary_detailed")
+                    or profile.get("shape_summary")
+                    or ""
+                ).strip()
+                if not summary:
+                    continue
+                channel = str(profile.get("channel") or "").strip()
+                prefix = channel_labels.get(channel, channel.capitalize() if channel else "Input")
+                profile_texts.append(f"{prefix}: {summary}")
+
+            if profile_texts:
+                lines.append(
+                    "**Forma observada en la referencia:** "
+                    + "; ".join(profile_texts)
+                    + "."
+                )
+            lines.append(
+                "_Descripción de forma; los puntos numéricos de coaching siguen "
+                "siendo únicamente los autorizados por los detectores de eventos._"
+            )
             lines.append("")
 
         comparisons = [
@@ -14450,7 +15440,7 @@ def render_global_analysis(
 
     def current_plan_label_for_pattern(pattern):
         """
-        v3.10.5 presentation-only.
+        v3.10.7 presentation-only.
 
         Un patrón físico repetido puede ser promovido/re-etiquetado por el
         plan de recurrencia. El apéndice debe mostrar la etiqueta ACTUAL del
@@ -14470,7 +15460,7 @@ def render_global_analysis(
         ]
 
         if not matches:
-            return pattern.get("region_label")
+            return None
 
         matches.sort(
             key=lambda item: _plan_overlap_m(
@@ -14623,6 +15613,7 @@ def save_result(
     session_coaching_facts,
     global_structured,
     global_analysis,
+    global_validation_audit=None,
 ):
     stem = os.path.splitext(
         os.path.basename(
@@ -14644,7 +15635,7 @@ def save_result(
 
     output_path = os.path.join(
         output_dir,
-        stem + f"_llm_analysis_v3_10_5_{MODEL_NAME}.json",
+        stem + f"_llm_analysis_v3_10_7_{MODEL_NAME}.json",
     )
 
     braking_point_detection = next(
@@ -14682,7 +15673,7 @@ def save_result(
     result = {
         "metadata": {
             "llm_analysis_version":
-                "3.10.5",
+                "3.10.7",
 
             "report_presentation_version":
                 "1.0",
@@ -14764,6 +15755,9 @@ def save_result(
         "session_coaching_facts":
             session_coaching_facts,
 
+        "global_validation_audit":
+            global_validation_audit or {},
+
         "global_structured":
             global_structured,
 
@@ -14795,7 +15789,7 @@ def save_result(
 
 def main():
     print_header(
-        "RACE ENGINEER - LLM ANALYSIS v3.10.5"
+        "RACE ENGINEER - LLM ANALYSIS v3.10.7"
     )
 
     input_path = find_json_file()
@@ -14896,7 +15890,7 @@ def main():
     print()
 
     print(
-        "Arquitectura v3.10.5:"
+        "Arquitectura v3.10.7:"
     )
 
     print(
@@ -14995,7 +15989,7 @@ def main():
             raise RuntimeError(
                 "No hay driver_action_episode disponibles "
                 f"para {reference_lap} -> {comparison_lap}. "
-                "La v3.10.5 requiere analyze_telemetry v3.8 "
+                "La v3.10.7 requiere analyze_telemetry v3.8 "
                 "con episodios primarios."
             )
 
@@ -15003,7 +15997,7 @@ def main():
 
         if episode_catalog:
             print(
-                "Solicitando interpretación aislada + ranking comparativo v3.10.5..."
+                "Solicitando interpretación aislada + ranking comparativo v3.10.7..."
             )
 
             validated = (
@@ -15236,6 +16230,7 @@ def main():
             track_location_context=(
                 track_location_context
             ),
+            source_data=data,
         )
     )
 
@@ -15283,6 +16278,19 @@ def main():
         ]
     )
 
+    global_validation_audit = {
+        key: global_validated.get(key)
+        for key in (
+            "status",
+            "attempts",
+            "fallback",
+            "deterministic_repairs",
+            "pruned_global_items",
+            "llm_validation_errors",
+        )
+        if global_validated.get(key) not in (None, {}, [])
+    }
+
     global_analysis = (
         render_global_analysis(
             metadata,
@@ -15299,6 +16307,7 @@ def main():
         session_coaching_facts,
         global_structured,
         global_analysis,
+        global_validation_audit=global_validation_audit,
     )
 
     print()

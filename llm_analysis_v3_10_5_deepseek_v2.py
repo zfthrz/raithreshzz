@@ -13,7 +13,7 @@ from datetime import datetime, timezone
 
 
 # ============================================================
-# RACE ENGINEER - LLM ANALYSIS v3.10.5
+# RACE ENGINEER - LLM ANALYSIS v3.10.5 / DeepSeek provisional v1
 # ============================================================
 #
 # Diseñado para:
@@ -40,7 +40,7 @@ from datetime import datetime, timezone
 # - interpreta cada episodio en aislamiento
 # - clasifica prioridades en una llamada comparativa separada
 #
-# Una llamada a Ollama por episodio.
+# Una llamada a DeepSeek API por episodio.
 # Una llamada comparativa para clasificar prioridades.
 # Una llamada de resumen por comparación.
 # Una llamada final para sintetizar la sesión.
@@ -52,10 +52,241 @@ from datetime import datetime, timezone
 # CONFIGURACIÓN
 # ============================================================
 
-OLLAMA_URL = "http://localhost:11434/api/chat"
+DEEPSEEK_URL = os.environ.get(
+    "DEEPSEEK_API_URL",
+    "https://api.deepseek.com/chat/completions",
+)
 
-MODEL_NAME = "ingenierov3"
+# Modelo provisional por defecto. Puede cambiarse sin editar el archivo:
+#   export DEEPSEEK_MODEL=deepseek-v4-pro
+MODEL_NAME = os.environ.get(
+    "DEEPSEEK_MODEL",
+    "deepseek-v4-pro",
+)
 
+DEEPSEEK_API_KEY_ENV = "DEEPSEEK_API_KEY"
+
+DEEPSEEK_PRICING_USD_PER_MILLION = {
+    # Pricing supplied for this experiment.
+    "deepseek-v4-flash": {
+        "input_cache_hit": 0.0028,
+        "input_cache_miss": 0.14,
+        "output": 0.28,
+    },
+    "deepseek-v4-pro": {
+        "input_cache_hit": 0.003625,
+        "input_cache_miss": 0.435,
+        "output": 0.87,
+    },
+}
+
+DEEPSEEK_USAGE = {
+    "http_request_count": 0,
+    "usage_response_count": 0,
+    "prompt_tokens": 0,
+    "prompt_cache_hit_tokens": 0,
+    "prompt_cache_miss_tokens": 0,
+    "completion_tokens": 0,
+    "total_tokens": 0,
+}
+
+
+def reset_deepseek_usage():
+    for key in DEEPSEEK_USAGE:
+        DEEPSEEK_USAGE[key] = 0
+
+
+def _usage_int(value):
+    try:
+        value = int(value)
+    except (TypeError, ValueError):
+        return None
+    return max(0, value)
+
+
+def _first_usage_int(usage, *keys):
+    if not isinstance(usage, dict):
+        return None
+    for key in keys:
+        value = _usage_int(usage.get(key))
+        if value is not None:
+            return value
+    return None
+
+
+def record_deepseek_usage(usage):
+    """
+    Acumula el `usage` devuelto por DeepSeek para TODAS las respuestas
+    HTTP válidas, incluidos retries de generación.
+
+    Si DeepSeek no devuelve desglose hit/miss, todo el input desconocido se
+    cobra como cache miss para que la estimación no sea optimista.
+    """
+    if not isinstance(usage, dict):
+        return
+
+    prompt = _first_usage_int(
+        usage,
+        "prompt_tokens",
+        "input_tokens",
+    ) or 0
+
+    completion = _first_usage_int(
+        usage,
+        "completion_tokens",
+        "output_tokens",
+    ) or 0
+
+    total = _first_usage_int(
+        usage,
+        "total_tokens",
+    )
+    if total is None:
+        total = prompt + completion
+
+    cache_hit = _first_usage_int(
+        usage,
+        "prompt_cache_hit_tokens",
+        "cache_hit_tokens",
+        "input_cache_hit_tokens",
+    )
+
+    cache_miss = _first_usage_int(
+        usage,
+        "prompt_cache_miss_tokens",
+        "cache_miss_tokens",
+        "input_cache_miss_tokens",
+    )
+
+    # Reconstruct missing side conservatively from prompt_tokens.
+    if cache_hit is None and cache_miss is None:
+        cache_hit = 0
+        cache_miss = prompt
+    elif cache_hit is None:
+        cache_hit = max(0, prompt - cache_miss)
+    elif cache_miss is None:
+        cache_miss = max(0, prompt - cache_hit)
+
+    # Do not let malformed provider accounting exceed prompt total.
+    if prompt > 0 and cache_hit + cache_miss > prompt:
+        overflow = cache_hit + cache_miss - prompt
+        cache_miss = max(0, cache_miss - overflow)
+
+    accounted = cache_hit + cache_miss
+    if prompt > accounted:
+        # Unknown remainder -> cache miss, conservative.
+        cache_miss += prompt - accounted
+
+    DEEPSEEK_USAGE["usage_response_count"] += 1
+    DEEPSEEK_USAGE["prompt_tokens"] += prompt
+    DEEPSEEK_USAGE["prompt_cache_hit_tokens"] += cache_hit
+    DEEPSEEK_USAGE["prompt_cache_miss_tokens"] += cache_miss
+    DEEPSEEK_USAGE["completion_tokens"] += completion
+    DEEPSEEK_USAGE["total_tokens"] += total
+
+
+def deepseek_usage_summary():
+    pricing = DEEPSEEK_PRICING_USD_PER_MILLION.get(
+        MODEL_NAME
+    )
+
+    summary = {
+        "model": MODEL_NAME,
+        "http_request_count":
+            DEEPSEEK_USAGE["http_request_count"],
+        "usage_response_count":
+            DEEPSEEK_USAGE["usage_response_count"],
+        "prompt_tokens":
+            DEEPSEEK_USAGE["prompt_tokens"],
+        "prompt_cache_hit_tokens":
+            DEEPSEEK_USAGE["prompt_cache_hit_tokens"],
+        "prompt_cache_miss_tokens":
+            DEEPSEEK_USAGE["prompt_cache_miss_tokens"],
+        "completion_tokens":
+            DEEPSEEK_USAGE["completion_tokens"],
+        "total_tokens":
+            DEEPSEEK_USAGE["total_tokens"],
+        "pricing_usd_per_million":
+            dict(pricing) if pricing else None,
+        "estimated_cost_usd": None,
+        "estimated_100_runs_usd": None,
+        "pricing_note":
+            "pricing supplied for this DeepSeek experiment",
+    }
+
+    if pricing:
+        cost = (
+            DEEPSEEK_USAGE["prompt_cache_hit_tokens"]
+            / 1_000_000
+            * pricing["input_cache_hit"]
+        )
+        cost += (
+            DEEPSEEK_USAGE["prompt_cache_miss_tokens"]
+            / 1_000_000
+            * pricing["input_cache_miss"]
+        )
+        cost += (
+            DEEPSEEK_USAGE["completion_tokens"]
+            / 1_000_000
+            * pricing["output"]
+        )
+
+        summary["estimated_cost_usd"] = round(cost, 8)
+        summary["estimated_100_runs_usd"] = round(
+            cost * 100,
+            6,
+        )
+
+    return summary
+
+
+def print_deepseek_usage_summary():
+    usage = deepseek_usage_summary()
+
+    print()
+    print_header("DEEPSEEK USAGE / COST")
+    print(
+        f"HTTP requests:      {usage['http_request_count']}"
+    )
+    print(
+        f"Usage responses:    {usage['usage_response_count']}"
+    )
+    print(
+        f"Input tokens:       {usage['prompt_tokens']:,}"
+    )
+    print(
+        "  cache hit:        "
+        f"{usage['prompt_cache_hit_tokens']:,}"
+    )
+    print(
+        "  cache miss:       "
+        f"{usage['prompt_cache_miss_tokens']:,}"
+    )
+    print(
+        f"Output tokens:      {usage['completion_tokens']:,}"
+    )
+    print(
+        f"Total tokens:       {usage['total_tokens']:,}"
+    )
+
+    if usage["estimated_cost_usd"] is not None:
+        print(
+            "Estimated cost:     "
+            f"${usage['estimated_cost_usd']:.6f}"
+        )
+        print(
+            "100 similar runs:   "
+            f"${usage['estimated_100_runs_usd']:.4f}"
+        )
+    else:
+        print(
+            "Estimated cost:     unavailable "
+            f"(no pricing table for {MODEL_NAME})"
+        )
+
+
+# DeepSeek V4 soporta contextos muy superiores; conservamos este valor sólo
+# como referencia del baseline local. No se envía como parámetro a la API.
 CONTEXT_SIZE = 8192
 
 TEMPERATURE = 0.15
@@ -71,15 +302,15 @@ TIMEOUT_SECONDS = 600
 # diez minutos antes de recuperar el intento. Los reintentos de transporte
 # son independientes de MAX_LLM_VALIDATION_ATTEMPTS.
 RANKER_TIMEOUT_SECONDS = 240
-MAX_OLLAMA_TRANSPORT_ATTEMPTS = 2
-OLLAMA_TRANSPORT_RETRY_DELAY_SECONDS = 2
+MAX_DEEPSEEK_TRANSPORT_ATTEMPTS = 2
+DEEPSEEK_TRANSPORT_RETRY_DELAY_SECONDS = 2
 
 # Una respuesta HTTP 200 con message.content vacío no debe abortar la sesión.
 # Se considera un fallo recuperable de generación y se repite la misma
 # solicitud. "thinking" se desactiva explícitamente porque este pipeline
 # sólo consume el JSON final.
-MAX_OLLAMA_GENERATION_ATTEMPTS = 3
-OLLAMA_GENERATION_RETRY_DELAY_SECONDS = 1
+MAX_DEEPSEEK_GENERATION_ATTEMPTS = 3
+DEEPSEEK_GENERATION_RETRY_DELAY_SECONDS = 1
 
 MAX_DRIVER_ACTION_EPISODES = 8
 
@@ -2002,10 +2233,10 @@ def build_llm_dataset(
 
 
 # ============================================================
-# OLLAMA
+# DEEPSEEK API - PROVISIONAL BACKEND
 # ============================================================
 
-def ollama_chat(
+def deepseek_chat(
     system_prompt,
     user_prompt,
     temperature=None,
@@ -2015,65 +2246,60 @@ def ollama_chat(
     format_schema=None,
 ):
     """
-    Wrapper robusto para /api/chat.
+    Wrapper robusto para DeepSeek Chat Completions.
 
-    Dos niveles de retry independientes:
-    1. transporte: timeout / URLError;
-    2. generación: HTTP válido pero JSON/message/content inutilizable.
+    Mantiene la misma interfaz interna que el antiguo wrapper de Ollama para
+    no modificar prompts, validadores ni el flujo de Race Engineer.
 
-    `think=False` es deliberado: Race Engineer sólo consume la respuesta
-    estructurada final y nunca utiliza ni expone el razonamiento interno.
+    Decisiones deliberadas para esta prueba:
+    - DeepSeek V4 en NON-THINKING para consumir sólo el JSON final y para que
+      `temperature` siga teniendo efecto.
+    - `response_format={"type": "json_object"}` en todas las llamadas.
+    - `seed` se conserva en la firma por compatibilidad con el pipeline, pero
+      no se envía: la API pública actual de DeepSeek no documenta `seed`.
+    - `format_schema` no se envía como JSON Schema porque DeepSeek JSON Output
+      expone `json_object`; los validadores Python existentes siguen siendo la
+      autoridad del schema y fuerzan retries si la respuesta no coincide.
     """
-    payload = {
-        "model":
-            MODEL_NAME,
+    api_key = os.environ.get(DEEPSEEK_API_KEY_ENV)
+    if not api_key:
+        raise RuntimeError(
+            "DEEPSEEK_API_KEY no está configurada. "
+            "En Codespaces agregala como secret y exportala al entorno."
+        )
 
+    payload = {
+        "model": MODEL_NAME,
         "messages": [
             {
-                "role":
-                    "system",
-
-                "content":
-                    system_prompt,
+                "role": "system",
+                "content": system_prompt,
             },
             {
-                "role":
-                    "user",
-
-                "content":
-                    user_prompt,
+                "role": "user",
+                "content": user_prompt,
             },
         ],
-
-        "stream":
-            False,
-
-        # Ollama puede devolver `thinking` separado de `content` en modelos
-        # compatibles. Para este pipeline queremos únicamente el JSON final.
-        "think":
-            False,
-
-        "format":
-            format_schema if format_schema is not None else "json",
-
-        "options": {
-            "temperature":
-                TEMPERATURE if temperature is None else temperature,
-
-            "num_ctx":
-                CONTEXT_SIZE,
+        "stream": False,
+        "temperature": (
+            TEMPERATURE if temperature is None else temperature
+        ),
+        "response_format": {
+            "type": "json_object",
         },
+        # V4 defaults to thinking=enabled, so disable it explicitly.
+        "thinking": {
+            "type": "disabled",
+        },
+        # Suficiente para los JSON del pipeline actual y evita respuestas
+        # accidentalmente enormes.
+        "max_tokens": 8192,
     }
-
-    if seed is not None:
-        payload["options"]["seed"] = int(seed)
 
     body = json.dumps(
         payload,
         ensure_ascii=False,
-    ).encode(
-        "utf-8"
-    )
+    ).encode("utf-8")
 
     effective_timeout = (
         TIMEOUT_SECONDS
@@ -2082,7 +2308,7 @@ def ollama_chat(
     )
 
     max_transport_attempts = (
-        MAX_OLLAMA_TRANSPORT_ATTEMPTS
+        MAX_DEEPSEEK_TRANSPORT_ATTEMPTS
         if transport_attempts is None
         else max(1, int(transport_attempts))
     )
@@ -2091,18 +2317,17 @@ def ollama_chat(
 
     for generation_attempt in range(
         1,
-        MAX_OLLAMA_GENERATION_ATTEMPTS + 1,
+        MAX_DEEPSEEK_GENERATION_ATTEMPTS + 1,
     ):
         raw = None
         last_transport_error = None
 
-        # Crear Request nuevo en cada intento de generación.
         request = urllib.request.Request(
-            OLLAMA_URL,
+            DEEPSEEK_URL,
             data=body,
             headers={
-                "Content-Type":
-                    "application/json",
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {api_key}",
             },
             method="POST",
         )
@@ -2112,6 +2337,7 @@ def ollama_chat(
             max_transport_attempts + 1,
         ):
             try:
+                DEEPSEEK_USAGE["http_request_count"] += 1
                 with urllib.request.urlopen(
                     request,
                     timeout=effective_timeout,
@@ -2121,6 +2347,39 @@ def ollama_chat(
                 last_transport_error = None
                 break
 
+            except urllib.error.HTTPError as exc:
+                try:
+                    error_body = exc.read().decode(
+                        "utf-8",
+                        errors="replace",
+                    )
+                except Exception:
+                    error_body = ""
+
+                # 429/5xx pueden ser transitorios. 4xx restantes son de
+                # configuración/payload y conviene fallar inmediatamente.
+                retryable = (
+                    exc.code == 429
+                    or 500 <= exc.code <= 599
+                )
+
+                if retryable and transport_attempt < max_transport_attempts:
+                    print(
+                        "    DeepSeek: HTTP transitorio "
+                        f"{exc.code} (intento {transport_attempt}/"
+                        f"{max_transport_attempts}). Reintentando..."
+                    )
+                    time.sleep(
+                        DEEPSEEK_TRANSPORT_RETRY_DELAY_SECONDS
+                    )
+                    continue
+
+                raise RuntimeError(
+                    "DEEPSEEK_HTTP_ERROR. "
+                    f"HTTP {exc.code}. URL: {DEEPSEEK_URL}\n"
+                    f"Respuesta: {error_body[:1200]}"
+                ) from exc
+
             except (
                 TimeoutError,
                 urllib.error.URLError,
@@ -2129,50 +2388,31 @@ def ollama_chat(
 
                 if transport_attempt < max_transport_attempts:
                     print(
-                        "    Ollama: fallo de transporte "
+                        "    DeepSeek: fallo de transporte "
                         f"(intento {transport_attempt}/"
                         f"{max_transport_attempts}): "
-                        f"{type(exc).__name__}. "
-                        "Reintentando la misma solicitud..."
+                        f"{type(exc).__name__}. Reintentando..."
                     )
                     time.sleep(
-                        OLLAMA_TRANSPORT_RETRY_DELAY_SECONDS
+                        DEEPSEEK_TRANSPORT_RETRY_DELAY_SECONDS
                     )
                     continue
 
-                if isinstance(exc, TimeoutError):
-                    raise RuntimeError(
-                        "OLLAMA_TRANSPORT_TIMEOUT. "
-                        "Ollama no respondió dentro del tiempo límite "
-                        f"tras {max_transport_attempts} intento(s).\n"
-                        f"URL: {OLLAMA_URL}\n"
-                        f"Timeout por intento: "
-                        f"{effective_timeout:g} s"
-                    ) from exc
-
                 raise RuntimeError(
-                    "No se pudo conectar con Ollama tras "
-                    f"{max_transport_attempts} intento(s).\n"
-                    f"URL: {OLLAMA_URL}\n"
+                    "DEEPSEEK_TRANSPORT_FAILED. "
+                    f"URL: {DEEPSEEK_URL}\n"
+                    f"Timeout por intento: {effective_timeout:g} s\n"
                     f"Error: {exc}"
                 ) from exc
 
         if raw is None:
             raise RuntimeError(
-                "OLLAMA_TRANSPORT_FAILED sin respuesta utilizable. "
+                "DEEPSEEK_TRANSPORT_FAILED sin respuesta utilizable. "
                 f"Último error: {last_transport_error}"
             )
 
-        # --------------------------------------------------------
-        # Validación de la envoltura de Ollama.
-        # Una anomalía acá es recuperable y repite la generación.
-        # --------------------------------------------------------
         try:
-            result = json.loads(
-                raw.decode(
-                    "utf-8"
-                )
-            )
+            result = json.loads(raw.decode("utf-8"))
         except (
             UnicodeDecodeError,
             json.JSONDecodeError,
@@ -2181,94 +2421,70 @@ def ollama_chat(
                 "respuesta HTTP no decodificable como JSON válido"
             )
 
-            if generation_attempt < MAX_OLLAMA_GENERATION_ATTEMPTS:
+            if generation_attempt < MAX_DEEPSEEK_GENERATION_ATTEMPTS:
                 print(
-                    "    Ollama: respuesta de generación inválida "
+                    "    DeepSeek: respuesta de generación inválida "
                     f"(intento {generation_attempt}/"
-                    f"{MAX_OLLAMA_GENERATION_ATTEMPTS}): "
-                    f"{last_generation_diagnostic}. "
+                    f"{MAX_DEEPSEEK_GENERATION_ATTEMPTS}). "
                     "Reintentando..."
                 )
                 time.sleep(
-                    OLLAMA_GENERATION_RETRY_DELAY_SECONDS
+                    DEEPSEEK_GENERATION_RETRY_DELAY_SECONDS
                 )
                 continue
 
             raise RuntimeError(
-                "OLLAMA_GENERATION_INVALID_JSON tras "
-                f"{MAX_OLLAMA_GENERATION_ATTEMPTS} intento(s)."
+                "DEEPSEEK_GENERATION_INVALID_JSON tras "
+                f"{MAX_DEEPSEEK_GENERATION_ATTEMPTS} intento(s)."
             ) from exc
 
-        message = result.get(
-            "message"
+        record_deepseek_usage(
+            result.get("usage")
         )
 
-        if not isinstance(
-            message,
-            dict,
-        ):
-            last_generation_diagnostic = (
-                "la respuesta no contiene un objeto message"
-            )
+        choices = result.get("choices")
+        message = None
+        finish_reason = None
 
-        else:
-            content = message.get(
-                "content"
-            )
+        if isinstance(choices, list) and choices:
+            first_choice = choices[0]
+            if isinstance(first_choice, dict):
+                message = first_choice.get("message")
+                finish_reason = first_choice.get("finish_reason")
 
-            if isinstance(
-                content,
-                str,
-            ) and content.strip():
+        if isinstance(message, dict):
+            content = message.get("content")
+
+            if isinstance(content, str) and content.strip():
                 return content
 
-            # No leemos ni imprimimos el contenido de `thinking`.
-            # Sólo registramos si Ollama informó que existía.
-            thinking_present = bool(
-                message.get(
-                    "thinking"
-                )
-            )
+        usage = result.get("usage")
+        last_generation_diagnostic = (
+            "choices[0].message.content vacío/ausente"
+            f"; finish_reason={finish_reason!r}"
+            f"; usage={usage!r}"
+        )
 
-            done_reason = result.get(
-                "done_reason"
-            )
-            eval_count = result.get(
-                "eval_count"
-            )
-            prompt_eval_count = result.get(
-                "prompt_eval_count"
-            )
-
-            last_generation_diagnostic = (
-                "message.content vacío"
-                f"; thinking_present={thinking_present}"
-                f"; done_reason={done_reason!r}"
-                f"; prompt_eval_count={prompt_eval_count!r}"
-                f"; eval_count={eval_count!r}"
-            )
-
-        if generation_attempt < MAX_OLLAMA_GENERATION_ATTEMPTS:
+        if generation_attempt < MAX_DEEPSEEK_GENERATION_ATTEMPTS:
             print(
-                "    Ollama: respuesta vacía/inutilizable "
+                "    DeepSeek: respuesta vacía/inutilizable "
                 f"(intento {generation_attempt}/"
-                f"{MAX_OLLAMA_GENERATION_ATTEMPTS}): "
-                f"{last_generation_diagnostic}. "
-                "Reintentando la misma generación..."
+                f"{MAX_DEEPSEEK_GENERATION_ATTEMPTS}): "
+                f"{last_generation_diagnostic}. Reintentando..."
             )
             time.sleep(
-                OLLAMA_GENERATION_RETRY_DELAY_SECONDS
+                DEEPSEEK_GENERATION_RETRY_DELAY_SECONDS
             )
             continue
 
         raise RuntimeError(
-            "OLLAMA_EMPTY_CONTENT tras "
-            f"{MAX_OLLAMA_GENERATION_ATTEMPTS} intento(s). "
+            "DEEPSEEK_EMPTY_CONTENT tras "
+            f"{MAX_DEEPSEEK_GENERATION_ATTEMPTS} intento(s). "
             f"Diagnóstico: {last_generation_diagnostic}"
         )
 
     raise RuntimeError(
-        "OLLAMA_GENERATION_FAILED sin respuesta utilizable."
+        "DEEPSEEK_GENERATION_FAILED sin respuesta utilizable."
     )
 
 
@@ -5503,7 +5719,7 @@ def get_validated_episode_response(
             )
             save_text(path, prompt)
 
-        raw = ollama_chat(
+        raw = deepseek_chat(
             EPISODE_SYSTEM_PROMPT,
             prompt,
         )
@@ -6024,7 +6240,7 @@ def get_validated_comparison_ranker_response(
             )
             save_text(path, prompt)
 
-        raw = ollama_chat(
+        raw = deepseek_chat(
             COMPARISON_RANKER_SYSTEM_PROMPT,
             prompt,
             temperature=RANKER_TEMPERATURE,
@@ -6300,7 +6516,7 @@ def get_validated_comparison_summary_response(
             )
             save_text(path, prompt)
 
-        raw = ollama_chat(
+        raw = deepseek_chat(
             COMPARISON_SUMMARY_SYSTEM_PROMPT,
             prompt,
         )
@@ -13908,7 +14124,7 @@ def get_validated_global_response(
                 prompt,
             )
 
-        raw = ollama_chat(
+        raw = deepseek_chat(
             GLOBAL_SYSTEM_PROMPT,
             prompt,
             temperature=0.0,
@@ -14644,7 +14860,7 @@ def save_result(
 
     output_path = os.path.join(
         output_dir,
-        stem + f"_llm_analysis_v3_10_5_{MODEL_NAME}.json",
+        stem + f"_llm_analysis_v3_10_5_deepseek_v2_{MODEL_NAME}.json",
     )
 
     braking_point_detection = next(
@@ -14717,6 +14933,9 @@ def save_result(
 
             "model":
                 MODEL_NAME,
+
+            "deepseek_usage":
+                deepseek_usage_summary(),
 
             "context":
                 CONTEXT_SIZE,
@@ -14794,8 +15013,10 @@ def save_result(
 # ============================================================
 
 def main():
+    reset_deepseek_usage()
+
     print_header(
-        "RACE ENGINEER - LLM ANALYSIS v3.10.5"
+        "RACE ENGINEER - LLM ANALYSIS v3.10.5 / DeepSeek provisional v2"
     )
 
     input_path = find_json_file()
@@ -14861,7 +15082,7 @@ def main():
     print()
 
     print(
-        f"Modelo: {MODEL_NAME}"
+        f"Modelo/API: {MODEL_NAME} @ DeepSeek"
     )
 
     print(
@@ -15300,6 +15521,8 @@ def main():
         global_structured,
         global_analysis,
     )
+
+    print_deepseek_usage_summary()
 
     print()
 

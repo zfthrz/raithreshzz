@@ -1,9 +1,3 @@
-VALIDATION ERRORS
-=================
-LLM_JSON_TRUNCATED: la respuesta anterior quedó incompleta. Devolvé un JSON completo y conciso, cerrando todas las cadenas, arrays y el objeto raíz.
-
-RAW RESPONSE
-============
 {
   "opportunities": [
     "En la zona A, replicá la secuencia de acelerador de la referencia: aplicación alta breve → acelerador liberado → aplicación parcial → liberación breve → reaplicación sostenida sin volver a soltar dentro de la zona",

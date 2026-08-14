@@ -13,7 +13,7 @@ from datetime import datetime, timezone
 
 
 # ============================================================
-# RACE ENGINEER - LLM ANALYSIS v3.10.5
+# RACE ENGINEER - LLM ANALYSIS v3.10.6 / DeepSeek provisional v1
 # ============================================================
 #
 # Diseñado para:
@@ -40,7 +40,7 @@ from datetime import datetime, timezone
 # - interpreta cada episodio en aislamiento
 # - clasifica prioridades en una llamada comparativa separada
 #
-# Una llamada a Ollama por episodio.
+# Una llamada a DeepSeek API por episodio.
 # Una llamada comparativa para clasificar prioridades.
 # Una llamada de resumen por comparación.
 # Una llamada final para sintetizar la sesión.
@@ -52,10 +52,241 @@ from datetime import datetime, timezone
 # CONFIGURACIÓN
 # ============================================================
 
-OLLAMA_URL = "http://localhost:11434/api/chat"
+DEEPSEEK_URL = os.environ.get(
+    "DEEPSEEK_API_URL",
+    "https://api.deepseek.com/chat/completions",
+)
 
-MODEL_NAME = "ingenierov3"
+# Modelo provisional por defecto. Puede cambiarse sin editar el archivo:
+#   export DEEPSEEK_MODEL=deepseek-v4-pro
+MODEL_NAME = os.environ.get(
+    "DEEPSEEK_MODEL",
+    "deepseek-v4-pro",
+)
 
+DEEPSEEK_API_KEY_ENV = "DEEPSEEK_API_KEY"
+
+DEEPSEEK_PRICING_USD_PER_MILLION = {
+    # Pricing supplied for this experiment.
+    "deepseek-v4-flash": {
+        "input_cache_hit": 0.0028,
+        "input_cache_miss": 0.14,
+        "output": 0.28,
+    },
+    "deepseek-v4-pro": {
+        "input_cache_hit": 0.003625,
+        "input_cache_miss": 0.435,
+        "output": 0.87,
+    },
+}
+
+DEEPSEEK_USAGE = {
+    "http_request_count": 0,
+    "usage_response_count": 0,
+    "prompt_tokens": 0,
+    "prompt_cache_hit_tokens": 0,
+    "prompt_cache_miss_tokens": 0,
+    "completion_tokens": 0,
+    "total_tokens": 0,
+}
+
+
+def reset_deepseek_usage():
+    for key in DEEPSEEK_USAGE:
+        DEEPSEEK_USAGE[key] = 0
+
+
+def _usage_int(value):
+    try:
+        value = int(value)
+    except (TypeError, ValueError):
+        return None
+    return max(0, value)
+
+
+def _first_usage_int(usage, *keys):
+    if not isinstance(usage, dict):
+        return None
+    for key in keys:
+        value = _usage_int(usage.get(key))
+        if value is not None:
+            return value
+    return None
+
+
+def record_deepseek_usage(usage):
+    """
+    Acumula el `usage` devuelto por DeepSeek para TODAS las respuestas
+    HTTP válidas, incluidos retries de generación.
+
+    Si DeepSeek no devuelve desglose hit/miss, todo el input desconocido se
+    cobra como cache miss para que la estimación no sea optimista.
+    """
+    if not isinstance(usage, dict):
+        return
+
+    prompt = _first_usage_int(
+        usage,
+        "prompt_tokens",
+        "input_tokens",
+    ) or 0
+
+    completion = _first_usage_int(
+        usage,
+        "completion_tokens",
+        "output_tokens",
+    ) or 0
+
+    total = _first_usage_int(
+        usage,
+        "total_tokens",
+    )
+    if total is None:
+        total = prompt + completion
+
+    cache_hit = _first_usage_int(
+        usage,
+        "prompt_cache_hit_tokens",
+        "cache_hit_tokens",
+        "input_cache_hit_tokens",
+    )
+
+    cache_miss = _first_usage_int(
+        usage,
+        "prompt_cache_miss_tokens",
+        "cache_miss_tokens",
+        "input_cache_miss_tokens",
+    )
+
+    # Reconstruct missing side conservatively from prompt_tokens.
+    if cache_hit is None and cache_miss is None:
+        cache_hit = 0
+        cache_miss = prompt
+    elif cache_hit is None:
+        cache_hit = max(0, prompt - cache_miss)
+    elif cache_miss is None:
+        cache_miss = max(0, prompt - cache_hit)
+
+    # Do not let malformed provider accounting exceed prompt total.
+    if prompt > 0 and cache_hit + cache_miss > prompt:
+        overflow = cache_hit + cache_miss - prompt
+        cache_miss = max(0, cache_miss - overflow)
+
+    accounted = cache_hit + cache_miss
+    if prompt > accounted:
+        # Unknown remainder -> cache miss, conservative.
+        cache_miss += prompt - accounted
+
+    DEEPSEEK_USAGE["usage_response_count"] += 1
+    DEEPSEEK_USAGE["prompt_tokens"] += prompt
+    DEEPSEEK_USAGE["prompt_cache_hit_tokens"] += cache_hit
+    DEEPSEEK_USAGE["prompt_cache_miss_tokens"] += cache_miss
+    DEEPSEEK_USAGE["completion_tokens"] += completion
+    DEEPSEEK_USAGE["total_tokens"] += total
+
+
+def deepseek_usage_summary():
+    pricing = DEEPSEEK_PRICING_USD_PER_MILLION.get(
+        MODEL_NAME
+    )
+
+    summary = {
+        "model": MODEL_NAME,
+        "http_request_count":
+            DEEPSEEK_USAGE["http_request_count"],
+        "usage_response_count":
+            DEEPSEEK_USAGE["usage_response_count"],
+        "prompt_tokens":
+            DEEPSEEK_USAGE["prompt_tokens"],
+        "prompt_cache_hit_tokens":
+            DEEPSEEK_USAGE["prompt_cache_hit_tokens"],
+        "prompt_cache_miss_tokens":
+            DEEPSEEK_USAGE["prompt_cache_miss_tokens"],
+        "completion_tokens":
+            DEEPSEEK_USAGE["completion_tokens"],
+        "total_tokens":
+            DEEPSEEK_USAGE["total_tokens"],
+        "pricing_usd_per_million":
+            dict(pricing) if pricing else None,
+        "estimated_cost_usd": None,
+        "estimated_100_runs_usd": None,
+        "pricing_note":
+            "pricing supplied for this DeepSeek experiment",
+    }
+
+    if pricing:
+        cost = (
+            DEEPSEEK_USAGE["prompt_cache_hit_tokens"]
+            / 1_000_000
+            * pricing["input_cache_hit"]
+        )
+        cost += (
+            DEEPSEEK_USAGE["prompt_cache_miss_tokens"]
+            / 1_000_000
+            * pricing["input_cache_miss"]
+        )
+        cost += (
+            DEEPSEEK_USAGE["completion_tokens"]
+            / 1_000_000
+            * pricing["output"]
+        )
+
+        summary["estimated_cost_usd"] = round(cost, 8)
+        summary["estimated_100_runs_usd"] = round(
+            cost * 100,
+            6,
+        )
+
+    return summary
+
+
+def print_deepseek_usage_summary():
+    usage = deepseek_usage_summary()
+
+    print()
+    print_header("DEEPSEEK USAGE / COST")
+    print(
+        f"HTTP requests:      {usage['http_request_count']}"
+    )
+    print(
+        f"Usage responses:    {usage['usage_response_count']}"
+    )
+    print(
+        f"Input tokens:       {usage['prompt_tokens']:,}"
+    )
+    print(
+        "  cache hit:        "
+        f"{usage['prompt_cache_hit_tokens']:,}"
+    )
+    print(
+        "  cache miss:       "
+        f"{usage['prompt_cache_miss_tokens']:,}"
+    )
+    print(
+        f"Output tokens:      {usage['completion_tokens']:,}"
+    )
+    print(
+        f"Total tokens:       {usage['total_tokens']:,}"
+    )
+
+    if usage["estimated_cost_usd"] is not None:
+        print(
+            "Estimated cost:     "
+            f"${usage['estimated_cost_usd']:.6f}"
+        )
+        print(
+            "100 similar runs:   "
+            f"${usage['estimated_100_runs_usd']:.4f}"
+        )
+    else:
+        print(
+            "Estimated cost:     unavailable "
+            f"(no pricing table for {MODEL_NAME})"
+        )
+
+
+# DeepSeek V4 soporta contextos muy superiores; conservamos este valor sólo
+# como referencia del baseline local. No se envía como parámetro a la API.
 CONTEXT_SIZE = 8192
 
 TEMPERATURE = 0.15
@@ -71,15 +302,15 @@ TIMEOUT_SECONDS = 600
 # diez minutos antes de recuperar el intento. Los reintentos de transporte
 # son independientes de MAX_LLM_VALIDATION_ATTEMPTS.
 RANKER_TIMEOUT_SECONDS = 240
-MAX_OLLAMA_TRANSPORT_ATTEMPTS = 2
-OLLAMA_TRANSPORT_RETRY_DELAY_SECONDS = 2
+MAX_DEEPSEEK_TRANSPORT_ATTEMPTS = 2
+DEEPSEEK_TRANSPORT_RETRY_DELAY_SECONDS = 2
 
 # Una respuesta HTTP 200 con message.content vacío no debe abortar la sesión.
 # Se considera un fallo recuperable de generación y se repite la misma
 # solicitud. "thinking" se desactiva explícitamente porque este pipeline
 # sólo consume el JSON final.
-MAX_OLLAMA_GENERATION_ATTEMPTS = 3
-OLLAMA_GENERATION_RETRY_DELAY_SECONDS = 1
+MAX_DEEPSEEK_GENERATION_ATTEMPTS = 3
+DEEPSEEK_GENERATION_RETRY_DELAY_SECONDS = 1
 
 MAX_DRIVER_ACTION_EPISODES = 8
 
@@ -1414,7 +1645,7 @@ def clean_driver_action_episode(
                 "throttle_release_point_comparison"
             ),
 
-        # Throttle 1.2: observacional. No se envía al LLM en v3.10.5.
+        # Throttle 1.2: observacional. No se envía al LLM en v3.10.6.
         "throttle_full_throttle_attainment_comparison":
             episode.get(
                 "throttle_full_throttle_attainment_comparison"
@@ -2002,10 +2233,10 @@ def build_llm_dataset(
 
 
 # ============================================================
-# OLLAMA
+# DEEPSEEK API - PROVISIONAL BACKEND
 # ============================================================
 
-def ollama_chat(
+def deepseek_chat(
     system_prompt,
     user_prompt,
     temperature=None,
@@ -2015,65 +2246,60 @@ def ollama_chat(
     format_schema=None,
 ):
     """
-    Wrapper robusto para /api/chat.
+    Wrapper robusto para DeepSeek Chat Completions.
 
-    Dos niveles de retry independientes:
-    1. transporte: timeout / URLError;
-    2. generación: HTTP válido pero JSON/message/content inutilizable.
+    Mantiene la misma interfaz interna que el antiguo wrapper de Ollama para
+    no modificar prompts, validadores ni el flujo de Race Engineer.
 
-    `think=False` es deliberado: Race Engineer sólo consume la respuesta
-    estructurada final y nunca utiliza ni expone el razonamiento interno.
+    Decisiones deliberadas para esta prueba:
+    - DeepSeek V4 en NON-THINKING para consumir sólo el JSON final y para que
+      `temperature` siga teniendo efecto.
+    - `response_format={"type": "json_object"}` en todas las llamadas.
+    - `seed` se conserva en la firma por compatibilidad con el pipeline, pero
+      no se envía: la API pública actual de DeepSeek no documenta `seed`.
+    - `format_schema` no se envía como JSON Schema porque DeepSeek JSON Output
+      expone `json_object`; los validadores Python existentes siguen siendo la
+      autoridad del schema y fuerzan retries si la respuesta no coincide.
     """
-    payload = {
-        "model":
-            MODEL_NAME,
+    api_key = os.environ.get(DEEPSEEK_API_KEY_ENV)
+    if not api_key:
+        raise RuntimeError(
+            "DEEPSEEK_API_KEY no está configurada. "
+            "En Codespaces agregala como secret y exportala al entorno."
+        )
 
+    payload = {
+        "model": MODEL_NAME,
         "messages": [
             {
-                "role":
-                    "system",
-
-                "content":
-                    system_prompt,
+                "role": "system",
+                "content": system_prompt,
             },
             {
-                "role":
-                    "user",
-
-                "content":
-                    user_prompt,
+                "role": "user",
+                "content": user_prompt,
             },
         ],
-
-        "stream":
-            False,
-
-        # Ollama puede devolver `thinking` separado de `content` en modelos
-        # compatibles. Para este pipeline queremos únicamente el JSON final.
-        "think":
-            False,
-
-        "format":
-            format_schema if format_schema is not None else "json",
-
-        "options": {
-            "temperature":
-                TEMPERATURE if temperature is None else temperature,
-
-            "num_ctx":
-                CONTEXT_SIZE,
+        "stream": False,
+        "temperature": (
+            TEMPERATURE if temperature is None else temperature
+        ),
+        "response_format": {
+            "type": "json_object",
         },
+        # V4 defaults to thinking=enabled, so disable it explicitly.
+        "thinking": {
+            "type": "disabled",
+        },
+        # Suficiente para los JSON del pipeline actual y evita respuestas
+        # accidentalmente enormes.
+        "max_tokens": 8192,
     }
-
-    if seed is not None:
-        payload["options"]["seed"] = int(seed)
 
     body = json.dumps(
         payload,
         ensure_ascii=False,
-    ).encode(
-        "utf-8"
-    )
+    ).encode("utf-8")
 
     effective_timeout = (
         TIMEOUT_SECONDS
@@ -2082,7 +2308,7 @@ def ollama_chat(
     )
 
     max_transport_attempts = (
-        MAX_OLLAMA_TRANSPORT_ATTEMPTS
+        MAX_DEEPSEEK_TRANSPORT_ATTEMPTS
         if transport_attempts is None
         else max(1, int(transport_attempts))
     )
@@ -2091,18 +2317,17 @@ def ollama_chat(
 
     for generation_attempt in range(
         1,
-        MAX_OLLAMA_GENERATION_ATTEMPTS + 1,
+        MAX_DEEPSEEK_GENERATION_ATTEMPTS + 1,
     ):
         raw = None
         last_transport_error = None
 
-        # Crear Request nuevo en cada intento de generación.
         request = urllib.request.Request(
-            OLLAMA_URL,
+            DEEPSEEK_URL,
             data=body,
             headers={
-                "Content-Type":
-                    "application/json",
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {api_key}",
             },
             method="POST",
         )
@@ -2112,6 +2337,7 @@ def ollama_chat(
             max_transport_attempts + 1,
         ):
             try:
+                DEEPSEEK_USAGE["http_request_count"] += 1
                 with urllib.request.urlopen(
                     request,
                     timeout=effective_timeout,
@@ -2121,6 +2347,39 @@ def ollama_chat(
                 last_transport_error = None
                 break
 
+            except urllib.error.HTTPError as exc:
+                try:
+                    error_body = exc.read().decode(
+                        "utf-8",
+                        errors="replace",
+                    )
+                except Exception:
+                    error_body = ""
+
+                # 429/5xx pueden ser transitorios. 4xx restantes son de
+                # configuración/payload y conviene fallar inmediatamente.
+                retryable = (
+                    exc.code == 429
+                    or 500 <= exc.code <= 599
+                )
+
+                if retryable and transport_attempt < max_transport_attempts:
+                    print(
+                        "    DeepSeek: HTTP transitorio "
+                        f"{exc.code} (intento {transport_attempt}/"
+                        f"{max_transport_attempts}). Reintentando..."
+                    )
+                    time.sleep(
+                        DEEPSEEK_TRANSPORT_RETRY_DELAY_SECONDS
+                    )
+                    continue
+
+                raise RuntimeError(
+                    "DEEPSEEK_HTTP_ERROR. "
+                    f"HTTP {exc.code}. URL: {DEEPSEEK_URL}\n"
+                    f"Respuesta: {error_body[:1200]}"
+                ) from exc
+
             except (
                 TimeoutError,
                 urllib.error.URLError,
@@ -2129,50 +2388,31 @@ def ollama_chat(
 
                 if transport_attempt < max_transport_attempts:
                     print(
-                        "    Ollama: fallo de transporte "
+                        "    DeepSeek: fallo de transporte "
                         f"(intento {transport_attempt}/"
                         f"{max_transport_attempts}): "
-                        f"{type(exc).__name__}. "
-                        "Reintentando la misma solicitud..."
+                        f"{type(exc).__name__}. Reintentando..."
                     )
                     time.sleep(
-                        OLLAMA_TRANSPORT_RETRY_DELAY_SECONDS
+                        DEEPSEEK_TRANSPORT_RETRY_DELAY_SECONDS
                     )
                     continue
 
-                if isinstance(exc, TimeoutError):
-                    raise RuntimeError(
-                        "OLLAMA_TRANSPORT_TIMEOUT. "
-                        "Ollama no respondió dentro del tiempo límite "
-                        f"tras {max_transport_attempts} intento(s).\n"
-                        f"URL: {OLLAMA_URL}\n"
-                        f"Timeout por intento: "
-                        f"{effective_timeout:g} s"
-                    ) from exc
-
                 raise RuntimeError(
-                    "No se pudo conectar con Ollama tras "
-                    f"{max_transport_attempts} intento(s).\n"
-                    f"URL: {OLLAMA_URL}\n"
+                    "DEEPSEEK_TRANSPORT_FAILED. "
+                    f"URL: {DEEPSEEK_URL}\n"
+                    f"Timeout por intento: {effective_timeout:g} s\n"
                     f"Error: {exc}"
                 ) from exc
 
         if raw is None:
             raise RuntimeError(
-                "OLLAMA_TRANSPORT_FAILED sin respuesta utilizable. "
+                "DEEPSEEK_TRANSPORT_FAILED sin respuesta utilizable. "
                 f"Último error: {last_transport_error}"
             )
 
-        # --------------------------------------------------------
-        # Validación de la envoltura de Ollama.
-        # Una anomalía acá es recuperable y repite la generación.
-        # --------------------------------------------------------
         try:
-            result = json.loads(
-                raw.decode(
-                    "utf-8"
-                )
-            )
+            result = json.loads(raw.decode("utf-8"))
         except (
             UnicodeDecodeError,
             json.JSONDecodeError,
@@ -2181,99 +2421,75 @@ def ollama_chat(
                 "respuesta HTTP no decodificable como JSON válido"
             )
 
-            if generation_attempt < MAX_OLLAMA_GENERATION_ATTEMPTS:
+            if generation_attempt < MAX_DEEPSEEK_GENERATION_ATTEMPTS:
                 print(
-                    "    Ollama: respuesta de generación inválida "
+                    "    DeepSeek: respuesta de generación inválida "
                     f"(intento {generation_attempt}/"
-                    f"{MAX_OLLAMA_GENERATION_ATTEMPTS}): "
-                    f"{last_generation_diagnostic}. "
+                    f"{MAX_DEEPSEEK_GENERATION_ATTEMPTS}). "
                     "Reintentando..."
                 )
                 time.sleep(
-                    OLLAMA_GENERATION_RETRY_DELAY_SECONDS
+                    DEEPSEEK_GENERATION_RETRY_DELAY_SECONDS
                 )
                 continue
 
             raise RuntimeError(
-                "OLLAMA_GENERATION_INVALID_JSON tras "
-                f"{MAX_OLLAMA_GENERATION_ATTEMPTS} intento(s)."
+                "DEEPSEEK_GENERATION_INVALID_JSON tras "
+                f"{MAX_DEEPSEEK_GENERATION_ATTEMPTS} intento(s)."
             ) from exc
 
-        message = result.get(
-            "message"
+        record_deepseek_usage(
+            result.get("usage")
         )
 
-        if not isinstance(
-            message,
-            dict,
-        ):
-            last_generation_diagnostic = (
-                "la respuesta no contiene un objeto message"
-            )
+        choices = result.get("choices")
+        message = None
+        finish_reason = None
 
-        else:
-            content = message.get(
-                "content"
-            )
+        if isinstance(choices, list) and choices:
+            first_choice = choices[0]
+            if isinstance(first_choice, dict):
+                message = first_choice.get("message")
+                finish_reason = first_choice.get("finish_reason")
 
-            if isinstance(
-                content,
-                str,
-            ) and content.strip():
+        if isinstance(message, dict):
+            content = message.get("content")
+
+            if isinstance(content, str) and content.strip():
                 return content
 
-            # No leemos ni imprimimos el contenido de `thinking`.
-            # Sólo registramos si Ollama informó que existía.
-            thinking_present = bool(
-                message.get(
-                    "thinking"
-                )
-            )
+        usage = result.get("usage")
+        last_generation_diagnostic = (
+            "choices[0].message.content vacío/ausente"
+            f"; finish_reason={finish_reason!r}"
+            f"; usage={usage!r}"
+        )
 
-            done_reason = result.get(
-                "done_reason"
-            )
-            eval_count = result.get(
-                "eval_count"
-            )
-            prompt_eval_count = result.get(
-                "prompt_eval_count"
-            )
-
-            last_generation_diagnostic = (
-                "message.content vacío"
-                f"; thinking_present={thinking_present}"
-                f"; done_reason={done_reason!r}"
-                f"; prompt_eval_count={prompt_eval_count!r}"
-                f"; eval_count={eval_count!r}"
-            )
-
-        if generation_attempt < MAX_OLLAMA_GENERATION_ATTEMPTS:
+        if generation_attempt < MAX_DEEPSEEK_GENERATION_ATTEMPTS:
             print(
-                "    Ollama: respuesta vacía/inutilizable "
+                "    DeepSeek: respuesta vacía/inutilizable "
                 f"(intento {generation_attempt}/"
-                f"{MAX_OLLAMA_GENERATION_ATTEMPTS}): "
-                f"{last_generation_diagnostic}. "
-                "Reintentando la misma generación..."
+                f"{MAX_DEEPSEEK_GENERATION_ATTEMPTS}): "
+                f"{last_generation_diagnostic}. Reintentando..."
             )
             time.sleep(
-                OLLAMA_GENERATION_RETRY_DELAY_SECONDS
+                DEEPSEEK_GENERATION_RETRY_DELAY_SECONDS
             )
             continue
 
         raise RuntimeError(
-            "OLLAMA_EMPTY_CONTENT tras "
-            f"{MAX_OLLAMA_GENERATION_ATTEMPTS} intento(s). "
+            "DEEPSEEK_EMPTY_CONTENT tras "
+            f"{MAX_DEEPSEEK_GENERATION_ATTEMPTS} intento(s). "
             f"Diagnóstico: {last_generation_diagnostic}"
         )
 
     raise RuntimeError(
-        "OLLAMA_GENERATION_FAILED sin respuesta utilizable."
+        "DEEPSEEK_GENERATION_FAILED sin respuesta utilizable."
     )
 
 
 # ============================================================
-# SYSTEM PROMPT v3.10.5
+# SYSTEM PROMPT v3.10.6
 # ============================================================
 
 SYSTEM_PROMPT = """
@@ -3718,7 +3934,7 @@ def validate_episode_coaching_direction(
     errors,
 ):
     """
-    Invariante factual v3.10.5.
+    Invariante factual v3.10.6.
 
     Canal objetivo unívoco:
       comparison LOWER  -> una orden explícita debe AUMENTAR
@@ -3776,7 +3992,7 @@ def validate_episode_coaching_direction(
 
 
 # ============================================================
-# DIRECCIÓN FACTUAL EXPLÍCITA v3.10.5
+# DIRECCIÓN FACTUAL EXPLÍCITA v3.10.6
 # ============================================================
 
 FACTUAL_HIGHER_SIGNAL_RE = re.compile(
@@ -3805,7 +4021,7 @@ def _directional_phrases_for_validation(
     normalized,
 ):
     """
-    v3.10.5
+    v3.10.6
 
     Divide el texto sólo en fronteras lingüísticas fuertes para validar
     dirección factual. No intenta reconstruir gramática completa.
@@ -3884,7 +4100,7 @@ def explicit_factual_direction_by_channel(
     value,
 ):
     """
-    v3.10.5
+    v3.10.6
 
     Extrae sólo afirmaciones factuales inequívocas.
 
@@ -3954,7 +4170,7 @@ def validate_episode_interpretation_direction(
     errors,
 ):
     """
-    Invariante factual v3.10.5.
+    Invariante factual v3.10.6.
 
     Si interpretation afirma explícitamente que un canal fue mayor/menor,
     esa dirección debe coincidir con los eventos persistentes suministrados
@@ -4656,7 +4872,7 @@ def channel_direction_contract_for_llm(
     episode,
 ):
     """
-    v3.10.5
+    v3.10.6
 
     Python resolves the factual direction of each action channel before the
     LLM sees the episode. This prevents the model from having to reconstruct
@@ -5263,7 +5479,7 @@ def build_deterministic_grounded_episode_fallback(episode):
     """
     Texto factual mínimo construido por Python.
 
-    En v3.10.5 también se usa como fuente de reparación selectiva: si una
+    En v3.10.6 también se usa como fuente de reparación selectiva: si una
     respuesta LLM tiene estructura correcta pero invierte un hecho o un target,
     Python reemplaza únicamente el campo narrativo inválido y conserva el resto.
     """
@@ -5305,7 +5521,7 @@ def build_deterministic_grounded_episode_fallback(episode):
 
 def repair_invalid_episode_semantic_fields(response, episode, errors):
     """
-    Reparación selectiva v3.10.5 antes de gastar un retry del LLM.
+    Reparación selectiva v3.10.6 antes de gastar un retry del LLM.
 
     Sólo actúa cuando schema, tipos e ID ya son correctos y TODOS los errores
     pertenecen a interpretation, recommendation o hypotheses[i]. Los campos
@@ -5503,7 +5719,7 @@ def get_validated_episode_response(
             )
             save_text(path, prompt)
 
-        raw = ollama_chat(
+        raw = deepseek_chat(
             EPISODE_SYSTEM_PROMPT,
             prompt,
         )
@@ -5553,7 +5769,7 @@ def get_validated_episode_response(
 
             print(
                 f"    Episodio {episode_id}: reparación determinista "
-                "v3.10.5 aplicada sin retry"
+                "v3.10.6 aplicada sin retry"
                 + (f" ({'; '.join(detail)})" if detail else "")
                 + "."
             )
@@ -6024,7 +6240,7 @@ def get_validated_comparison_ranker_response(
             )
             save_text(path, prompt)
 
-        raw = ollama_chat(
+        raw = deepseek_chat(
             COMPARISON_RANKER_SYSTEM_PROMPT,
             prompt,
             temperature=RANKER_TEMPERATURE,
@@ -6300,7 +6516,7 @@ def get_validated_comparison_summary_response(
             )
             save_text(path, prompt)
 
-        raw = ollama_chat(
+        raw = deepseek_chat(
             COMPARISON_SUMMARY_SYSTEM_PROMPT,
             prompt,
         )
@@ -7469,6 +7685,330 @@ def _priority_ranking_map(
     return result
 
 
+
+
+# ============================================================
+# PERFIL DE ACCIÓN DE REFERENCIA v3.10.6
+# ============================================================
+
+REFERENCE_ACTION_PROFILE_VERSION = "1.0"
+REFERENCE_THROTTLE_GAP_MIN_M = 8.0
+REFERENCE_THROTTLE_BRIEF_APPLICATION_MAX_M = 20.0
+
+
+def _reference_throttle_event_catalog(
+    source_data,
+    reference_lap=None,
+):
+    """
+    Extrae eventos físicos de acelerador de la vuelta de referencia.
+
+    La fuente es throttle_physical_point_profiles producida por Python.
+    No consulta al LLM y no convierte full-throttle attainment en coaching
+    numérico: ese dato conserva su política observacional.
+    """
+    if not isinstance(source_data, dict):
+        return []
+
+    container = source_data.get("throttle_physical_point_profiles") or {}
+    profiles = container.get("profiles", []) if isinstance(container, dict) else []
+    by_event_id = {}
+
+    for profile in profiles or []:
+        if not isinstance(profile, dict):
+            continue
+
+        profile_reference_lap = safe_int(profile.get("reference_lap"))
+        if (
+            reference_lap is not None
+            and profile_reference_lap is not None
+            and profile_reference_lap != reference_lap
+        ):
+            continue
+
+        event = profile.get("reference_event") or {}
+        if not isinstance(event, dict):
+            continue
+
+        event_id = str(
+            event.get("event_id")
+            or profile.get("reference_event_id")
+            or ""
+        ).strip()
+        onset = safe_float(event.get("onset_distance_m"))
+        if not event_id or onset is None:
+            continue
+
+        by_event_id[event_id] = {
+            "event_id": event_id,
+            "reference_lap": profile_reference_lap,
+            "onset_distance_m": onset,
+            "confirmation_distance_m": safe_float(event.get("confirmation_distance_m")),
+            "release_distance_m": safe_float(event.get("release_distance_m")),
+            "release_confirmed": bool(event.get("release_confirmed")),
+            "peak_throttle_percent": safe_float(event.get("peak_throttle_percent")),
+            "peak_distance_m": safe_float(event.get("peak_distance_m")),
+            "full_throttle_attainment_confirmed": bool(
+                event.get("full_throttle_attainment_confirmed")
+            ),
+            "full_throttle_attainment_distance_m": safe_float(
+                event.get("full_throttle_attainment_distance_m")
+            ),
+            "distance_from_onset_to_full_throttle_m": safe_float(
+                event.get("distance_from_onset_to_full_throttle_m")
+            ),
+            "partial_lift_count": safe_int(event.get("partial_lift_count")) or 0,
+        }
+
+    return sorted(
+        by_event_id.values(),
+        key=lambda item: (
+            item.get("onset_distance_m")
+            if item.get("onset_distance_m") is not None
+            else 999999.0,
+            item.get("event_id") or "",
+        ),
+    )
+
+
+def _reference_throttle_level_label(peak_percent):
+    peak_percent = safe_float(peak_percent)
+    if peak_percent is None:
+        return "aplicación"
+    if peak_percent < 60.0:
+        return "aplicación parcial"
+    if peak_percent < 85.0:
+        return "aplicación media"
+    return "aplicación alta"
+
+
+def _reference_throttle_profile_for_region(
+    region,
+    source_data,
+):
+    """
+    Describe la forma observada del acelerador de la vuelta de referencia.
+
+    Sólo usa eventos cuyo onset cae dentro de la región. Los metros y
+    porcentajes quedan en steps como respaldo descriptivo; el target textual
+    usa categorías de forma, no nuevos objetivos numéricos no calibrados.
+    """
+    if not isinstance(region, dict):
+        return None
+
+    start = safe_float(region.get("start_distance_m"))
+    end = safe_float(region.get("end_distance_m"))
+    if start is None or end is None:
+        return None
+    if end < start:
+        start, end = end, start
+
+    findings = [
+        item
+        for item in (region.get("findings", []) or [])
+        if isinstance(item, dict)
+    ]
+    reference_laps = sorted({
+        safe_int(item.get("reference_lap"))
+        for item in findings
+        if safe_int(item.get("reference_lap")) is not None
+    })
+    reference_lap = reference_laps[0] if len(reference_laps) == 1 else None
+
+    events = [
+        event
+        for event in _reference_throttle_event_catalog(
+            source_data,
+            reference_lap=reference_lap,
+        )
+        if (
+            event.get("onset_distance_m") is not None
+            and start <= event["onset_distance_m"] <= end
+        )
+    ]
+    if not events:
+        return None
+
+    steps = []
+    previous_release = None
+
+    for event in events:
+        onset = safe_float(event.get("onset_distance_m"))
+        release = safe_float(event.get("release_distance_m"))
+        peak = safe_float(event.get("peak_throttle_percent"))
+
+        if (
+            previous_release is not None
+            and onset is not None
+            and onset > previous_release
+        ):
+            gap = onset - previous_release
+            if gap >= REFERENCE_THROTTLE_GAP_MIN_M:
+                steps.append({
+                    "kind": "released_gap",
+                    "start_distance_m": previous_release,
+                    "end_distance_m": onset,
+                    "length_m": gap,
+                    "shape": (
+                        "liberación breve"
+                        if gap <= 20.0
+                        else "acelerador liberado"
+                    ),
+                    "descriptive_only": True,
+                })
+
+        duration = (
+            release - onset
+            if onset is not None
+            and release is not None
+            and release >= onset
+            else None
+        )
+
+        level = _reference_throttle_level_label(peak)
+        if event.get("full_throttle_attainment_confirmed"):
+            shape = (
+                "reaplicación sostenida sin volver a soltar dentro de la zona"
+                if release is not None and release > end
+                else "reaplicación sostenida"
+            )
+        elif duration is not None and duration <= REFERENCE_THROTTLE_BRIEF_APPLICATION_MAX_M:
+            shape = f"{level} breve"
+        else:
+            shape = level
+
+        steps.append({
+            "kind": "application",
+            "event_id": event.get("event_id"),
+            "shape": shape,
+            "onset_distance_m": onset,
+            "release_distance_m": release,
+            "duration_m": duration,
+            "peak_throttle_percent": peak,
+            "peak_distance_m": safe_float(event.get("peak_distance_m")),
+            "full_throttle_attainment_confirmed": bool(
+                event.get("full_throttle_attainment_confirmed")
+            ),
+            "full_throttle_attainment_distance_m": safe_float(
+                event.get("full_throttle_attainment_distance_m")
+            ),
+            "distance_from_onset_to_full_throttle_m": safe_float(
+                event.get("distance_from_onset_to_full_throttle_m")
+            ),
+            "descriptive_only": True,
+        })
+
+        if release is not None:
+            previous_release = release
+
+    shape_sequence = [
+        str(step.get("shape") or "").strip()
+        for step in steps
+        if str(step.get("shape") or "").strip()
+    ]
+    if not shape_sequence:
+        return None
+
+    detailed_sequence = []
+    for step in steps:
+        shape = str(step.get("shape") or "").strip()
+        if not shape:
+            continue
+
+        if step.get("kind") == "released_gap":
+            gap_start = safe_float(step.get("start_distance_m"))
+            gap_end = safe_float(step.get("end_distance_m"))
+            if gap_start is not None and gap_end is not None:
+                detailed_sequence.append(
+                    f"{shape} (~{gap_start:.0f}–{gap_end:.0f} m)"
+                )
+            else:
+                detailed_sequence.append(shape)
+            continue
+
+        onset = safe_float(step.get("onset_distance_m"))
+        release = safe_float(step.get("release_distance_m"))
+        peak = safe_float(step.get("peak_throttle_percent"))
+
+        detail = shape
+        if onset is not None:
+            if release is not None and release <= end:
+                detail += f" (~{onset:.0f}–{release:.0f} m"
+                if peak is not None and not step.get("full_throttle_attainment_confirmed"):
+                    detail += f"; pico ~{peak:.0f}%"
+                detail += ")"
+            else:
+                detail += f" desde ~{onset:.0f} m"
+
+        detailed_sequence.append(detail)
+
+    return {
+        "version": REFERENCE_ACTION_PROFILE_VERSION,
+        "channel": "throttle",
+        "reference_lap": reference_lap,
+        "region_start_m": start,
+        "region_end_m": end,
+        "event_count": len(events),
+        "steps": steps,
+        "shape_sequence": shape_sequence,
+        "shape_summary": " → ".join(shape_sequence),
+        "shape_summary_detailed": " → ".join(detailed_sequence),
+        "source": "throttle_physical_point_profiles.reference_event",
+        "descriptive_only": True,
+        "numeric_coaching_authorized": False,
+    }
+
+
+def _reference_throttle_profile_target_text(profile):
+    if not isinstance(profile, dict):
+        return None
+    summary = str(profile.get("shape_summary") or "").strip()
+    if not summary:
+        return None
+    return "replicar la secuencia de acelerador de la referencia: " + summary
+
+
+def _attach_reference_action_profiles(
+    regions,
+    source_data,
+):
+    """
+    Sustituye el target genérico de throttle mixed por una secuencia concreta.
+
+    Si Python no puede describir la referencia, el target queda en None: es
+    preferible omitir la recomendación a decir sólo "replicá la modulación".
+    """
+    if not isinstance(regions, list):
+        return regions
+
+    for region in regions:
+        if not isinstance(region, dict):
+            continue
+
+        profile = _reference_throttle_profile_for_region(region, source_data)
+
+        for repeated in region.get("repeated_differences", []) or []:
+            if not isinstance(repeated, dict):
+                continue
+            if repeated.get("channel") != "throttle":
+                continue
+            if repeated.get("direction") != "mixed_across_comparisons":
+                continue
+
+            repeated["reference_action_profile"] = profile
+            repeated["target"] = _reference_throttle_profile_target_text(profile)
+            repeated["target_source"] = (
+                "reference_action_profile"
+                if repeated.get("target")
+                else "unavailable_reference_action_profile"
+            )
+
+        if profile is not None:
+            region["reference_throttle_profile"] = profile
+
+    return regions
+
+
 def _coaching_target_for_channel_direction(
     channel,
     direction,
@@ -7492,8 +8032,10 @@ def _coaching_target_for_channel_direction(
         return targets[(channel, direction)]
 
     fallback = {
+        # v3.10.6: throttle mixed se completa desde reference_action_profile.
+        # Sin perfil suficiente, no se emite el target genérico.
         "throttle":
-            "replicar la secuencia y modulación del acelerador de la referencia",
+            None,
         "brake":
             "replicar la secuencia de aplicación del freno de la referencia",
         "steering_magnitude":
@@ -10038,6 +10580,12 @@ def _build_next_stint_plan(
                         "target"
                     )
                 ],
+            "reference_action_profiles":
+                [
+                    item.get("reference_action_profile")
+                    for item in (region.get("repeated_differences", []) or [])
+                    if isinstance(item.get("reference_action_profile"), dict)
+                ],
             "quantitative_observations":
                 [
                     text
@@ -10181,10 +10729,10 @@ def _build_next_stint_plan(
 
 
 # ============================================================
-# PRIORIDAD DE SESIÓN POR RECURRENCIA v3.10.5
+# PRIORIDAD DE SESIÓN POR RECURRENCIA v3.10.6
 # ============================================================
 
-SESSION_PRIORITY_POLICY_VERSION = "1.2"
+SESSION_PRIORITY_POLICY_VERSION = "1.3"
 
 
 def _plan_overlap_m(
@@ -10686,7 +11234,7 @@ def _apply_recurrence_aware_session_priority(
     max_items=3,
 ):
     """
-    v3.10.5
+    v3.10.6
 
     Reordena únicamente el plan GLOBAL de próxima tanda.
 
@@ -10970,11 +11518,12 @@ def _attach_repeated_throttle_patterns_to_plan(
 def build_session_coaching_facts(
     valid_comparison_results,
     track_location_context=None,
+    source_data=None,
 ):
     """
     Convierte comparaciones ya validadas en una ficha determinista.
 
-    v3.10.5:
+    v3.10.6:
     - priority_findings conserva sólo episodios PRIORITARIOS para el tiebreak;
     - recurrence_findings usa TODOS los episodios coaching-eligible para que la
       recurrencia física no dependa de la clasificación elegida por el LLM;
@@ -11383,6 +11932,17 @@ def build_session_coaching_facts(
         track_location_context,
     )
 
+    # v3.10.6: el target mixed de acelerador sólo existe si Python puede
+    # explicar la forma observada de la vuelta de referencia.
+    _attach_reference_action_profiles(
+        priority_regions,
+        source_data,
+    )
+    _attach_reference_action_profiles(
+        recurrence_regions,
+        source_data,
+    )
+
     repeated_braking_point_patterns = (
         _build_repeated_braking_point_patterns(
             braking_point_findings,
@@ -11626,6 +12186,10 @@ def build_session_coaching_facts(
                 "recurrence_regions_plus_repeated_point_patterns",
             "temporal_observation_policy":
                 "descriptive_only_without_temporal_target",
+            "mixed_throttle_target_policy":
+                "reference_action_profile_or_omit",
+            "reference_action_profile_source":
+                "throttle_physical_point_profiles.reference_event",
         },
         "priority_finding_count":
             len(
@@ -11727,7 +12291,7 @@ def compact_session_coaching_facts_for_llm(
     session_coaching_facts,
 ):
     """
-    v3.10.5
+    v3.10.6
 
     El LLM global recibe únicamente hechos CUALITATIVOS.
 
@@ -12334,7 +12898,7 @@ No texto fuera del JSON.
 
 
 # ============================================================
-# PRIORIDADES GLOBALES DETERMINISTAS v3.10.5
+# PRIORIDADES GLOBALES DETERMINISTAS v3.10.6
 # ============================================================
 
 def _direct_coaching_target_text(
@@ -12439,7 +13003,7 @@ def deterministic_priority_for_plan_item(
       - secuencia;
       - magnitudes espaciales.
 
-    El LLM ya no vuelve a generar estos datos en v3.10.5.
+    El LLM ya no vuelve a generar estos datos en v3.10.6.
     """
     if not isinstance(
         item,
@@ -12577,7 +13141,7 @@ def build_deterministic_repeated_observations(
     session_coaching_facts,
 ):
     """
-    v3.10.5
+    v3.10.6
 
     repeated_observations is factual session accounting, not narrative model
     judgment. Build one item per selected repeated region from Python-owned
@@ -12668,7 +13232,7 @@ def global_correction_instructions(errors):
     """
     Traduce errores del validator global a instrucciones concretas y seguras.
 
-    En v3.10.5 las prioridades numéricas/direccionales son propiedad de Python. Este bloque sólo corrige campos narrativos del LLM.
+    En v3.10.6 las prioridades numéricas/direccionales son propiedad de Python. Este bloque sólo corrige campos narrativos del LLM.
     """
     instructions = []
 
@@ -13082,7 +13646,7 @@ def _validate_global_priority_text_list(value, plan, errors):
 
 
 # ============================================================
-# CONSISTENCIA DIRECCIONAL GLOBAL v3.10.5
+# CONSISTENCIA DIRECCIONAL GLOBAL v3.10.6
 # ============================================================
 
 def _explicit_command_direction_map(
@@ -13307,7 +13871,7 @@ def validate_global_zone_list_consistency(
     errors,
 ):
     """
-    Invariante global por zona v3.10.5.
+    Invariante global por zona v3.10.6.
 
     - opportunities[A/B/C] no puede invertir targets deterministas de su zona.
     - repeated_observations[A/B/C] no puede invertir hechos observados ni
@@ -13486,7 +14050,7 @@ def validate_global_direction_consistency(
     errors,
 ):
     """
-    Invariante global v3.10.5.
+    Invariante global v3.10.6.
 
     1) Una prioridad de zona no puede invertir un target explícito de Python.
     2) Una conclusión que nombra una zona no puede invertir la dirección
@@ -13806,6 +14370,91 @@ def validate_global_llm_response(
 
 
 
+
+def repair_global_optional_list_overflow(
+    response,
+    session_coaching_facts,
+):
+    """
+    Reparación determinista v3.10.6 para exceso de items en listas globales.
+
+    Mantiene los límites estrictos del schema sin gastar un retry del LLM por
+    un problema puramente de cardinalidad. Para opportunities intenta conservar
+    primero una oportunidad por cada zona A/B/C presente en next_stint_plan y
+    luego completa por orden original hasta el máximo permitido. Las demás
+    listas opcionales se recortan por orden original.
+    """
+    if not isinstance(response, dict):
+        return response, {}
+
+    limits = {
+        "opportunities": 4,
+        "repeated_observations": 4,
+        "hypotheses": 3,
+        "limitations": 2,
+    }
+
+    repaired = dict(response)
+    repairs = {}
+
+    plan = (
+        session_coaching_facts.get("next_stint_plan", [])
+        if isinstance(session_coaching_facts, dict)
+        else []
+    )
+    plan_labels = []
+    for item in (plan or [])[:3]:
+        if not isinstance(item, dict):
+            continue
+        label = str(item.get("plan_label", "")).strip().upper()
+        if label and label not in plan_labels:
+            plan_labels.append(label)
+
+    for field, max_items in limits.items():
+        value = response.get(field)
+        if not isinstance(value, list) or len(value) <= max_items:
+            continue
+
+        if field == "opportunities":
+            selected = set()
+
+            # Garantiza cobertura de las zonas deterministas principales si el
+            # LLM devolvió al menos una opportunity claramente asociada a ellas.
+            for label in plan_labels:
+                for index, item in enumerate(value):
+                    if index in selected or not isinstance(item, str):
+                        continue
+                    labels = _zone_labels_in_text(item)
+                    if labels == {label}:
+                        selected.add(index)
+                        break
+
+            # Completa por orden original sin exceder el límite.
+            for index in range(len(value)):
+                if len(selected) >= max_items:
+                    break
+                selected.add(index)
+
+            kept_indexes = sorted(selected)[:max_items]
+        else:
+            kept_indexes = list(range(max_items))
+
+        removed_indexes = [
+            index for index in range(len(value))
+            if index not in kept_indexes
+        ]
+
+        repaired[field] = [value[index] for index in kept_indexes]
+        repairs[field] = {
+            "original_count": len(value),
+            "kept_count": len(kept_indexes),
+            "kept_indexes": kept_indexes,
+            "removed_indexes": removed_indexes,
+            "reason": "max_items_enforced_deterministically",
+        }
+
+    return repaired, repairs
+
 def prune_only_invalid_global_list_items(
     response,
     valid_comparison_results,
@@ -13813,7 +14462,7 @@ def prune_only_invalid_global_list_items(
     errors,
 ):
     """
-    Fallback determinista v3.10.5 para listas narrativas opcionales globales.
+    Fallback determinista v3.10.6 para listas narrativas opcionales globales.
 
     Tras agotar los reintentos del LLM, puede eliminar únicamente items
     concretos rechazados por el validator dentro de opportunities,
@@ -13908,7 +14557,7 @@ def get_validated_global_response(
                 prompt,
             )
 
-        raw = ollama_chat(
+        raw = deepseek_chat(
             GLOBAL_SYSTEM_PROMPT,
             prompt,
             temperature=0.0,
@@ -13933,6 +14582,21 @@ def get_validated_global_response(
                 build_deterministic_repeated_observations(
                     session_coaching_facts
                 )
+            )
+
+        parsed, overflow_repairs = repair_global_optional_list_overflow(
+            parsed,
+            session_coaching_facts,
+        )
+
+        if overflow_repairs:
+            repaired_fields = ", ".join(
+                f"{field}({details['original_count']}→{details['kept_count']})"
+                for field, details in overflow_repairs.items()
+            )
+            print(
+                "Síntesis global: reparación determinista de cardinalidad "
+                f"aplicada sin retry: {repaired_fields}."
             )
 
         errors = validate_global_llm_response(
@@ -13962,6 +14626,11 @@ def get_validated_global_response(
 
                 "validation_errors":
                     [],
+
+                "deterministic_repairs":
+                    {
+                        "optional_list_overflow": overflow_repairs
+                    } if overflow_repairs else {},
             }
 
     pruned_response, removed_items = (
@@ -13994,7 +14663,7 @@ def get_validated_global_response(
         )
 
         print(
-            "Síntesis global: fallback determinista v3.10.5 "
+            "Síntesis global: fallback determinista v3.10.6 "
             f"aplicado; se descartaron {removed_count} items "
             "opcionales no grounded."
         )
@@ -14215,6 +14884,29 @@ def render_global_analysis(
         action_text = clean_priority(priority_text, label)
         if action_text:
             lines.append(f"**Objetivo de conducción:** {action_text}")
+            lines.append("")
+
+        reference_profiles = [
+            profile
+            for profile in (item.get("reference_action_profiles", []) or [])
+            if isinstance(profile, dict) and profile.get("shape_summary")
+        ]
+        if reference_profiles:
+            lines.append(
+                "**Forma observada en la referencia:** "
+                + "; ".join(
+                    str(
+                        profile.get("shape_summary_detailed")
+                        or profile.get("shape_summary")
+                    )
+                    for profile in reference_profiles[:2]
+                )
+                + "."
+            )
+            lines.append(
+                "_Descripción de forma; los puntos numéricos de coaching siguen "
+                "siendo únicamente los autorizados por los detectores de eventos._"
+            )
             lines.append("")
 
         comparisons = [
@@ -14450,7 +15142,7 @@ def render_global_analysis(
 
     def current_plan_label_for_pattern(pattern):
         """
-        v3.10.5 presentation-only.
+        v3.10.6 presentation-only.
 
         Un patrón físico repetido puede ser promovido/re-etiquetado por el
         plan de recurrencia. El apéndice debe mostrar la etiqueta ACTUAL del
@@ -14470,7 +15162,7 @@ def render_global_analysis(
         ]
 
         if not matches:
-            return pattern.get("region_label")
+            return None
 
         matches.sort(
             key=lambda item: _plan_overlap_m(
@@ -14644,7 +15336,7 @@ def save_result(
 
     output_path = os.path.join(
         output_dir,
-        stem + f"_llm_analysis_v3_10_5_{MODEL_NAME}.json",
+        stem + f"_llm_analysis_v3_10_6_deepseek_v2_{MODEL_NAME}.json",
     )
 
     braking_point_detection = next(
@@ -14682,7 +15374,7 @@ def save_result(
     result = {
         "metadata": {
             "llm_analysis_version":
-                "3.10.5",
+                "3.10.6",
 
             "report_presentation_version":
                 "1.0",
@@ -14717,6 +15409,9 @@ def save_result(
 
             "model":
                 MODEL_NAME,
+
+            "deepseek_usage":
+                deepseek_usage_summary(),
 
             "context":
                 CONTEXT_SIZE,
@@ -14794,8 +15489,10 @@ def save_result(
 # ============================================================
 
 def main():
+    reset_deepseek_usage()
+
     print_header(
-        "RACE ENGINEER - LLM ANALYSIS v3.10.5"
+        "RACE ENGINEER - LLM ANALYSIS v3.10.6 / DeepSeek provisional v2"
     )
 
     input_path = find_json_file()
@@ -14861,7 +15558,7 @@ def main():
     print()
 
     print(
-        f"Modelo: {MODEL_NAME}"
+        f"Modelo/API: {MODEL_NAME} @ DeepSeek"
     )
 
     print(
@@ -14896,7 +15593,7 @@ def main():
     print()
 
     print(
-        "Arquitectura v3.10.5:"
+        "Arquitectura v3.10.6:"
     )
 
     print(
@@ -14995,7 +15692,7 @@ def main():
             raise RuntimeError(
                 "No hay driver_action_episode disponibles "
                 f"para {reference_lap} -> {comparison_lap}. "
-                "La v3.10.5 requiere analyze_telemetry v3.8 "
+                "La v3.10.6 requiere analyze_telemetry v3.8 "
                 "con episodios primarios."
             )
 
@@ -15003,7 +15700,7 @@ def main():
 
         if episode_catalog:
             print(
-                "Solicitando interpretación aislada + ranking comparativo v3.10.5..."
+                "Solicitando interpretación aislada + ranking comparativo v3.10.6..."
             )
 
             validated = (
@@ -15236,6 +15933,7 @@ def main():
             track_location_context=(
                 track_location_context
             ),
+            source_data=data,
         )
     )
 
@@ -15300,6 +15998,8 @@ def main():
         global_structured,
         global_analysis,
     )
+
+    print_deepseek_usage_summary()
 
     print()
 

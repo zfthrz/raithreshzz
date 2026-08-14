@@ -109,8 +109,37 @@ def resolve_interval(profile: dict[str, Any], start_m: float, end_m: float) -> d
     if significant:
         dominant = max(significant, key=lambda x: x["overlap_m"])
 
+        # Un complejo de varias curvas puede dominar el intervalo aunque
+        # ninguna curva individual supere 50% del span. Agrupar primero por
+        # `group` evita etiquetar como transición un intervalo que pertenece
+        # materialmente al mismo complejo (p. ej. Villeneuve T5–T6).
+        group_rows = {}
+        for row in significant:
+            if row["overlap_share"] < 0.10:
+                continue
+            group_rows.setdefault(row["group"], []).append(row)
+
+        if group_rows:
+            dominant_group, dominant_group_rows = max(
+                group_rows.items(),
+                key=lambda item: sum(row["overlap_m"] for row in item[1]),
+            )
+            dominant_group_overlap = sum(
+                row["overlap_m"] for row in dominant_group_rows
+            )
+            dominant_group_share = dominant_group_overlap / span
+        else:
+            dominant_group = None
+            dominant_group_rows = []
+            dominant_group_share = 0.0
+
+        if len(dominant_group_rows) > 1 and dominant_group_share >= 0.50:
+            nums = sorted(row["turn"] for row in dominant_group_rows)
+            label = f"T{nums[0]}–T{nums[-1]} — {dominant_group}"
+            location_type = "corner_complex"
+
         # Un episodio claramente contenido en una curva.
-        if dominant["overlap_share"] >= 0.50:
+        elif dominant["overlap_share"] >= 0.50:
             same_group = [
                 x for x in significant
                 if x["group"] == dominant["group"] and x["overlap_share"] >= 0.10

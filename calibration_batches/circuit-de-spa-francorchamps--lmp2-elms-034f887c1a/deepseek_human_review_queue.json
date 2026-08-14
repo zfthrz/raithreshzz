@@ -1,0 +1,1760 @@
+{
+  "metadata": {
+    "queue_schema_version": "1.0",
+    "generator_version": "1.0",
+    "created_at_utc": "2026-08-14T18:13:57.362248+00:00",
+    "source_pool_sha256": "db6b0deff38947254a9f13a40e665a940f2488fdc75fe42d476ae2b0dbdcfd12",
+    "source_review_sha256": "3295a941fd5776791e8442279592bd9e7ad62fd81645f869c7df7b09bd723de4",
+    "selected_pair_count": 32,
+    "excluded_existing_human_label_count": 40,
+    "blindness_contract": {
+      "deepseek_labels_in_queue": false,
+      "deepseek_confidence_in_queue": false,
+      "deepseek_reasoning_in_queue": false,
+      "matcher_decisions_in_queue": false,
+      "human_labels_in_queue": false
+    },
+    "semantics": "Blind human calibration queue. DeepSeek was used only for hidden case selection; its decisions are stored separately in the audit file."
+  },
+  "queue": [
+    {
+      "pair_id": "0074a9eeb0cda5f4ce5d",
+      "features": {
+        "track": "Circuit de Spa-Francorchamps",
+        "session_a": 1,
+        "session_b": 3,
+        "episode_pk_a": 5,
+        "episode_pk_b": 37,
+        "episode_id_a": 1,
+        "episode_id_b": 1,
+        "start_distance_a_m": 2387.0,
+        "end_distance_a_m": 2595.0,
+        "center_distance_a_m": 2491.0,
+        "start_distance_b_m": 2529.0,
+        "end_distance_b_m": 2671.0,
+        "center_distance_b_m": 2600.0,
+        "center_distance_abs_diff_m": 109.0,
+        "overlap_m": 66.0,
+        "overlap_over_union": 0.2323943661971831,
+        "overlap_over_shorter": 0.4647887323943662,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 1.1061009843899683,
+        "action_time_loss_b_s": 0.6488307928397887,
+        "action_time_loss_similarity": 0.5865927270624652,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.1388136511375948,
+            "onset_offset_abs_diff_m": 6.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.21825355547605713,
+            "peak_difference_similarity": 0.9723411218812842,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.054712892741061725,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 14.0,
+            "mean_difference_similarity": 0.01583432720939112,
+            "peak_difference_similarity": 0.9200880653825643,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      },
+      "selected_by": []
+    },
+    {
+      "pair_id": "02eaba2e80351b573bb3",
+      "features": {
+        "track": "Circuit de Spa-Francorchamps",
+        "session_a": 2,
+        "session_b": 3,
+        "episode_pk_a": 25,
+        "episode_pk_b": 57,
+        "episode_id_a": 8,
+        "episode_id_b": 11,
+        "start_distance_a_m": 4752.0,
+        "end_distance_a_m": 4775.0,
+        "center_distance_a_m": 4763.5,
+        "start_distance_b_m": 4771.0,
+        "end_distance_b_m": 4808.0,
+        "center_distance_b_m": 4789.5,
+        "center_distance_abs_diff_m": 26.0,
+        "overlap_m": 4.0,
+        "overlap_over_union": 0.07142857142857142,
+        "overlap_over_shorter": 0.17391304347826086,
+        "channel_jaccard": 0.0,
+        "channels_a": [
+          "brake"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [],
+        "channels_only_a": [
+          "brake"
+        ],
+        "channels_only_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "action_time_loss_a_s": 0.024949602815382832,
+        "action_time_loss_b_s": 0.04836412390625355,
+        "action_time_loss_similarity": 0.515870045816271,
+        "per_channel_metrics": {}
+      },
+      "selected_by": []
+    },
+    {
+      "pair_id": "06d40fb85d08e1b51e80",
+      "features": {
+        "track": "Circuit de Spa-Francorchamps",
+        "session_a": 1,
+        "session_b": 4,
+        "episode_pk_a": 2,
+        "episode_pk_b": 93,
+        "episode_id_a": 2,
+        "episode_id_b": 12,
+        "start_distance_a_m": 6552.0,
+        "end_distance_a_m": 6608.0,
+        "center_distance_a_m": 6580.0,
+        "start_distance_b_m": 6585.0,
+        "end_distance_b_m": 6605.0,
+        "center_distance_b_m": 6595.0,
+        "center_distance_abs_diff_m": 15.0,
+        "overlap_m": 20.0,
+        "overlap_over_union": 0.35714285714285715,
+        "overlap_over_shorter": 1.0,
+        "channel_jaccard": 0.3333333333333333,
+        "channels_a": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude"
+        ],
+        "shared_channels": [
+          "steering_magnitude"
+        ],
+        "channels_only_a": [
+          "brake",
+          "throttle"
+        ],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.11539428462981505,
+        "action_time_loss_b_s": 0.06331347458905157,
+        "action_time_loss_similarity": 0.5486708010900301,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.7142857142857143,
+            "onset_offset_abs_diff_m": 36.0,
+            "end_offset_abs_diff_m": 4.0,
+            "mean_difference_similarity": 0.883967121868547,
+            "peak_difference_similarity": 0.407236085154694,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      },
+      "selected_by": []
+    },
+    {
+      "pair_id": "0b50e477889bb5d1d97c",
+      "features": {
+        "track": "Circuit de Spa-Francorchamps",
+        "session_a": 2,
+        "session_b": 4,
+        "episode_pk_a": 23,
+        "episode_pk_b": 77,
+        "episode_id_a": 6,
+        "episode_id_b": 5,
+        "start_distance_a_m": 2245.0,
+        "end_distance_a_m": 2266.0,
+        "center_distance_a_m": 2255.5,
+        "start_distance_b_m": 2193.0,
+        "end_distance_b_m": 2256.0,
+        "center_distance_b_m": 2224.5,
+        "center_distance_abs_diff_m": 31.0,
+        "overlap_m": 11.0,
+        "overlap_over_union": 0.1506849315068493,
+        "overlap_over_shorter": 0.5238095238095238,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "brake"
+        ],
+        "channels_b": [
+          "brake"
+        ],
+        "shared_channels": [
+          "brake"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.045262547790194674,
+        "action_time_loss_b_s": 0.03571059570335677,
+        "action_time_loss_similarity": 0.7889656558637832,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.07936507936507942,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.9766399797010853,
+            "peak_difference_similarity": 0.7837949669047803,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      },
+      "selected_by": []
+    },
+    {
+      "pair_id": "0c0f495f8a21287e8f7f",
+      "features": {
+        "track": "Circuit de Spa-Francorchamps",
+        "session_a": 2,
+        "session_b": 3,
+        "episode_pk_a": 26,
+        "episode_pk_b": 37,
+        "episode_id_a": 1,
+        "episode_id_b": 1,
+        "start_distance_a_m": 2455.0,
+        "end_distance_a_m": 2579.0,
+        "center_distance_a_m": 2517.0,
+        "start_distance_b_m": 2529.0,
+        "end_distance_b_m": 2671.0,
+        "center_distance_b_m": 2600.0,
+        "center_distance_abs_diff_m": 83.0,
+        "overlap_m": 50.0,
+        "overlap_over_union": 0.23148148148148148,
+        "overlap_over_shorter": 0.4032258064516129,
+        "channel_jaccard": 0.6666666666666666,
+        "channels_a": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [
+          "brake"
+        ],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.5926346196445493,
+        "action_time_loss_b_s": 0.6488307928397887,
+        "action_time_loss_similarity": 0.9133885539721671,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.24238982280781463,
+            "onset_offset_abs_diff_m": 9.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.839322479776269,
+            "peak_difference_similarity": 0.5750041681066106,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.1223307587460245,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 3.0,
+            "mean_difference_similarity": 0.17197183290858412,
+            "peak_difference_similarity": 0.8355394253103021,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      },
+      "selected_by": []
+    },
+    {
+      "pair_id": "10ddbb37edb960fc9a59",
+      "features": {
+        "track": "Circuit de Spa-Francorchamps",
+        "session_a": 3,
+        "session_b": 5,
+        "episode_pk_a": 57,
+        "episode_pk_b": 118,
+        "episode_id_a": 11,
+        "episode_id_b": 14,
+        "start_distance_a_m": 4771.0,
+        "end_distance_a_m": 4808.0,
+        "center_distance_a_m": 4789.5,
+        "start_distance_b_m": 4741.0,
+        "end_distance_b_m": 4773.0,
+        "center_distance_b_m": 4757.0,
+        "center_distance_abs_diff_m": 32.5,
+        "overlap_m": 2.0,
+        "overlap_over_union": 0.029850746268656716,
+        "overlap_over_shorter": 0.0625,
+        "channel_jaccard": 0.3333333333333333,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "brake",
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [
+          "steering_magnitude"
+        ],
+        "channels_only_b": [
+          "brake"
+        ],
+        "action_time_loss_a_s": 0.04836412390625355,
+        "action_time_loss_b_s": 0.03538288991020977,
+        "action_time_loss_similarity": 0.7315937321390145,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.040540540540540515,
+            "onset_offset_abs_diff_m": 20.0,
+            "end_offset_abs_diff_m": 16.0,
+            "mean_difference_similarity": 0.2863005916441279,
+            "peak_difference_similarity": 0.3777295386487846,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      },
+      "selected_by": []
+    },
+    {
+      "pair_id": "18162f24c36a31ac0bf4",
+      "features": {
+        "track": "Circuit de Spa-Francorchamps",
+        "session_a": 2,
+        "session_b": 4,
+        "episode_pk_a": 34,
+        "episode_pk_b": 93,
+        "episode_id_a": 9,
+        "episode_id_b": 12,
+        "start_distance_a_m": 6572.0,
+        "end_distance_a_m": 6599.0,
+        "center_distance_a_m": 6585.5,
+        "start_distance_b_m": 6585.0,
+        "end_distance_b_m": 6605.0,
+        "center_distance_b_m": 6595.0,
+        "center_distance_abs_diff_m": 9.5,
+        "overlap_m": 14.0,
+        "overlap_over_union": 0.42424242424242425,
+        "overlap_over_shorter": 0.7,
+        "channel_jaccard": 0.0,
+        "channels_a": [
+          "brake",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude"
+        ],
+        "shared_channels": [],
+        "channels_only_a": [
+          "brake",
+          "throttle"
+        ],
+        "channels_only_b": [
+          "steering_magnitude"
+        ],
+        "action_time_loss_a_s": 0.09321862788128499,
+        "action_time_loss_b_s": 0.06331347458905157,
+        "action_time_loss_similarity": 0.6791933761316677,
+        "per_channel_metrics": {}
+      },
+      "selected_by": []
+    },
+    {
+      "pair_id": "1bb4c514f6f8aa4444fa",
+      "features": {
+        "track": "Circuit de Spa-Francorchamps",
+        "session_a": 1,
+        "session_b": 6,
+        "episode_pk_a": 3,
+        "episode_pk_b": 137,
+        "episode_id_a": 3,
+        "episode_id_b": 4,
+        "start_distance_a_m": 6647.0,
+        "end_distance_a_m": 6703.0,
+        "center_distance_a_m": 6675.0,
+        "start_distance_b_m": 6700.0,
+        "end_distance_b_m": 6722.0,
+        "center_distance_b_m": 6711.0,
+        "center_distance_abs_diff_m": 36.0,
+        "overlap_m": 3.0,
+        "overlap_over_union": 0.04,
+        "overlap_over_shorter": 0.13636363636363635,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "steering_magnitude"
+        ],
+        "channels_b": [
+          "steering_magnitude"
+        ],
+        "shared_channels": [
+          "steering_magnitude"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.07818780230776667,
+        "action_time_loss_b_s": 0.058544330309530324,
+        "action_time_loss_similarity": 0.7487655181697683,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.07670127620385798,
+            "peak_difference_similarity": 0.5950407713450829,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      },
+      "selected_by": []
+    },
+    {
+      "pair_id": "288c5b8aa3f922d1dfd8",
+      "features": {
+        "track": "Circuit de Spa-Francorchamps",
+        "session_a": 2,
+        "session_b": 4,
+        "episode_pk_a": 20,
+        "episode_pk_b": 74,
+        "episode_id_a": 3,
+        "episode_id_b": 2,
+        "start_distance_a_m": 6617.0,
+        "end_distance_a_m": 6652.0,
+        "center_distance_a_m": 6634.5,
+        "start_distance_b_m": 6487.0,
+        "end_distance_b_m": 6664.0,
+        "center_distance_b_m": 6575.5,
+        "center_distance_abs_diff_m": 59.0,
+        "overlap_m": 35.0,
+        "overlap_over_union": 0.1977401129943503,
+        "overlap_over_shorter": 1.0,
+        "channel_jaccard": 0.3333333333333333,
+        "channels_a": [
+          "steering_magnitude"
+        ],
+        "channels_b": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [
+          "brake",
+          "throttle"
+        ],
+        "action_time_loss_a_s": 0.13066225604482895,
+        "action_time_loss_b_s": 0.21335486695214456,
+        "action_time_loss_similarity": 0.6124175084983482,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.5649717514124294,
+            "onset_offset_abs_diff_m": 100.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.11410666334505397,
+            "peak_difference_similarity": 0.4691244345639194,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      },
+      "selected_by": []
+    },
+    {
+      "pair_id": "2f03a9d0692a431bc70a",
+      "features": {
+        "track": "Circuit de Spa-Francorchamps",
+        "session_a": 5,
+        "session_b": 6,
+        "episode_pk_a": 112,
+        "episode_pk_b": 143,
+        "episode_id_a": 8,
+        "episode_id_b": 2,
+        "start_distance_a_m": 1047.0,
+        "end_distance_a_m": 1194.0,
+        "center_distance_a_m": 1120.5,
+        "start_distance_b_m": 987.0,
+        "end_distance_b_m": 1187.0,
+        "center_distance_b_m": 1087.0,
+        "center_distance_abs_diff_m": 33.5,
+        "overlap_m": 140.0,
+        "overlap_over_union": 0.6763285024154589,
+        "overlap_over_shorter": 0.9523809523809523,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.09537867664471378,
+        "action_time_loss_b_s": 0.12173840648067369,
+        "action_time_loss_similarity": 0.7834723601368596,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.050510204081632676,
+            "onset_offset_abs_diff_m": 114.0,
+            "end_offset_abs_diff_m": 145.0,
+            "mean_difference_similarity": 0.8412107464604297,
+            "peak_difference_similarity": 0.8366999223952191,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.1522789115646258,
+            "onset_offset_abs_diff_m": 9.0,
+            "end_offset_abs_diff_m": 29.0,
+            "mean_difference_similarity": 0.6595896829499464,
+            "peak_difference_similarity": 0.810275241152596,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      },
+      "selected_by": []
+    },
+    {
+      "pair_id": "2f20a7121e8d8530999f",
+      "features": {
+        "track": "Circuit de Spa-Francorchamps",
+        "session_a": 4,
+        "session_b": 6,
+        "episode_pk_a": 73,
+        "episode_pk_b": 142,
+        "episode_id_a": 1,
+        "episode_id_b": 1,
+        "start_distance_a_m": 146.0,
+        "end_distance_a_m": 269.0,
+        "center_distance_a_m": 207.5,
+        "start_distance_b_m": 153.0,
+        "end_distance_b_m": 299.0,
+        "center_distance_b_m": 226.0,
+        "center_distance_abs_diff_m": 18.5,
+        "overlap_m": 116.0,
+        "overlap_over_union": 0.7581699346405228,
+        "overlap_over_shorter": 0.943089430894309,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "brake",
+          "steering_magnitude"
+        ],
+        "channels_b": [
+          "brake",
+          "steering_magnitude"
+        ],
+        "shared_channels": [
+          "brake",
+          "steering_magnitude"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.38890789753067034,
+        "action_time_loss_b_s": 0.2289744266653484,
+        "action_time_loss_similarity": 0.5887626045117555,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.1905557411738501,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 36.0,
+            "mean_difference_similarity": 0.8052758039615917,
+            "peak_difference_similarity": 0.7719058877199946,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.07807105468314957,
+            "onset_offset_abs_diff_m": 3.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.9448665190314278,
+            "peak_difference_similarity": 0.910219617015536,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      },
+      "selected_by": []
+    },
+    {
+      "pair_id": "3f8151f36a7ea15750b9",
+      "features": {
+        "track": "Circuit de Spa-Francorchamps",
+        "session_a": 2,
+        "session_b": 4,
+        "episode_pk_a": 32,
+        "episode_pk_b": 88,
+        "episode_id_a": 7,
+        "episode_id_b": 7,
+        "start_distance_a_m": 2228.0,
+        "end_distance_a_m": 2272.0,
+        "center_distance_a_m": 2250.0,
+        "start_distance_b_m": 2228.0,
+        "end_distance_b_m": 2296.0,
+        "center_distance_b_m": 2262.0,
+        "center_distance_abs_diff_m": 12.0,
+        "overlap_m": 44.0,
+        "overlap_over_union": 0.6470588235294118,
+        "overlap_over_shorter": 1.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "brake",
+          "throttle"
+        ],
+        "channels_b": [
+          "brake",
+          "throttle"
+        ],
+        "shared_channels": [
+          "brake",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.13459785792198886,
+        "action_time_loss_b_s": 0.16357489052915497,
+        "action_time_loss_similarity": 0.8228515849014042,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.24331550802139035,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 4.0,
+            "mean_difference_similarity": 0.9332244377661723,
+            "peak_difference_similarity": 0.7174733147358492,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.6537433155080214,
+            "onset_offset_abs_diff_m": 45.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.2152104646683816,
+            "peak_difference_similarity": 0.879188010947545,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      },
+      "selected_by": []
+    },
+    {
+      "pair_id": "460a7a7ee7ea62a5ce47",
+      "features": {
+        "track": "Circuit de Spa-Francorchamps",
+        "session_a": 5,
+        "session_b": 6,
+        "episode_pk_a": 97,
+        "episode_pk_b": 138,
+        "episode_id_a": 2,
+        "episode_id_b": 5,
+        "start_distance_a_m": 2853.0,
+        "end_distance_a_m": 2918.0,
+        "center_distance_a_m": 2885.5,
+        "start_distance_b_m": 2902.0,
+        "end_distance_b_m": 2937.0,
+        "center_distance_b_m": 2919.5,
+        "center_distance_abs_diff_m": 34.0,
+        "overlap_m": 16.0,
+        "overlap_over_union": 0.19047619047619047,
+        "overlap_over_shorter": 0.45714285714285713,
+        "channel_jaccard": 0.0,
+        "channels_a": [
+          "brake",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude"
+        ],
+        "shared_channels": [],
+        "channels_only_a": [
+          "brake",
+          "throttle"
+        ],
+        "channels_only_b": [
+          "steering_magnitude"
+        ],
+        "action_time_loss_a_s": 0.18038390462049136,
+        "action_time_loss_b_s": 0.04649416392960859,
+        "action_time_loss_similarity": 0.2577511781188426,
+        "per_channel_metrics": {}
+      },
+      "selected_by": []
+    },
+    {
+      "pair_id": "46a459475c68dcee05ca",
+      "features": {
+        "track": "Circuit de Spa-Francorchamps",
+        "session_a": 1,
+        "session_b": 5,
+        "episode_pk_a": 1,
+        "episode_pk_b": 115,
+        "episode_id_a": 1,
+        "episode_id_b": 11,
+        "start_distance_a_m": 4391.0,
+        "end_distance_a_m": 4603.0,
+        "center_distance_a_m": 4497.0,
+        "start_distance_b_m": 4363.0,
+        "end_distance_b_m": 4422.0,
+        "center_distance_b_m": 4392.5,
+        "center_distance_abs_diff_m": 104.5,
+        "overlap_m": 31.0,
+        "overlap_over_union": 0.12916666666666668,
+        "overlap_over_shorter": 0.5254237288135594,
+        "channel_jaccard": 0.5,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [
+          "steering_magnitude"
+        ],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.7654263067387461,
+        "action_time_loss_b_s": 0.06539612515886972,
+        "action_time_loss_similarity": 0.08543751969736076,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.04645027182603134,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.3244780415177068,
+            "peak_difference_similarity": 0.7578977735881774,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "mixed"
+          }
+        }
+      },
+      "selected_by": []
+    },
+    {
+      "pair_id": "5a891d125d898b84d2fa",
+      "features": {
+        "track": "Circuit de Spa-Francorchamps",
+        "session_a": 2,
+        "session_b": 6,
+        "episode_pk_a": 19,
+        "episode_pk_b": 149,
+        "episode_id_a": 2,
+        "episode_id_b": 8,
+        "start_distance_a_m": 6671.0,
+        "end_distance_a_m": 6693.0,
+        "center_distance_a_m": 6682.0,
+        "start_distance_b_m": 6692.0,
+        "end_distance_b_m": 6707.0,
+        "center_distance_b_m": 6699.5,
+        "center_distance_abs_diff_m": 17.5,
+        "overlap_m": 1.0,
+        "overlap_over_union": 0.027777777777777776,
+        "overlap_over_shorter": 0.06666666666666667,
+        "channel_jaccard": 0.5,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude"
+        ],
+        "shared_channels": [
+          "steering_magnitude"
+        ],
+        "channels_only_a": [
+          "throttle"
+        ],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.16342452068720092,
+        "action_time_loss_b_s": 0.040121165613925314,
+        "action_time_loss_similarity": 0.245502727774361,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.18181818181818177,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 4.0,
+            "mean_difference_similarity": 0.07074944588066723,
+            "peak_difference_similarity": 0.5612929321721298,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      },
+      "selected_by": []
+    },
+    {
+      "pair_id": "6141a050f3abf0ceb980",
+      "features": {
+        "track": "Circuit de Spa-Francorchamps",
+        "session_a": 2,
+        "session_b": 4,
+        "episode_pk_a": 25,
+        "episode_pk_b": 80,
+        "episode_id_a": 8,
+        "episode_id_b": 8,
+        "start_distance_a_m": 4752.0,
+        "end_distance_a_m": 4775.0,
+        "center_distance_a_m": 4763.5,
+        "start_distance_b_m": 4785.0,
+        "end_distance_b_m": 4806.0,
+        "center_distance_b_m": 4795.5,
+        "center_distance_abs_diff_m": 32.0,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 0.0,
+        "channels_a": [
+          "brake"
+        ],
+        "channels_b": [
+          "throttle"
+        ],
+        "shared_channels": [],
+        "channels_only_a": [
+          "brake"
+        ],
+        "channels_only_b": [
+          "throttle"
+        ],
+        "action_time_loss_a_s": 0.024949602815382832,
+        "action_time_loss_b_s": 0.03189619979833935,
+        "action_time_loss_similarity": 0.7822123943643534,
+        "per_channel_metrics": {}
+      },
+      "selected_by": []
+    },
+    {
+      "pair_id": "6e0c4df1726a0d0b3914",
+      "features": {
+        "track": "Circuit de Spa-Francorchamps",
+        "session_a": 2,
+        "session_b": 6,
+        "episode_pk_a": 19,
+        "episode_pk_b": 137,
+        "episode_id_a": 2,
+        "episode_id_b": 4,
+        "start_distance_a_m": 6671.0,
+        "end_distance_a_m": 6693.0,
+        "center_distance_a_m": 6682.0,
+        "start_distance_b_m": 6700.0,
+        "end_distance_b_m": 6722.0,
+        "center_distance_b_m": 6711.0,
+        "center_distance_abs_diff_m": 29.0,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 0.5,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude"
+        ],
+        "shared_channels": [
+          "steering_magnitude"
+        ],
+        "channels_only_a": [
+          "throttle"
+        ],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.16342452068720092,
+        "action_time_loss_b_s": 0.058544330309530324,
+        "action_time_loss_similarity": 0.3582346765549694,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.18181818181818177,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 4.0,
+            "mean_difference_similarity": 0.0304329457358672,
+            "peak_difference_similarity": 0.9427767573755038,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      },
+      "selected_by": []
+    },
+    {
+      "pair_id": "7f8aa96472ed6ff2e91e",
+      "features": {
+        "track": "Circuit de Spa-Francorchamps",
+        "session_a": 4,
+        "session_b": 5,
+        "episode_pk_a": 95,
+        "episode_pk_b": 116,
+        "episode_id_a": 14,
+        "episode_id_b": 12,
+        "start_distance_a_m": 291.0,
+        "end_distance_a_m": 314.0,
+        "center_distance_a_m": 302.5,
+        "start_distance_b_m": 264.0,
+        "end_distance_b_m": 283.0,
+        "center_distance_b_m": 273.5,
+        "center_distance_abs_diff_m": 29.0,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 0.5,
+        "channels_a": [
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [
+          "steering_magnitude"
+        ],
+        "action_time_loss_a_s": 0.03406583694184295,
+        "action_time_loss_b_s": 0.05730782363907849,
+        "action_time_loss_similarity": 0.594436060883898,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.7559621542548001,
+            "peak_difference_similarity": 0.772698005888829,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      },
+      "selected_by": []
+    },
+    {
+      "pair_id": "8eb0fd95ea1b47078b0b",
+      "features": {
+        "track": "Circuit de Spa-Francorchamps",
+        "session_a": 5,
+        "session_b": 6,
+        "episode_pk_a": 103,
+        "episode_pk_b": 137,
+        "episode_id_a": 8,
+        "episode_id_b": 4,
+        "start_distance_a_m": 6666.0,
+        "end_distance_a_m": 6698.0,
+        "center_distance_a_m": 6682.0,
+        "start_distance_b_m": 6700.0,
+        "end_distance_b_m": 6722.0,
+        "center_distance_b_m": 6711.0,
+        "center_distance_abs_diff_m": 29.0,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 0.5,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude"
+        ],
+        "shared_channels": [
+          "steering_magnitude"
+        ],
+        "channels_only_a": [
+          "throttle"
+        ],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.051786143043301536,
+        "action_time_loss_b_s": 0.058544330309530324,
+        "action_time_loss_similarity": 0.8845629076206439,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.08654270940792368,
+            "peak_difference_similarity": 0.7053697563112555,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      },
+      "selected_by": []
+    },
+    {
+      "pair_id": "9265a7f9db72950cc9e0",
+      "features": {
+        "track": "Circuit de Spa-Francorchamps",
+        "session_a": 2,
+        "session_b": 5,
+        "episode_pk_a": 35,
+        "episode_pk_b": 116,
+        "episode_id_a": 10,
+        "episode_id_b": 12,
+        "start_distance_a_m": 294.0,
+        "end_distance_a_m": 317.0,
+        "center_distance_a_m": 305.5,
+        "start_distance_b_m": 264.0,
+        "end_distance_b_m": 283.0,
+        "center_distance_b_m": 273.5,
+        "center_distance_abs_diff_m": 32.0,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 0.5,
+        "channels_a": [
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [
+          "steering_magnitude"
+        ],
+        "action_time_loss_a_s": 0.08579897188959595,
+        "action_time_loss_b_s": 0.05730782363907849,
+        "action_time_loss_similarity": 0.6679313560169557,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.6590146691527297,
+            "peak_difference_similarity": 0.6368790444714574,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      },
+      "selected_by": []
+    },
+    {
+      "pair_id": "960d31430fa1a544692a",
+      "features": {
+        "track": "Circuit de Spa-Francorchamps",
+        "session_a": 2,
+        "session_b": 5,
+        "episode_pk_a": 18,
+        "episode_pk_b": 116,
+        "episode_id_a": 1,
+        "episode_id_b": 12,
+        "start_distance_a_m": 227.0,
+        "end_distance_a_m": 256.0,
+        "center_distance_a_m": 241.5,
+        "start_distance_b_m": 264.0,
+        "end_distance_b_m": 283.0,
+        "center_distance_b_m": 273.5,
+        "center_distance_abs_diff_m": 32.0,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 0.3333333333333333,
+        "channels_a": [
+          "brake",
+          "steering_magnitude"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude"
+        ],
+        "channels_only_a": [
+          "brake"
+        ],
+        "channels_only_b": [
+          "throttle"
+        ],
+        "action_time_loss_a_s": 0.18457602295896702,
+        "action_time_loss_b_s": 0.05730782363907849,
+        "action_time_loss_similarity": 0.31048357592913656,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.052631578947368474,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 1.0,
+            "mean_difference_similarity": 0.39200218281349924,
+            "peak_difference_similarity": 0.30511252870811517,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      },
+      "selected_by": []
+    },
+    {
+      "pair_id": "99c45b9eada4ba36969a",
+      "features": {
+        "track": "Circuit de Spa-Francorchamps",
+        "session_a": 4,
+        "session_b": 3,
+        "episode_pk_a": 84,
+        "episode_pk_b": 50,
+        "episode_id_a": 3,
+        "episode_id_b": 4,
+        "start_distance_a_m": 2408.0,
+        "end_distance_a_m": 2582.0,
+        "center_distance_a_m": 2495.0,
+        "start_distance_b_m": 2424.0,
+        "end_distance_b_m": 2481.0,
+        "center_distance_b_m": 2452.5,
+        "center_distance_abs_diff_m": 42.5,
+        "overlap_m": 57.0,
+        "overlap_over_union": 0.3275862068965517,
+        "overlap_over_shorter": 1.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.3761339741855849,
+        "action_time_loss_b_s": 0.26067970066709734,
+        "action_time_loss_similarity": 0.693050132553242,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.411373260738052,
+            "onset_offset_abs_diff_m": 23.0,
+            "end_offset_abs_diff_m": 24.0,
+            "mean_difference_similarity": 0.14287842763328876,
+            "peak_difference_similarity": 0.5121387777370184,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "mixed"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.21082879612825167,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 6.0,
+            "mean_difference_similarity": 0.26835460294107116,
+            "peak_difference_similarity": 0.6570982548227957,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      },
+      "selected_by": []
+    },
+    {
+      "pair_id": "b1eff6414e5ea41cd215",
+      "features": {
+        "track": "Circuit de Spa-Francorchamps",
+        "session_a": 4,
+        "session_b": 3,
+        "episode_pk_a": 92,
+        "episode_pk_b": 58,
+        "episode_id_a": 11,
+        "episode_id_b": 12,
+        "start_distance_a_m": 4397.0,
+        "end_distance_a_m": 4445.0,
+        "center_distance_a_m": 4421.0,
+        "start_distance_b_m": 4441.0,
+        "end_distance_b_m": 4457.0,
+        "center_distance_b_m": 4449.0,
+        "center_distance_abs_diff_m": 28.0,
+        "overlap_m": 4.0,
+        "overlap_over_union": 0.06666666666666667,
+        "overlap_over_shorter": 0.25,
+        "channel_jaccard": 0.0,
+        "channels_a": [
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude"
+        ],
+        "shared_channels": [],
+        "channels_only_a": [
+          "throttle"
+        ],
+        "channels_only_b": [
+          "steering_magnitude"
+        ],
+        "action_time_loss_a_s": 0.07778512568793872,
+        "action_time_loss_b_s": 0.04575164750043825,
+        "action_time_loss_similarity": 0.5881799006661818,
+        "per_channel_metrics": {}
+      },
+      "selected_by": []
+    },
+    {
+      "pair_id": "bd8d235af6bb4aa3c761",
+      "features": {
+        "track": "Circuit de Spa-Francorchamps",
+        "session_a": 4,
+        "session_b": 3,
+        "episode_pk_a": 77,
+        "episode_pk_b": 39,
+        "episode_id_a": 5,
+        "episode_id_b": 3,
+        "start_distance_a_m": 2193.0,
+        "end_distance_a_m": 2256.0,
+        "center_distance_a_m": 2224.5,
+        "start_distance_b_m": 2204.0,
+        "end_distance_b_m": 2270.0,
+        "center_distance_b_m": 2237.0,
+        "center_distance_abs_diff_m": 12.5,
+        "overlap_m": 52.0,
+        "overlap_over_union": 0.6753246753246753,
+        "overlap_over_shorter": 0.8253968253968254,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "brake"
+        ],
+        "channels_b": [
+          "brake"
+        ],
+        "shared_channels": [
+          "brake"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.03571059570335677,
+        "action_time_loss_b_s": 0.3239370963734416,
+        "action_time_loss_similarity": 0.11023929060038508,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.05699855699855694,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.2333665853790173,
+            "peak_difference_similarity": 0.5017885857700476,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "mixed"
+          }
+        }
+      },
+      "selected_by": []
+    },
+    {
+      "pair_id": "bfe6b2d94d095873342d",
+      "features": {
+        "track": "Circuit de Spa-Francorchamps",
+        "session_a": 3,
+        "session_b": 5,
+        "episode_pk_a": 37,
+        "episode_pk_b": 96,
+        "episode_id_a": 1,
+        "episode_id_b": 1,
+        "start_distance_a_m": 2529.0,
+        "end_distance_a_m": 2671.0,
+        "center_distance_a_m": 2600.0,
+        "start_distance_b_m": 2575.0,
+        "end_distance_b_m": 2658.0,
+        "center_distance_b_m": 2616.5,
+        "center_distance_abs_diff_m": 16.5,
+        "overlap_m": 83.0,
+        "overlap_over_union": 0.5845070422535211,
+        "overlap_over_shorter": 1.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.6488307928397887,
+        "action_time_loss_b_s": 0.2671567409152118,
+        "action_time_loss_similarity": 0.41175102024046345,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.2806719837094858,
+            "onset_offset_abs_diff_m": 15.0,
+            "end_offset_abs_diff_m": 42.0,
+            "mean_difference_similarity": 0.6952717245388352,
+            "peak_difference_similarity": 0.8437573045661928,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.176056338028169,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 25.0,
+            "mean_difference_similarity": 0.8742288797837058,
+            "peak_difference_similarity": 0.9233926730244432,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      },
+      "selected_by": []
+    },
+    {
+      "pair_id": "d35c4aaf8ea4011d1585",
+      "features": {
+        "track": "Circuit de Spa-Francorchamps",
+        "session_a": 1,
+        "session_b": 2,
+        "episode_pk_a": 8,
+        "episode_pk_b": 34,
+        "episode_id_a": 4,
+        "episode_id_b": 9,
+        "start_distance_a_m": 6537.0,
+        "end_distance_a_m": 6570.0,
+        "center_distance_a_m": 6553.5,
+        "start_distance_b_m": 6572.0,
+        "end_distance_b_m": 6599.0,
+        "center_distance_b_m": 6585.5,
+        "center_distance_abs_diff_m": 32.0,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 0.5,
+        "channels_a": [
+          "brake"
+        ],
+        "channels_b": [
+          "brake",
+          "throttle"
+        ],
+        "shared_channels": [
+          "brake"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [
+          "throttle"
+        ],
+        "action_time_loss_a_s": 0.021590616736574475,
+        "action_time_loss_b_s": 0.09321862788128499,
+        "action_time_loss_similarity": 0.23161268543954946,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.07407407407407407,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 2.0,
+            "mean_difference_similarity": 0.8832032899429721,
+            "peak_difference_similarity": 0.7165872029391991,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      },
+      "selected_by": []
+    },
+    {
+      "pair_id": "db6c3efa4967a37d8c3d",
+      "features": {
+        "track": "Circuit de Spa-Francorchamps",
+        "session_a": 3,
+        "session_b": 5,
+        "episode_pk_a": 55,
+        "episode_pk_b": 106,
+        "episode_id_a": 9,
+        "episode_id_b": 2,
+        "start_distance_a_m": 3669.0,
+        "end_distance_a_m": 3753.0,
+        "center_distance_a_m": 3711.0,
+        "start_distance_b_m": 3660.0,
+        "end_distance_b_m": 3846.0,
+        "center_distance_b_m": 3753.0,
+        "center_distance_abs_diff_m": 42.0,
+        "overlap_m": 84.0,
+        "overlap_over_union": 0.45161290322580644,
+        "overlap_over_shorter": 1.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.06771644748876327,
+        "action_time_loss_b_s": 0.1970922465442584,
+        "action_time_loss_similarity": 0.3435774297369789,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.12788018433179726,
+            "onset_offset_abs_diff_m": 31.0,
+            "end_offset_abs_diff_m": 10.0,
+            "mean_difference_similarity": 0.032611152416540876,
+            "peak_difference_similarity": 0.999495714892489,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "mixed"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.24692780337941622,
+            "onset_offset_abs_diff_m": 5.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.7465085719739252,
+            "peak_difference_similarity": 0.6729138892415113,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      },
+      "selected_by": []
+    },
+    {
+      "pair_id": "e51ad7ba9a0fc530afd7",
+      "features": {
+        "track": "Circuit de Spa-Francorchamps",
+        "session_a": 4,
+        "session_b": 3,
+        "episode_pk_a": 86,
+        "episode_pk_b": 49,
+        "episode_id_a": 5,
+        "episode_id_b": 3,
+        "start_distance_a_m": 4463.0,
+        "end_distance_a_m": 4605.0,
+        "center_distance_a_m": 4534.0,
+        "start_distance_b_m": 4475.0,
+        "end_distance_b_m": 4625.0,
+        "center_distance_b_m": 4550.0,
+        "center_distance_abs_diff_m": 16.0,
+        "overlap_m": 130.0,
+        "overlap_over_union": 0.8024691358024691,
+        "overlap_over_shorter": 0.9154929577464789,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.2151982063546427,
+        "action_time_loss_b_s": 0.26943996868531883,
+        "action_time_loss_similarity": 0.7986870225848878,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.16356807511737093,
+            "onset_offset_abs_diff_m": 3.0,
+            "end_offset_abs_diff_m": 49.0,
+            "mean_difference_similarity": 0.06804630093097835,
+            "peak_difference_similarity": 0.8836379756987981,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.30441314553990606,
+            "onset_offset_abs_diff_m": 4.0,
+            "end_offset_abs_diff_m": 45.0,
+            "mean_difference_similarity": 0.01317131778499592,
+            "peak_difference_similarity": 0.9467113215507988,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      },
+      "selected_by": []
+    },
+    {
+      "pair_id": "efb4c8b94c3105145ca4",
+      "features": {
+        "track": "Circuit de Spa-Francorchamps",
+        "session_a": 4,
+        "session_b": 3,
+        "episode_pk_a": 84,
+        "episode_pk_b": 48,
+        "episode_id_a": 3,
+        "episode_id_b": 2,
+        "start_distance_a_m": 2408.0,
+        "end_distance_a_m": 2582.0,
+        "center_distance_a_m": 2495.0,
+        "start_distance_b_m": 2508.0,
+        "end_distance_b_m": 2570.0,
+        "center_distance_b_m": 2539.0,
+        "center_distance_abs_diff_m": 44.0,
+        "overlap_m": 62.0,
+        "overlap_over_union": 0.3563218390804598,
+        "overlap_over_shorter": 1.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.3761339741855849,
+        "action_time_loss_b_s": 0.33959439565361293,
+        "action_time_loss_similarity": 0.9028548840580316,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.1968854282536151,
+            "onset_offset_abs_diff_m": 7.0,
+            "end_offset_abs_diff_m": 18.0,
+            "mean_difference_similarity": 0.05099026324170159,
+            "peak_difference_similarity": 0.7370386730495554,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.3160919540229885,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.4681012749545468,
+            "peak_difference_similarity": 0.761016311967775,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      },
+      "selected_by": []
+    },
+    {
+      "pair_id": "facfe126f06efce2ede7",
+      "features": {
+        "track": "Circuit de Spa-Francorchamps",
+        "session_a": 1,
+        "session_b": 3,
+        "episode_pk_a": 1,
+        "episode_pk_b": 49,
+        "episode_id_a": 1,
+        "episode_id_b": 3,
+        "start_distance_a_m": 4391.0,
+        "end_distance_a_m": 4603.0,
+        "center_distance_a_m": 4497.0,
+        "start_distance_b_m": 4475.0,
+        "end_distance_b_m": 4625.0,
+        "center_distance_b_m": 4550.0,
+        "center_distance_abs_diff_m": 53.0,
+        "overlap_m": 128.0,
+        "overlap_over_union": 0.5470085470085471,
+        "overlap_over_shorter": 0.8533333333333334,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.7654263067387461,
+        "action_time_loss_b_s": 0.26943996868531883,
+        "action_time_loss_similarity": 0.35201294535240424,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.2571069182389937,
+            "onset_offset_abs_diff_m": 55.0,
+            "end_offset_abs_diff_m": 47.0,
+            "mean_difference_similarity": 0.43852101606221944,
+            "peak_difference_similarity": 0.8271254676678177,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.011761006289308207,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.8111353147217683,
+            "peak_difference_similarity": 0.8648567847085665,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      },
+      "selected_by": []
+    },
+    {
+      "pair_id": "fd1e4bc4b7de37d4f5c3",
+      "features": {
+        "track": "Circuit de Spa-Francorchamps",
+        "session_a": 1,
+        "session_b": 2,
+        "episode_pk_a": 1,
+        "episode_pk_b": 33,
+        "episode_id_a": 1,
+        "episode_id_b": 8,
+        "start_distance_a_m": 4391.0,
+        "end_distance_a_m": 4603.0,
+        "center_distance_a_m": 4497.0,
+        "start_distance_b_m": 4520.0,
+        "end_distance_b_m": 4583.0,
+        "center_distance_b_m": 4551.5,
+        "center_distance_abs_diff_m": 54.5,
+        "overlap_m": 63.0,
+        "overlap_over_union": 0.2971698113207547,
+        "overlap_over_shorter": 1.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.7654263067387461,
+        "action_time_loss_b_s": 0.1046478859337725,
+        "action_time_loss_similarity": 0.13671843391383556,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.23869421982629524,
+            "onset_offset_abs_diff_m": 43.0,
+            "end_offset_abs_diff_m": 6.0,
+            "mean_difference_similarity": 0.5666792150279842,
+            "peak_difference_similarity": 0.742842548641927,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.16509433962264153,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.590252054070984,
+            "peak_difference_similarity": 0.7935375911223072,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      },
+      "selected_by": []
+    },
+    {
+      "pair_id": "fed471de059c7959f511",
+      "features": {
+        "track": "Circuit de Spa-Francorchamps",
+        "session_a": 4,
+        "session_b": 5,
+        "episode_pk_a": 87,
+        "episode_pk_b": 106,
+        "episode_id_a": 6,
+        "episode_id_b": 2,
+        "start_distance_a_m": 3588.0,
+        "end_distance_a_m": 3786.0,
+        "center_distance_a_m": 3687.0,
+        "start_distance_b_m": 3660.0,
+        "end_distance_b_m": 3846.0,
+        "center_distance_b_m": 3753.0,
+        "center_distance_abs_diff_m": 66.0,
+        "overlap_m": 126.0,
+        "overlap_over_union": 0.4883720930232558,
+        "overlap_over_shorter": 0.6774193548387096,
+        "channel_jaccard": 0.6666666666666666,
+        "channels_a": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [
+          "brake"
+        ],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.2139237272836283,
+        "action_time_loss_b_s": 0.1970922465442584,
+        "action_time_loss_similarity": 0.9213201782098062,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.01352231997393294,
+            "onset_offset_abs_diff_m": 60.0,
+            "end_offset_abs_diff_m": 39.0,
+            "mean_difference_similarity": 0.022381837512009138,
+            "peak_difference_similarity": 0.5905043308619942,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "mixed"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.10443141088302377,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 9.0,
+            "mean_difference_similarity": 0.6574681824479901,
+            "peak_difference_similarity": 0.48579270789563006,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      },
+      "selected_by": []
+    }
+  ]
+}

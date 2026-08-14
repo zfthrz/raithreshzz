@@ -1,0 +1,110 @@
+H3 persistent patterns v0.1 validation
+======================================
+
+py_compile
+----------
+build_persistent_patterns_v0_1.py: PASS
+validate_persistent_patterns_v0_1.py: PASS
+audit_persistent_patterns_v0_1.py: PASS
+
+Synthetic transitivity case
+---------------------------
+Input relation:
+- A-B = MATCH
+- B-C = MATCH
+- A-C = AMBIGUOUS
+- D has no MATCH edge
+
+Expected:
+- A/B/C = one equivalence class
+- A-C AMBIGUOUS is transitively resolved
+- 3 independent sessions -> persistent_pattern
+- D -> single_observation
+- no conflicts
+
+==============================================================================
+RACE ENGINEER - H3 PERSISTENT PATTERN BUILDER v0.1
+==============================================================================
+Matcher version:             0.3
+Episodes:                    4
+Patterns/classes:            2
+persistent_pattern                1
+single_observation                1
+MATCH edges:                 2
+AMBIG resolved transitively: 1
+Conflicts requiring review:  0
+Output: /mnt/data/h3_synthetic/patterns.json
+RESULT: PASS
+
+==============================================================================
+RACE ENGINEER - H3 PERSISTENT PATTERN VALIDATION v0.1
+==============================================================================
+Source episodes:              4
+Source MATCH edges:           2
+Output patterns/classes:      2
+persistent_pattern                1
+single_observation                1
+AMBIG internal/transitive:    1
+REJECT internal contradictions:0
+MATCH crossing classes:       0
+Errors:                       0
+RESULT: PASS
+
+======================================================================================
+RACE ENGINEER - H3 PERSISTENT PATTERN AUDIT v0.1
+======================================================================================
+Patterns/classes: 2
+Episodes:         4
+
+STATE COUNTS
+  persistent_pattern                1
+  single_observation                1
+
+TOP 1 RECURRENT CLASSES
+state                     sess  obs  center   spread  common_channels              M/A/R
+persistent_pattern           3    3   124.0     8.0 brake                        2/1/0
+
+CONFLICTS: 0
+
+Contradiction detection case
+----------------------------
+Input relation:
+- A-B = MATCH
+- B-C = MATCH
+- A-C = REJECT
+
+Expected:
+- transitive class is preserved
+- class state = conflict_review_required
+- builder returns REVIEW_REQUIRED
+- validator detects internal REJECT and returns REVIEW_REQUIRED
+
+==============================================================================
+RACE ENGINEER - H3 PERSISTENT PATTERN BUILDER v0.1
+==============================================================================
+Matcher version:             0.3
+Episodes:                    4
+Patterns/classes:            2
+conflict_review_required          1
+single_observation                1
+MATCH edges:                 2
+AMBIG resolved transitively: 0
+Conflicts requiring review:  1
+Output: /mnt/data/h3_synthetic/patterns_conflict.json
+RESULT: REVIEW_REQUIRED
+
+==============================================================================
+RACE ENGINEER - H3 PERSISTENT PATTERN VALIDATION v0.1
+==============================================================================
+Source episodes:              4
+Source MATCH edges:           2
+Output patterns/classes:      2
+conflict_review_required          1
+single_observation                1
+AMBIG internal/transitive:    0
+REJECT internal contradictions:1
+MATCH crossing classes:       0
+Errors:                       0
+RESULT: REVIEW_REQUIRED
+
+Builder exit=2 Validator exit=3

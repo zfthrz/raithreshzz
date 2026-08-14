@@ -1,0 +1,6298 @@
+{
+  "metadata": {
+    "schema_version": "1.0",
+    "h3_version": "0.1",
+    "created_at_utc": "2026-08-14T18:40:12.641335+00:00",
+    "source_features": "/workspaces/raithreshzz/calibration_batches/circuit-de-spa-francorchamps--lmp2-elms-034f887c1a/episode_pair_features.json",
+    "source_matches": "/workspaces/raithreshzz/calibration_batches/circuit-de-spa-francorchamps--lmp2-elms-034f887c1a/episode_pair_matches.json",
+    "matcher_version": "0.3",
+    "matcher_status": "CALIBRATED_PROVISIONAL_SINGLE_CONTEXT",
+    "persistent_min_independent_sessions": 3,
+    "equivalence_policy": "MATCH is transitive: A=B and B=C implies A=C. Internal AMBIGUOUS pairs are resolved by equivalence closure; internal REJECT pairs are contradictions requiring audit.",
+    "within_session_repeat_evidence_available": false,
+    "policy": "Derived H3 evidence only. Does not mutate History DB, does not select historical_reference, and does not alter coaching."
+  },
+  "summary": {
+    "episode_count": 116,
+    "pattern_count": 51,
+    "state_counts": {
+      "cross_session_repeat": 9,
+      "persistent_pattern": 12,
+      "single_observation": 30
+    },
+    "persistent_pattern_count": 12,
+    "cross_session_repeat_count": 9,
+    "single_observation_count": 30,
+    "conflict_review_required_count": 0,
+    "match_edge_count": 93,
+    "transitively_resolved_ambiguous_pair_count": 79
+  },
+  "patterns": [
+    {
+      "pattern_id": "pat_2c75dcd18159e0cddbb5",
+      "state": "persistent_pattern",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 7,
+      "independent_session_count": 6,
+      "session_ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "session_observation_counts": {
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "4": 1,
+        "5": 2,
+        "6": 1
+      },
+      "members": [
+        {
+          "session_id": 1,
+          "episode_pk": 5,
+          "episode_id": 1,
+          "timestamp_utc": "2026-08-09T02:42:26Z",
+          "session_type": "P",
+          "start_distance_m": 2387.0,
+          "end_distance_m": 2595.0,
+          "center_distance_m": 2491.0,
+          "action_time_loss_s": 1.1061009843899683,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 2,
+          "episode_pk": 26,
+          "episode_id": 1,
+          "timestamp_utc": "2026-08-09T04:35:16Z",
+          "session_type": "P",
+          "start_distance_m": 2455.0,
+          "end_distance_m": 2579.0,
+          "center_distance_m": 2517.0,
+          "action_time_loss_s": 0.5926346196445493,
+          "channels": [
+            "brake",
+            "steering_magnitude",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 3,
+          "episode_pk": 48,
+          "episode_id": 2,
+          "timestamp_utc": "2026-08-10T00:34:34Z",
+          "session_type": "P",
+          "start_distance_m": 2508.0,
+          "end_distance_m": 2570.0,
+          "center_distance_m": 2539.0,
+          "action_time_loss_s": 0.33959439565361293,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 4,
+          "episode_pk": 84,
+          "episode_id": 3,
+          "timestamp_utc": "2026-08-09T04:52:43Z",
+          "session_type": "Q",
+          "start_distance_m": 2408.0,
+          "end_distance_m": 2582.0,
+          "center_distance_m": 2495.0,
+          "action_time_loss_s": 0.3761339741855849,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 5,
+          "episode_pk": 110,
+          "episode_id": 6,
+          "timestamp_utc": "2026-08-10T00:53:48Z",
+          "session_type": "Q",
+          "start_distance_m": 2448.0,
+          "end_distance_m": 2503.0,
+          "center_distance_m": 2475.5,
+          "action_time_loss_s": 0.13931338206928956,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 5,
+          "episode_pk": 119,
+          "episode_id": 15,
+          "timestamp_utc": "2026-08-10T00:53:48Z",
+          "session_type": "Q",
+          "start_distance_m": 2533.0,
+          "end_distance_m": 2551.0,
+          "center_distance_m": 2542.0,
+          "action_time_loss_s": 0.03411878462553375,
+          "channels": [
+            "steering_magnitude"
+          ]
+        },
+        {
+          "session_id": 6,
+          "episode_pk": 139,
+          "episode_id": 6,
+          "timestamp_utc": "2026-08-10T01:03:52Z",
+          "session_type": "R",
+          "start_distance_m": 2522.0,
+          "end_distance_m": 2558.0,
+          "center_distance_m": 2540.0,
+          "action_time_loss_s": 0.04153408245579726,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 2,
+        "episode_pk": 26,
+        "episode_id": 1,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 2455.0,
+        "start_min_m": 2387.0,
+        "start_max_m": 2533.0,
+        "end_median_m": 2570.0,
+        "end_min_m": 2503.0,
+        "end_max_m": 2595.0,
+        "center_median_m": 2517.0,
+        "center_min_m": 2475.5,
+        "center_max_m": 2542.0,
+        "center_spread_m": 66.5
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.33959439565361293,
+        "action_time_loss_min_s": 0.03411878462553375,
+        "action_time_loss_max_s": 1.1061009843899683
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "steering_magnitude"
+        ],
+        "union_action_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "brake": 1,
+          "steering_magnitude": 7,
+          "throttle": 6
+        },
+        "session_prevalence_count": {
+          "brake": 1,
+          "steering_magnitude": 6,
+          "throttle": 6
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T02:42:26Z",
+        "last_observed_utc": "2026-08-10T01:03:52Z",
+        "session_types": [
+          "P",
+          "Q",
+          "R"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 8,
+        "internal_ambiguous_pair_count": 12,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 20,
+        "observed_internal_cross_session_pair_count": 20,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 12,
+        "same_session_member_pair_count_inferred": 1,
+        "decision_counts": {
+          "AMBIGUOUS": 12,
+          "MATCH": 8
+        }
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_76fc2e3a45936193c1f2",
+      "state": "persistent_pattern",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 11,
+      "independent_session_count": 5,
+      "session_ids": [
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "session_observation_counts": {
+        "2": 1,
+        "3": 3,
+        "4": 3,
+        "5": 2,
+        "6": 2
+      },
+      "members": [
+        {
+          "session_id": 2,
+          "episode_pk": 27,
+          "episode_id": 2,
+          "timestamp_utc": "2026-08-09T04:35:16Z",
+          "session_type": "P",
+          "start_distance_m": 2873.0,
+          "end_distance_m": 2977.0,
+          "center_distance_m": 2925.0,
+          "action_time_loss_s": 0.5097700092937814,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 3,
+          "episode_pk": 43,
+          "episode_id": 7,
+          "timestamp_utc": "2026-08-10T00:34:34Z",
+          "session_type": "P",
+          "start_distance_m": 2945.0,
+          "end_distance_m": 3017.0,
+          "center_distance_m": 2981.0,
+          "action_time_loss_s": 0.16056450139351597,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 3,
+          "episode_pk": 51,
+          "episode_id": 5,
+          "timestamp_utc": "2026-08-10T00:34:34Z",
+          "session_type": "P",
+          "start_distance_m": 2848.0,
+          "end_distance_m": 2913.0,
+          "center_distance_m": 2880.5,
+          "action_time_loss_s": 0.20452781044148338,
+          "channels": [
+            "brake",
+            "steering_magnitude"
+          ]
+        },
+        {
+          "session_id": 3,
+          "episode_pk": 54,
+          "episode_id": 8,
+          "timestamp_utc": "2026-08-10T00:34:34Z",
+          "session_type": "P",
+          "start_distance_m": 2934.0,
+          "end_distance_m": 3017.0,
+          "center_distance_m": 2975.5,
+          "action_time_loss_s": 0.11915742234658921,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 4,
+          "episode_pk": 75,
+          "episode_id": 3,
+          "timestamp_utc": "2026-08-09T04:52:43Z",
+          "session_type": "Q",
+          "start_distance_m": 2901.0,
+          "end_distance_m": 2965.0,
+          "center_distance_m": 2933.0,
+          "action_time_loss_s": 0.12099578873803551,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 4,
+          "episode_pk": 76,
+          "episode_id": 4,
+          "timestamp_utc": "2026-08-09T04:52:43Z",
+          "session_type": "Q",
+          "start_distance_m": 2849.0,
+          "end_distance_m": 2885.0,
+          "center_distance_m": 2867.0,
+          "action_time_loss_s": 0.03703345485955367,
+          "channels": [
+            "brake",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 4,
+          "episode_pk": 85,
+          "episode_id": 4,
+          "timestamp_utc": "2026-08-09T04:52:43Z",
+          "session_type": "Q",
+          "start_distance_m": 2854.0,
+          "end_distance_m": 2967.0,
+          "center_distance_m": 2910.5,
+          "action_time_loss_s": 0.34641804968345724,
+          "channels": [
+            "brake",
+            "steering_magnitude",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 5,
+          "episode_pk": 97,
+          "episode_id": 2,
+          "timestamp_utc": "2026-08-10T00:53:48Z",
+          "session_type": "Q",
+          "start_distance_m": 2853.0,
+          "end_distance_m": 2918.0,
+          "center_distance_m": 2885.5,
+          "action_time_loss_s": 0.18038390462049136,
+          "channels": [
+            "brake",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 5,
+          "episode_pk": 105,
+          "episode_id": 1,
+          "timestamp_utc": "2026-08-10T00:53:48Z",
+          "session_type": "Q",
+          "start_distance_m": 2854.0,
+          "end_distance_m": 2951.0,
+          "center_distance_m": 2902.5,
+          "action_time_loss_s": 0.23623675123783272,
+          "channels": [
+            "brake",
+            "steering_magnitude",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 6,
+          "episode_pk": 138,
+          "episode_id": 5,
+          "timestamp_utc": "2026-08-10T01:03:52Z",
+          "session_type": "R",
+          "start_distance_m": 2902.0,
+          "end_distance_m": 2937.0,
+          "center_distance_m": 2919.5,
+          "action_time_loss_s": 0.04649416392960859,
+          "channels": [
+            "steering_magnitude"
+          ]
+        },
+        {
+          "session_id": 6,
+          "episode_pk": 146,
+          "episode_id": 5,
+          "timestamp_utc": "2026-08-10T01:03:52Z",
+          "session_type": "R",
+          "start_distance_m": 2939.0,
+          "end_distance_m": 2975.0,
+          "center_distance_m": 2957.0,
+          "action_time_loss_s": 0.0709970547686467,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 6,
+        "episode_pk": 138,
+        "episode_id": 5,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 2873.0,
+        "start_min_m": 2848.0,
+        "start_max_m": 2945.0,
+        "end_median_m": 2965.0,
+        "end_min_m": 2885.0,
+        "end_max_m": 3017.0,
+        "center_median_m": 2919.5,
+        "center_min_m": 2867.0,
+        "center_max_m": 2981.0,
+        "center_spread_m": 114.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.16056450139351597,
+        "action_time_loss_min_s": 0.03703345485955367,
+        "action_time_loss_max_s": 0.5097700092937814
+      },
+      "channel_summary": {
+        "common_action_channels": [],
+        "union_action_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "brake": 5,
+          "steering_magnitude": 9,
+          "throttle": 9
+        },
+        "session_prevalence_count": {
+          "brake": 3,
+          "steering_magnitude": 5,
+          "throttle": 5
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T04:35:16Z",
+        "last_observed_utc": "2026-08-10T01:03:52Z",
+        "session_types": [
+          "P",
+          "Q",
+          "R"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 14,
+        "internal_ambiguous_pair_count": 33,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 47,
+        "observed_internal_cross_session_pair_count": 47,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 33,
+        "same_session_member_pair_count_inferred": 8,
+        "decision_counts": {
+          "AMBIGUOUS": 33,
+          "MATCH": 14
+        }
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_d9cdda96801be42ac20e",
+      "state": "persistent_pattern",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 8,
+      "independent_session_count": 5,
+      "session_ids": [
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "session_observation_counts": {
+        "2": 1,
+        "3": 1,
+        "4": 3,
+        "5": 1,
+        "6": 2
+      },
+      "members": [
+        {
+          "session_id": 2,
+          "episode_pk": 32,
+          "episode_id": 7,
+          "timestamp_utc": "2026-08-09T04:35:16Z",
+          "session_type": "P",
+          "start_distance_m": 2228.0,
+          "end_distance_m": 2272.0,
+          "center_distance_m": 2250.0,
+          "action_time_loss_s": 0.13459785792198886,
+          "channels": [
+            "brake",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 3,
+          "episode_pk": 39,
+          "episode_id": 3,
+          "timestamp_utc": "2026-08-10T00:34:34Z",
+          "session_type": "P",
+          "start_distance_m": 2204.0,
+          "end_distance_m": 2270.0,
+          "center_distance_m": 2237.0,
+          "action_time_loss_s": 0.3239370963734416,
+          "channels": [
+            "brake"
+          ]
+        },
+        {
+          "session_id": 4,
+          "episode_pk": 77,
+          "episode_id": 5,
+          "timestamp_utc": "2026-08-09T04:52:43Z",
+          "session_type": "Q",
+          "start_distance_m": 2193.0,
+          "end_distance_m": 2256.0,
+          "center_distance_m": 2224.5,
+          "action_time_loss_s": 0.03571059570335677,
+          "channels": [
+            "brake"
+          ]
+        },
+        {
+          "session_id": 4,
+          "episode_pk": 88,
+          "episode_id": 7,
+          "timestamp_utc": "2026-08-09T04:52:43Z",
+          "session_type": "Q",
+          "start_distance_m": 2228.0,
+          "end_distance_m": 2296.0,
+          "center_distance_m": 2262.0,
+          "action_time_loss_s": 0.16357489052915497,
+          "channels": [
+            "brake",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 4,
+          "episode_pk": 91,
+          "episode_id": 10,
+          "timestamp_utc": "2026-08-09T04:52:43Z",
+          "session_type": "Q",
+          "start_distance_m": 2131.0,
+          "end_distance_m": 2201.0,
+          "center_distance_m": 2166.0,
+          "action_time_loss_s": 0.09046096363217515,
+          "channels": [
+            "brake",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 5,
+          "episode_pk": 111,
+          "episode_id": 7,
+          "timestamp_utc": "2026-08-10T00:53:48Z",
+          "session_type": "Q",
+          "start_distance_m": 2141.0,
+          "end_distance_m": 2256.0,
+          "center_distance_m": 2198.5,
+          "action_time_loss_s": 0.11148423309622046,
+          "channels": [
+            "brake",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 6,
+          "episode_pk": 135,
+          "episode_id": 2,
+          "timestamp_utc": "2026-08-10T01:03:52Z",
+          "session_type": "R",
+          "start_distance_m": 2179.0,
+          "end_distance_m": 2273.0,
+          "center_distance_m": 2226.0,
+          "action_time_loss_s": 0.18946983276807572,
+          "channels": [
+            "brake",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 6,
+          "episode_pk": 147,
+          "episode_id": 6,
+          "timestamp_utc": "2026-08-10T01:03:52Z",
+          "session_type": "R",
+          "start_distance_m": 2140.0,
+          "end_distance_m": 2267.0,
+          "center_distance_m": 2203.5,
+          "action_time_loss_s": 0.06532040241985726,
+          "channels": [
+            "brake",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 4,
+        "episode_pk": 77,
+        "episode_id": 5,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 2186.0,
+        "start_min_m": 2131.0,
+        "start_max_m": 2228.0,
+        "end_median_m": 2268.5,
+        "end_min_m": 2201.0,
+        "end_max_m": 2296.0,
+        "center_median_m": 2225.25,
+        "center_min_m": 2166.0,
+        "center_max_m": 2262.0,
+        "center_spread_m": 96.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.12304104550910466,
+        "action_time_loss_min_s": 0.03571059570335677,
+        "action_time_loss_max_s": 0.3239370963734416
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "brake"
+        ],
+        "union_action_channels": [
+          "brake",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "brake": 8,
+          "throttle": 6
+        },
+        "session_prevalence_count": {
+          "brake": 5,
+          "throttle": 4
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T04:35:16Z",
+        "last_observed_utc": "2026-08-10T01:03:52Z",
+        "session_types": [
+          "P",
+          "Q",
+          "R"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 8,
+        "internal_ambiguous_pair_count": 16,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 24,
+        "observed_internal_cross_session_pair_count": 24,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 16,
+        "same_session_member_pair_count_inferred": 4,
+        "decision_counts": {
+          "AMBIGUOUS": 16,
+          "MATCH": 8
+        }
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_da4a205ee5716896a8f2",
+      "state": "persistent_pattern",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 6,
+      "independent_session_count": 5,
+      "session_ids": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "session_observation_counts": {
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "4": 1,
+        "5": 2
+      },
+      "members": [
+        {
+          "session_id": 1,
+          "episode_pk": 1,
+          "episode_id": 1,
+          "timestamp_utc": "2026-08-09T02:42:26Z",
+          "session_type": "P",
+          "start_distance_m": 4391.0,
+          "end_distance_m": 4603.0,
+          "center_distance_m": 4497.0,
+          "action_time_loss_s": 0.7654263067387461,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 2,
+          "episode_pk": 33,
+          "episode_id": 8,
+          "timestamp_utc": "2026-08-09T04:35:16Z",
+          "session_type": "P",
+          "start_distance_m": 4520.0,
+          "end_distance_m": 4583.0,
+          "center_distance_m": 4551.5,
+          "action_time_loss_s": 0.1046478859337725,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 3,
+          "episode_pk": 49,
+          "episode_id": 3,
+          "timestamp_utc": "2026-08-10T00:34:34Z",
+          "session_type": "P",
+          "start_distance_m": 4475.0,
+          "end_distance_m": 4625.0,
+          "center_distance_m": 4550.0,
+          "action_time_loss_s": 0.26943996868531883,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 4,
+          "episode_pk": 86,
+          "episode_id": 5,
+          "timestamp_utc": "2026-08-09T04:52:43Z",
+          "session_type": "Q",
+          "start_distance_m": 4463.0,
+          "end_distance_m": 4605.0,
+          "center_distance_m": 4534.0,
+          "action_time_loss_s": 0.2151982063546427,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 5,
+          "episode_pk": 98,
+          "episode_id": 3,
+          "timestamp_utc": "2026-08-10T00:53:48Z",
+          "session_type": "Q",
+          "start_distance_m": 4465.0,
+          "end_distance_m": 4591.0,
+          "center_distance_m": 4528.0,
+          "action_time_loss_s": 0.13827204955487105,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 5,
+          "episode_pk": 107,
+          "episode_id": 3,
+          "timestamp_utc": "2026-08-10T00:53:48Z",
+          "session_type": "Q",
+          "start_distance_m": 4463.0,
+          "end_distance_m": 4554.0,
+          "center_distance_m": 4508.5,
+          "action_time_loss_s": 0.18562388661709406,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 4,
+        "episode_pk": 86,
+        "episode_id": 5,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 4464.0,
+        "start_min_m": 4391.0,
+        "start_max_m": 4520.0,
+        "end_median_m": 4597.0,
+        "end_min_m": 4554.0,
+        "end_max_m": 4625.0,
+        "center_median_m": 4531.0,
+        "center_min_m": 4497.0,
+        "center_max_m": 4551.5,
+        "center_spread_m": 54.5
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.20041104648586838,
+        "action_time_loss_min_s": 0.1046478859337725,
+        "action_time_loss_max_s": 0.7654263067387461
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "steering_magnitude": 6,
+          "throttle": 6
+        },
+        "session_prevalence_count": {
+          "steering_magnitude": 5,
+          "throttle": 5
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T02:42:26Z",
+        "last_observed_utc": "2026-08-10T00:53:48Z",
+        "session_types": [
+          "P",
+          "Q"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 12,
+        "internal_ambiguous_pair_count": 2,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 14,
+        "observed_internal_cross_session_pair_count": 14,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 2,
+        "same_session_member_pair_count_inferred": 1,
+        "decision_counts": {
+          "AMBIGUOUS": 2,
+          "MATCH": 12
+        }
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_9f1471d61f0d75363670",
+      "state": "persistent_pattern",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 6,
+      "independent_session_count": 4,
+      "session_ids": [
+        1,
+        4,
+        5,
+        6
+      ],
+      "session_observation_counts": {
+        "1": 2,
+        "4": 1,
+        "5": 1,
+        "6": 2
+      },
+      "members": [
+        {
+          "session_id": 1,
+          "episode_pk": 4,
+          "episode_id": 4,
+          "timestamp_utc": "2026-08-09T02:42:26Z",
+          "session_type": "P",
+          "start_distance_m": 4802.0,
+          "end_distance_m": 4870.0,
+          "center_distance_m": 4836.0,
+          "action_time_loss_s": 0.062414753543819756,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 1,
+          "episode_pk": 7,
+          "episode_id": 3,
+          "timestamp_utc": "2026-08-09T02:42:26Z",
+          "session_type": "P",
+          "start_distance_m": 4837.0,
+          "end_distance_m": 4876.0,
+          "center_distance_m": 4856.5,
+          "action_time_loss_s": 0.034582917280971515,
+          "channels": [
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 4,
+          "episode_pk": 89,
+          "episode_id": 8,
+          "timestamp_utc": "2026-08-09T04:52:43Z",
+          "session_type": "Q",
+          "start_distance_m": 4807.0,
+          "end_distance_m": 4873.0,
+          "center_distance_m": 4840.0,
+          "action_time_loss_s": 0.11958465576391575,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 5,
+          "episode_pk": 101,
+          "episode_id": 6,
+          "timestamp_utc": "2026-08-10T00:53:48Z",
+          "session_type": "Q",
+          "start_distance_m": 4821.0,
+          "end_distance_m": 4882.0,
+          "center_distance_m": 4851.5,
+          "action_time_loss_s": 0.07165742336863445,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 6,
+          "episode_pk": 140,
+          "episode_id": 7,
+          "timestamp_utc": "2026-08-10T01:03:52Z",
+          "session_type": "R",
+          "start_distance_m": 4785.0,
+          "end_distance_m": 4866.0,
+          "center_distance_m": 4825.5,
+          "action_time_loss_s": 0.02384154321572396,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 6,
+          "episode_pk": 150,
+          "episode_id": 9,
+          "timestamp_utc": "2026-08-10T01:03:52Z",
+          "session_type": "R",
+          "start_distance_m": 4803.0,
+          "end_distance_m": 4868.0,
+          "center_distance_m": 4835.5,
+          "action_time_loss_s": 0.020748414398340742,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 1,
+        "episode_pk": 4,
+        "episode_id": 4,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 4805.0,
+        "start_min_m": 4785.0,
+        "start_max_m": 4837.0,
+        "end_median_m": 4871.5,
+        "end_min_m": 4866.0,
+        "end_max_m": 4882.0,
+        "center_median_m": 4838.0,
+        "center_min_m": 4825.5,
+        "center_max_m": 4856.5,
+        "center_spread_m": 31.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.048498835412395636,
+        "action_time_loss_min_s": 0.020748414398340742,
+        "action_time_loss_max_s": 0.11958465576391575
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "throttle"
+        ],
+        "union_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "steering_magnitude": 5,
+          "throttle": 6
+        },
+        "session_prevalence_count": {
+          "steering_magnitude": 4,
+          "throttle": 4
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T02:42:26Z",
+        "last_observed_utc": "2026-08-10T01:03:52Z",
+        "session_types": [
+          "P",
+          "Q",
+          "R"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 10,
+        "internal_ambiguous_pair_count": 3,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 13,
+        "observed_internal_cross_session_pair_count": 13,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 3,
+        "same_session_member_pair_count_inferred": 2,
+        "decision_counts": {
+          "AMBIGUOUS": 3,
+          "MATCH": 10
+        }
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_c1e59d93db2349f72d38",
+      "state": "persistent_pattern",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 5,
+      "independent_session_count": 4,
+      "session_ids": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "session_observation_counts": {
+        "2": 2,
+        "3": 1,
+        "4": 1,
+        "5": 1
+      },
+      "members": [
+        {
+          "session_id": 2,
+          "episode_pk": 21,
+          "episode_id": 4,
+          "timestamp_utc": "2026-08-09T04:35:16Z",
+          "session_type": "P",
+          "start_distance_m": 2287.0,
+          "end_distance_m": 2351.0,
+          "center_distance_m": 2319.0,
+          "action_time_loss_s": 0.10360458664123229,
+          "channels": [
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 2,
+          "episode_pk": 36,
+          "episode_id": 11,
+          "timestamp_utc": "2026-08-09T04:35:16Z",
+          "session_type": "P",
+          "start_distance_m": 2319.0,
+          "end_distance_m": 2346.0,
+          "center_distance_m": 2332.5,
+          "action_time_loss_s": 0.07129930999283118,
+          "channels": [
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 3,
+          "episode_pk": 40,
+          "episode_id": 4,
+          "timestamp_utc": "2026-08-10T00:34:34Z",
+          "session_type": "P",
+          "start_distance_m": 2283.0,
+          "end_distance_m": 2363.0,
+          "center_distance_m": 2323.0,
+          "action_time_loss_s": 0.22230351944430993,
+          "channels": [
+            "brake",
+            "steering_magnitude",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 4,
+          "episode_pk": 78,
+          "episode_id": 6,
+          "timestamp_utc": "2026-08-09T04:52:43Z",
+          "session_type": "Q",
+          "start_distance_m": 2316.0,
+          "end_distance_m": 2361.0,
+          "center_distance_m": 2338.5,
+          "action_time_loss_s": 0.035245549264764975,
+          "channels": [
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 5,
+          "episode_pk": 114,
+          "episode_id": 10,
+          "timestamp_utc": "2026-08-10T00:53:48Z",
+          "session_type": "Q",
+          "start_distance_m": 2312.0,
+          "end_distance_m": 2361.0,
+          "center_distance_m": 2336.5,
+          "action_time_loss_s": 0.06914278044338573,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 2,
+        "episode_pk": 36,
+        "episode_id": 11,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 2312.0,
+        "start_min_m": 2283.0,
+        "start_max_m": 2319.0,
+        "end_median_m": 2361.0,
+        "end_min_m": 2346.0,
+        "end_max_m": 2363.0,
+        "center_median_m": 2332.5,
+        "center_min_m": 2319.0,
+        "center_max_m": 2338.5,
+        "center_spread_m": 19.5
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.07129930999283118,
+        "action_time_loss_min_s": 0.035245549264764975,
+        "action_time_loss_max_s": 0.22230351944430993
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "throttle"
+        ],
+        "union_action_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "brake": 1,
+          "steering_magnitude": 2,
+          "throttle": 5
+        },
+        "session_prevalence_count": {
+          "brake": 1,
+          "steering_magnitude": 2,
+          "throttle": 4
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T04:35:16Z",
+        "last_observed_utc": "2026-08-10T00:53:48Z",
+        "session_types": [
+          "P",
+          "Q"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 6,
+        "internal_ambiguous_pair_count": 3,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 9,
+        "observed_internal_cross_session_pair_count": 9,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 3,
+        "same_session_member_pair_count_inferred": 1,
+        "decision_counts": {
+          "AMBIGUOUS": 3,
+          "MATCH": 6
+        }
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_2d3e90054a3459ef47a9",
+      "state": "persistent_pattern",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 5,
+      "independent_session_count": 4,
+      "session_ids": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "session_observation_counts": {
+        "2": 1,
+        "3": 2,
+        "4": 1,
+        "5": 1
+      },
+      "members": [
+        {
+          "session_id": 2,
+          "episode_pk": 22,
+          "episode_id": 5,
+          "timestamp_utc": "2026-08-09T04:35:16Z",
+          "session_type": "P",
+          "start_distance_m": 3771.0,
+          "end_distance_m": 3843.0,
+          "center_distance_m": 3807.0,
+          "action_time_loss_s": 0.08702911092062493,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 3,
+          "episode_pk": 44,
+          "episode_id": 8,
+          "timestamp_utc": "2026-08-10T00:34:34Z",
+          "session_type": "P",
+          "start_distance_m": 3741.0,
+          "end_distance_m": 3876.0,
+          "center_distance_m": 3808.5,
+          "action_time_loss_s": 0.0811890597848759,
+          "channels": [
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 3,
+          "episode_pk": 55,
+          "episode_id": 9,
+          "timestamp_utc": "2026-08-10T00:34:34Z",
+          "session_type": "P",
+          "start_distance_m": 3669.0,
+          "end_distance_m": 3753.0,
+          "center_distance_m": 3711.0,
+          "action_time_loss_s": 0.06771644748876327,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 4,
+          "episode_pk": 87,
+          "episode_id": 6,
+          "timestamp_utc": "2026-08-09T04:52:43Z",
+          "session_type": "Q",
+          "start_distance_m": 3588.0,
+          "end_distance_m": 3786.0,
+          "center_distance_m": 3687.0,
+          "action_time_loss_s": 0.2139237272836283,
+          "channels": [
+            "brake",
+            "steering_magnitude",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 5,
+          "episode_pk": 106,
+          "episode_id": 2,
+          "timestamp_utc": "2026-08-10T00:53:48Z",
+          "session_type": "Q",
+          "start_distance_m": 3660.0,
+          "end_distance_m": 3846.0,
+          "center_distance_m": 3753.0,
+          "action_time_loss_s": 0.1970922465442584,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 5,
+        "episode_pk": 106,
+        "episode_id": 2,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 3669.0,
+        "start_min_m": 3588.0,
+        "start_max_m": 3771.0,
+        "end_median_m": 3843.0,
+        "end_min_m": 3753.0,
+        "end_max_m": 3876.0,
+        "center_median_m": 3753.0,
+        "center_min_m": 3687.0,
+        "center_max_m": 3808.5,
+        "center_spread_m": 121.5
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.08702911092062493,
+        "action_time_loss_min_s": 0.06771644748876327,
+        "action_time_loss_max_s": 0.2139237272836283
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "throttle"
+        ],
+        "union_action_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "brake": 1,
+          "steering_magnitude": 4,
+          "throttle": 5
+        },
+        "session_prevalence_count": {
+          "brake": 1,
+          "steering_magnitude": 4,
+          "throttle": 4
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T04:35:16Z",
+        "last_observed_utc": "2026-08-10T00:53:48Z",
+        "session_types": [
+          "P",
+          "Q"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 5,
+        "internal_ambiguous_pair_count": 4,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 9,
+        "observed_internal_cross_session_pair_count": 9,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 4,
+        "same_session_member_pair_count_inferred": 1,
+        "decision_counts": {
+          "AMBIGUOUS": 4,
+          "MATCH": 5
+        }
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_4f9c9d50962b6f3664c9",
+      "state": "persistent_pattern",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 5,
+      "independent_session_count": 3,
+      "session_ids": [
+        2,
+        4,
+        6
+      ],
+      "session_observation_counts": {
+        "2": 1,
+        "4": 2,
+        "6": 2
+      },
+      "members": [
+        {
+          "session_id": 2,
+          "episode_pk": 28,
+          "episode_id": 3,
+          "timestamp_utc": "2026-08-09T04:35:16Z",
+          "session_type": "P",
+          "start_distance_m": 163.0,
+          "end_distance_m": 255.0,
+          "center_distance_m": 209.0,
+          "action_time_loss_s": 0.38611060429119926,
+          "channels": [
+            "brake",
+            "steering_magnitude",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 4,
+          "episode_pk": 73,
+          "episode_id": 1,
+          "timestamp_utc": "2026-08-09T04:52:43Z",
+          "session_type": "Q",
+          "start_distance_m": 146.0,
+          "end_distance_m": 269.0,
+          "center_distance_m": 207.5,
+          "action_time_loss_s": 0.38890789753067034,
+          "channels": [
+            "brake",
+            "steering_magnitude"
+          ]
+        },
+        {
+          "session_id": 4,
+          "episode_pk": 83,
+          "episode_id": 2,
+          "timestamp_utc": "2026-08-09T04:52:43Z",
+          "session_type": "Q",
+          "start_distance_m": 138.0,
+          "end_distance_m": 261.0,
+          "center_distance_m": 199.5,
+          "action_time_loss_s": 0.4771246758075396,
+          "channels": [
+            "brake",
+            "steering_magnitude",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 6,
+          "episode_pk": 134,
+          "episode_id": 1,
+          "timestamp_utc": "2026-08-10T01:03:52Z",
+          "session_type": "R",
+          "start_distance_m": 168.0,
+          "end_distance_m": 302.0,
+          "center_distance_m": 235.0,
+          "action_time_loss_s": 0.5697390403861844,
+          "channels": [
+            "brake",
+            "steering_magnitude"
+          ]
+        },
+        {
+          "session_id": 6,
+          "episode_pk": 142,
+          "episode_id": 1,
+          "timestamp_utc": "2026-08-10T01:03:52Z",
+          "session_type": "R",
+          "start_distance_m": 153.0,
+          "end_distance_m": 299.0,
+          "center_distance_m": 226.0,
+          "action_time_loss_s": 0.2289744266653484,
+          "channels": [
+            "brake",
+            "steering_magnitude"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 2,
+        "episode_pk": 28,
+        "episode_id": 3,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 153.0,
+        "start_min_m": 138.0,
+        "start_max_m": 168.0,
+        "end_median_m": 269.0,
+        "end_min_m": 255.0,
+        "end_max_m": 302.0,
+        "center_median_m": 209.0,
+        "center_min_m": 199.5,
+        "center_max_m": 235.0,
+        "center_spread_m": 35.5
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.38890789753067034,
+        "action_time_loss_min_s": 0.2289744266653484,
+        "action_time_loss_max_s": 0.5697390403861844
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "brake",
+          "steering_magnitude"
+        ],
+        "union_action_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "brake": 5,
+          "steering_magnitude": 5,
+          "throttle": 2
+        },
+        "session_prevalence_count": {
+          "brake": 3,
+          "steering_magnitude": 3,
+          "throttle": 2
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T04:35:16Z",
+        "last_observed_utc": "2026-08-10T01:03:52Z",
+        "session_types": [
+          "P",
+          "Q",
+          "R"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 8,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 8,
+        "observed_internal_cross_session_pair_count": 8,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 2,
+        "decision_counts": {
+          "MATCH": 8
+        }
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_1a7dec3c69e86e417472",
+      "state": "persistent_pattern",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 5,
+      "independent_session_count": 3,
+      "session_ids": [
+        2,
+        3,
+        5
+      ],
+      "session_observation_counts": {
+        "2": 2,
+        "3": 1,
+        "5": 2
+      },
+      "members": [
+        {
+          "session_id": 2,
+          "episode_pk": 19,
+          "episode_id": 2,
+          "timestamp_utc": "2026-08-09T04:35:16Z",
+          "session_type": "P",
+          "start_distance_m": 6671.0,
+          "end_distance_m": 6693.0,
+          "center_distance_m": 6682.0,
+          "action_time_loss_s": 0.16342452068720092,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 2,
+          "episode_pk": 29,
+          "episode_id": 4,
+          "timestamp_utc": "2026-08-09T04:35:16Z",
+          "session_type": "P",
+          "start_distance_m": 6635.0,
+          "end_distance_m": 6692.0,
+          "center_distance_m": 6663.5,
+          "action_time_loss_s": 0.23083141783529015,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 3,
+          "episode_pk": 47,
+          "episode_id": 1,
+          "timestamp_utc": "2026-08-10T00:34:34Z",
+          "session_type": "P",
+          "start_distance_m": 6629.0,
+          "end_distance_m": 6706.0,
+          "center_distance_m": 6667.5,
+          "action_time_loss_s": 0.3852849988625593,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 5,
+          "episode_pk": 103,
+          "episode_id": 8,
+          "timestamp_utc": "2026-08-10T00:53:48Z",
+          "session_type": "Q",
+          "start_distance_m": 6666.0,
+          "end_distance_m": 6698.0,
+          "center_distance_m": 6682.0,
+          "action_time_loss_s": 0.051786143043301536,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 5,
+          "episode_pk": 109,
+          "episode_id": 5,
+          "timestamp_utc": "2026-08-10T00:53:48Z",
+          "session_type": "Q",
+          "start_distance_m": 6605.0,
+          "end_distance_m": 6704.0,
+          "center_distance_m": 6654.5,
+          "action_time_loss_s": 0.17390835961313655,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 3,
+        "episode_pk": 47,
+        "episode_id": 1,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 6635.0,
+        "start_min_m": 6605.0,
+        "start_max_m": 6671.0,
+        "end_median_m": 6698.0,
+        "end_min_m": 6692.0,
+        "end_max_m": 6706.0,
+        "center_median_m": 6667.5,
+        "center_min_m": 6654.5,
+        "center_max_m": 6682.0,
+        "center_spread_m": 27.5
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.17390835961313655,
+        "action_time_loss_min_s": 0.051786143043301536,
+        "action_time_loss_max_s": 0.3852849988625593
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "steering_magnitude": 5,
+          "throttle": 5
+        },
+        "session_prevalence_count": {
+          "steering_magnitude": 3,
+          "throttle": 3
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T04:35:16Z",
+        "last_observed_utc": "2026-08-10T00:53:48Z",
+        "session_types": [
+          "P",
+          "Q"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 6,
+        "internal_ambiguous_pair_count": 2,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 8,
+        "observed_internal_cross_session_pair_count": 8,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 2,
+        "same_session_member_pair_count_inferred": 2,
+        "decision_counts": {
+          "AMBIGUOUS": 2,
+          "MATCH": 6
+        }
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_3badf1e4caddc2259b13",
+      "state": "persistent_pattern",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 4,
+      "independent_session_count": 3,
+      "session_ids": [
+        4,
+        5,
+        6
+      ],
+      "session_observation_counts": {
+        "4": 1,
+        "5": 2,
+        "6": 1
+      },
+      "members": [
+        {
+          "session_id": 4,
+          "episode_pk": 92,
+          "episode_id": 11,
+          "timestamp_utc": "2026-08-09T04:52:43Z",
+          "session_type": "Q",
+          "start_distance_m": 4397.0,
+          "end_distance_m": 4445.0,
+          "center_distance_m": 4421.0,
+          "action_time_loss_s": 0.07778512568793872,
+          "channels": [
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 5,
+          "episode_pk": 99,
+          "episode_id": 4,
+          "timestamp_utc": "2026-08-10T00:53:48Z",
+          "session_type": "Q",
+          "start_distance_m": 4342.0,
+          "end_distance_m": 4430.0,
+          "center_distance_m": 4386.0,
+          "action_time_loss_s": 0.11395572255480602,
+          "channels": [
+            "brake",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 5,
+          "episode_pk": 115,
+          "episode_id": 11,
+          "timestamp_utc": "2026-08-10T00:53:48Z",
+          "session_type": "Q",
+          "start_distance_m": 4363.0,
+          "end_distance_m": 4422.0,
+          "center_distance_m": 4392.5,
+          "action_time_loss_s": 0.06539612515886972,
+          "channels": [
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 6,
+          "episode_pk": 136,
+          "episode_id": 3,
+          "timestamp_utc": "2026-08-10T01:03:52Z",
+          "session_type": "R",
+          "start_distance_m": 4343.0,
+          "end_distance_m": 4440.0,
+          "center_distance_m": 4391.5,
+          "action_time_loss_s": 0.0849132350090116,
+          "channels": [
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 5,
+        "episode_pk": 115,
+        "episode_id": 11,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 4353.0,
+        "start_min_m": 4342.0,
+        "start_max_m": 4397.0,
+        "end_median_m": 4435.0,
+        "end_min_m": 4422.0,
+        "end_max_m": 4445.0,
+        "center_median_m": 4392.0,
+        "center_min_m": 4386.0,
+        "center_max_m": 4421.0,
+        "center_spread_m": 35.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.08134918034847516,
+        "action_time_loss_min_s": 0.06539612515886972,
+        "action_time_loss_max_s": 0.11395572255480602
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "throttle"
+        ],
+        "union_action_channels": [
+          "brake",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "brake": 1,
+          "throttle": 4
+        },
+        "session_prevalence_count": {
+          "brake": 1,
+          "throttle": 3
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T04:52:43Z",
+        "last_observed_utc": "2026-08-10T01:03:52Z",
+        "session_types": [
+          "Q",
+          "R"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 3,
+        "internal_ambiguous_pair_count": 2,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 5,
+        "observed_internal_cross_session_pair_count": 5,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 2,
+        "same_session_member_pair_count_inferred": 1,
+        "decision_counts": {
+          "AMBIGUOUS": 2,
+          "MATCH": 3
+        }
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_c9951d6fab596f010ec0",
+      "state": "persistent_pattern",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 3,
+      "independent_session_count": 3,
+      "session_ids": [
+        2,
+        3,
+        5
+      ],
+      "session_observation_counts": {
+        "2": 1,
+        "3": 1,
+        "5": 1
+      },
+      "members": [
+        {
+          "session_id": 2,
+          "episode_pk": 31,
+          "episode_id": 6,
+          "timestamp_utc": "2026-08-09T04:35:16Z",
+          "session_type": "P",
+          "start_distance_m": 2771.0,
+          "end_distance_m": 2839.0,
+          "center_distance_m": 2805.0,
+          "action_time_loss_s": 0.13461370155316388,
+          "channels": [
+            "brake",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 3,
+          "episode_pk": 60,
+          "episode_id": 14,
+          "timestamp_utc": "2026-08-10T00:34:34Z",
+          "session_type": "P",
+          "start_distance_m": 2779.0,
+          "end_distance_m": 2799.0,
+          "center_distance_m": 2789.0,
+          "action_time_loss_s": 0.03287101144126581,
+          "channels": [
+            "brake",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 5,
+          "episode_pk": 104,
+          "episode_id": 9,
+          "timestamp_utc": "2026-08-10T00:53:48Z",
+          "session_type": "Q",
+          "start_distance_m": 2782.0,
+          "end_distance_m": 2813.0,
+          "center_distance_m": 2797.5,
+          "action_time_loss_s": 0.03428022327643987,
+          "channels": [
+            "brake",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 5,
+        "episode_pk": 104,
+        "episode_id": 9,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 2779.0,
+        "start_min_m": 2771.0,
+        "start_max_m": 2782.0,
+        "end_median_m": 2813.0,
+        "end_min_m": 2799.0,
+        "end_max_m": 2839.0,
+        "center_median_m": 2797.5,
+        "center_min_m": 2789.0,
+        "center_max_m": 2805.0,
+        "center_spread_m": 16.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.03428022327643987,
+        "action_time_loss_min_s": 0.03287101144126581,
+        "action_time_loss_max_s": 0.13461370155316388
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "brake",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "brake",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "brake": 3,
+          "throttle": 3
+        },
+        "session_prevalence_count": {
+          "brake": 3,
+          "throttle": 3
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T04:35:16Z",
+        "last_observed_utc": "2026-08-10T00:53:48Z",
+        "session_types": [
+          "P",
+          "Q"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 2,
+        "internal_ambiguous_pair_count": 1,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 3,
+        "observed_internal_cross_session_pair_count": 3,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 1,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {
+          "AMBIGUOUS": 1,
+          "MATCH": 2
+        }
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_75db54c0d8267d2c0dc7",
+      "state": "persistent_pattern",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 3,
+      "independent_session_count": 3,
+      "session_ids": [
+        1,
+        2,
+        3
+      ],
+      "session_observation_counts": {
+        "1": 1,
+        "2": 1,
+        "3": 1
+      },
+      "members": [
+        {
+          "session_id": 1,
+          "episode_pk": 3,
+          "episode_id": 3,
+          "timestamp_utc": "2026-08-09T02:42:26Z",
+          "session_type": "P",
+          "start_distance_m": 6647.0,
+          "end_distance_m": 6703.0,
+          "center_distance_m": 6675.0,
+          "action_time_loss_s": 0.07818780230776667,
+          "channels": [
+            "steering_magnitude"
+          ]
+        },
+        {
+          "session_id": 2,
+          "episode_pk": 20,
+          "episode_id": 3,
+          "timestamp_utc": "2026-08-09T04:35:16Z",
+          "session_type": "P",
+          "start_distance_m": 6617.0,
+          "end_distance_m": 6652.0,
+          "center_distance_m": 6634.5,
+          "action_time_loss_s": 0.13066225604482895,
+          "channels": [
+            "steering_magnitude"
+          ]
+        },
+        {
+          "session_id": 3,
+          "episode_pk": 38,
+          "episode_id": 2,
+          "timestamp_utc": "2026-08-10T00:34:34Z",
+          "session_type": "P",
+          "start_distance_m": 6621.0,
+          "end_distance_m": 6688.0,
+          "center_distance_m": 6654.5,
+          "action_time_loss_s": 0.43223500384149816,
+          "channels": [
+            "steering_magnitude"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 3,
+        "episode_pk": 38,
+        "episode_id": 2,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 6621.0,
+        "start_min_m": 6617.0,
+        "start_max_m": 6647.0,
+        "end_median_m": 6688.0,
+        "end_min_m": 6652.0,
+        "end_max_m": 6703.0,
+        "center_median_m": 6654.5,
+        "center_min_m": 6634.5,
+        "center_max_m": 6675.0,
+        "center_spread_m": 40.5
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.13066225604482895,
+        "action_time_loss_min_s": 0.07818780230776667,
+        "action_time_loss_max_s": 0.43223500384149816
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "steering_magnitude"
+        ],
+        "union_action_channels": [
+          "steering_magnitude"
+        ],
+        "episode_prevalence_count": {
+          "steering_magnitude": 3
+        },
+        "session_prevalence_count": {
+          "steering_magnitude": 3
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T02:42:26Z",
+        "last_observed_utc": "2026-08-10T00:34:34Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 2,
+        "internal_ambiguous_pair_count": 1,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 3,
+        "observed_internal_cross_session_pair_count": 3,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 1,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {
+          "AMBIGUOUS": 1,
+          "MATCH": 2
+        }
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_791170ebd311edba9f3c",
+      "state": "cross_session_repeat",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 2,
+      "independent_session_count": 2,
+      "session_ids": [
+        2,
+        4
+      ],
+      "session_observation_counts": {
+        "2": 1,
+        "4": 1
+      },
+      "members": [
+        {
+          "session_id": 2,
+          "episode_pk": 35,
+          "episode_id": 10,
+          "timestamp_utc": "2026-08-09T04:35:16Z",
+          "session_type": "P",
+          "start_distance_m": 294.0,
+          "end_distance_m": 317.0,
+          "center_distance_m": 305.5,
+          "action_time_loss_s": 0.08579897188959595,
+          "channels": [
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 4,
+          "episode_pk": 95,
+          "episode_id": 14,
+          "timestamp_utc": "2026-08-09T04:52:43Z",
+          "session_type": "Q",
+          "start_distance_m": 291.0,
+          "end_distance_m": 314.0,
+          "center_distance_m": 302.5,
+          "action_time_loss_s": 0.03406583694184295,
+          "channels": [
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 2,
+        "episode_pk": 35,
+        "episode_id": 10,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 292.5,
+        "start_min_m": 291.0,
+        "start_max_m": 294.0,
+        "end_median_m": 315.5,
+        "end_min_m": 314.0,
+        "end_max_m": 317.0,
+        "center_median_m": 304.0,
+        "center_min_m": 302.5,
+        "center_max_m": 305.5,
+        "center_spread_m": 3.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.059932404415719454,
+        "action_time_loss_min_s": 0.03406583694184295,
+        "action_time_loss_max_s": 0.08579897188959595
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "throttle"
+        ],
+        "union_action_channels": [
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "throttle": 2
+        },
+        "session_prevalence_count": {
+          "throttle": 2
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T04:35:16Z",
+        "last_observed_utc": "2026-08-09T04:52:43Z",
+        "session_types": [
+          "P",
+          "Q"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 1,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 1,
+        "observed_internal_cross_session_pair_count": 1,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {
+          "MATCH": 1
+        }
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_dd75f22ae41aa9095eb4",
+      "state": "cross_session_repeat",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 2,
+      "independent_session_count": 2,
+      "session_ids": [
+        4,
+        5
+      ],
+      "session_observation_counts": {
+        "4": 1,
+        "5": 1
+      },
+      "members": [
+        {
+          "session_id": 4,
+          "episode_pk": 79,
+          "episode_id": 7,
+          "timestamp_utc": "2026-08-09T04:52:43Z",
+          "session_type": "Q",
+          "start_distance_m": 306.0,
+          "end_distance_m": 329.0,
+          "center_distance_m": 317.5,
+          "action_time_loss_s": 0.033956591659602964,
+          "channels": [
+            "steering_magnitude"
+          ]
+        },
+        {
+          "session_id": 5,
+          "episode_pk": 117,
+          "episode_id": 13,
+          "timestamp_utc": "2026-08-10T00:53:48Z",
+          "session_type": "Q",
+          "start_distance_m": 296.0,
+          "end_distance_m": 331.0,
+          "center_distance_m": 313.5,
+          "action_time_loss_s": 0.037109746551058365,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 4,
+        "episode_pk": 79,
+        "episode_id": 7,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 301.0,
+        "start_min_m": 296.0,
+        "start_max_m": 306.0,
+        "end_median_m": 330.0,
+        "end_min_m": 329.0,
+        "end_max_m": 331.0,
+        "center_median_m": 315.5,
+        "center_min_m": 313.5,
+        "center_max_m": 317.5,
+        "center_spread_m": 4.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.035533169105330664,
+        "action_time_loss_min_s": 0.033956591659602964,
+        "action_time_loss_max_s": 0.037109746551058365
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "steering_magnitude"
+        ],
+        "union_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "steering_magnitude": 2,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "steering_magnitude": 2,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T04:52:43Z",
+        "last_observed_utc": "2026-08-10T00:53:48Z",
+        "session_types": [
+          "Q"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 1,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 1,
+        "observed_internal_cross_session_pair_count": 1,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {
+          "MATCH": 1
+        }
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_d7b4c32bad8589509422",
+      "state": "cross_session_repeat",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 2,
+      "independent_session_count": 2,
+      "session_ids": [
+        5,
+        6
+      ],
+      "session_observation_counts": {
+        "5": 1,
+        "6": 1
+      },
+      "members": [
+        {
+          "session_id": 5,
+          "episode_pk": 112,
+          "episode_id": 8,
+          "timestamp_utc": "2026-08-10T00:53:48Z",
+          "session_type": "Q",
+          "start_distance_m": 1047.0,
+          "end_distance_m": 1194.0,
+          "center_distance_m": 1120.5,
+          "action_time_loss_s": 0.09537867664471378,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 6,
+          "episode_pk": 143,
+          "episode_id": 2,
+          "timestamp_utc": "2026-08-10T01:03:52Z",
+          "session_type": "R",
+          "start_distance_m": 987.0,
+          "end_distance_m": 1187.0,
+          "center_distance_m": 1087.0,
+          "action_time_loss_s": 0.12173840648067369,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 5,
+        "episode_pk": 112,
+        "episode_id": 8,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 1017.0,
+        "start_min_m": 987.0,
+        "start_max_m": 1047.0,
+        "end_median_m": 1190.5,
+        "end_min_m": 1187.0,
+        "end_max_m": 1194.0,
+        "center_median_m": 1103.75,
+        "center_min_m": 1087.0,
+        "center_max_m": 1120.5,
+        "center_spread_m": 33.5
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.10855854156269373,
+        "action_time_loss_min_s": 0.09537867664471378,
+        "action_time_loss_max_s": 0.12173840648067369
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "steering_magnitude": 2,
+          "throttle": 2
+        },
+        "session_prevalence_count": {
+          "steering_magnitude": 2,
+          "throttle": 2
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-10T00:53:48Z",
+        "last_observed_utc": "2026-08-10T01:03:52Z",
+        "session_types": [
+          "Q",
+          "R"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 1,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 1,
+        "observed_internal_cross_session_pair_count": 1,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {
+          "MATCH": 1
+        }
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_bbc25fb2eebb0d99f52a",
+      "state": "cross_session_repeat",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 2,
+      "independent_session_count": 2,
+      "session_ids": [
+        3,
+        4
+      ],
+      "session_observation_counts": {
+        "3": 1,
+        "4": 1
+      },
+      "members": [
+        {
+          "session_id": 3,
+          "episode_pk": 50,
+          "episode_id": 4,
+          "timestamp_utc": "2026-08-10T00:34:34Z",
+          "session_type": "P",
+          "start_distance_m": 2424.0,
+          "end_distance_m": 2481.0,
+          "center_distance_m": 2452.5,
+          "action_time_loss_s": 0.26067970066709734,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 4,
+          "episode_pk": 81,
+          "episode_id": 9,
+          "timestamp_utc": "2026-08-09T04:52:43Z",
+          "session_type": "Q",
+          "start_distance_m": 2425.0,
+          "end_distance_m": 2474.0,
+          "center_distance_m": 2449.5,
+          "action_time_loss_s": 0.02748544702214417,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 3,
+        "episode_pk": 50,
+        "episode_id": 4,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 2424.5,
+        "start_min_m": 2424.0,
+        "start_max_m": 2425.0,
+        "end_median_m": 2477.5,
+        "end_min_m": 2474.0,
+        "end_max_m": 2481.0,
+        "center_median_m": 2451.0,
+        "center_min_m": 2449.5,
+        "center_max_m": 2452.5,
+        "center_spread_m": 3.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.14408257384462075,
+        "action_time_loss_min_s": 0.02748544702214417,
+        "action_time_loss_max_s": 0.26067970066709734
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "steering_magnitude": 2,
+          "throttle": 2
+        },
+        "session_prevalence_count": {
+          "steering_magnitude": 2,
+          "throttle": 2
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T04:52:43Z",
+        "last_observed_utc": "2026-08-10T00:34:34Z",
+        "session_types": [
+          "P",
+          "Q"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 1,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 1,
+        "observed_internal_cross_session_pair_count": 1,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {
+          "MATCH": 1
+        }
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_57e8e16151758a2eb411",
+      "state": "cross_session_repeat",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 2,
+      "independent_session_count": 2,
+      "session_ids": [
+        3,
+        5
+      ],
+      "session_observation_counts": {
+        "3": 1,
+        "5": 1
+      },
+      "members": [
+        {
+          "session_id": 3,
+          "episode_pk": 37,
+          "episode_id": 1,
+          "timestamp_utc": "2026-08-10T00:34:34Z",
+          "session_type": "P",
+          "start_distance_m": 2529.0,
+          "end_distance_m": 2671.0,
+          "center_distance_m": 2600.0,
+          "action_time_loss_s": 0.6488307928397887,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 5,
+          "episode_pk": 96,
+          "episode_id": 1,
+          "timestamp_utc": "2026-08-10T00:53:48Z",
+          "session_type": "Q",
+          "start_distance_m": 2575.0,
+          "end_distance_m": 2658.0,
+          "center_distance_m": 2616.5,
+          "action_time_loss_s": 0.2671567409152118,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 3,
+        "episode_pk": 37,
+        "episode_id": 1,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 2552.0,
+        "start_min_m": 2529.0,
+        "start_max_m": 2575.0,
+        "end_median_m": 2664.5,
+        "end_min_m": 2658.0,
+        "end_max_m": 2671.0,
+        "center_median_m": 2608.25,
+        "center_min_m": 2600.0,
+        "center_max_m": 2616.5,
+        "center_spread_m": 16.5
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.45799376687750026,
+        "action_time_loss_min_s": 0.2671567409152118,
+        "action_time_loss_max_s": 0.6488307928397887
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "steering_magnitude": 2,
+          "throttle": 2
+        },
+        "session_prevalence_count": {
+          "steering_magnitude": 2,
+          "throttle": 2
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-10T00:34:34Z",
+        "last_observed_utc": "2026-08-10T00:53:48Z",
+        "session_types": [
+          "P",
+          "Q"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 1,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 1,
+        "observed_internal_cross_session_pair_count": 1,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {
+          "MATCH": 1
+        }
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_9a43f0492f9401153a47",
+      "state": "cross_session_repeat",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 2,
+      "independent_session_count": 2,
+      "session_ids": [
+        3,
+        5
+      ],
+      "session_observation_counts": {
+        "3": 1,
+        "5": 1
+      },
+      "members": [
+        {
+          "session_id": 3,
+          "episode_pk": 53,
+          "episode_id": 7,
+          "timestamp_utc": "2026-08-10T00:34:34Z",
+          "session_type": "P",
+          "start_distance_m": 3164.0,
+          "end_distance_m": 3220.0,
+          "center_distance_m": 3192.0,
+          "action_time_loss_s": 0.1435309373775766,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 5,
+          "episode_pk": 108,
+          "episode_id": 4,
+          "timestamp_utc": "2026-08-10T00:53:48Z",
+          "session_type": "Q",
+          "start_distance_m": 3164.0,
+          "end_distance_m": 3219.0,
+          "center_distance_m": 3191.5,
+          "action_time_loss_s": 0.17840138837814834,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 3,
+        "episode_pk": 53,
+        "episode_id": 7,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 3164.0,
+        "start_min_m": 3164.0,
+        "start_max_m": 3164.0,
+        "end_median_m": 3219.5,
+        "end_min_m": 3219.0,
+        "end_max_m": 3220.0,
+        "center_median_m": 3191.75,
+        "center_min_m": 3191.5,
+        "center_max_m": 3192.0,
+        "center_spread_m": 0.5
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.16096616287786247,
+        "action_time_loss_min_s": 0.1435309373775766,
+        "action_time_loss_max_s": 0.17840138837814834
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "steering_magnitude": 2,
+          "throttle": 2
+        },
+        "session_prevalence_count": {
+          "steering_magnitude": 2,
+          "throttle": 2
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-10T00:34:34Z",
+        "last_observed_utc": "2026-08-10T00:53:48Z",
+        "session_types": [
+          "P",
+          "Q"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 1,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 1,
+        "observed_internal_cross_session_pair_count": 1,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {
+          "MATCH": 1
+        }
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_446fa10aef9698eef057",
+      "state": "cross_session_repeat",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 2,
+      "independent_session_count": 2,
+      "session_ids": [
+        5,
+        6
+      ],
+      "session_observation_counts": {
+        "5": 1,
+        "6": 1
+      },
+      "members": [
+        {
+          "session_id": 5,
+          "episode_pk": 118,
+          "episode_id": 14,
+          "timestamp_utc": "2026-08-10T00:53:48Z",
+          "session_type": "Q",
+          "start_distance_m": 4741.0,
+          "end_distance_m": 4773.0,
+          "center_distance_m": 4757.0,
+          "action_time_loss_s": 0.03538288991020977,
+          "channels": [
+            "brake",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 6,
+          "episode_pk": 148,
+          "episode_id": 7,
+          "timestamp_utc": "2026-08-10T01:03:52Z",
+          "session_type": "R",
+          "start_distance_m": 4711.0,
+          "end_distance_m": 4775.0,
+          "center_distance_m": 4743.0,
+          "action_time_loss_s": 0.04650030256128446,
+          "channels": [
+            "brake",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 5,
+        "episode_pk": 118,
+        "episode_id": 14,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 4726.0,
+        "start_min_m": 4711.0,
+        "start_max_m": 4741.0,
+        "end_median_m": 4774.0,
+        "end_min_m": 4773.0,
+        "end_max_m": 4775.0,
+        "center_median_m": 4750.0,
+        "center_min_m": 4743.0,
+        "center_max_m": 4757.0,
+        "center_spread_m": 14.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.04094159623574711,
+        "action_time_loss_min_s": 0.03538288991020977,
+        "action_time_loss_max_s": 0.04650030256128446
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "brake",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "brake",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "brake": 2,
+          "throttle": 2
+        },
+        "session_prevalence_count": {
+          "brake": 2,
+          "throttle": 2
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-10T00:53:48Z",
+        "last_observed_utc": "2026-08-10T01:03:52Z",
+        "session_types": [
+          "Q",
+          "R"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 1,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 1,
+        "observed_internal_cross_session_pair_count": 1,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {
+          "MATCH": 1
+        }
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_56d9b32249bd7091d8ee",
+      "state": "cross_session_repeat",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 2,
+      "independent_session_count": 2,
+      "session_ids": [
+        1,
+        3
+      ],
+      "session_observation_counts": {
+        "1": 1,
+        "3": 1
+      },
+      "members": [
+        {
+          "session_id": 1,
+          "episode_pk": 8,
+          "episode_id": 4,
+          "timestamp_utc": "2026-08-09T02:42:26Z",
+          "session_type": "P",
+          "start_distance_m": 6537.0,
+          "end_distance_m": 6570.0,
+          "center_distance_m": 6553.5,
+          "action_time_loss_s": 0.021590616736574475,
+          "channels": [
+            "brake"
+          ]
+        },
+        {
+          "session_id": 3,
+          "episode_pk": 41,
+          "episode_id": 5,
+          "timestamp_utc": "2026-08-10T00:34:34Z",
+          "session_type": "P",
+          "start_distance_m": 6523.0,
+          "end_distance_m": 6589.0,
+          "center_distance_m": 6556.0,
+          "action_time_loss_s": 0.19245717398509044,
+          "channels": [
+            "brake"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 1,
+        "episode_pk": 8,
+        "episode_id": 4,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 6530.0,
+        "start_min_m": 6523.0,
+        "start_max_m": 6537.0,
+        "end_median_m": 6579.5,
+        "end_min_m": 6570.0,
+        "end_max_m": 6589.0,
+        "center_median_m": 6554.75,
+        "center_min_m": 6553.5,
+        "center_max_m": 6556.0,
+        "center_spread_m": 2.5
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.10702389536083246,
+        "action_time_loss_min_s": 0.021590616736574475,
+        "action_time_loss_max_s": 0.19245717398509044
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "brake"
+        ],
+        "union_action_channels": [
+          "brake"
+        ],
+        "episode_prevalence_count": {
+          "brake": 2
+        },
+        "session_prevalence_count": {
+          "brake": 2
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T02:42:26Z",
+        "last_observed_utc": "2026-08-10T00:34:34Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 1,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 1,
+        "observed_internal_cross_session_pair_count": 1,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {
+          "MATCH": 1
+        }
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_3c80c7787c764ab84377",
+      "state": "cross_session_repeat",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 2,
+      "independent_session_count": 2,
+      "session_ids": [
+        1,
+        2
+      ],
+      "session_observation_counts": {
+        "1": 1,
+        "2": 1
+      },
+      "members": [
+        {
+          "session_id": 1,
+          "episode_pk": 2,
+          "episode_id": 2,
+          "timestamp_utc": "2026-08-09T02:42:26Z",
+          "session_type": "P",
+          "start_distance_m": 6552.0,
+          "end_distance_m": 6608.0,
+          "center_distance_m": 6580.0,
+          "action_time_loss_s": 0.11539428462981505,
+          "channels": [
+            "brake",
+            "steering_magnitude",
+            "throttle"
+          ]
+        },
+        {
+          "session_id": 2,
+          "episode_pk": 34,
+          "episode_id": 9,
+          "timestamp_utc": "2026-08-09T04:35:16Z",
+          "session_type": "P",
+          "start_distance_m": 6572.0,
+          "end_distance_m": 6599.0,
+          "center_distance_m": 6585.5,
+          "action_time_loss_s": 0.09321862788128499,
+          "channels": [
+            "brake",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 1,
+        "episode_pk": 2,
+        "episode_id": 2,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 6562.0,
+        "start_min_m": 6552.0,
+        "start_max_m": 6572.0,
+        "end_median_m": 6603.5,
+        "end_min_m": 6599.0,
+        "end_max_m": 6608.0,
+        "center_median_m": 6582.75,
+        "center_min_m": 6580.0,
+        "center_max_m": 6585.5,
+        "center_spread_m": 5.5
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.10430645625555002,
+        "action_time_loss_min_s": 0.09321862788128499,
+        "action_time_loss_max_s": 0.11539428462981505
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "brake",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "brake": 2,
+          "steering_magnitude": 1,
+          "throttle": 2
+        },
+        "session_prevalence_count": {
+          "brake": 2,
+          "steering_magnitude": 1,
+          "throttle": 2
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T02:42:26Z",
+        "last_observed_utc": "2026-08-09T04:35:16Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 1,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 1,
+        "observed_internal_cross_session_pair_count": 1,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {
+          "MATCH": 1
+        }
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_c668895ba0c02e50c394",
+      "state": "single_observation",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        2
+      ],
+      "session_observation_counts": {
+        "2": 1
+      },
+      "members": [
+        {
+          "session_id": 2,
+          "episode_pk": 18,
+          "episode_id": 1,
+          "timestamp_utc": "2026-08-09T04:35:16Z",
+          "session_type": "P",
+          "start_distance_m": 227.0,
+          "end_distance_m": 256.0,
+          "center_distance_m": 241.5,
+          "action_time_loss_s": 0.18457602295896702,
+          "channels": [
+            "brake",
+            "steering_magnitude"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 2,
+        "episode_pk": 18,
+        "episode_id": 1,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 227.0,
+        "start_min_m": 227.0,
+        "start_max_m": 227.0,
+        "end_median_m": 256.0,
+        "end_min_m": 256.0,
+        "end_max_m": 256.0,
+        "center_median_m": 241.5,
+        "center_min_m": 241.5,
+        "center_max_m": 241.5,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.18457602295896702,
+        "action_time_loss_min_s": 0.18457602295896702,
+        "action_time_loss_max_s": 0.18457602295896702
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "brake",
+          "steering_magnitude"
+        ],
+        "union_action_channels": [
+          "brake",
+          "steering_magnitude"
+        ],
+        "episode_prevalence_count": {
+          "brake": 1,
+          "steering_magnitude": 1
+        },
+        "session_prevalence_count": {
+          "brake": 1,
+          "steering_magnitude": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T04:35:16Z",
+        "last_observed_utc": "2026-08-09T04:35:16Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_9a0521c3223f03898082",
+      "state": "single_observation",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        5
+      ],
+      "session_observation_counts": {
+        "5": 1
+      },
+      "members": [
+        {
+          "session_id": 5,
+          "episode_pk": 102,
+          "episode_id": 7,
+          "timestamp_utc": "2026-08-10T00:53:48Z",
+          "session_type": "Q",
+          "start_distance_m": 241.0,
+          "end_distance_m": 292.0,
+          "center_distance_m": 266.5,
+          "action_time_loss_s": 0.06614890507619009,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 5,
+        "episode_pk": 102,
+        "episode_id": 7,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 241.0,
+        "start_min_m": 241.0,
+        "start_max_m": 241.0,
+        "end_median_m": 292.0,
+        "end_min_m": 292.0,
+        "end_max_m": 292.0,
+        "center_median_m": 266.5,
+        "center_min_m": 266.5,
+        "center_max_m": 266.5,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.06614890507619009,
+        "action_time_loss_min_s": 0.06614890507619009,
+        "action_time_loss_max_s": 0.06614890507619009
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-10T00:53:48Z",
+        "last_observed_utc": "2026-08-10T00:53:48Z",
+        "session_types": [
+          "Q"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_71603a4e8d7a0479f689",
+      "state": "single_observation",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        5
+      ],
+      "session_observation_counts": {
+        "5": 1
+      },
+      "members": [
+        {
+          "session_id": 5,
+          "episode_pk": 116,
+          "episode_id": 12,
+          "timestamp_utc": "2026-08-10T00:53:48Z",
+          "session_type": "Q",
+          "start_distance_m": 264.0,
+          "end_distance_m": 283.0,
+          "center_distance_m": 273.5,
+          "action_time_loss_s": 0.05730782363907849,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 5,
+        "episode_pk": 116,
+        "episode_id": 12,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 264.0,
+        "start_min_m": 264.0,
+        "start_max_m": 264.0,
+        "end_median_m": 283.0,
+        "end_min_m": 283.0,
+        "end_max_m": 283.0,
+        "center_median_m": 273.5,
+        "center_min_m": 273.5,
+        "center_max_m": 273.5,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.05730782363907849,
+        "action_time_loss_min_s": 0.05730782363907849,
+        "action_time_loss_max_s": 0.05730782363907849
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-10T00:53:48Z",
+        "last_observed_utc": "2026-08-10T00:53:48Z",
+        "session_types": [
+          "Q"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_c54f5cd953ccdaf098fa",
+      "state": "single_observation",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        4
+      ],
+      "session_observation_counts": {
+        "4": 1
+      },
+      "members": [
+        {
+          "session_id": 4,
+          "episode_pk": 90,
+          "episode_id": 9,
+          "timestamp_utc": "2026-08-09T04:52:43Z",
+          "session_type": "Q",
+          "start_distance_m": 1112.0,
+          "end_distance_m": 1249.0,
+          "center_distance_m": 1180.5,
+          "action_time_loss_s": 0.10211349099914813,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 4,
+        "episode_pk": 90,
+        "episode_id": 9,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 1112.0,
+        "start_min_m": 1112.0,
+        "start_max_m": 1112.0,
+        "end_median_m": 1249.0,
+        "end_min_m": 1249.0,
+        "end_max_m": 1249.0,
+        "center_median_m": 1180.5,
+        "center_min_m": 1180.5,
+        "center_max_m": 1180.5,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.10211349099914813,
+        "action_time_loss_min_s": 0.10211349099914813,
+        "action_time_loss_max_s": 0.10211349099914813
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T04:52:43Z",
+        "last_observed_utc": "2026-08-09T04:52:43Z",
+        "session_types": [
+          "Q"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_55a2fe1f2da8b9e8c399",
+      "state": "single_observation",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        2
+      ],
+      "session_observation_counts": {
+        "2": 1
+      },
+      "members": [
+        {
+          "session_id": 2,
+          "episode_pk": 23,
+          "episode_id": 6,
+          "timestamp_utc": "2026-08-09T04:35:16Z",
+          "session_type": "P",
+          "start_distance_m": 2245.0,
+          "end_distance_m": 2266.0,
+          "center_distance_m": 2255.5,
+          "action_time_loss_s": 0.045262547790194674,
+          "channels": [
+            "brake"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 2,
+        "episode_pk": 23,
+        "episode_id": 6,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 2245.0,
+        "start_min_m": 2245.0,
+        "start_max_m": 2245.0,
+        "end_median_m": 2266.0,
+        "end_min_m": 2266.0,
+        "end_max_m": 2266.0,
+        "center_median_m": 2255.5,
+        "center_min_m": 2255.5,
+        "center_max_m": 2255.5,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.045262547790194674,
+        "action_time_loss_min_s": 0.045262547790194674,
+        "action_time_loss_max_s": 0.045262547790194674
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "brake"
+        ],
+        "union_action_channels": [
+          "brake"
+        ],
+        "episode_prevalence_count": {
+          "brake": 1
+        },
+        "session_prevalence_count": {
+          "brake": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T04:35:16Z",
+        "last_observed_utc": "2026-08-09T04:35:16Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_704315d265c34c7c0ead",
+      "state": "single_observation",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        3
+      ],
+      "session_observation_counts": {
+        "3": 1
+      },
+      "members": [
+        {
+          "session_id": 3,
+          "episode_pk": 59,
+          "episode_id": 13,
+          "timestamp_utc": "2026-08-10T00:34:34Z",
+          "session_type": "P",
+          "start_distance_m": 2256.0,
+          "end_distance_m": 2294.0,
+          "center_distance_m": 2275.0,
+          "action_time_loss_s": 0.039096088942670804,
+          "channels": [
+            "brake"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 3,
+        "episode_pk": 59,
+        "episode_id": 13,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 2256.0,
+        "start_min_m": 2256.0,
+        "start_max_m": 2256.0,
+        "end_median_m": 2294.0,
+        "end_min_m": 2294.0,
+        "end_max_m": 2294.0,
+        "center_median_m": 2275.0,
+        "center_min_m": 2275.0,
+        "center_max_m": 2275.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.039096088942670804,
+        "action_time_loss_min_s": 0.039096088942670804,
+        "action_time_loss_max_s": 0.039096088942670804
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "brake"
+        ],
+        "union_action_channels": [
+          "brake"
+        ],
+        "episode_prevalence_count": {
+          "brake": 1
+        },
+        "session_prevalence_count": {
+          "brake": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-10T00:34:34Z",
+        "last_observed_utc": "2026-08-10T00:34:34Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_95612470b98630893059",
+      "state": "single_observation",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        3
+      ],
+      "session_observation_counts": {
+        "3": 1
+      },
+      "members": [
+        {
+          "session_id": 3,
+          "episode_pk": 42,
+          "episode_id": 6,
+          "timestamp_utc": "2026-08-10T00:34:34Z",
+          "session_type": "P",
+          "start_distance_m": 2803.0,
+          "end_distance_m": 2889.0,
+          "center_distance_m": 2846.0,
+          "action_time_loss_s": 0.17475870493682066,
+          "channels": [
+            "brake",
+            "steering_magnitude"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 3,
+        "episode_pk": 42,
+        "episode_id": 6,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 2803.0,
+        "start_min_m": 2803.0,
+        "start_max_m": 2803.0,
+        "end_median_m": 2889.0,
+        "end_min_m": 2889.0,
+        "end_max_m": 2889.0,
+        "center_median_m": 2846.0,
+        "center_min_m": 2846.0,
+        "center_max_m": 2846.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.17475870493682066,
+        "action_time_loss_min_s": 0.17475870493682066,
+        "action_time_loss_max_s": 0.17475870493682066
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "brake",
+          "steering_magnitude"
+        ],
+        "union_action_channels": [
+          "brake",
+          "steering_magnitude"
+        ],
+        "episode_prevalence_count": {
+          "brake": 1,
+          "steering_magnitude": 1
+        },
+        "session_prevalence_count": {
+          "brake": 1,
+          "steering_magnitude": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-10T00:34:34Z",
+        "last_observed_utc": "2026-08-10T00:34:34Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_e35d2fab579cb179254f",
+      "state": "single_observation",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        5
+      ],
+      "session_observation_counts": {
+        "5": 1
+      },
+      "members": [
+        {
+          "session_id": 5,
+          "episode_pk": 113,
+          "episode_id": 9,
+          "timestamp_utc": "2026-08-10T00:53:48Z",
+          "session_type": "Q",
+          "start_distance_m": 3012.0,
+          "end_distance_m": 3048.0,
+          "center_distance_m": 3030.0,
+          "action_time_loss_s": 0.06991740716424033,
+          "channels": [
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 5,
+        "episode_pk": 113,
+        "episode_id": 9,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 3012.0,
+        "start_min_m": 3012.0,
+        "start_max_m": 3012.0,
+        "end_median_m": 3048.0,
+        "end_min_m": 3048.0,
+        "end_max_m": 3048.0,
+        "center_median_m": 3030.0,
+        "center_min_m": 3030.0,
+        "center_max_m": 3030.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.06991740716424033,
+        "action_time_loss_min_s": 0.06991740716424033,
+        "action_time_loss_max_s": 0.06991740716424033
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "throttle"
+        ],
+        "union_action_channels": [
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-10T00:53:48Z",
+        "last_observed_utc": "2026-08-10T00:53:48Z",
+        "session_types": [
+          "Q"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_703ee689889b5dec52a1",
+      "state": "single_observation",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        4
+      ],
+      "session_observation_counts": {
+        "4": 1
+      },
+      "members": [
+        {
+          "session_id": 4,
+          "episode_pk": 82,
+          "episode_id": 1,
+          "timestamp_utc": "2026-08-09T04:52:43Z",
+          "session_type": "Q",
+          "start_distance_m": 3036.0,
+          "end_distance_m": 3214.0,
+          "center_distance_m": 3125.0,
+          "action_time_loss_s": 0.47995728498126056,
+          "channels": [
+            "brake",
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 4,
+        "episode_pk": 82,
+        "episode_id": 1,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 3036.0,
+        "start_min_m": 3036.0,
+        "start_max_m": 3036.0,
+        "end_median_m": 3214.0,
+        "end_min_m": 3214.0,
+        "end_max_m": 3214.0,
+        "center_median_m": 3125.0,
+        "center_min_m": 3125.0,
+        "center_max_m": 3125.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.47995728498126056,
+        "action_time_loss_min_s": 0.47995728498126056,
+        "action_time_loss_max_s": 0.47995728498126056
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "brake": 1,
+          "steering_magnitude": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "brake": 1,
+          "steering_magnitude": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T04:52:43Z",
+        "last_observed_utc": "2026-08-09T04:52:43Z",
+        "session_types": [
+          "Q"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_dccc151fef2f23c7de6d",
+      "state": "single_observation",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        1
+      ],
+      "session_observation_counts": {
+        "1": 1
+      },
+      "members": [
+        {
+          "session_id": 1,
+          "episode_pk": 6,
+          "episode_id": 2,
+          "timestamp_utc": "2026-08-09T02:42:26Z",
+          "session_type": "P",
+          "start_distance_m": 3150.0,
+          "end_distance_m": 3200.0,
+          "center_distance_m": 3175.0,
+          "action_time_loss_s": 0.04991748695656639,
+          "channels": [
+            "steering_magnitude"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 1,
+        "episode_pk": 6,
+        "episode_id": 2,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 3150.0,
+        "start_min_m": 3150.0,
+        "start_max_m": 3150.0,
+        "end_median_m": 3200.0,
+        "end_min_m": 3200.0,
+        "end_max_m": 3200.0,
+        "center_median_m": 3175.0,
+        "center_min_m": 3175.0,
+        "center_max_m": 3175.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.04991748695656639,
+        "action_time_loss_min_s": 0.04991748695656639,
+        "action_time_loss_max_s": 0.04991748695656639
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "steering_magnitude"
+        ],
+        "union_action_channels": [
+          "steering_magnitude"
+        ],
+        "episode_prevalence_count": {
+          "steering_magnitude": 1
+        },
+        "session_prevalence_count": {
+          "steering_magnitude": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T02:42:26Z",
+        "last_observed_utc": "2026-08-09T02:42:26Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_f2878cbd4b53a6ceb6bf",
+      "state": "single_observation",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        5
+      ],
+      "session_observation_counts": {
+        "5": 1
+      },
+      "members": [
+        {
+          "session_id": 5,
+          "episode_pk": 100,
+          "episode_id": 5,
+          "timestamp_utc": "2026-08-10T00:53:48Z",
+          "session_type": "Q",
+          "start_distance_m": 3193.0,
+          "end_distance_m": 3237.0,
+          "center_distance_m": 3215.0,
+          "action_time_loss_s": 0.07585451936894572,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 5,
+        "episode_pk": 100,
+        "episode_id": 5,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 3193.0,
+        "start_min_m": 3193.0,
+        "start_max_m": 3193.0,
+        "end_median_m": 3237.0,
+        "end_min_m": 3237.0,
+        "end_max_m": 3237.0,
+        "center_median_m": 3215.0,
+        "center_min_m": 3215.0,
+        "center_max_m": 3215.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.07585451936894572,
+        "action_time_loss_min_s": 0.07585451936894572,
+        "action_time_loss_max_s": 0.07585451936894572
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-10T00:53:48Z",
+        "last_observed_utc": "2026-08-10T00:53:48Z",
+        "session_types": [
+          "Q"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_7d4542546143765b5edd",
+      "state": "single_observation",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        3
+      ],
+      "session_observation_counts": {
+        "3": 1
+      },
+      "members": [
+        {
+          "session_id": 3,
+          "episode_pk": 56,
+          "episode_id": 10,
+          "timestamp_utc": "2026-08-10T00:34:34Z",
+          "session_type": "P",
+          "start_distance_m": 3582.0,
+          "end_distance_m": 3648.0,
+          "center_distance_m": 3615.0,
+          "action_time_loss_s": 0.04933516354749656,
+          "channels": [
+            "brake",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 3,
+        "episode_pk": 56,
+        "episode_id": 10,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 3582.0,
+        "start_min_m": 3582.0,
+        "start_max_m": 3582.0,
+        "end_median_m": 3648.0,
+        "end_min_m": 3648.0,
+        "end_max_m": 3648.0,
+        "center_median_m": 3615.0,
+        "center_min_m": 3615.0,
+        "center_max_m": 3615.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.04933516354749656,
+        "action_time_loss_min_s": 0.04933516354749656,
+        "action_time_loss_max_s": 0.04933516354749656
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "brake",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "brake",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "brake": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "brake": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-10T00:34:34Z",
+        "last_observed_utc": "2026-08-10T00:34:34Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_69be334634c64fd399be",
+      "state": "single_observation",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        2
+      ],
+      "session_observation_counts": {
+        "2": 1
+      },
+      "members": [
+        {
+          "session_id": 2,
+          "episode_pk": 30,
+          "episode_id": 5,
+          "timestamp_utc": "2026-08-09T04:35:16Z",
+          "session_type": "P",
+          "start_distance_m": 3749.0,
+          "end_distance_m": 3901.0,
+          "center_distance_m": 3825.0,
+          "action_time_loss_s": 0.22634012987934682,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 2,
+        "episode_pk": 30,
+        "episode_id": 5,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 3749.0,
+        "start_min_m": 3749.0,
+        "start_max_m": 3749.0,
+        "end_median_m": 3901.0,
+        "end_min_m": 3901.0,
+        "end_max_m": 3901.0,
+        "center_median_m": 3825.0,
+        "center_min_m": 3825.0,
+        "center_max_m": 3825.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.22634012987934682,
+        "action_time_loss_min_s": 0.22634012987934682,
+        "action_time_loss_max_s": 0.22634012987934682
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T04:35:16Z",
+        "last_observed_utc": "2026-08-09T04:35:16Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_4af1300faa22ee2e71ee",
+      "state": "single_observation",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        3
+      ],
+      "session_observation_counts": {
+        "3": 1
+      },
+      "members": [
+        {
+          "session_id": 3,
+          "episode_pk": 46,
+          "episode_id": 10,
+          "timestamp_utc": "2026-08-10T00:34:34Z",
+          "session_type": "P",
+          "start_distance_m": 4346.0,
+          "end_distance_m": 4377.0,
+          "center_distance_m": 4361.5,
+          "action_time_loss_s": 0.03528474911814783,
+          "channels": [
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 3,
+        "episode_pk": 46,
+        "episode_id": 10,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 4346.0,
+        "start_min_m": 4346.0,
+        "start_max_m": 4346.0,
+        "end_median_m": 4377.0,
+        "end_min_m": 4377.0,
+        "end_max_m": 4377.0,
+        "center_median_m": 4361.5,
+        "center_min_m": 4361.5,
+        "center_max_m": 4361.5,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.03528474911814783,
+        "action_time_loss_min_s": 0.03528474911814783,
+        "action_time_loss_max_s": 0.03528474911814783
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "throttle"
+        ],
+        "union_action_channels": [
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-10T00:34:34Z",
+        "last_observed_utc": "2026-08-10T00:34:34Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_9bde0666042c1fe4114b",
+      "state": "single_observation",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        3
+      ],
+      "session_observation_counts": {
+        "3": 1
+      },
+      "members": [
+        {
+          "session_id": 3,
+          "episode_pk": 52,
+          "episode_id": 6,
+          "timestamp_utc": "2026-08-10T00:34:34Z",
+          "session_type": "P",
+          "start_distance_m": 4346.0,
+          "end_distance_m": 4378.0,
+          "center_distance_m": 4362.0,
+          "action_time_loss_s": 0.15848049328563718,
+          "channels": [
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 3,
+        "episode_pk": 52,
+        "episode_id": 6,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 4346.0,
+        "start_min_m": 4346.0,
+        "start_max_m": 4346.0,
+        "end_median_m": 4378.0,
+        "end_min_m": 4378.0,
+        "end_max_m": 4378.0,
+        "center_median_m": 4362.0,
+        "center_min_m": 4362.0,
+        "center_max_m": 4362.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.15848049328563718,
+        "action_time_loss_min_s": 0.15848049328563718,
+        "action_time_loss_max_s": 0.15848049328563718
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "throttle"
+        ],
+        "union_action_channels": [
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-10T00:34:34Z",
+        "last_observed_utc": "2026-08-10T00:34:34Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_4fd20a2a600a8f85dc54",
+      "state": "single_observation",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        6
+      ],
+      "session_observation_counts": {
+        "6": 1
+      },
+      "members": [
+        {
+          "session_id": 6,
+          "episode_pk": 145,
+          "episode_id": 4,
+          "timestamp_utc": "2026-08-10T01:03:52Z",
+          "session_type": "R",
+          "start_distance_m": 4348.0,
+          "end_distance_m": 4412.0,
+          "center_distance_m": 4380.0,
+          "action_time_loss_s": 0.07700616768951818,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 6,
+        "episode_pk": 145,
+        "episode_id": 4,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 4348.0,
+        "start_min_m": 4348.0,
+        "start_max_m": 4348.0,
+        "end_median_m": 4412.0,
+        "end_min_m": 4412.0,
+        "end_max_m": 4412.0,
+        "center_median_m": 4380.0,
+        "center_min_m": 4380.0,
+        "center_max_m": 4380.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.07700616768951818,
+        "action_time_loss_min_s": 0.07700616768951818,
+        "action_time_loss_max_s": 0.07700616768951818
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-10T01:03:52Z",
+        "last_observed_utc": "2026-08-10T01:03:52Z",
+        "session_types": [
+          "R"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_5bbf35a0c0d2a77f678c",
+      "state": "single_observation",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        3
+      ],
+      "session_observation_counts": {
+        "3": 1
+      },
+      "members": [
+        {
+          "session_id": 3,
+          "episode_pk": 45,
+          "episode_id": 9,
+          "timestamp_utc": "2026-08-10T00:34:34Z",
+          "session_type": "P",
+          "start_distance_m": 4394.0,
+          "end_distance_m": 4428.0,
+          "center_distance_m": 4411.0,
+          "action_time_loss_s": 0.03773204447335843,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 3,
+        "episode_pk": 45,
+        "episode_id": 9,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 4394.0,
+        "start_min_m": 4394.0,
+        "start_max_m": 4394.0,
+        "end_median_m": 4428.0,
+        "end_min_m": 4428.0,
+        "end_max_m": 4428.0,
+        "center_median_m": 4411.0,
+        "center_min_m": 4411.0,
+        "center_max_m": 4411.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.03773204447335843,
+        "action_time_loss_min_s": 0.03773204447335843,
+        "action_time_loss_max_s": 0.03773204447335843
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-10T00:34:34Z",
+        "last_observed_utc": "2026-08-10T00:34:34Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_55cc49e0fdba90da2db3",
+      "state": "single_observation",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        3
+      ],
+      "session_observation_counts": {
+        "3": 1
+      },
+      "members": [
+        {
+          "session_id": 3,
+          "episode_pk": 58,
+          "episode_id": 12,
+          "timestamp_utc": "2026-08-10T00:34:34Z",
+          "session_type": "P",
+          "start_distance_m": 4441.0,
+          "end_distance_m": 4457.0,
+          "center_distance_m": 4449.0,
+          "action_time_loss_s": 0.04575164750043825,
+          "channels": [
+            "steering_magnitude"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 3,
+        "episode_pk": 58,
+        "episode_id": 12,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 4441.0,
+        "start_min_m": 4441.0,
+        "start_max_m": 4441.0,
+        "end_median_m": 4457.0,
+        "end_min_m": 4457.0,
+        "end_max_m": 4457.0,
+        "center_median_m": 4449.0,
+        "center_min_m": 4449.0,
+        "center_max_m": 4449.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.04575164750043825,
+        "action_time_loss_min_s": 0.04575164750043825,
+        "action_time_loss_max_s": 0.04575164750043825
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "steering_magnitude"
+        ],
+        "union_action_channels": [
+          "steering_magnitude"
+        ],
+        "episode_prevalence_count": {
+          "steering_magnitude": 1
+        },
+        "session_prevalence_count": {
+          "steering_magnitude": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-10T00:34:34Z",
+        "last_observed_utc": "2026-08-10T00:34:34Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_3472e1d05c02795c545e",
+      "state": "single_observation",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        6
+      ],
+      "session_observation_counts": {
+        "6": 1
+      },
+      "members": [
+        {
+          "session_id": 6,
+          "episode_pk": 141,
+          "episode_id": 8,
+          "timestamp_utc": "2026-08-10T01:03:52Z",
+          "session_type": "R",
+          "start_distance_m": 4549.0,
+          "end_distance_m": 4582.0,
+          "center_distance_m": 4565.5,
+          "action_time_loss_s": 0.02275369198777355,
+          "channels": [
+            "steering_magnitude"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 6,
+        "episode_pk": 141,
+        "episode_id": 8,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 4549.0,
+        "start_min_m": 4549.0,
+        "start_max_m": 4549.0,
+        "end_median_m": 4582.0,
+        "end_min_m": 4582.0,
+        "end_max_m": 4582.0,
+        "center_median_m": 4565.5,
+        "center_min_m": 4565.5,
+        "center_max_m": 4565.5,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.02275369198777355,
+        "action_time_loss_min_s": 0.02275369198777355,
+        "action_time_loss_max_s": 0.02275369198777355
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "steering_magnitude"
+        ],
+        "union_action_channels": [
+          "steering_magnitude"
+        ],
+        "episode_prevalence_count": {
+          "steering_magnitude": 1
+        },
+        "session_prevalence_count": {
+          "steering_magnitude": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-10T01:03:52Z",
+        "last_observed_utc": "2026-08-10T01:03:52Z",
+        "session_types": [
+          "R"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_aff354d7aced1916fcb2",
+      "state": "single_observation",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        6
+      ],
+      "session_observation_counts": {
+        "6": 1
+      },
+      "members": [
+        {
+          "session_id": 6,
+          "episode_pk": 144,
+          "episode_id": 3,
+          "timestamp_utc": "2026-08-10T01:03:52Z",
+          "session_type": "R",
+          "start_distance_m": 4595.0,
+          "end_distance_m": 4649.0,
+          "center_distance_m": 4622.0,
+          "action_time_loss_s": 0.10849112444317655,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 6,
+        "episode_pk": 144,
+        "episode_id": 3,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 4595.0,
+        "start_min_m": 4595.0,
+        "start_max_m": 4595.0,
+        "end_median_m": 4649.0,
+        "end_min_m": 4649.0,
+        "end_max_m": 4649.0,
+        "center_median_m": 4622.0,
+        "center_min_m": 4622.0,
+        "center_max_m": 4622.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.10849112444317655,
+        "action_time_loss_min_s": 0.10849112444317655,
+        "action_time_loss_max_s": 0.10849112444317655
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-10T01:03:52Z",
+        "last_observed_utc": "2026-08-10T01:03:52Z",
+        "session_types": [
+          "R"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_e27309ac035a854c88a9",
+      "state": "single_observation",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        2
+      ],
+      "session_observation_counts": {
+        "2": 1
+      },
+      "members": [
+        {
+          "session_id": 2,
+          "episode_pk": 25,
+          "episode_id": 8,
+          "timestamp_utc": "2026-08-09T04:35:16Z",
+          "session_type": "P",
+          "start_distance_m": 4752.0,
+          "end_distance_m": 4775.0,
+          "center_distance_m": 4763.5,
+          "action_time_loss_s": 0.024949602815382832,
+          "channels": [
+            "brake"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 2,
+        "episode_pk": 25,
+        "episode_id": 8,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 4752.0,
+        "start_min_m": 4752.0,
+        "start_max_m": 4752.0,
+        "end_median_m": 4775.0,
+        "end_min_m": 4775.0,
+        "end_max_m": 4775.0,
+        "center_median_m": 4763.5,
+        "center_min_m": 4763.5,
+        "center_max_m": 4763.5,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.024949602815382832,
+        "action_time_loss_min_s": 0.024949602815382832,
+        "action_time_loss_max_s": 0.024949602815382832
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "brake"
+        ],
+        "union_action_channels": [
+          "brake"
+        ],
+        "episode_prevalence_count": {
+          "brake": 1
+        },
+        "session_prevalence_count": {
+          "brake": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T04:35:16Z",
+        "last_observed_utc": "2026-08-09T04:35:16Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_a2734e7d685b1abc35c7",
+      "state": "single_observation",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        3
+      ],
+      "session_observation_counts": {
+        "3": 1
+      },
+      "members": [
+        {
+          "session_id": 3,
+          "episode_pk": 57,
+          "episode_id": 11,
+          "timestamp_utc": "2026-08-10T00:34:34Z",
+          "session_type": "P",
+          "start_distance_m": 4771.0,
+          "end_distance_m": 4808.0,
+          "center_distance_m": 4789.5,
+          "action_time_loss_s": 0.04836412390625355,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 3,
+        "episode_pk": 57,
+        "episode_id": 11,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 4771.0,
+        "start_min_m": 4771.0,
+        "start_max_m": 4771.0,
+        "end_median_m": 4808.0,
+        "end_min_m": 4808.0,
+        "end_max_m": 4808.0,
+        "center_median_m": 4789.5,
+        "center_min_m": 4789.5,
+        "center_max_m": 4789.5,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.04836412390625355,
+        "action_time_loss_min_s": 0.04836412390625355,
+        "action_time_loss_max_s": 0.04836412390625355
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-10T00:34:34Z",
+        "last_observed_utc": "2026-08-10T00:34:34Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_d68a4cef04007dcd4e17",
+      "state": "single_observation",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        4
+      ],
+      "session_observation_counts": {
+        "4": 1
+      },
+      "members": [
+        {
+          "session_id": 4,
+          "episode_pk": 80,
+          "episode_id": 8,
+          "timestamp_utc": "2026-08-09T04:52:43Z",
+          "session_type": "Q",
+          "start_distance_m": 4785.0,
+          "end_distance_m": 4806.0,
+          "center_distance_m": 4795.5,
+          "action_time_loss_s": 0.03189619979833935,
+          "channels": [
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 4,
+        "episode_pk": 80,
+        "episode_id": 8,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 4785.0,
+        "start_min_m": 4785.0,
+        "start_max_m": 4785.0,
+        "end_median_m": 4806.0,
+        "end_min_m": 4806.0,
+        "end_max_m": 4806.0,
+        "center_median_m": 4795.5,
+        "center_min_m": 4795.5,
+        "center_max_m": 4795.5,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.03189619979833935,
+        "action_time_loss_min_s": 0.03189619979833935,
+        "action_time_loss_max_s": 0.03189619979833935
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "throttle"
+        ],
+        "union_action_channels": [
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T04:52:43Z",
+        "last_observed_utc": "2026-08-09T04:52:43Z",
+        "session_types": [
+          "Q"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_aa7659bc5a5ed39d3fd5",
+      "state": "single_observation",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        2
+      ],
+      "session_observation_counts": {
+        "2": 1
+      },
+      "members": [
+        {
+          "session_id": 2,
+          "episode_pk": 24,
+          "episode_id": 7,
+          "timestamp_utc": "2026-08-09T04:35:16Z",
+          "session_type": "P",
+          "start_distance_m": 5027.0,
+          "end_distance_m": 5071.0,
+          "center_distance_m": 5049.0,
+          "action_time_loss_s": 0.030626144408273603,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 2,
+        "episode_pk": 24,
+        "episode_id": 7,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 5027.0,
+        "start_min_m": 5027.0,
+        "start_max_m": 5027.0,
+        "end_median_m": 5071.0,
+        "end_min_m": 5071.0,
+        "end_max_m": 5071.0,
+        "center_median_m": 5049.0,
+        "center_min_m": 5049.0,
+        "center_max_m": 5049.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.030626144408273603,
+        "action_time_loss_min_s": 0.030626144408273603,
+        "action_time_loss_max_s": 0.030626144408273603
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T04:35:16Z",
+        "last_observed_utc": "2026-08-09T04:35:16Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_5100d20d17f445a9799a",
+      "state": "single_observation",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        5
+      ],
+      "session_observation_counts": {
+        "5": 1
+      },
+      "members": [
+        {
+          "session_id": 5,
+          "episode_pk": 120,
+          "episode_id": 16,
+          "timestamp_utc": "2026-08-10T00:53:48Z",
+          "session_type": "Q",
+          "start_distance_m": 5104.0,
+          "end_distance_m": 5148.0,
+          "center_distance_m": 5126.0,
+          "action_time_loss_s": 0.020349786133991188,
+          "channels": [
+            "steering_magnitude"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 5,
+        "episode_pk": 120,
+        "episode_id": 16,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 5104.0,
+        "start_min_m": 5104.0,
+        "start_max_m": 5104.0,
+        "end_median_m": 5148.0,
+        "end_min_m": 5148.0,
+        "end_max_m": 5148.0,
+        "center_median_m": 5126.0,
+        "center_min_m": 5126.0,
+        "center_max_m": 5126.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.020349786133991188,
+        "action_time_loss_min_s": 0.020349786133991188,
+        "action_time_loss_max_s": 0.020349786133991188
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "steering_magnitude"
+        ],
+        "union_action_channels": [
+          "steering_magnitude"
+        ],
+        "episode_prevalence_count": {
+          "steering_magnitude": 1
+        },
+        "session_prevalence_count": {
+          "steering_magnitude": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-10T00:53:48Z",
+        "last_observed_utc": "2026-08-10T00:53:48Z",
+        "session_types": [
+          "Q"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_1f1f2a7ea9b7312737d6",
+      "state": "single_observation",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        4
+      ],
+      "session_observation_counts": {
+        "4": 1
+      },
+      "members": [
+        {
+          "session_id": 4,
+          "episode_pk": 94,
+          "episode_id": 13,
+          "timestamp_utc": "2026-08-09T04:52:43Z",
+          "session_type": "Q",
+          "start_distance_m": 6448.0,
+          "end_distance_m": 6514.0,
+          "center_distance_m": 6481.0,
+          "action_time_loss_s": 0.04944691118778621,
+          "channels": [
+            "brake",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 4,
+        "episode_pk": 94,
+        "episode_id": 13,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 6448.0,
+        "start_min_m": 6448.0,
+        "start_max_m": 6448.0,
+        "end_median_m": 6514.0,
+        "end_min_m": 6514.0,
+        "end_max_m": 6514.0,
+        "center_median_m": 6481.0,
+        "center_min_m": 6481.0,
+        "center_max_m": 6481.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.04944691118778621,
+        "action_time_loss_min_s": 0.04944691118778621,
+        "action_time_loss_max_s": 0.04944691118778621
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "brake",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "brake",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "brake": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "brake": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T04:52:43Z",
+        "last_observed_utc": "2026-08-09T04:52:43Z",
+        "session_types": [
+          "Q"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_2373f38fb1141f6248d5",
+      "state": "single_observation",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        4
+      ],
+      "session_observation_counts": {
+        "4": 1
+      },
+      "members": [
+        {
+          "session_id": 4,
+          "episode_pk": 74,
+          "episode_id": 2,
+          "timestamp_utc": "2026-08-09T04:52:43Z",
+          "session_type": "Q",
+          "start_distance_m": 6487.0,
+          "end_distance_m": 6664.0,
+          "center_distance_m": 6575.5,
+          "action_time_loss_s": 0.21335486695214456,
+          "channels": [
+            "brake",
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 4,
+        "episode_pk": 74,
+        "episode_id": 2,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 6487.0,
+        "start_min_m": 6487.0,
+        "start_max_m": 6487.0,
+        "end_median_m": 6664.0,
+        "end_min_m": 6664.0,
+        "end_max_m": 6664.0,
+        "center_median_m": 6575.5,
+        "center_min_m": 6575.5,
+        "center_max_m": 6575.5,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.21335486695214456,
+        "action_time_loss_min_s": 0.21335486695214456,
+        "action_time_loss_max_s": 0.21335486695214456
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "brake": 1,
+          "steering_magnitude": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "brake": 1,
+          "steering_magnitude": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T04:52:43Z",
+        "last_observed_utc": "2026-08-09T04:52:43Z",
+        "session_types": [
+          "Q"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_bc3808419983451e0874",
+      "state": "single_observation",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        4
+      ],
+      "session_observation_counts": {
+        "4": 1
+      },
+      "members": [
+        {
+          "session_id": 4,
+          "episode_pk": 93,
+          "episode_id": 12,
+          "timestamp_utc": "2026-08-09T04:52:43Z",
+          "session_type": "Q",
+          "start_distance_m": 6585.0,
+          "end_distance_m": 6605.0,
+          "center_distance_m": 6595.0,
+          "action_time_loss_s": 0.06331347458905157,
+          "channels": [
+            "steering_magnitude"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 4,
+        "episode_pk": 93,
+        "episode_id": 12,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 6585.0,
+        "start_min_m": 6585.0,
+        "start_max_m": 6585.0,
+        "end_median_m": 6605.0,
+        "end_min_m": 6605.0,
+        "end_max_m": 6605.0,
+        "center_median_m": 6595.0,
+        "center_min_m": 6595.0,
+        "center_max_m": 6595.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.06331347458905157,
+        "action_time_loss_min_s": 0.06331347458905157,
+        "action_time_loss_max_s": 0.06331347458905157
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "steering_magnitude"
+        ],
+        "union_action_channels": [
+          "steering_magnitude"
+        ],
+        "episode_prevalence_count": {
+          "steering_magnitude": 1
+        },
+        "session_prevalence_count": {
+          "steering_magnitude": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T04:52:43Z",
+        "last_observed_utc": "2026-08-09T04:52:43Z",
+        "session_types": [
+          "Q"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_8a20cc10b89ea11ab6f0",
+      "state": "single_observation",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        6
+      ],
+      "session_observation_counts": {
+        "6": 1
+      },
+      "members": [
+        {
+          "session_id": 6,
+          "episode_pk": 149,
+          "episode_id": 8,
+          "timestamp_utc": "2026-08-10T01:03:52Z",
+          "session_type": "R",
+          "start_distance_m": 6692.0,
+          "end_distance_m": 6707.0,
+          "center_distance_m": 6699.5,
+          "action_time_loss_s": 0.040121165613925314,
+          "channels": [
+            "steering_magnitude"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 6,
+        "episode_pk": 149,
+        "episode_id": 8,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 6692.0,
+        "start_min_m": 6692.0,
+        "start_max_m": 6692.0,
+        "end_median_m": 6707.0,
+        "end_min_m": 6707.0,
+        "end_max_m": 6707.0,
+        "center_median_m": 6699.5,
+        "center_min_m": 6699.5,
+        "center_max_m": 6699.5,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.040121165613925314,
+        "action_time_loss_min_s": 0.040121165613925314,
+        "action_time_loss_max_s": 0.040121165613925314
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "steering_magnitude"
+        ],
+        "union_action_channels": [
+          "steering_magnitude"
+        ],
+        "episode_prevalence_count": {
+          "steering_magnitude": 1
+        },
+        "session_prevalence_count": {
+          "steering_magnitude": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-10T01:03:52Z",
+        "last_observed_utc": "2026-08-10T01:03:52Z",
+        "session_types": [
+          "R"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_07915cc07e5118cd4a78",
+      "state": "single_observation",
+      "context": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        6
+      ],
+      "session_observation_counts": {
+        "6": 1
+      },
+      "members": [
+        {
+          "session_id": 6,
+          "episode_pk": 137,
+          "episode_id": 4,
+          "timestamp_utc": "2026-08-10T01:03:52Z",
+          "session_type": "R",
+          "start_distance_m": 6700.0,
+          "end_distance_m": 6722.0,
+          "center_distance_m": 6711.0,
+          "action_time_loss_s": 0.058544330309530324,
+          "channels": [
+            "steering_magnitude"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 6,
+        "episode_pk": 137,
+        "episode_id": 4,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 6700.0,
+        "start_min_m": 6700.0,
+        "start_max_m": 6700.0,
+        "end_median_m": 6722.0,
+        "end_min_m": 6722.0,
+        "end_max_m": 6722.0,
+        "center_median_m": 6711.0,
+        "center_min_m": 6711.0,
+        "center_max_m": 6711.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.058544330309530324,
+        "action_time_loss_min_s": 0.058544330309530324,
+        "action_time_loss_max_s": 0.058544330309530324
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "steering_magnitude"
+        ],
+        "union_action_channels": [
+          "steering_magnitude"
+        ],
+        "episode_prevalence_count": {
+          "steering_magnitude": 1
+        },
+        "session_prevalence_count": {
+          "steering_magnitude": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-10T01:03:52Z",
+        "last_observed_utc": "2026-08-10T01:03:52Z",
+        "session_types": [
+          "R"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    }
+  ]
+}

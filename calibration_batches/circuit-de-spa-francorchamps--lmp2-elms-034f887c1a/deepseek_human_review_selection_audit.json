@@ -1,0 +1,588 @@
+{
+  "metadata": {
+    "audit_schema_version": "1.0",
+    "generator_version": "1.0",
+    "created_at_utc": "2026-08-14T18:13:57.367056+00:00",
+    "source_pool": "/workspaces/raithreshzz/calibration_batches/circuit-de-spa-francorchamps--lmp2-elms-034f887c1a/deepseek_ambiguous_pool.json",
+    "source_reviews": "/workspaces/raithreshzz/calibration_batches/circuit-de-spa-francorchamps--lmp2-elms-034f887c1a/deepseek_ambiguous_reviews.json",
+    "source_human_label_files": [
+      "/workspaces/raithreshzz/calibration_batches/circuit-de-spa-francorchamps--lmp2-elms-034f887c1a/pair_labels.json",
+      "/workspaces/raithreshzz/calibration_batches/circuit-de-spa-francorchamps--lmp2-elms-034f887c1a/boundary_pair_labels.json",
+      "/workspaces/raithreshzz/calibration_batches/circuit-de-spa-francorchamps--lmp2-elms-034f887c1a/reject_boundary_pair_labels.json"
+    ],
+    "candidate_count_after_exclusions": 688,
+    "selected_pair_count": 32,
+    "missing_review_count": 0,
+    "invalid_review_count": 0,
+    "quotas": {
+      "same_high_boundary": 6,
+      "same_medium_boundary": 6,
+      "different_high_boundary": 6,
+      "different_medium_boundary": 6,
+      "ambiguous_diverse": 8
+    },
+    "warning": "Do not inspect this file before completing the blind human review if reviewer independence matters."
+  },
+  "selections": [
+    {
+      "pair_id": "0074a9eeb0cda5f4ce5d",
+      "selection_stratum": "ambiguous_diverse",
+      "deepseek_label": "AMBIGUOUS",
+      "deepseek_confidence": "MEDIUM",
+      "deepseek_reason_codes": [
+        "SPATIAL_PROXIMITY_SUPPORTS_SAME",
+        "OVERLAP_SUPPORTS_SAME",
+        "CHANNEL_SET_SUPPORTS_SAME",
+        "CHANNEL_SHAPE_CONFLICT",
+        "DIRECTION_CONSISTENCY_CONFLICT",
+        "EVIDENCE_MIXED_OR_INSUFFICIENT"
+      ],
+      "deepseek_reason": "The episodes are spatially close with moderate overlap, suggesting possible same region. Identical channel sets support similarity. However, shape metrics conflict: steering mean similarity is low, and direction consistency differs (mixed vs consistent). Given the mixed evidence, neither SAME nor DIFFERENT is strongly supported.",
+      "center_distance_abs_diff_m": 109.0,
+      "overlap_over_union": 0.2323943661971831,
+      "overlap_over_shorter": 0.4647887323943662,
+      "channel_jaccard": 1.0
+    },
+    {
+      "pair_id": "02eaba2e80351b573bb3",
+      "selection_stratum": "different_medium_boundary",
+      "deepseek_label": "DIFFERENT",
+      "deepseek_confidence": "MEDIUM",
+      "deepseek_reason_codes": [
+        "LOW_OR_ZERO_OVERLAP_SUPPORTS_DIFFERENT",
+        "CHANNEL_SET_CONFLICT",
+        "SPATIAL_SEPARATION_SUPPORTS_DIFFERENT"
+      ],
+      "deepseek_reason": "The episodes have minimal spatial overlap (4 m out of 23 m and 37 m lengths) and a center separation of 26 m, suggesting different track regions. Additionally, the channel sets are completely disjoint, with no shared channels to compare shapes. While action time loss similarity is moderate, it cannot override the spatial and channel evidence. Thus, they are likely different patterns.",
+      "center_distance_abs_diff_m": 26.0,
+      "overlap_over_union": 0.07142857142857142,
+      "overlap_over_shorter": 0.17391304347826086,
+      "channel_jaccard": 0.0
+    },
+    {
+      "pair_id": "06d40fb85d08e1b51e80",
+      "selection_stratum": "ambiguous_diverse",
+      "deepseek_label": "AMBIGUOUS",
+      "deepseek_confidence": "MEDIUM",
+      "deepseek_reason_codes": [
+        "SPATIAL_PROXIMITY_SUPPORTS_SAME",
+        "OVERLAP_SUPPORTS_SAME",
+        "CHANNEL_SET_CONFLICT",
+        "CHANNEL_SHAPE_CONFLICT",
+        "EVIDENCE_MIXED_OR_INSUFFICIENT"
+      ],
+      "deepseek_reason": "Spatial evidence strongly suggests the same track region: center separation 15 m, overlap over shorter 1.0, and overlap over union 0.357. However, channel set conflict is significant: only steering_magnitude is shared, with brake and throttle missing in B. Steering shape shows mixed signals: high mean similarity but low peak similarity and a 36 m onset offset. Given the conflicting channel and shape evidence, the pair cannot be confidently labeled SAME or DIFFERENT.",
+      "center_distance_abs_diff_m": 15.0,
+      "overlap_over_union": 0.35714285714285715,
+      "overlap_over_shorter": 1.0,
+      "channel_jaccard": 0.3333333333333333
+    },
+    {
+      "pair_id": "0b50e477889bb5d1d97c",
+      "selection_stratum": "ambiguous_diverse",
+      "deepseek_label": "AMBIGUOUS",
+      "deepseek_confidence": "LOW",
+      "deepseek_reason_codes": [
+        "SPATIAL_PROXIMITY_SUPPORTS_SAME",
+        "LOW_OR_ZERO_OVERLAP_SUPPORTS_DIFFERENT",
+        "CHANNEL_SET_SUPPORTS_SAME",
+        "CHANNEL_SHAPE_SUPPORTS_SAME",
+        "EVIDENCE_MIXED_OR_INSUFFICIENT"
+      ],
+      "deepseek_reason": "Spatial evidence is mixed: center separation of 31 m is not huge, but overlap over union is low (0.15), suggesting only partial overlap. However, overlap over shorter is 0.52, indicating the shorter episode is substantially within the longer one. Channel set is identical (brake only) and shape similarity is high (mean diff 0.98, peak diff 0.78). Given the conflicting spatial metrics and strong channel similarity, the pair could plausibly be the same pattern or different but adjacent regions. Thus, AMBIGUOUS with low confidence.",
+      "center_distance_abs_diff_m": 31.0,
+      "overlap_over_union": 0.1506849315068493,
+      "overlap_over_shorter": 0.5238095238095238,
+      "channel_jaccard": 1.0
+    },
+    {
+      "pair_id": "0c0f495f8a21287e8f7f",
+      "selection_stratum": "ambiguous_diverse",
+      "deepseek_label": "AMBIGUOUS",
+      "deepseek_confidence": "MEDIUM",
+      "deepseek_reason_codes": [
+        "SPATIAL_PROXIMITY_SUPPORTS_SAME",
+        "OVERLAP_SUPPORTS_SAME",
+        "CHANNEL_SET_CONFLICT",
+        "CHANNEL_SHAPE_CONFLICT",
+        "EVIDENCE_MIXED_OR_INSUFFICIENT"
+      ],
+      "deepseek_reason": "Spatial evidence shows moderate proximity and partial overlap, suggesting possible same region, but overlap metrics are not strong. Channel set conflict (missing brake in B) and mixed per-channel shape similarities (throttle mean vs peak, steering peak) create uncertainty. Action time loss similarity is high but secondary. Overall, evidence is mixed and does not clearly support SAME or DIFFERENT.",
+      "center_distance_abs_diff_m": 83.0,
+      "overlap_over_union": 0.23148148148148148,
+      "overlap_over_shorter": 0.4032258064516129,
+      "channel_jaccard": 0.6666666666666666
+    },
+    {
+      "pair_id": "10ddbb37edb960fc9a59",
+      "selection_stratum": "different_medium_boundary",
+      "deepseek_label": "DIFFERENT",
+      "deepseek_confidence": "MEDIUM",
+      "deepseek_reason_codes": [
+        "SPATIAL_SEPARATION_SUPPORTS_DIFFERENT",
+        "LOW_OR_ZERO_OVERLAP_SUPPORTS_DIFFERENT",
+        "CHANNEL_SET_CONFLICT",
+        "CHANNEL_SHAPE_CONFLICT"
+      ],
+      "deepseek_reason": "The episodes are spatially separated by 32.5 m center distance with negligible overlap (2 m), suggesting different track regions. Channel sets conflict (steering vs brake) and throttle shape similarity is low. Action time loss similarity is moderate but cannot override spatial evidence. Thus, they likely represent different patterns.",
+      "center_distance_abs_diff_m": 32.5,
+      "overlap_over_union": 0.029850746268656716,
+      "overlap_over_shorter": 0.0625,
+      "channel_jaccard": 0.3333333333333333
+    },
+    {
+      "pair_id": "18162f24c36a31ac0bf4",
+      "selection_stratum": "ambiguous_diverse",
+      "deepseek_label": "AMBIGUOUS",
+      "deepseek_confidence": "LOW",
+      "deepseek_reason_codes": [
+        "SPATIAL_PROXIMITY_SUPPORTS_SAME",
+        "CHANNEL_SET_CONFLICT",
+        "EVIDENCE_MIXED_OR_INSUFFICIENT"
+      ],
+      "deepseek_reason": "The episodes are spatially close (center diff 9.5 m, overlap 14 m, overlap over shorter 0.7), suggesting they may cover the same track region. However, the channel sets are completely disjoint, with no shared channels to compare shapes. This conflict between spatial proximity and channel identity leaves the classification uncertain. Action time loss similarity is moderate but secondary. Given the lack of channel overlap, we cannot confidently label as SAME, but spatial evidence prevents a clear DIFFERENT. Thus AMBIGUOUS is appropriate.",
+      "center_distance_abs_diff_m": 9.5,
+      "overlap_over_union": 0.42424242424242425,
+      "overlap_over_shorter": 0.7,
+      "channel_jaccard": 0.0
+    },
+    {
+      "pair_id": "1bb4c514f6f8aa4444fa",
+      "selection_stratum": "ambiguous_diverse",
+      "deepseek_label": "AMBIGUOUS",
+      "deepseek_confidence": "MEDIUM",
+      "deepseek_reason_codes": [
+        "SPATIAL_PROXIMITY_SUPPORTS_SAME",
+        "LOW_OR_ZERO_OVERLAP_SUPPORTS_DIFFERENT",
+        "CHANNEL_SET_SUPPORTS_SAME",
+        "CHANNEL_SHAPE_CONFLICT",
+        "ACTION_TIME_SUPPORTS_SAME",
+        "EVIDENCE_MIXED_OR_INSUFFICIENT"
+      ],
+      "deepseek_reason": "The episodes are spatially close (center separation 36 m) but have very low overlap (3 m, OoU 0.04). They share the same single channel, but the mean difference similarity is very low (0.077), indicating shape conflict. Action time loss similarity is moderate (0.749). Given the conflicting spatial and shape evidence, the pair is best classified as AMBIGUOUS.",
+      "center_distance_abs_diff_m": 36.0,
+      "overlap_over_union": 0.04,
+      "overlap_over_shorter": 0.13636363636363635,
+      "channel_jaccard": 1.0
+    },
+    {
+      "pair_id": "288c5b8aa3f922d1dfd8",
+      "selection_stratum": "ambiguous_diverse",
+      "deepseek_label": "AMBIGUOUS",
+      "deepseek_confidence": "LOW",
+      "deepseek_reason_codes": [
+        "SPATIAL_PROXIMITY_SUPPORTS_SAME",
+        "OVERLAP_SUPPORTS_SAME",
+        "CHANNEL_SET_CONFLICT",
+        "CHANNEL_SHAPE_CONFLICT",
+        "EVIDENCE_MIXED_OR_INSUFFICIENT"
+      ],
+      "deepseek_reason": "Spatial evidence is mixed: center separation of 59 m is moderate, but overlap over shorter is 1.0, suggesting the shorter episode lies entirely within the longer one. However, channel set conflict is strong (only steering shared, brake/throttle unique to B) and steering shape similarity is very low (mean difference similarity 0.114). Given the conflicting spatial and channel/shape evidence, neither SAME nor DIFFERENT is clearly supported.",
+      "center_distance_abs_diff_m": 59.0,
+      "overlap_over_union": 0.1977401129943503,
+      "overlap_over_shorter": 1.0,
+      "channel_jaccard": 0.3333333333333333
+    },
+    {
+      "pair_id": "2f03a9d0692a431bc70a",
+      "selection_stratum": "same_high_boundary",
+      "deepseek_label": "SAME",
+      "deepseek_confidence": "HIGH",
+      "deepseek_reason_codes": [
+        "SPATIAL_PROXIMITY_SUPPORTS_SAME",
+        "OVERLAP_SUPPORTS_SAME",
+        "CHANNEL_SET_SUPPORTS_SAME",
+        "CHANNEL_SHAPE_SUPPORTS_SAME",
+        "DIRECTION_CONSISTENCY_SUPPORTS_SAME",
+        "ACTION_TIME_SUPPORTS_SAME"
+      ],
+      "deepseek_reason": "The episodes are spatially close with substantial overlap and nearly identical track regions. Channel sets are identical and per-channel shape similarities are high, with consistent direction. Action time loss similarity is moderate but secondary. Overall evidence strongly supports SAME.",
+      "center_distance_abs_diff_m": 33.5,
+      "overlap_over_union": 0.6763285024154589,
+      "overlap_over_shorter": 0.9523809523809523,
+      "channel_jaccard": 1.0
+    },
+    {
+      "pair_id": "2f20a7121e8d8530999f",
+      "selection_stratum": "same_high_boundary",
+      "deepseek_label": "SAME",
+      "deepseek_confidence": "HIGH",
+      "deepseek_reason_codes": [
+        "SPATIAL_PROXIMITY_SUPPORTS_SAME",
+        "OVERLAP_SUPPORTS_SAME",
+        "CHANNEL_SET_SUPPORTS_SAME",
+        "CHANNEL_SHAPE_SUPPORTS_SAME",
+        "DIRECTION_CONSISTENCY_SUPPORTS_SAME"
+      ],
+      "deepseek_reason": "The episodes are spatially very close with high overlap, identical channel sets, and strong per-channel shape similarity. Direction consistency is consistent for both channels. This strongly supports the same general track region and driving-difference pattern.",
+      "center_distance_abs_diff_m": 18.5,
+      "overlap_over_union": 0.7581699346405228,
+      "overlap_over_shorter": 0.943089430894309,
+      "channel_jaccard": 1.0
+    },
+    {
+      "pair_id": "3f8151f36a7ea15750b9",
+      "selection_stratum": "same_high_boundary",
+      "deepseek_label": "SAME",
+      "deepseek_confidence": "HIGH",
+      "deepseek_reason_codes": [
+        "SPATIAL_PROXIMITY_SUPPORTS_SAME",
+        "OVERLAP_SUPPORTS_SAME",
+        "CHANNEL_SET_SUPPORTS_SAME",
+        "CHANNEL_SHAPE_SUPPORTS_SAME",
+        "ACTION_TIME_SUPPORTS_SAME"
+      ],
+      "deepseek_reason": "The episodes are spatially nearly identical: center separation 12 m, overlap over shorter 1.0, and overlap over union 0.65. Channel sets match exactly. Brake channel shape is highly similar (onset offset diff 0 m, end offset diff 4 m, mean similarity 0.93). Throttle shows some coverage difference but peak similarity is high and direction consistent. Action time loss similarity is 0.82. Overall, evidence strongly supports same general track region and driving pattern.",
+      "center_distance_abs_diff_m": 12.0,
+      "overlap_over_union": 0.6470588235294118,
+      "overlap_over_shorter": 1.0,
+      "channel_jaccard": 1.0
+    },
+    {
+      "pair_id": "460a7a7ee7ea62a5ce47",
+      "selection_stratum": "different_medium_boundary",
+      "deepseek_label": "DIFFERENT",
+      "deepseek_confidence": "MEDIUM",
+      "deepseek_reason_codes": [
+        "CHANNEL_SET_CONFLICT",
+        "LOW_OR_ZERO_OVERLAP_SUPPORTS_DIFFERENT",
+        "SPATIAL_SEPARATION_SUPPORTS_DIFFERENT"
+      ],
+      "deepseek_reason": "The episodes have no shared channels, indicating different driving-difference types. Spatial overlap is low (IoU=0.19) and center separation is 34 m, suggesting they may not represent the same physical region. Channel set conflict is strong, so DIFFERENT is more likely than SAME, but spatial proximity is moderate, leaving some ambiguity.",
+      "center_distance_abs_diff_m": 34.0,
+      "overlap_over_union": 0.19047619047619047,
+      "overlap_over_shorter": 0.45714285714285713,
+      "channel_jaccard": 0.0
+    },
+    {
+      "pair_id": "46a459475c68dcee05ca",
+      "selection_stratum": "ambiguous_diverse",
+      "deepseek_label": "AMBIGUOUS",
+      "deepseek_confidence": "LOW",
+      "deepseek_reason_codes": [
+        "SPATIAL_PROXIMITY_SUPPORTS_SAME",
+        "LOW_OR_ZERO_OVERLAP_SUPPORTS_DIFFERENT",
+        "CHANNEL_SET_CONFLICT",
+        "CHANNEL_SHAPE_CONFLICT",
+        "ACTION_TIME_CONFLICT",
+        "EVIDENCE_MIXED_OR_INSUFFICIENT"
+      ],
+      "deepseek_reason": "Spatial evidence is mixed: center separation is 104.5 m, overlap over union is low (0.129), but overlap over shorter is moderate (0.525). Channel set conflict (A has steering_magnitude, B does not) and low throttle mean similarity (0.324) suggest different patterns. However, the episodes are on the same track and relatively close in distance, so they could be the same region with different channel emphasis. Given conflicting signals, AMBIGUOUS is appropriate.",
+      "center_distance_abs_diff_m": 104.5,
+      "overlap_over_union": 0.12916666666666668,
+      "overlap_over_shorter": 0.5254237288135594,
+      "channel_jaccard": 0.5
+    },
+    {
+      "pair_id": "5a891d125d898b84d2fa",
+      "selection_stratum": "different_medium_boundary",
+      "deepseek_label": "DIFFERENT",
+      "deepseek_confidence": "MEDIUM",
+      "deepseek_reason_codes": [
+        "LOW_OR_ZERO_OVERLAP_SUPPORTS_DIFFERENT",
+        "SPATIAL_SEPARATION_SUPPORTS_DIFFERENT",
+        "CHANNEL_SET_CONFLICT",
+        "CHANNEL_SHAPE_CONFLICT"
+      ],
+      "deepseek_reason": "The episodes are spatially separated with minimal overlap (1 m) and low overlap ratios, indicating different track regions. Channel set conflict (throttle missing in B) and low steering shape similarity further support different driving patterns. Action time loss similarity is low but secondary. Overall, evidence favors DIFFERENT, though some spatial proximity (17.5 m center separation) leaves slight ambiguity.",
+      "center_distance_abs_diff_m": 17.5,
+      "overlap_over_union": 0.027777777777777776,
+      "overlap_over_shorter": 0.06666666666666667,
+      "channel_jaccard": 0.5
+    },
+    {
+      "pair_id": "6141a050f3abf0ceb980",
+      "selection_stratum": "different_high_boundary",
+      "deepseek_label": "DIFFERENT",
+      "deepseek_confidence": "HIGH",
+      "deepseek_reason_codes": [
+        "SPATIAL_SEPARATION_SUPPORTS_DIFFERENT",
+        "LOW_OR_ZERO_OVERLAP_SUPPORTS_DIFFERENT",
+        "CHANNEL_SET_CONFLICT"
+      ],
+      "deepseek_reason": "The episodes occupy different, non-overlapping track segments separated by 10 m (end of A at 4775 m, start of B at 4785 m) with zero spatial overlap. Additionally, the channel sets are completely disjoint (brake vs throttle), indicating different driving actions. Despite similar action time loss, spatial and channel evidence strongly support DIFFERENT.",
+      "center_distance_abs_diff_m": 32.0,
+      "overlap_over_union": 0.0,
+      "overlap_over_shorter": 0.0,
+      "channel_jaccard": 0.0
+    },
+    {
+      "pair_id": "6e0c4df1726a0d0b3914",
+      "selection_stratum": "different_medium_boundary",
+      "deepseek_label": "DIFFERENT",
+      "deepseek_confidence": "MEDIUM",
+      "deepseek_reason_codes": [
+        "LOW_OR_ZERO_OVERLAP_SUPPORTS_DIFFERENT",
+        "SPATIAL_SEPARATION_SUPPORTS_DIFFERENT",
+        "CHANNEL_SET_CONFLICT",
+        "CHANNEL_SHAPE_CONFLICT"
+      ],
+      "deepseek_reason": "The episodes have zero spatial overlap and a center separation of 29 m, suggesting different track regions. Channel set differs (throttle missing in B) and steering shape similarity is very low (mean difference similarity 0.03), despite peak similarity being high. Action time loss similarity is low (0.358). Overall, spatial and channel evidence point to different patterns.",
+      "center_distance_abs_diff_m": 29.0,
+      "overlap_over_union": 0.0,
+      "overlap_over_shorter": 0.0,
+      "channel_jaccard": 0.5
+    },
+    {
+      "pair_id": "7f8aa96472ed6ff2e91e",
+      "selection_stratum": "different_high_boundary",
+      "deepseek_label": "DIFFERENT",
+      "deepseek_confidence": "HIGH",
+      "deepseek_reason_codes": [
+        "LOW_OR_ZERO_OVERLAP_SUPPORTS_DIFFERENT",
+        "SPATIAL_SEPARATION_SUPPORTS_DIFFERENT",
+        "CHANNEL_SET_CONFLICT"
+      ],
+      "deepseek_reason": "The episodes occupy completely non-overlapping distance ranges (A: 291-314 m, B: 264-283 m) with a center separation of 29 m. Zero overlap and distinct spatial regions strongly indicate different physical track locations. Channel set conflict (A lacks steering_magnitude) further supports that these are not the same pattern. Action time loss similarity is moderate but cannot override clear spatial separation.",
+      "center_distance_abs_diff_m": 29.0,
+      "overlap_over_union": 0.0,
+      "overlap_over_shorter": 0.0,
+      "channel_jaccard": 0.5
+    },
+    {
+      "pair_id": "8eb0fd95ea1b47078b0b",
+      "selection_stratum": "different_medium_boundary",
+      "deepseek_label": "DIFFERENT",
+      "deepseek_confidence": "MEDIUM",
+      "deepseek_reason_codes": [
+        "LOW_OR_ZERO_OVERLAP_SUPPORTS_DIFFERENT",
+        "SPATIAL_SEPARATION_SUPPORTS_DIFFERENT",
+        "CHANNEL_SET_CONFLICT",
+        "CHANNEL_SHAPE_CONFLICT"
+      ],
+      "deepseek_reason": "The episodes are spatially disjoint with zero overlap and a 29 m center separation, suggesting different track regions. Channel set conflict (throttle only in A) and low steering shape similarity further support different driving patterns. Action time loss similarity is high but secondary to spatial evidence.",
+      "center_distance_abs_diff_m": 29.0,
+      "overlap_over_union": 0.0,
+      "overlap_over_shorter": 0.0,
+      "channel_jaccard": 0.5
+    },
+    {
+      "pair_id": "9265a7f9db72950cc9e0",
+      "selection_stratum": "different_high_boundary",
+      "deepseek_label": "DIFFERENT",
+      "deepseek_confidence": "HIGH",
+      "deepseek_reason_codes": [
+        "SPATIAL_SEPARATION_SUPPORTS_DIFFERENT",
+        "LOW_OR_ZERO_OVERLAP_SUPPORTS_DIFFERENT",
+        "CHANNEL_SET_CONFLICT"
+      ],
+      "deepseek_reason": "The episodes are spatially disjoint with zero overlap and a 32 m center separation, indicating different physical track regions. Although they share throttle and have some shape similarity, the spatial evidence is decisive for DIFFERENT. The channel set conflict (steering_magnitude only in B) further supports distinct patterns.",
+      "center_distance_abs_diff_m": 32.0,
+      "overlap_over_union": 0.0,
+      "overlap_over_shorter": 0.0,
+      "channel_jaccard": 0.5
+    },
+    {
+      "pair_id": "960d31430fa1a544692a",
+      "selection_stratum": "different_high_boundary",
+      "deepseek_label": "DIFFERENT",
+      "deepseek_confidence": "HIGH",
+      "deepseek_reason_codes": [
+        "LOW_OR_ZERO_OVERLAP_SUPPORTS_DIFFERENT",
+        "SPATIAL_SEPARATION_SUPPORTS_DIFFERENT",
+        "CHANNEL_SET_CONFLICT",
+        "CHANNEL_SHAPE_CONFLICT"
+      ],
+      "deepseek_reason": "The episodes are spatially disjoint with zero overlap and a 32 m center separation, indicating different track regions. Channel sets conflict (only steering shared) and steering shape similarity is low. Action time loss similarity is weak (0.31) and cannot override spatial evidence. Thus they represent different historical patterns.",
+      "center_distance_abs_diff_m": 32.0,
+      "overlap_over_union": 0.0,
+      "overlap_over_shorter": 0.0,
+      "channel_jaccard": 0.3333333333333333
+    },
+    {
+      "pair_id": "99c45b9eada4ba36969a",
+      "selection_stratum": "same_medium_boundary",
+      "deepseek_label": "SAME",
+      "deepseek_confidence": "MEDIUM",
+      "deepseek_reason_codes": [
+        "SPATIAL_PROXIMITY_SUPPORTS_SAME",
+        "OVERLAP_SUPPORTS_SAME",
+        "CHANNEL_SET_SUPPORTS_SAME",
+        "CHANNEL_SHAPE_CONFLICT",
+        "ACTION_TIME_SUPPORTS_SAME"
+      ],
+      "deepseek_reason": "The episodes are spatially very close: center separation 42.5 m, overlap over shorter = 1.0, and overlap over union 0.33. Channel sets are identical. Throttle onset aligns exactly, and action time loss similarity is moderate (0.69). However, steering magnitude shape similarity is low (mean similarity 0.143) and direction consistency is mixed, indicating some shape conflict. Overall, spatial proximity and channel set support SAME, but shape conflict reduces confidence to MEDIUM.",
+      "center_distance_abs_diff_m": 42.5,
+      "overlap_over_union": 0.3275862068965517,
+      "overlap_over_shorter": 1.0,
+      "channel_jaccard": 1.0
+    },
+    {
+      "pair_id": "b1eff6414e5ea41cd215",
+      "selection_stratum": "different_high_boundary",
+      "deepseek_label": "DIFFERENT",
+      "deepseek_confidence": "HIGH",
+      "deepseek_reason_codes": [
+        "CHANNEL_SET_CONFLICT",
+        "LOW_OR_ZERO_OVERLAP_SUPPORTS_DIFFERENT",
+        "SPATIAL_SEPARATION_SUPPORTS_DIFFERENT"
+      ],
+      "deepseek_reason": "The episodes have no shared channels, with A on throttle and B on steering_magnitude, indicating different driving-difference types. Spatially, they are separated by 28 m center distance and overlap only 4 m, yielding low overlap metrics. This combination strongly supports DIFFERENT.",
+      "center_distance_abs_diff_m": 28.0,
+      "overlap_over_union": 0.06666666666666667,
+      "overlap_over_shorter": 0.25,
+      "channel_jaccard": 0.0
+    },
+    {
+      "pair_id": "bd8d235af6bb4aa3c761",
+      "selection_stratum": "same_high_boundary",
+      "deepseek_label": "SAME",
+      "deepseek_confidence": "HIGH",
+      "deepseek_reason_codes": [
+        "SPATIAL_PROXIMITY_SUPPORTS_SAME",
+        "OVERLAP_SUPPORTS_SAME",
+        "CHANNEL_SET_SUPPORTS_SAME",
+        "CHANNEL_SHAPE_SUPPORTS_SAME"
+      ],
+      "deepseek_reason": "The episodes are spatially very close (center separation 12.5 m) with substantial overlap (IoU 0.675, overlap over shorter 0.825). They share the same single channel (brake) and have identical onset/end offsets, indicating similar braking region. Action time loss similarity is low, but that is secondary and does not override strong spatial and channel evidence.",
+      "center_distance_abs_diff_m": 12.5,
+      "overlap_over_union": 0.6753246753246753,
+      "overlap_over_shorter": 0.8253968253968254,
+      "channel_jaccard": 1.0
+    },
+    {
+      "pair_id": "bfe6b2d94d095873342d",
+      "selection_stratum": "same_high_boundary",
+      "deepseek_label": "SAME",
+      "deepseek_confidence": "HIGH",
+      "deepseek_reason_codes": [
+        "SPATIAL_PROXIMITY_SUPPORTS_SAME",
+        "OVERLAP_SUPPORTS_SAME",
+        "CHANNEL_SET_SUPPORTS_SAME",
+        "CHANNEL_SHAPE_SUPPORTS_SAME",
+        "DIRECTION_CONSISTENCY_SUPPORTS_SAME"
+      ],
+      "deepseek_reason": "The episodes are spatially nearly identical: center separation 16.5 m, overlap over shorter 1.0, and overlap over union 0.58. They share the same channels with high shape similarity and consistent direction. Action time loss differs but is secondary and does not override strong spatial and channel evidence.",
+      "center_distance_abs_diff_m": 16.5,
+      "overlap_over_union": 0.5845070422535211,
+      "overlap_over_shorter": 1.0,
+      "channel_jaccard": 1.0
+    },
+    {
+      "pair_id": "d35c4aaf8ea4011d1585",
+      "selection_stratum": "different_high_boundary",
+      "deepseek_label": "DIFFERENT",
+      "deepseek_confidence": "HIGH",
+      "deepseek_reason_codes": [
+        "LOW_OR_ZERO_OVERLAP_SUPPORTS_DIFFERENT",
+        "SPATIAL_SEPARATION_SUPPORTS_DIFFERENT",
+        "CHANNEL_SET_CONFLICT"
+      ],
+      "deepseek_reason": "The episodes have zero spatial overlap and are separated by a 2 m gap, with center distance 32 m apart. This indicates different physical track regions. The channel set also differs (A: brake only, B: brake+throttle). Although brake shape metrics show some similarity, spatial separation is decisive. Thus, they should not be treated as the same historical pattern.",
+      "center_distance_abs_diff_m": 32.0,
+      "overlap_over_union": 0.0,
+      "overlap_over_shorter": 0.0,
+      "channel_jaccard": 0.5
+    },
+    {
+      "pair_id": "db6c3efa4967a37d8c3d",
+      "selection_stratum": "same_medium_boundary",
+      "deepseek_label": "SAME",
+      "deepseek_confidence": "MEDIUM",
+      "deepseek_reason_codes": [
+        "SPATIAL_PROXIMITY_SUPPORTS_SAME",
+        "OVERLAP_SUPPORTS_SAME",
+        "CHANNEL_SET_SUPPORTS_SAME",
+        "CHANNEL_SHAPE_SUPPORTS_SAME",
+        "DIRECTION_CONSISTENCY_SUPPORTS_SAME",
+        "ACTION_TIME_CONFLICT"
+      ],
+      "deepseek_reason": "The episodes are spatially close (center diff 42 m, full overlap of shorter episode) and share identical channels. Throttle shape is similar with small offsets and high mean similarity. Steering peak similarity is near perfect, though mean similarity is low and direction consistency differs (consistent vs mixed). Action time loss similarity is low, but spatial and channel evidence dominate. Overall, same general track region and driving pattern is likely, but some shape inconsistencies warrant medium confidence.",
+      "center_distance_abs_diff_m": 42.0,
+      "overlap_over_union": 0.45161290322580644,
+      "overlap_over_shorter": 1.0,
+      "channel_jaccard": 1.0
+    },
+    {
+      "pair_id": "e51ad7ba9a0fc530afd7",
+      "selection_stratum": "same_high_boundary",
+      "deepseek_label": "SAME",
+      "deepseek_confidence": "HIGH",
+      "deepseek_reason_codes": [
+        "SPATIAL_PROXIMITY_SUPPORTS_SAME",
+        "OVERLAP_SUPPORTS_SAME",
+        "CHANNEL_SET_SUPPORTS_SAME",
+        "CHANNEL_SHAPE_SUPPORTS_SAME",
+        "ACTION_TIME_SUPPORTS_SAME"
+      ],
+      "deepseek_reason": "The episodes are spatially nearly identical (center separation 16 m, high overlap) and share the same channels. Peak shapes are similar, and action time loss is comparable. Despite some differences in mean values and direction consistency, the strong spatial and channel overlap supports SAME.",
+      "center_distance_abs_diff_m": 16.0,
+      "overlap_over_union": 0.8024691358024691,
+      "overlap_over_shorter": 0.9154929577464789,
+      "channel_jaccard": 1.0
+    },
+    {
+      "pair_id": "efb4c8b94c3105145ca4",
+      "selection_stratum": "same_medium_boundary",
+      "deepseek_label": "SAME",
+      "deepseek_confidence": "MEDIUM",
+      "deepseek_reason_codes": [
+        "SPATIAL_PROXIMITY_SUPPORTS_SAME",
+        "OVERLAP_SUPPORTS_SAME",
+        "CHANNEL_SET_SUPPORTS_SAME",
+        "ACTION_TIME_SUPPORTS_SAME",
+        "CHANNEL_SHAPE_CONFLICT"
+      ],
+      "deepseek_reason": "The episodes are spatially close (center separation 44 m, full overlap of the shorter episode) and share identical channels, supporting SAME. Action time loss is also similar. However, steering direction consistency differs and mean difference similarity is low, indicating shape conflict. Overall, spatial proximity and channel set strongly suggest the same general region and driving-difference type, but shape differences warrant medium confidence.",
+      "center_distance_abs_diff_m": 44.0,
+      "overlap_over_union": 0.3563218390804598,
+      "overlap_over_shorter": 1.0,
+      "channel_jaccard": 1.0
+    },
+    {
+      "pair_id": "facfe126f06efce2ede7",
+      "selection_stratum": "same_medium_boundary",
+      "deepseek_label": "SAME",
+      "deepseek_confidence": "MEDIUM",
+      "deepseek_reason_codes": [
+        "SPATIAL_PROXIMITY_SUPPORTS_SAME",
+        "OVERLAP_SUPPORTS_SAME",
+        "CHANNEL_SET_SUPPORTS_SAME",
+        "CHANNEL_SHAPE_SUPPORTS_SAME",
+        "ACTION_TIME_CONFLICT"
+      ],
+      "deepseek_reason": "The episodes are spatially close (center diff 53 m, overlap 128 m, overlap over shorter 0.85), indicating the same general track region. Channel sets are identical. Throttle shape is strongly similar; steering has moderate mean similarity but high peak similarity. Direction consistency differs, but that is secondary. Action time loss similarity is low (0.35), but spatial and channel evidence dominate. Overall, SAME is better supported, though steering mean difference and action time conflict introduce some uncertainty.",
+      "center_distance_abs_diff_m": 53.0,
+      "overlap_over_union": 0.5470085470085471,
+      "overlap_over_shorter": 0.8533333333333334,
+      "channel_jaccard": 1.0
+    },
+    {
+      "pair_id": "fd1e4bc4b7de37d4f5c3",
+      "selection_stratum": "same_medium_boundary",
+      "deepseek_label": "SAME",
+      "deepseek_confidence": "MEDIUM",
+      "deepseek_reason_codes": [
+        "SPATIAL_PROXIMITY_SUPPORTS_SAME",
+        "OVERLAP_SUPPORTS_SAME",
+        "CHANNEL_SET_SUPPORTS_SAME",
+        "CHANNEL_SHAPE_SUPPORTS_SAME",
+        "ACTION_TIME_CONFLICT"
+      ],
+      "deepseek_reason": "The episodes are spatially close (center separation 54.5 m) and episode B is fully contained within A (overlap over shorter = 1.0). Channel sets are identical and per-channel shape similarities are moderate to high. Action time loss similarity is low, but that is secondary and does not override spatial and channel evidence. Thus SAME is supported, though the low action time similarity and some coverage differences warrant MEDIUM confidence.",
+      "center_distance_abs_diff_m": 54.5,
+      "overlap_over_union": 0.2971698113207547,
+      "overlap_over_shorter": 1.0,
+      "channel_jaccard": 1.0
+    },
+    {
+      "pair_id": "fed471de059c7959f511",
+      "selection_stratum": "same_medium_boundary",
+      "deepseek_label": "SAME",
+      "deepseek_confidence": "MEDIUM",
+      "deepseek_reason_codes": [
+        "SPATIAL_PROXIMITY_SUPPORTS_SAME",
+        "OVERLAP_SUPPORTS_SAME",
+        "CHANNEL_SET_SUPPORTS_SAME",
+        "CHANNEL_SHAPE_SUPPORTS_SAME",
+        "ACTION_TIME_SUPPORTS_SAME",
+        "DIRECTION_CONSISTENCY_CONFLICT"
+      ],
+      "deepseek_reason": "The episodes overlap substantially in track distance (126 m) and are centered only 66 m apart, indicating the same general region. Shared channels show similar onset/end offsets and moderate shape similarity, and action time loss is nearly identical. The only conflict is steering direction consistency, but spatial proximity and overlap dominate, supporting SAME with medium confidence.",
+      "center_distance_abs_diff_m": 66.0,
+      "overlap_over_union": 0.4883720930232558,
+      "overlap_over_shorter": 0.6774193548387096,
+      "channel_jaccard": 0.6666666666666666
+    }
+  ]
+}

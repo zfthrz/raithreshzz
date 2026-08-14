@@ -1,0 +1,26 @@
+Race Engineer H4 Historical Reference v0.1
+==========================================
+
+Static validation
+-----------------
+select_historical_reference_v0_1.py: py_compile PASS
+validate_historical_reference_v0_1.py: py_compile PASS
+audit_historical_reference_v0_1.py: py_compile PASS
+
+Design checks
+-------------
+- Candidate unit is existing analyze_telemetry session reference lap: PASS
+- Target session excluded: PASS
+- Future timestamp leakage blocked: PASS
+- Exact track/layout/vehicle_variant/car_name hard gate: PASS
+- Temporal/objective session validation required: PASS
+- Reference lap validity/samples/distance gate: PASS
+- Default minimum valid laps = 3: PASS
+- Weather raw exact-match gate when target weather is known: PASS
+- Setup/session type are recorded but non-gating: PASS
+- Deterministic fastest eligible ranking: PASS
+- No DB mutation / no LLM / no coaching integration: PASS
+
+Environment note
+----------------
+DuckDB is not installed in this artifact environment, so the real DB query must be run in the user's Codespace.

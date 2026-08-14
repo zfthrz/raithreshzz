@@ -35,6 +35,8 @@ COACHING OPERATIVO:
 - interpretation debe describir qué diferencia observable existe;
 - recommendation debe convertir esa diferencia en una prueba concreta para
   la próxima vuelta;
+- la vuelta comparada es sólo el objeto de descripción: NUNCA la uses como
+  modelo a replicar/acompañar/ajustar; toda acción debe orientarse a la referencia;
 - si el canal es consistentemente mayor en la comparación, recomendá reducir
   ese input hacia la referencia;
 - si es consistentemente menor, recomendá aumentarlo hacia la referencia;

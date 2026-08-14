@@ -55,6 +55,7 @@ next_session_priorities:
 
 conclusion:
 - una conclusión corta y operativa;
+- nunca uses la vuelta comparada como modelo/objetivo; toda acción debe orientarse a la referencia;
 - empezá por la acción principal que el piloto debe probar en la próxima tanda;
 - debe resumir el plan de zonas prioritarias sin volver a narrar toda la evidencia;
 - no uses una conclusión genérica como "ajustar los inputs";

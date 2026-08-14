@@ -1,14 +1,14 @@
 {
   "metadata": {
-    "matcher_version": "0.2",
+    "matcher_version": "0.3",
     "matcher_status": "CALIBRATED_PROVISIONAL_SINGLE_CONTEXT",
-    "created_at_utc": "2026-08-14T16:51:47.539182+00:00",
+    "created_at_utc": "2026-08-14T18:28:13.535391+00:00",
     "source_features": "/workspaces/raithreshzz/calibration_batches/circuit-de-spa-francorchamps--lmp2-elms-034f887c1a/episode_pair_features.json",
     "calibration_context": {
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "human_labels": 40
+      "human_labels": 72
     },
     "policy": "High-precision provisional matcher. Automatic MATCH/REJECT only in human-supported cores; unobserved boundary space remains AMBIGUOUS. No clustering or persistent_pattern creation.",
     "thresholds": {
@@ -16,6 +16,10 @@
       "match_overlap_shorter_min": 0.98,
       "match_overlap_union_min": 0.33,
       "match_shared_channel_min": 1,
+      "extended_match_center_max_m": 66.0,
+      "extended_match_overlap_shorter_min": 0.6666666666666666,
+      "extended_match_overlap_union_min": 0.33,
+      "extended_match_channel_jaccard_min": 0.6666666666666666,
       "shape_conflict_mean_similarity_max": 0.2,
       "shape_conflict_coverage_diff_min": 0.5,
       "shape_conflict_impact_similarity_max": 0.45,
@@ -24,8 +28,8 @@
     }
   },
   "counts": {
-    "MATCH": 23,
-    "AMBIGUOUS": 699,
+    "MATCH": 93,
+    "AMBIGUOUS": 629,
     "REJECT": 4784
   },
   "decisions": [
@@ -839,13 +843,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=37.000<=66.0",
+        "overlap_shorter=0.985915>=0.6666666666666666",
+        "overlap_union=0.654206>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.3566635663034812,
         "mean_difference_similarity_mean": 0.08292799484382683,
@@ -1389,13 +1396,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=53.000<=66.0",
+        "overlap_shorter=0.853333>=0.6666666666666666",
+        "overlap_union=0.547009>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.13443396226415094,
         "mean_difference_similarity_mean": 0.6248281653919938,
@@ -1739,13 +1749,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=31.000<=66.0",
+        "overlap_shorter=1.000000>=0.6666666666666666",
+        "overlap_union=0.594340>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.19553009883198563,
         "mean_difference_similarity_mean": 0.4140116040530919,
@@ -1964,13 +1977,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=11.500<=66.0",
+        "overlap_shorter=1.000000>=0.6666666666666666",
+        "overlap_union=0.429245>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.12131971801783122,
         "mean_difference_similarity_mean": 0.8524610551449922,
@@ -6516,13 +6532,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=20.500<=66.0",
+        "overlap_shorter=0.732143>=0.6666666666666666",
+        "overlap_union=0.500000>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=1>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.0,
         "mean_difference_similarity_mean": 0.17155506847404386,
@@ -9016,13 +9035,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=4.000<=66.0",
+        "overlap_shorter=0.954545>=0.6666666666666666",
+        "overlap_union=0.887324>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.5124777183600713,
         "mean_difference_similarity_mean": 0.7238742881404147,
@@ -9916,13 +9938,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=15.500<=66.0",
+        "overlap_shorter=0.803279>=0.6666666666666666",
+        "overlap_union=0.612500>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.25843780135004824,
         "mean_difference_similarity_mean": 0.4180478935269263,
@@ -10566,13 +10591,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=10.500<=66.0",
+        "overlap_shorter=0.941176>=0.6666666666666666",
+        "overlap_union=0.752941>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.5468409586056644,
         "mean_difference_similarity_mean": 0.8623032453995705,
@@ -11043,13 +11071,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=26.000<=66.0",
+        "overlap_shorter=1.000000>=0.6666666666666666",
+        "overlap_union=0.596154>=0.33",
+        "channel_jaccard=0.666667>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.2244106699751861,
         "mean_difference_similarity_mean": 0.1760552594043514,
@@ -26701,13 +26732,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=20.000<=66.0",
+        "overlap_shorter=0.885714>=0.6666666666666666",
+        "overlap_union=0.436620>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=1>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.0,
         "mean_difference_similarity_mean": 0.9416133614135375,
@@ -28451,13 +28485,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=19.500<=66.0",
+        "overlap_shorter=0.777778>=0.6666666666666666",
+        "overlap_union=0.472973>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=1>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.1777777777777778,
         "mean_difference_similarity_mean": 0.4219924786103843,
@@ -31980,13 +32017,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=54.000<=66.0",
+        "overlap_shorter=1.000000>=0.6666666666666666",
+        "overlap_union=0.387097>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.15367383512544802,
         "mean_difference_similarity_mean": 0.5054385791929752,
@@ -39730,13 +39770,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=22.000<=66.0",
+        "overlap_shorter=1.000000>=0.6666666666666666",
+        "overlap_union=0.712644>=0.33",
+        "channel_jaccard=0.666667>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.05084352984797924,
         "mean_difference_similarity_mean": 0.3221785704476469,
@@ -40305,13 +40348,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=22.000<=66.0",
+        "overlap_shorter=1.000000>=0.6666666666666666",
+        "overlap_union=0.500000>=0.33",
+        "channel_jaccard=0.666667>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.20564516129032256,
         "mean_difference_similarity_mean": 0.5858292754143853,
@@ -40980,13 +41026,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=41.500<=66.0",
+        "overlap_shorter=0.872727>=0.6666666666666666",
+        "overlap_union=0.366412>=0.33",
+        "channel_jaccard=0.666667>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.23350439882697943,
         "mean_difference_similarity_mean": 0.6879799524058879,
@@ -41730,13 +41779,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=8.000<=66.0",
+        "overlap_shorter=1.000000>=0.6666666666666666",
+        "overlap_union=0.615385>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.13461538461538464,
         "mean_difference_similarity_mean": 0.5018525399686653,
@@ -41980,13 +42032,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=14.500<=66.0",
+        "overlap_shorter=0.903846>=0.6666666666666666",
+        "overlap_union=0.764228>=0.33",
+        "channel_jaccard=0.666667>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.20443328795098706,
         "mean_difference_similarity_mean": 0.48936344060619164,
@@ -43080,13 +43135,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=22.500<=66.0",
+        "overlap_shorter=0.804124>=0.6666666666666666",
+        "overlap_union=0.634146>=0.33",
+        "channel_jaccard=0.666667>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.23974028548770815,
         "mean_difference_similarity_mean": 0.23672458111149602,
@@ -43782,13 +43840,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=32.000<=66.0",
+        "overlap_shorter=1.000000>=0.6666666666666666",
+        "overlap_union=0.346154>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.15331196581196582,
         "mean_difference_similarity_mean": 0.6276319829568316,
@@ -44159,13 +44220,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=9.500<=66.0",
+        "overlap_shorter=1.000000>=0.6666666666666666",
+        "overlap_union=0.747967>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=3>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.03095911393896551,
         "mean_difference_similarity_mean": 0.4524290371540774,
@@ -45709,13 +45773,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=26.000<=66.0",
+        "overlap_shorter=0.945652>=0.6666666666666666",
+        "overlap_union=0.625899>=0.33",
+        "channel_jaccard=0.666667>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.2191758598312784,
         "mean_difference_similarity_mean": 0.5482160404247091,
@@ -45909,13 +45976,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=17.000<=66.0",
+        "overlap_shorter=1.000000>=0.6666666666666666",
+        "overlap_union=0.630137>=0.33",
+        "channel_jaccard=0.666667>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.17301965455628346,
         "mean_difference_similarity_mean": 0.9227929123348535,
@@ -47486,13 +47556,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=18.500<=66.0",
+        "overlap_shorter=0.812500>=0.6666666666666666",
+        "overlap_union=0.412698>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.12527412280701755,
         "mean_difference_similarity_mean": 0.7456011036621184,
@@ -47636,13 +47709,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=9.000<=66.0",
+        "overlap_shorter=1.000000>=0.6666666666666666",
+        "overlap_union=0.575758>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.3450292397660819,
         "mean_difference_similarity_mean": 0.3541947305244536,
@@ -51961,13 +52037,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=7.500<=66.0",
+        "overlap_shorter=1.000000>=0.6666666666666666",
+        "overlap_union=0.455882>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.34724857685009486,
         "mean_difference_similarity_mean": 0.6282408181393504,
@@ -53186,13 +53265,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=12.000<=66.0",
+        "overlap_shorter=1.000000>=0.6666666666666666",
+        "overlap_union=0.647059>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.4485294117647059,
         "mean_difference_similarity_mean": 0.574217451217277,
@@ -54636,13 +54718,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=24.000<=66.0",
+        "overlap_shorter=1.000000>=0.6666666666666666",
+        "overlap_union=0.468085>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.648936170212766,
         "mean_difference_similarity_mean": 0.4174905776855034,
@@ -55361,13 +55446,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=17.500<=66.0",
+        "overlap_shorter=1.000000>=0.6666666666666666",
+        "overlap_union=0.443662>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.31986362620165437,
         "mean_difference_similarity_mean": 0.047119493839663844,
@@ -56263,13 +56351,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=23.500<=66.0",
+        "overlap_shorter=1.000000>=0.6666666666666666",
+        "overlap_union=0.500000>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.15873015873015878,
         "mean_difference_similarity_mean": 0.4238995633532672,
@@ -60038,13 +60129,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=3.000<=66.0",
+        "overlap_shorter=0.869565>=0.6666666666666666",
+        "overlap_union=0.769231>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=1>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.0,
         "mean_difference_similarity_mean": 0.8717561658921436,
@@ -61838,13 +61932,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=6.000<=66.0",
+        "overlap_shorter=1.000000>=0.6666666666666666",
+        "overlap_union=0.600000>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=1>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.1777777777777778,
         "mean_difference_similarity_mean": 0.7518915742764247,
@@ -65165,13 +65262,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=27.500<=66.0",
+        "overlap_shorter=0.821138>=0.6666666666666666",
+        "overlap_union=0.647436>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.18046960320349478,
         "mean_difference_similarity_mean": 0.40180333705708093,
@@ -65365,13 +65465,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=18.500<=66.0",
+        "overlap_shorter=0.943089>=0.6666666666666666",
+        "overlap_union=0.758170>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.13431339792849983,
         "mean_difference_similarity_mean": 0.8750711614965098,
@@ -68065,13 +68168,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=30.500<=66.0",
+        "overlap_shorter=0.781250>=0.6666666666666666",
+        "overlap_union=0.450450>=0.33",
+        "channel_jaccard=0.666667>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.3743556701030928,
         "mean_difference_similarity_mean": 0.4590055664475698,
@@ -68765,13 +68871,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=24.000<=66.0",
+        "overlap_shorter=0.722222>=0.6666666666666666",
+        "overlap_union=0.351351>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.1545138888888889,
         "mean_difference_similarity_mean": 0.6072492612383371,
@@ -69515,13 +69624,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=18.500<=66.0",
+        "overlap_shorter=0.888889>=0.6666666666666666",
+        "overlap_union=0.463768>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.2651709401709402,
         "mean_difference_similarity_mean": 0.6429550350559974,
@@ -70590,13 +70702,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=12.500<=66.0",
+        "overlap_shorter=0.825397>=0.6666666666666666",
+        "overlap_union=0.675325>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=1>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.05699855699855694,
         "mean_difference_similarity_mean": 0.2333665853790173,
@@ -81673,13 +81788,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=35.500<=66.0",
+        "overlap_shorter=0.756098>=0.6666666666666666",
+        "overlap_union=0.567073>=0.33",
+        "channel_jaccard=0.666667>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.2617704162116249,
         "mean_difference_similarity_mean": 0.35177658525046585,
@@ -81873,13 +81991,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=26.500<=66.0",
+        "overlap_shorter=0.878049>=0.6666666666666666",
+        "overlap_union=0.670807>=0.33",
+        "channel_jaccard=0.666667>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.2156142109366299,
         "mean_difference_similarity_mean": 0.7144858913417029,
@@ -82373,13 +82494,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=44.000<=66.0",
+        "overlap_shorter=1.000000>=0.6666666666666666",
+        "overlap_union=0.356322>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.2564886911383018,
         "mean_difference_similarity_mean": 0.2595457690981242,
@@ -84098,13 +84222,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=30.000<=66.0",
+        "overlap_shorter=0.907692>=0.6666666666666666",
+        "overlap_union=0.495798>=0.33",
+        "channel_jaccard=0.666667>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.4963921034717495,
         "mean_difference_similarity_mean": 0.77106417736394,
@@ -84373,13 +84500,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=25.000<=66.0",
+        "overlap_shorter=0.984615>=0.6666666666666666",
+        "overlap_union=0.561404>=0.33",
+        "channel_jaccard=0.666667>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.05697753573859771,
         "mean_difference_similarity_mean": 0.5973501675483062,
@@ -84573,13 +84703,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=8.000<=66.0",
+        "overlap_shorter=1.000000>=0.6666666666666666",
+        "overlap_union=0.858407>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=3>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.07374631268436578,
         "mean_difference_similarity_mean": 0.48548373803313494,
@@ -85698,13 +85831,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=16.000<=66.0",
+        "overlap_shorter=0.915493>=0.6666666666666666",
+        "overlap_union=0.802469>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.2339906103286385,
         "mean_difference_similarity_mean": 0.040608809357987136,
@@ -86048,13 +86184,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=6.000<=66.0",
+        "overlap_shorter=1.000000>=0.6666666666666666",
+        "overlap_union=0.887324>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.1611334674714956,
         "mean_difference_similarity_mean": 0.1062877563256627,
@@ -86273,13 +86412,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=25.500<=66.0",
+        "overlap_shorter=1.000000>=0.6666666666666666",
+        "overlap_union=0.640845>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.47798328432131243,
         "mean_difference_similarity_mean": 0.09005471069775756,
@@ -87498,13 +87640,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=24.000<=66.0",
+        "overlap_shorter=1.000000>=0.6666666666666666",
+        "overlap_union=0.424242>=0.33",
+        "channel_jaccard=0.666667>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.1284271284271284,
         "mean_difference_similarity_mean": 0.7835244328595854,
@@ -87898,13 +88043,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=66.000<=66.0",
+        "overlap_shorter=0.677419>=0.6666666666666666",
+        "overlap_union=0.488372>=0.33",
+        "channel_jaccard=0.666667>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.05897686542847835,
         "mean_difference_similarity_mean": 0.33992500997999964,
@@ -91073,13 +91221,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=11.500<=66.0",
+        "overlap_shorter=0.852459>=0.6666666666666666",
+        "overlap_union=0.693333>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.33407848981619476,
         "mean_difference_similarity_mean": 0.3175975116512188,
@@ -91723,13 +91874,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=14.500<=66.0",
+        "overlap_shorter=0.893939>=0.6666666666666666",
+        "overlap_union=0.670455>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.30695847362514034,
         "mean_difference_similarity_mean": 0.769466234331678,
@@ -91973,13 +92127,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=4.500<=66.0",
+        "overlap_shorter=0.938462>=0.6666666666666666",
+        "overlap_union=0.871429>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.1780885780885781,
         "mean_difference_similarity_mean": 0.766097884025791,
@@ -94623,13 +94780,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=32.500<=66.0",
+        "overlap_shorter=0.857143>=0.6666666666666666",
+        "overlap_union=0.480000>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.04751552795031053,
         "mean_difference_similarity_mean": 0.4765922229551073,
@@ -95198,13 +95358,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=37.500<=66.0",
+        "overlap_shorter=0.871429>=0.6666666666666666",
+        "overlap_union=0.448529>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.12097862767154105,
         "mean_difference_similarity_mean": 0.21097023850645605,
@@ -96573,13 +96736,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=29.500<=66.0",
+        "overlap_shorter=0.895833>=0.6666666666666666",
+        "overlap_union=0.421569>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=1>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.0,
         "mean_difference_similarity_mean": 0.7962588161868679,
@@ -101898,13 +102064,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=16.500<=66.0",
+        "overlap_shorter=1.000000>=0.6666666666666666",
+        "overlap_union=0.584507>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.2283641608688274,
         "mean_difference_similarity_mean": 0.7847503021612705,
@@ -103274,7 +103443,7 @@
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
       "decision": "AMBIGUOUS",
-      "rule_id": "CORE_SPATIAL_BUT_WEAK_SHAPE_CONFLICT",
+      "rule_id": "MATCH_CORE_BUT_WEAK_SHAPE_CONFLICT",
       "reasons": [
         "core_spatial_match",
         "shared_shape_mean_similarity_low",
@@ -105500,13 +105669,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=13.500<=66.0",
+        "overlap_shorter=1.000000>=0.6666666666666666",
+        "overlap_union=0.612500>=0.33",
+        "channel_jaccard=0.666667>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.23966836734693875,
         "mean_difference_similarity_mean": 0.37515439291342817,
@@ -109125,13 +109297,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=24.000<=66.0",
+        "overlap_shorter=0.833333>=0.6666666666666666",
+        "overlap_union=0.384615>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.4513888888888889,
         "mean_difference_similarity_mean": 0.426755640239713,
@@ -112575,13 +112750,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=14.500<=66.0",
+        "overlap_shorter=1.000000>=0.6666666666666666",
+        "overlap_union=0.415584>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.18770292207792205,
         "mean_difference_similarity_mean": 0.16288621956014204,
@@ -112725,13 +112903,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=13.000<=66.0",
+        "overlap_shorter=0.974026>=0.6666666666666666",
+        "overlap_union=0.742574>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.29581529581529586,
         "mean_difference_similarity_mean": 0.4238083687380978,
@@ -114552,13 +114733,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=22.000<=66.0",
+        "overlap_shorter=0.920635>=0.6666666666666666",
+        "overlap_union=0.725000>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.0728571428571429,
         "mean_difference_similarity_mean": 0.36925268325423233,
@@ -114777,13 +114961,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=41.500<=66.0",
+        "overlap_shorter=0.868132>=0.6666666666666666",
+        "overlap_union=0.487654>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.24399267399267394,
         "mean_difference_similarity_mean": 0.522948385958333,
@@ -116827,13 +117014,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=22.000<=66.0",
+        "overlap_shorter=0.907692>=0.6666666666666666",
+        "overlap_union=0.572816>=0.33",
+        "channel_jaccard=0.666667>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.4645519429024584,
         "mean_difference_similarity_mean": 0.44649129848770747,
@@ -120679,13 +120869,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=18.500<=66.0",
+        "overlap_shorter=1.000000>=0.6666666666666666",
+        "overlap_union=0.433735>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.444611780455154,
         "mean_difference_similarity_mean": 0.34036109438163636,
@@ -121054,13 +121247,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=42.000<=66.0",
+        "overlap_shorter=1.000000>=0.6666666666666666",
+        "overlap_union=0.451613>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.18740399385560674,
         "mean_difference_similarity_mean": 0.38955986219523303,
@@ -126254,13 +126450,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=8.500<=66.0",
+        "overlap_shorter=0.850000>=0.6666666666666666",
+        "overlap_union=0.500000>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.035483870967741915,
         "mean_difference_similarity_mean": 0.8847998248497857,
@@ -129381,13 +129580,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=26.000<=66.0",
+        "overlap_shorter=0.737705>=0.6666666666666666",
+        "overlap_union=0.463918>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.28840315725561627,
         "mean_difference_similarity_mean": 0.43725963296051495,
@@ -129631,13 +129833,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=16.000<=66.0",
+        "overlap_shorter=0.770492>=0.6666666666666666",
+        "overlap_union=0.594937>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.15598991172761667,
         "mean_difference_similarity_mean": 0.26561555175312673,
@@ -133506,13 +133711,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=27.500<=66.0",
+        "overlap_shorter=0.819149>=0.6666666666666666",
+        "overlap_union=0.583333>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.17284921369102685,
         "mean_difference_similarity_mean": 0.35633214164609783,
@@ -134133,13 +134341,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=33.500<=66.0",
+        "overlap_shorter=0.952381>=0.6666666666666666",
+        "overlap_union=0.676329>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.10139455782312924,
         "mean_difference_similarity_mean": 0.750400214705188,
@@ -136810,13 +137021,16 @@
       "track": "Circuit de Spa-Francorchamps",
       "track_layout": "Circuit de Spa-Francorchamps",
       "vehicle_variant": "LMP2_ELMS",
-      "decision": "AMBIGUOUS",
-      "rule_id": "UNRESOLVED_BOUNDARY",
+      "decision": "MATCH",
+      "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
       "reasons": [
-        "not_in_high_precision_match_core",
-        "not_in_calibrated_far_reject_core"
+        "center_diff_m=14.000<=66.0",
+        "overlap_shorter=1.000000>=0.6666666666666666",
+        "overlap_union=0.500000>=0.33",
+        "channel_jaccard=1.000000>=0.6666666666666666",
+        "shared_channels=2>=1"
       ],
-      "automatic": false,
+      "automatic": true,
       "shape": {
         "coverage_abs_diff_mean": 0.1328125,
         "mean_difference_similarity_mean": 0.21258182763883596,

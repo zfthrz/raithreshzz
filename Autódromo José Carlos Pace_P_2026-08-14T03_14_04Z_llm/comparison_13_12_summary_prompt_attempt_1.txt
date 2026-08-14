@@ -1,0 +1,32 @@
+
+Sintetizá únicamente las evaluaciones ya validadas que siguen.
+No reinterpretes telemetría ni agregues conceptos nuevos.
+
+EVALUACIONES VALIDADAS:
+[{"classification":"PRIORITARIO","interpretation":"La dirección muestra una variación mixta: primero mayor magnitud y luego menor respecto de la referencia, mientras el acelerador se mantiene consistentemente por debajo. La velocidad también es menor en un tramo coincidente.","hypotheses":["La menor aplicación de acelerador podría estar asociada con la menor velocidad observada.","La secuencia de dirección mixta podría reflejar una modulación distinta a la referencia."],"recommendation":"aumentar el acelerador hacia la referencia"},{"classification":"PRIORITARIO","interpretation":"La magnitud de dirección muestra una variación mixta: primero menor y luego mayor respecto de la referencia, mientras el acelerador se mantiene consistentemente menor. La velocidad también es menor en un tramo que coincide con la segunda parte de la diferencia de dirección y con la mayor diferencia de acelerador.","hypotheses":["La menor aplicación de acelerador podría estar asociada con la menor velocidad observada en el tramo final del episodio.","La secuencia de dirección mixta podría reflejar una modulación distinta a la referencia, sin que se pueda afirmar una relación causal con la velocidad."],"recommendation":"aumentar el acelerador hacia la referencia"},{"classification":"PRIORITARIO","interpretation":"El volante se mantiene con menor magnitud que la referencia en un tramo sostenido, mientras el acelerador presenta una secuencia mixta: primero mayor y luego menor. La velocidad es menor en un tramo que coincide parcialmente con estas diferencias.","hypotheses":["La menor magnitud de volante podría asociarse con la velocidad menor observada en el mismo sector.","La secuencia mixta del acelerador podría reflejar una modulación distinta a la referencia."],"recommendation":"replicar la secuencia y modulación del acelerador de la referencia"},{"classification":"SECUNDARIO","interpretation":"El episodio muestra una dirección con mayor magnitud y un acelerador con menor aplicación respecto de la vuelta de referencia, coexistiendo con una velocidad sostenidamente menor.","hypotheses":["La mayor magnitud de dirección podría estar asociada a una corrección más amplia del volante en ese tramo.","La menor aplicación del acelerador podría estar relacionada con una demanda de velocidad más baja en ese sector."],"recommendation":"aumentar el acelerador hacia la referencia"},{"classification":"NO_ACCIONABLE","interpretation":"El acelerador se mantiene por debajo de la referencia en un tramo breve, mientras la velocidad también es menor y se extiende más allá de ese tramo.","hypotheses":["La menor aplicación del acelerador podría contribuir a la menor velocidad observada en el mismo sector."],"recommendation":"Aumentá la aplicación del acelerador en ese tramo para acercarla a la referencia."}]
+
+CONTRATO JSON EXACTO:
+- comparison_observations: lista de strings;
+- limitations: lista de strings;
+- conclusion: string.
+
+Las listas pueden ser [].
+No escribas cifras.
+No agregues ni omitas claves.
+La conclusion debe resumir la acción de coaching más importante ya presente
+en las evaluaciones, no limitarse a decir que existen diferencias.
+Conservá verbos operativos como reducir, aumentar o replicar cuando estén
+respaldados por las recomendaciones validadas.
+Steering/dirección es observation-only: la conclusion NO debe convertir
+diferencias de volante/dirección en una orden directa.
+No sustituyas una recomendación concreta por "revisar", "comparar",
+"ajustar", "trabajar" o "mejorar".
+Las limitaciones deben ser neutrales y referirse sólo a lo que no
+puede inferirse de la evidencia disponible.
+
+Ejemplo de FORMA:
+{"comparison_observations":["observación cualitativa apoyada por evaluaciones validadas"],"limitations":["la causa no puede determinarse con la evidencia disponible"],"conclusion":"síntesis cualitativa sin cifras"}
+
+
+
+Respondé únicamente con el objeto JSON completo.

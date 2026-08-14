@@ -1,0 +1,36 @@
+
+Sintetizá únicamente las evaluaciones ya validadas que siguen.
+No reinterpretes telemetría ni agregues conceptos nuevos.
+
+EVALUACIONES VALIDADAS:
+[{"classification":"PRIORITARIO","interpretation":"El volante se mantiene con menor magnitud que en la vuelta de referencia durante un tramo sostenido, coincidiendo con una velocidad también menor en parte de ese sector.","hypotheses":["Una menor magnitud de volante podría estar asociada a una velocidad más baja en ese sector, aunque la evidencia no permite establecer una relación causal."],"recommendation":"Aumentá la magnitud del volante en ese tramo para acercarte a la referencia, manteniendo la secuencia de dirección que venís usando."},{"classification":"SECUNDARIO","interpretation":"En el tramo analizado, el volante presenta una magnitud mayor que la referencia, mientras que el acelerador se mantiene por debajo. La velocidad también es inferior y continúa perdiendo tiempo después de que finalizan las diferencias en los controles.","hypotheses":["La mayor magnitud de volante podría estar asociada a una corrección más amplia en ese sector.","El menor uso del acelerador podría contribuir a la velocidad más baja observada."],"recommendation":"Reducí la magnitud del volante hacia la referencia y aumentá el acelerador en la misma zona, manteniendo la secuencia de aplicación."},{"classification":"NO_ACCIONABLE","interpretation":"El acelerador se mantiene por debajo de la referencia en un tramo sostenido, coincidiendo con una velocidad también menor que se prolonga más allá del episodio.","hypotheses":["La menor aplicación de acelerador podría contribuir a la velocidad más baja observada en el mismo sector."],"recommendation":"Aumentá la aplicación de acelerador en ese tramo para acercarte a la referencia."}]
+
+CONTRATO JSON EXACTO:
+- comparison_observations: lista de strings;
+- limitations: lista de strings;
+- conclusion: string.
+
+Las listas pueden ser [].
+No escribas cifras.
+No agregues ni omitas claves.
+La conclusion debe resumir la acción de coaching más importante ya presente
+en las evaluaciones, no limitarse a decir que existen diferencias.
+Conservá verbos operativos como reducir, aumentar o replicar cuando estén
+respaldados por las recomendaciones validadas.
+No sustituyas una recomendación concreta por "revisar", "comparar",
+"ajustar", "trabajar" o "mejorar".
+Las limitaciones deben ser neutrales y referirse sólo a lo que no
+puede inferirse de la evidencia disponible.
+
+Ejemplo de FORMA:
+{"comparison_observations":["observación cualitativa apoyada por evaluaciones validadas"],"limitations":["la causa no puede determinarse con la evidencia disponible"],"conclusion":"síntesis cualitativa sin cifras"}
+
+
+REINTENTO OBLIGATORIO
+La respuesta anterior violó el contrato.
+Tipos de error:
+["grounding"]
+Regenerá el objeto raíz COMPLETO desde cero.
+
+
+Respondé únicamente con el objeto JSON completo.

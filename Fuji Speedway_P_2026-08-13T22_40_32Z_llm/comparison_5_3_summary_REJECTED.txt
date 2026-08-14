@@ -1,0 +1,23 @@
+VALIDATION ERRORS
+=================
+conclusion: la dirección de steering_magnitude no es unívoca entre los episodios; usá una formulación neutral hacia la referencia.
+
+RAW RESPONSE
+============
+{
+  "comparison_observations": [
+    "El volante y el acelerador se mantienen más altos que en la vuelta de referencia, mientras la velocidad es menor en el mismo tramo.",
+    "Se observó un uso del acelerador menor respecto de la vuelta de referencia.",
+    "En el tramo donde la velocidad es menor que la referencia, el freno se mantiene por debajo y la magnitud de dirección por encima.",
+    "El freno se mantiene por debajo de la referencia durante un tramo sostenido, mientras la magnitud de dirección se mantiene por encima en un sector superpuesto.",
+    "El volante se mantiene con mayor magnitud que la referencia mientras el acelerador se mantiene con menor magnitud, coincidiendo con una velocidad sostenida más baja.",
+    "Se observaron una aplicación de freno mayor y un uso del acelerador menor respecto de la vuelta de referencia.",
+    "El volante se mantiene con menor magnitud que la referencia en un tramo acotado, mientras el acelerador presenta una secuencia mixta: primero menor y luego mayor que la referencia.",
+    "Se observaron una aplicación de freno menor y una magnitud de dirección/volante mayor respecto de la vuelta de referencia."
+  ],
+  "limitations": [
+    "La evidencia no permite establecer una relación causal entre las diferencias de freno, dirección y velocidad.",
+    "No puede determinarse si las diferencias en los controles son causa o consecuencia de la menor velocidad observada."
+  ],
+  "conclusion": "El patrón prioritario es una menor aplicación de freno y acelerador junto con una mayor magnitud de dirección en los sectores donde la velocidad cae respecto de la referencia. En la próxima vuelta, aumentá la aplicación de freno y acelerador hacia los valores de referencia y reducí la magnitud de dirección en esos mismos sectores, manteniendo la secuencia de entrada de ambos controles."
+}

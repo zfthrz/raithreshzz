@@ -1,0 +1,414 @@
+{
+  "schema_version": 1,
+  "profile_id": "interlagos-lmu-15turn-v0.2",
+  "status": "VALIDATED_MULTI_SESSION",
+  "track": "Autódromo José Carlos Pace",
+  "layout": "Autódromo José Carlos Pace",
+  "distance_coordinate": "LMU Lap Dist",
+  "calibration": {
+    "source_session": "Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z",
+    "source_lap_internal_index": 3,
+    "source_lap_time_s_approx": 87.3,
+    "source_lap_dist_max_m": 4267.137407574008,
+    "source_gps_path_m_approx": 4228.150824741866,
+    "geometry_method": "GPS trajectory + signed curvature + LMU/RaceControl 15-turn direction-sequence constrained calibration",
+    "numbering_scheme": "LMU/RaceControl Interlagos 15-turn scheme",
+    "numbering_note": "RaceControl's LMU guide explicitly describes T1–T14 and states that the circuit has 15 turns. T15 is retained as Arquibancadas using the conventional Interlagos naming cross-check. RaceControl groups/names parts of T6–T9 differently from some Formula 1 references; this profile deliberately follows the LMU/RaceControl naming for T6–T14.",
+    "external_reference_summary": [
+      "RaceControl LMU Interlagos Track Guide: 4.309 km, 15 turns; LMU-oriented turn sequence and names.",
+      "FIA WEC São Paulo track information: 4.309 km, 15 turns.",
+      "Mercedes-AMG F1 Interlagos corner-name guide: conventional name cross-check including Arquibancadas."
+    ],
+    "requires_cross_session_validation": false,
+    "validation_status": "PASS",
+    "validation_summary": {
+      "calibration_session": {
+        "session": "Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z",
+        "lap_internal_index": 3,
+        "lap_time_s_approx": 87.3,
+        "lap_dist_max_m": 4267.137407574008,
+        "gps_path_m_approx": 4228.150824741866,
+        "gps_coverage": 1.0
+      },
+      "independent_sessions": [
+        {
+          "session": "Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z",
+          "lap_internal_index": 1,
+          "lap_time_s_approx": 87.9,
+          "lap_dist_max_m": 4264.121988658864,
+          "gps_path_m_approx": 4239.620236589837,
+          "gps_coverage": 1.0,
+          "method": "same-direction nearest local extremum on signed curvature; 2 m resampling, 20 m heading window, 14 m smoothing",
+          "apex_pass_tolerance_m": 35.0,
+          "apex_warning_tolerance_m": 70.0,
+          "pass_count": 15,
+          "warning_count": 0,
+          "failure_count": 0,
+          "median_abs_offset_m": 4.0,
+          "max_abs_offset_m": 20.0,
+          "overall_status": "PASS",
+          "turn_results": [
+            {
+              "turn": 1,
+              "name": "'S' do Senna",
+              "direction": "left",
+              "expected_apex_m": 412.0,
+              "observed_apex_m": 408.0,
+              "offset_m": -4.0,
+              "observed_signed_curvature_rad_per_m": 0.019177,
+              "status": "PASS"
+            },
+            {
+              "turn": 2,
+              "name": "'S' do Senna",
+              "direction": "right",
+              "expected_apex_m": 480.0,
+              "observed_apex_m": 478.0,
+              "offset_m": -2.0,
+              "observed_signed_curvature_rad_per_m": -0.015731,
+              "status": "PASS"
+            },
+            {
+              "turn": 3,
+              "name": "Curva do Sol",
+              "direction": "left",
+              "expected_apex_m": 634.0,
+              "observed_apex_m": 634.0,
+              "offset_m": 0.0,
+              "observed_signed_curvature_rad_per_m": 0.008532,
+              "status": "PASS"
+            },
+            {
+              "turn": 4,
+              "name": "Descida do Lago",
+              "direction": "left",
+              "expected_apex_m": 1454.0,
+              "observed_apex_m": 1460.0,
+              "offset_m": 6.0,
+              "observed_signed_curvature_rad_per_m": 0.016157,
+              "status": "PASS"
+            },
+            {
+              "turn": 5,
+              "name": "Descida do Lago",
+              "direction": "left",
+              "expected_apex_m": 1614.0,
+              "observed_apex_m": 1608.0,
+              "offset_m": -6.0,
+              "observed_signed_curvature_rad_per_m": 0.007326,
+              "status": "PASS"
+            },
+            {
+              "turn": 6,
+              "name": "Ferradura",
+              "direction": "right",
+              "expected_apex_m": 2074.0,
+              "observed_apex_m": 2070.0,
+              "offset_m": -4.0,
+              "observed_signed_curvature_rad_per_m": -0.010402,
+              "status": "PASS"
+            },
+            {
+              "turn": 7,
+              "name": "Curva do Laranjinha",
+              "direction": "right",
+              "expected_apex_m": 2158.0,
+              "observed_apex_m": 2150.0,
+              "offset_m": -8.0,
+              "observed_signed_curvature_rad_per_m": -0.009446,
+              "status": "PASS"
+            },
+            {
+              "turn": 8,
+              "name": "Pinheirinho",
+              "direction": "right",
+              "expected_apex_m": 2358.0,
+              "observed_apex_m": 2362.0,
+              "offset_m": 4.0,
+              "observed_signed_curvature_rad_per_m": -0.041453,
+              "status": "PASS"
+            },
+            {
+              "turn": 9,
+              "name": "Pinheirinho",
+              "direction": "left",
+              "expected_apex_m": 2464.0,
+              "observed_apex_m": 2460.0,
+              "offset_m": -4.0,
+              "observed_signed_curvature_rad_per_m": 0.020798,
+              "status": "PASS"
+            },
+            {
+              "turn": 10,
+              "name": "Bico de Pato",
+              "direction": "right",
+              "expected_apex_m": 2758.0,
+              "observed_apex_m": 2778.0,
+              "offset_m": 20.0,
+              "observed_signed_curvature_rad_per_m": -0.04424,
+              "status": "PASS"
+            },
+            {
+              "turn": 11,
+              "name": "Mergulho",
+              "direction": "left",
+              "expected_apex_m": 2934.0,
+              "observed_apex_m": 2932.0,
+              "offset_m": -2.0,
+              "observed_signed_curvature_rad_per_m": 0.008493,
+              "status": "PASS"
+            },
+            {
+              "turn": 12,
+              "name": "Junção",
+              "direction": "left",
+              "expected_apex_m": 3264.0,
+              "observed_apex_m": 3268.0,
+              "offset_m": 4.0,
+              "observed_signed_curvature_rad_per_m": 0.020274,
+              "status": "PASS"
+            },
+            {
+              "turn": 13,
+              "name": "Turn 13",
+              "direction": "left",
+              "expected_apex_m": 3380.0,
+              "observed_apex_m": 3382.0,
+              "offset_m": 2.0,
+              "observed_signed_curvature_rad_per_m": 0.006441,
+              "status": "PASS"
+            },
+            {
+              "turn": 14,
+              "name": "Subida dos Boxes",
+              "direction": "left",
+              "expected_apex_m": 3648.0,
+              "observed_apex_m": 3654.0,
+              "offset_m": 6.0,
+              "observed_signed_curvature_rad_per_m": 0.004946,
+              "status": "PASS"
+            },
+            {
+              "turn": 15,
+              "name": "Arquibancadas",
+              "direction": "left",
+              "expected_apex_m": 3982.0,
+              "observed_apex_m": 3986.0,
+              "offset_m": 4.0,
+              "observed_signed_curvature_rad_per_m": 0.001775,
+              "status": "PASS"
+            }
+          ]
+        }
+      ],
+      "interpretation": "15/15 turn apexes matched the independent session within 35 m; median absolute offset 4 m, maximum 20 m. Automatic top-N curvature candidates are not treated as official turn numbers: continuous complexes create duplicate maxima and low-curvature final turns can be omitted."
+    }
+  },
+  "ignored_geometric_features_m": [
+    {
+      "center_m": 560.0,
+      "reason": "secondary local maximum inside continuous T3 Curva do Sol; stable cross-session apex is 634 m"
+    },
+    {
+      "center_m": 2014.0,
+      "reason": "entry/secondary curvature inside continuous T6–T7 Ferradura–Laranjinha region"
+    },
+    {
+      "center_m": 2884.0,
+      "reason": "secondary curvature feature inside T11 Mergulho"
+    },
+    {
+      "center_m": 2998.0,
+      "reason": "secondary curvature feature inside T11 Mergulho"
+    }
+  ],
+  "manual_low_curvature_turns": [
+    {
+      "turn": 5,
+      "reason": "second left within continuous Descida do Lago curvature; not isolated reliably by top-N candidate selection"
+    },
+    {
+      "turn": 13,
+      "reason": "flat-out low-curvature left below automatic top-N selection"
+    },
+    {
+      "turn": 14,
+      "reason": "long low-curvature uphill left underrepresented by automatic top-N selection"
+    },
+    {
+      "turn": 15,
+      "reason": "very low-curvature final left omitted by automatic top-N selection"
+    }
+  ],
+  "turns": [
+    {
+      "turn": 1,
+      "name": "'S' do Senna",
+      "aliases": [
+        "Senna S"
+      ],
+      "group": "'S' do Senna",
+      "direction": "left",
+      "start_m": 306.0,
+      "apex_m": 412.0,
+      "end_m": 440.0
+    },
+    {
+      "turn": 2,
+      "name": "'S' do Senna",
+      "aliases": [
+        "Senna S"
+      ],
+      "group": "'S' do Senna",
+      "direction": "right",
+      "start_m": 440.0,
+      "apex_m": 480.0,
+      "end_m": 526.0
+    },
+    {
+      "turn": 3,
+      "name": "Curva do Sol",
+      "aliases": [],
+      "group": "Curva do Sol",
+      "direction": "left",
+      "start_m": 540.0,
+      "apex_m": 634.0,
+      "end_m": 776.0
+    },
+    {
+      "turn": 4,
+      "name": "Descida do Lago",
+      "aliases": [],
+      "group": "Descida do Lago",
+      "direction": "left",
+      "start_m": 1372.0,
+      "apex_m": 1454.0,
+      "end_m": 1510.0
+    },
+    {
+      "turn": 5,
+      "name": "Descida do Lago",
+      "aliases": [],
+      "group": "Descida do Lago",
+      "direction": "left",
+      "start_m": 1510.0,
+      "apex_m": 1614.0,
+      "end_m": 1710.0
+    },
+    {
+      "turn": 6,
+      "name": "Ferradura",
+      "aliases": [],
+      "group": "Ferradura–Laranjinha",
+      "direction": "right",
+      "start_m": 1992.0,
+      "apex_m": 2074.0,
+      "end_m": 2116.0
+    },
+    {
+      "turn": 7,
+      "name": "Curva do Laranjinha",
+      "aliases": [
+        "Laranjinha"
+      ],
+      "group": "Ferradura–Laranjinha",
+      "direction": "right",
+      "start_m": 2116.0,
+      "apex_m": 2158.0,
+      "end_m": 2244.0
+    },
+    {
+      "turn": 8,
+      "name": "Pinheirinho",
+      "aliases": [],
+      "group": "Pinheirinho",
+      "direction": "right",
+      "start_m": 2316.0,
+      "apex_m": 2358.0,
+      "end_m": 2400.0
+    },
+    {
+      "turn": 9,
+      "name": "Pinheirinho",
+      "aliases": [],
+      "group": "Pinheirinho",
+      "direction": "left",
+      "start_m": 2400.0,
+      "apex_m": 2464.0,
+      "end_m": 2552.0
+    },
+    {
+      "turn": 10,
+      "name": "Bico de Pato",
+      "aliases": [],
+      "group": "Bico de Pato",
+      "direction": "right",
+      "start_m": 2716.0,
+      "apex_m": 2758.0,
+      "end_m": 2824.0
+    },
+    {
+      "turn": 11,
+      "name": "Mergulho",
+      "aliases": [],
+      "group": "Mergulho",
+      "direction": "left",
+      "start_m": 2860.0,
+      "apex_m": 2934.0,
+      "end_m": 3076.0
+    },
+    {
+      "turn": 12,
+      "name": "Junção",
+      "aliases": [
+        "Juncao"
+      ],
+      "group": "Junção",
+      "direction": "left",
+      "start_m": 3212.0,
+      "apex_m": 3264.0,
+      "end_m": 3330.0
+    },
+    {
+      "turn": 13,
+      "name": "Turn 13",
+      "aliases": [
+        "Café",
+        "Cafe"
+      ],
+      "group": "Turn 13",
+      "direction": "left",
+      "start_m": 3330.0,
+      "apex_m": 3380.0,
+      "end_m": 3460.0
+    },
+    {
+      "turn": 14,
+      "name": "Subida dos Boxes",
+      "aliases": [],
+      "group": "Subida dos Boxes",
+      "direction": "left",
+      "start_m": 3460.0,
+      "apex_m": 3648.0,
+      "end_m": 3790.0
+    },
+    {
+      "turn": 15,
+      "name": "Arquibancadas",
+      "aliases": [
+        "Turn 15"
+      ],
+      "group": "Arquibancadas",
+      "direction": "left",
+      "start_m": 3920.0,
+      "apex_m": 3982.0,
+      "end_m": 4160.0
+    }
+  ],
+  "display_policy": {
+    "prefer_corner_name": true,
+    "turn_number_is_secondary": false,
+    "turn_number_suffix": "LMU",
+    "always_preserve_lmu_distance_m": true
+  }
+}

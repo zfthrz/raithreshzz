@@ -1,0 +1,231 @@
+{
+  "schema_version": 1,
+  "track": "Autódromo José Carlos Pace",
+  "canonical_name": "Autódromo José Carlos Pace",
+  "aliases": [
+    "Interlagos",
+    "Autodromo Jose Carlos Pace",
+    "Autódromo de Interlagos"
+  ],
+  "official_length_m": 4309,
+  "numbering_scheme": "LMU_RACECONTROL_15_TURN",
+  "numbering_policy": {
+    "primary": "Use the 15-turn numbering and naming sequence from the Le Mans Ultimate / RaceControl Interlagos Track Guide wherever it explicitly defines a turn.",
+    "turn_15_policy": "RaceControl's LMU guide describes T1 through T14 but states that the circuit has 15 turns. T15 is therefore named Arquibancadas using the conventional Interlagos nomenclature cross-check.",
+    "alternative_naming_note": "Some Formula 1 references use a different semantic grouping in the T6-T9 region: T6-T7 Ferradura, T8 Laranjinha, T9 Pinheirinho. The LMU/RaceControl guide instead uses T6 Ferradura, T7 Curva do Laranjinha, and T8-T9 Pinheirinho. Race Engineer uses the LMU/RaceControl convention as canonical for this profile.",
+    "detector_note": "The --turn-count value used by detect_track_turns.py is only a geometric peak-selection count; candidate_number is never treated as an official turn number."
+  },
+  "sources": [
+    {
+      "id": "racecontrol_lmu_interlagos_track_guide",
+      "authority": "RaceControl / Le Mans Ultimate",
+      "title": "Le Mans Ultimate: Interlagos Track Guide",
+      "date": "2025-01-08",
+      "url": "https://news.racecontrol.gg/tracks/le-mans-ultimate-interlagos-track-guide/",
+      "role": "primary_turn_numbering_and_names"
+    },
+    {
+      "id": "fia_wec_interlagos_track_info",
+      "authority": "FIA WEC",
+      "title": "ROLEX 6 Hours of São Paulo - Track Info",
+      "url": "https://www.fiawec.com/en/race/rolex-6-hours-of-sao-paulo-2026",
+      "role": "official_length_and_15_turn_count"
+    },
+    {
+      "id": "mercedes_f1_interlagos_corner_names",
+      "authority": "Mercedes-AMG PETRONAS F1 Team",
+      "title": "How the Interlagos Corners Got Their Names",
+      "date": "2025-11-02",
+      "url": "https://www.mercedesamgf1.com/news/how-the-interlagos-corners-got-their-names",
+      "role": "conventional_name_cross_check_and_turn_15"
+    }
+  ],
+  "turns": [
+    {
+      "turn": 1,
+      "name": "'S' do Senna",
+      "aliases": [
+        "Senna S",
+        "S do Senna"
+      ],
+      "group": "'S' do Senna",
+      "direction": "left"
+    },
+    {
+      "turn": 2,
+      "name": "'S' do Senna",
+      "aliases": [
+        "Senna S",
+        "S do Senna"
+      ],
+      "group": "'S' do Senna",
+      "direction": "right"
+    },
+    {
+      "turn": 3,
+      "name": "Curva do Sol",
+      "aliases": [
+        "Curve of the Sun"
+      ],
+      "group": "Curva do Sol",
+      "direction": "left"
+    },
+    {
+      "turn": 4,
+      "name": "Descida do Lago",
+      "aliases": [
+        "Lake's Descent"
+      ],
+      "group": "Descida do Lago",
+      "direction": "left"
+    },
+    {
+      "turn": 5,
+      "name": "Descida do Lago",
+      "aliases": [
+        "Lake's Descent"
+      ],
+      "group": "Descida do Lago",
+      "direction": "left"
+    },
+    {
+      "turn": 6,
+      "name": "Ferradura",
+      "aliases": [
+        "Horseshoe"
+      ],
+      "group": "Ferradura–Laranjinha",
+      "direction": "right"
+    },
+    {
+      "turn": 7,
+      "name": "Curva do Laranjinha",
+      "aliases": [
+        "Laranjinha",
+        "Little Orange",
+        "Ferradura (conventional F1 grouping)"
+      ],
+      "group": "Ferradura–Laranjinha",
+      "direction": "right"
+    },
+    {
+      "turn": 8,
+      "name": "Pinheirinho",
+      "aliases": [
+        "Laranjinha (conventional F1 grouping)",
+        "Little Pine / Little Orange naming differs by convention"
+      ],
+      "group": "Pinheirinho",
+      "direction": "right"
+    },
+    {
+      "turn": 9,
+      "name": "Pinheirinho",
+      "aliases": [
+        "Little Pine Tree"
+      ],
+      "group": "Pinheirinho",
+      "direction": "left"
+    },
+    {
+      "turn": 10,
+      "name": "Bico de Pato",
+      "aliases": [
+        "Duck's Bill"
+      ],
+      "group": "Bico de Pato",
+      "direction": "right"
+    },
+    {
+      "turn": 11,
+      "name": "Mergulho",
+      "aliases": [
+        "Dive"
+      ],
+      "group": "Mergulho",
+      "direction": "left"
+    },
+    {
+      "turn": 12,
+      "name": "Junção",
+      "aliases": [
+        "Juncao",
+        "Junction"
+      ],
+      "group": "Junção",
+      "direction": "left"
+    },
+    {
+      "turn": 13,
+      "name": "Turn 13",
+      "aliases": [
+        "Café",
+        "Cafe",
+        "Café (conventional Interlagos name)"
+      ],
+      "group": "Turn 13",
+      "direction": "left"
+    },
+    {
+      "turn": 14,
+      "name": "Subida dos Boxes",
+      "aliases": [
+        "Up to the Pits"
+      ],
+      "group": "Subida dos Boxes",
+      "direction": "left"
+    },
+    {
+      "turn": 15,
+      "name": "Arquibancadas",
+      "aliases": [
+        "Bleachers",
+        "Turn 15"
+      ],
+      "group": "Arquibancadas",
+      "direction": "left"
+    }
+  ],
+  "complexes": [
+    {
+      "label": "'S' do Senna",
+      "turns": [
+        1,
+        2
+      ]
+    },
+    {
+      "label": "Descida do Lago",
+      "turns": [
+        4,
+        5
+      ]
+    },
+    {
+      "label": "Ferradura–Laranjinha",
+      "turns": [
+        6,
+        7
+      ]
+    },
+    {
+      "label": "Pinheirinho",
+      "turns": [
+        8,
+        9
+      ]
+    }
+  ],
+  "integration_policy": {
+    "canonical_context": "Le Mans Ultimate",
+    "llm_may_invent_track_location": false,
+    "track_profile_owns_distance_calibration": true,
+    "nomenclature_file_owns_semantic_turn_identity": true,
+    "preferred_render_order": [
+      "turn_number_and_name",
+      "turn_number",
+      "complex_name",
+      "distance_only"
+    ]
+  }
+}

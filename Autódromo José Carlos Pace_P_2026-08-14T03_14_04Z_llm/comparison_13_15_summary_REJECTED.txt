@@ -1,0 +1,19 @@
+VALIDATION ERRORS
+=================
+conclusion: velocidad usada como acción del piloto; la velocidad es sólo contexto/propagación, no un input ni un objetivo de acción.
+
+RAW RESPONSE
+============
+{
+  "comparison_observations": [
+    "El volante se mantiene con mayor magnitud que la referencia en un tramo sostenido, mientras el acelerador se mantiene con menor magnitud en un tramo cercano.",
+    "La velocidad es menor en un tramo más extenso que abarca ambos eventos y continúa perdiendo tiempo después de que terminan.",
+    "El acelerador se mantiene por debajo de la referencia durante un tramo sostenido, mientras la velocidad también es menor y la pérdida de tiempo continúa después de ese tramo.",
+    "La vuelta muestra una fase sostenida con mayor magnitud de dirección y menor aplicación de acelerador respecto de la referencia, coincidiendo con una velocidad inferior que se prolonga más allá del episodio de inputs."
+  ],
+  "limitations": [
+    "La causa de las diferencias no puede determinarse con la evidencia disponible.",
+    "No es posible inferir si las diferencias se deben a una técnica específica o a condiciones externas."
+  ],
+  "conclusion": "Reducí la magnitud del volante y aumentá la aplicación de acelerador en los tramos donde se mantienen alejados de la referencia, manteniendo la secuencia de ambos inputs para recuperar velocidad."
+}

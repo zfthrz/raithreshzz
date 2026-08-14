@@ -51,6 +51,9 @@ COACHING OPERATIVO:
   no contenga. Priorizá una instrucción principal sólo cuando la evidencia lo
   permita claramente.
 
+STEERING EN ESTA RECOMENDACIÓN:
+steering_magnitude puede ser foco principal o ajuste secundario. No lo elijas automáticamente: comparalo con freno/acelerador y redactá una maniobra principal grounded. Si su dirección es mixed, usá replicar/acompañar la referencia.
+
 CAUSALIDAD:
 - describí coexistencia, asociación o compatibilidad;
 - podés usar expresiones prudentes como "podría contribuir";

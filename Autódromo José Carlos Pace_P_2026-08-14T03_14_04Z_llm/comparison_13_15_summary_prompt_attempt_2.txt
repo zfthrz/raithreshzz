@@ -1,0 +1,36 @@
+
+Sintetizá únicamente las evaluaciones ya validadas que siguen.
+No reinterpretes telemetría ni agregues conceptos nuevos.
+
+EVALUACIONES VALIDADAS:
+[{"classification":"PRIORITARIO","interpretation":"La vuelta muestra una fase con mayor magnitud de dirección y menor acelerador respecto de la referencia, coincidiendo con una velocidad sostenidamente inferior que se prolonga más allá del episodio de inputs.","hypotheses":["La mayor magnitud de dirección podría estar asociada a una corrección más amplia del volante, mientras el menor acelerador podría contribuir a la menor velocidad observada."],"recommendation":"Reducí la magnitud de dirección y aumentá el acelerador hacia los valores de referencia, manteniendo la secuencia de inputs en la zona donde ambos canales difieren."},{"classification":"PRIORITARIO","interpretation":"El acelerador se mantiene por debajo de la referencia durante un tramo sostenido, con una diferencia que alcanza su punto máximo en el centro del episodio. La velocidad también es menor en ese sector y continúa perdiendo tiempo después de que el acelerador vuelve a valores comparables.","hypotheses":["La menor aplicación de acelerador podría estar asociada con la velocidad más baja observada en el mismo tramo."],"recommendation":"Aumentá la aplicación del acelerador en ese sector para acercarte a la referencia, manteniendo una modulación progresiva."},{"classification":"SECUNDARIO","interpretation":"El acelerador se mantiene por debajo de la referencia en un tramo sostenido, con una diferencia que alcanza su punto máximo en el centro del episodio. La velocidad también es menor en un intervalo que se superpone parcialmente y continúa perdiendo tiempo después de que finaliza la diferencia de acelerador.","hypotheses":["La menor aplicación de acelerador podría contribuir a la menor velocidad observada en el tramo coincidente."],"recommendation":"Aumentá la aplicación de acelerador en ese sector para acercarte a la referencia, manteniendo una modulación progresiva que evite picos bruscos."},{"classification":"SECUNDARIO","interpretation":"El volante presenta una magnitud sostenida mayor que la referencia en un tramo acotado, mientras el acelerador se mantiene por debajo en una zona que se superpone parcialmente. La velocidad concurrente es menor y continúa perdiendo tiempo después de que terminan las diferencias de inputs.","hypotheses":["La mayor magnitud de volante podría estar asociada a una corrección más amplia en esa sección, coexistiendo con una menor aplicación de acelerador.","La menor aplicación de acelerador podría contribuir a la velocidad más baja observada, aunque la evidencia no permite afirmar causalidad."],"recommendation":"Reducí la magnitud de volante hacia la referencia en ese tramo y aumentá la aplicación de acelerador hacia la referencia, coordinando ambos inputs en la misma secuencia."},{"classification":"NO_ACCIONABLE","interpretation":"El volante presenta una magnitud menor en la vuelta comparada durante un tramo sostenido.","hypotheses":["La menor magnitud de volante podría estar asociada a una diferencia en la secuencia de dirección respecto de la referencia."],"recommendation":"Aumentá la magnitud de volante en ese tramo para acercarte a la referencia."}]
+
+CONTRATO JSON EXACTO:
+- comparison_observations: lista de strings;
+- limitations: lista de strings;
+- conclusion: string.
+
+Las listas pueden ser [].
+No escribas cifras.
+No agregues ni omitas claves.
+La conclusion debe resumir la acción de coaching más importante ya presente
+en las evaluaciones, no limitarse a decir que existen diferencias.
+Conservá verbos operativos como reducir, aumentar o replicar cuando estén
+respaldados por las recomendaciones validadas.
+No sustituyas una recomendación concreta por "revisar", "comparar",
+"ajustar", "trabajar" o "mejorar".
+Las limitaciones deben ser neutrales y referirse sólo a lo que no
+puede inferirse de la evidencia disponible.
+
+Ejemplo de FORMA:
+{"comparison_observations":["observación cualitativa apoyada por evaluaciones validadas"],"limitations":["la causa no puede determinarse con la evidencia disponible"],"conclusion":"síntesis cualitativa sin cifras"}
+
+
+REINTENTO OBLIGATORIO
+La respuesta anterior violó el contrato.
+Tipos de error:
+["contract"]
+Regenerá el objeto raíz COMPLETO desde cero.
+
+
+Respondé únicamente con el objeto JSON completo.

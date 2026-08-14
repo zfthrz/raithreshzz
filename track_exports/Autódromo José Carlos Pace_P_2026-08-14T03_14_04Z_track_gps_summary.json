@@ -1,0 +1,158 @@
+{
+  "source_file": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\telemetria\\Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z.duckdb",
+  "track_name": "Autódromo José Carlos Pace",
+  "track_layout": "Autódromo José Carlos Pace",
+  "selected_lap": 1,
+  "time_source": "GPS Time.value",
+  "lap_boundary_source": "Lap.ts",
+  "lap_distance_boundary_repairs": {
+    "1": {
+      "sample_index": 1170,
+      "original_lap_dist_m": 641.4768836430007,
+      "repaired_lap_dist_m": 0.0,
+      "next_sample_lap_dist_m": 11.337102070984105,
+      "reason": "boundary_linear_interpolation_across_lap_dist_reset"
+    },
+    "2": {
+      "sample_index": 2050,
+      "original_lap_dist_m": 1116.274733571206,
+      "repaired_lap_dist_m": 0.0,
+      "next_sample_lap_dist_m": 6.280604884564264,
+      "reason": "boundary_linear_interpolation_across_lap_dist_reset"
+    },
+    "3": {
+      "sample_index": 2922,
+      "original_lap_dist_m": 1595.6313694430578,
+      "repaired_lap_dist_m": 0.0,
+      "next_sample_lap_dist_m": 10.19735433322259,
+      "reason": "boundary_linear_interpolation_across_lap_dist_reset"
+    },
+    "4": {
+      "sample_index": 3799,
+      "original_lap_dist_m": 2069.9058262492554,
+      "repaired_lap_dist_m": 0.0,
+      "next_sample_lap_dist_m": 6.313154724447138,
+      "reason": "boundary_linear_interpolation_across_lap_dist_reset"
+    },
+    "5": {
+      "sample_index": 4678,
+      "original_lap_dist_m": 2546.099588670557,
+      "repaired_lap_dist_m": 0.0,
+      "next_sample_lap_dist_m": 3.244230414535518,
+      "reason": "boundary_linear_interpolation_across_lap_dist_reset"
+    }
+  },
+  "target_hz": 10.0,
+  "channel_modes": {
+    "GPS Time": {
+      "mode": "rowid",
+      "row_count": 47027,
+      "columns": [
+        "value"
+      ]
+    },
+    "GPS Latitude": {
+      "mode": "rowid",
+      "row_count": 4703,
+      "columns": [
+        "value"
+      ]
+    },
+    "GPS Longitude": {
+      "mode": "rowid",
+      "row_count": 4703,
+      "columns": [
+        "value"
+      ]
+    },
+    "Lap Dist": {
+      "mode": "rowid",
+      "row_count": 4703,
+      "columns": [
+        "value"
+      ]
+    }
+  },
+  "selected_lap_metrics": {
+    "sample_count": 880,
+    "duration_s": 87.90000000000009,
+    "gps_coverage": 1.0,
+    "gps_path_m": 4239.620236589837,
+    "lap_dist_min_m": 0.0,
+    "lap_dist_max_m": 4264.121988658864,
+    "lap_dist_span_m": 4264.121988658864
+  },
+  "exported_point_count": 880,
+  "bounds": {
+    "latitude_min": 59.9959716796875,
+    "latitude_max": 60.00529479980469,
+    "longitude_min": -0.0027550688475253644,
+    "longitude_max": 0.009035957923386913,
+    "x_east_min_m": -41.45324307404426,
+    "x_east_max_m": 614.0858170578703,
+    "y_north_min_m": -340.8410798427523,
+    "y_north_max_m": 695.8440096137764,
+    "lap_distance_min_m": 0.0,
+    "lap_distance_max_m": 4264.121988658864
+  },
+  "laps": {
+    "0": {
+      "sample_count": 1170,
+      "duration_s": 116.89999999999998,
+      "gps_coverage": 1.0,
+      "gps_path_m": 4140.589870361916,
+      "lap_dist_min_m": 72.11991882324219,
+      "lap_dist_max_m": 4269.0988656873305,
+      "lap_dist_span_m": 4196.978946864088
+    },
+    "1": {
+      "sample_count": 880,
+      "duration_s": 87.90000000000009,
+      "gps_coverage": 1.0,
+      "gps_path_m": 4239.620236589837,
+      "lap_dist_min_m": 0.0,
+      "lap_dist_max_m": 4264.121988658864,
+      "lap_dist_span_m": 4264.121988658864
+    },
+    "2": {
+      "sample_count": 872,
+      "duration_s": 87.10000000000014,
+      "gps_coverage": 1.0,
+      "gps_path_m": 4217.9221633789575,
+      "lap_dist_min_m": 0.0,
+      "lap_dist_max_m": 4268.050225851627,
+      "lap_dist_span_m": 4268.050225851627
+    },
+    "3": {
+      "sample_count": 877,
+      "duration_s": 87.60000000000014,
+      "gps_coverage": 1.0,
+      "gps_path_m": 4220.476025783302,
+      "lap_dist_min_m": 0.0,
+      "lap_dist_max_m": 4264.187211035027,
+      "lap_dist_span_m": 4264.187211035027
+    },
+    "4": {
+      "sample_count": 879,
+      "duration_s": 87.80000000000018,
+      "gps_coverage": 1.0,
+      "gps_path_m": 4218.793372632244,
+      "lap_dist_min_m": 0.0,
+      "lap_dist_max_m": 4261.14600672618,
+      "lap_dist_span_m": 4261.14600672618
+    },
+    "5": {
+      "sample_count": 25,
+      "duration_s": 2.400000000000091,
+      "gps_coverage": 1.0,
+      "gps_path_m": 186.39019454856924,
+      "lap_dist_min_m": 0.0,
+      "lap_dist_max_m": 181.88444548312276,
+      "lap_dist_span_m": 181.88444548312276
+    }
+  },
+  "outputs": {
+    "csv": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\track_exports\\Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_track_gps.csv",
+    "geojson": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\track_exports\\Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_track_gps.geojson"
+  }
+}

@@ -1,0 +1,32 @@
+
+Sintetizá únicamente las evaluaciones ya validadas que siguen.
+No reinterpretes telemetría ni agregues conceptos nuevos.
+
+EVALUACIONES VALIDADAS:
+[{"classification":"PRIORITARIO","interpretation":"El ángulo de dirección se mantiene menor que en la vuelta de referencia durante un tramo sostenido, coincidiendo con una velocidad también menor en parte de ese sector.","hypotheses":["La menor magnitud de dirección podría estar asociada a una reducción de velocidad en el mismo sector."],"recommendation":"mantener esta diferencia como observación; no hay un target directo de input autorizado"},{"classification":"SECUNDARIO","interpretation":"La dirección muestra una magnitud mayor sostenida en un tramo, mientras el acelerador presenta una magnitud menor en un tramo cercano. La velocidad es menor en un tramo que se extiende más allá de ambos eventos.","hypotheses":["La mayor magnitud de dirección podría estar asociada a la menor velocidad observada en el tramo.","La menor magnitud de acelerador podría estar asociada a la menor velocidad observada en el tramo."],"recommendation":"aumentar el acelerador hacia la referencia"},{"classification":"NO_ACCIONABLE","interpretation":"El acelerador se mantiene por debajo de la referencia en un tramo sostenido, con una diferencia que alcanza su pico máximo dentro del episodio. La velocidad también es menor en un sector que se extiende más allá del final de esa diferencia de acelerador, y el tiempo por vuelta continúa aumentando durante ese tramo posterior.","hypotheses":["La menor aplicación de acelerador podría estar asociada con la menor velocidad observada en el sector inmediato, aunque la evidencia no permite afirmar una relación causal directa."],"recommendation":"Aumentá la aplicación de acelerador en ese tramo para acercarte a la referencia, manteniendo la modulación actual en el resto del episodio."}]
+
+CONTRATO JSON EXACTO:
+- comparison_observations: lista de strings;
+- limitations: lista de strings;
+- conclusion: string.
+
+Las listas pueden ser [].
+No escribas cifras.
+No agregues ni omitas claves.
+La conclusion debe resumir la acción de coaching más importante ya presente
+en las evaluaciones, no limitarse a decir que existen diferencias.
+Conservá verbos operativos como reducir, aumentar o replicar cuando estén
+respaldados por las recomendaciones validadas.
+Steering/dirección es observation-only: la conclusion NO debe convertir
+diferencias de volante/dirección en una orden directa.
+No sustituyas una recomendación concreta por "revisar", "comparar",
+"ajustar", "trabajar" o "mejorar".
+Las limitaciones deben ser neutrales y referirse sólo a lo que no
+puede inferirse de la evidencia disponible.
+
+Ejemplo de FORMA:
+{"comparison_observations":["observación cualitativa apoyada por evaluaciones validadas"],"limitations":["la causa no puede determinarse con la evidencia disponible"],"conclusion":"síntesis cualitativa sin cifras"}
+
+
+
+Respondé únicamente con el objeto JSON completo.

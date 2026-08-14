@@ -35,6 +35,8 @@ COACHING OPERATIVO:
 - interpretation debe describir qué diferencia observable existe;
 - recommendation debe convertir esa diferencia en una prueba concreta para
   la próxima vuelta;
+- la vuelta comparada es sólo el objeto de descripción: NUNCA la uses como
+  modelo a replicar/acompañar/ajustar; toda acción debe orientarse a la referencia;
 - si el canal es consistentemente mayor en la comparación, recomendá reducir
   ese input hacia la referencia;
 - si es consistentemente menor, recomendá aumentarlo hacia la referencia;
@@ -50,6 +52,9 @@ COACHING OPERATIVO:
 - si hay varios canales, no inventes una jerarquía entre ellos que el payload
   no contenga. Priorizá una instrucción principal sólo cuando la evidencia lo
   permita claramente.
+
+STEERING EN ESTA RECOMENDACIÓN:
+este episodio sólo ofrece steering_magnitude como canal de acción. Podés convertirlo en una recomendación directa si la diferencia es unívoca y grounded; si es mixed, recomendá replicar/acompañar la secuencia de la referencia. No atribuyas causalidad dinámica.
 
 CAUSALIDAD:
 - describí coexistencia, asociación o compatibilidad;

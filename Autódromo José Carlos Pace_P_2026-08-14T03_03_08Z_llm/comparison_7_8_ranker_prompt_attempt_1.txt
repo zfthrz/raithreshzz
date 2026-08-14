@@ -1,0 +1,34 @@
+
+Construí la prioridad RELATIVA usando exclusivamente estos hechos deterministas.
+
+EPISODIOS:
+[{"episode_id":5,"objective_rank":5,"action_time_loss_s":0.04220241319686391,"action_loss_vs_max":0.24454641451636064,"action_loss_share_of_total":0.09126594938026125,"parent_zone_delta_loss_s":0.8009643153093315,"parent_zone_net_loss_equivalent_percent":5.268950487583879,"evidence_strength":"moderate","action_channel_count":1,"action_channels":["brake"],"speed_context_available":true},{"episode_id":6,"objective_rank":6,"action_time_loss_s":0.03617392400502695,"action_loss_vs_max":0.2096136866190869,"action_loss_share_of_total":0.07822887998673829,"parent_zone_delta_loss_s":0.8009643153093315,"parent_zone_net_loss_equivalent_percent":4.516296583207533,"evidence_strength":"moderate","action_channel_count":2,"action_channels":["brake","throttle"],"speed_context_available":true},{"episode_id":3,"objective_rank":3,"action_time_loss_s":0.05525804154601488,"action_loss_vs_max":0.3201986547602971,"action_loss_share_of_total":0.11949974517015842,"parent_zone_delta_loss_s":0.8009643153093315,"parent_zone_net_loss_equivalent_percent":6.8989392523279,"evidence_strength":"strong","action_channel_count":2,"action_channels":["steering_magnitude","throttle"],"speed_context_available":false},{"episode_id":2,"objective_rank":2,"action_time_loss_s":0.061402252432088744,"action_loss_vs_max":0.3558019444397937,"action_loss_share_of_total":0.13278707158664252,"parent_zone_delta_loss_s":0.8009643153093315,"parent_zone_net_loss_equivalent_percent":7.666040953194683,"evidence_strength":"strong","action_channel_count":1,"action_channels":["steering_magnitude"],"speed_context_available":true},{"episode_id":8,"objective_rank":8,"action_time_loss_s":0.02440022084201754,"action_loss_vs_max":0.14138969950576605,"action_loss_share_of_total":0.05276734555075755,"parent_zone_delta_loss_s":0.8009643153093315,"parent_zone_net_loss_equivalent_percent":3.0463555461386815,"evidence_strength":"weak","action_channel_count":1,"action_channels":["steering_magnitude"],"speed_context_available":false},{"episode_id":7,"objective_rank":7,"action_time_loss_s":0.02677175763274242,"action_loss_vs_max":0.1551318240700671,"action_loss_share_of_total":0.05789597541573902,"parent_zone_delta_loss_s":0.8009643153093315,"parent_zone_net_loss_equivalent_percent":3.3424407456158893,"evidence_strength":"weak","action_channel_count":1,"action_channels":["steering_magnitude"],"speed_context_available":false},{"episode_id":4,"objective_rank":4,"action_time_loss_s":0.04362851952108926,"action_loss_vs_max":0.25281014073224284,"action_loss_share_of_total":0.09435001348319491,"parent_zone_delta_loss_s":0.8009643153093315,"parent_zone_net_loss_equivalent_percent":5.446999159287136,"evidence_strength":"moderate","action_channel_count":2,"action_channels":["steering_magnitude","throttle"],"speed_context_available":true},{"episode_id":1,"objective_rank":1,"action_time_loss_s":0.1725742464076916,"action_loss_vs_max":1.0,"action_loss_share_of_total":0.373205019426508,"parent_zone_delta_loss_s":0.16011952072250324,"parent_zone_net_loss_equivalent_percent":107.77839305850357,"evidence_strength":"strong","action_channel_count":2,"action_channels":["steering_magnitude","throttle"],"speed_context_available":true}]
+
+REGLAS DE ORDEN:
+- ordered_episode_ids debe contener TODOS los episode_id exactamente una vez;
+- el primer ID es la oportunidad de coaching de mayor prioridad relativa;
+- el último ID es la de menor prioridad relativa;
+- no copies automáticamente objective_rank: usalo como evidencia objetiva junto
+  con el resto de los hechos deterministas;
+- no inventes información nueva.
+
+REGLAS DE TIERS:
+- priority_cut_rank es el último puesto del tier PRIORITARIO;
+- si hay más de un episodio, al menos uno debe quedar fuera de PRIORITARIO;
+- no_actionable_start_rank es el primer puesto NO_ACCIONABLE;
+- si ningún episodio es NO_ACCIONABLE, devolvé 9;
+- los puestos entre ambos cortes son SECUNDARIO;
+- no existe cuota fija ni threshold numérico de tiempo;
+- elegí los cortes observando la separación RELATIVA entre los episodios.
+
+No devuelvas classification por episodio: Python la deriva de forma
+determinista a partir del orden y los cortes.
+No devuelvas explicación, rationale ni texto adicional.
+
+La estructura JSON está impuesta externamente mediante JSON Schema.
+IMPORTANTE: no existe ningún ejemplo de valores correctos en este prompt.
+Debés decidir el orden y ambos cortes exclusivamente a partir de EPISODIOS.
+
+
+
+Respondé únicamente con el objeto JSON completo.

@@ -1,0 +1,30 @@
+
+Sintetizá únicamente las evaluaciones ya validadas que siguen.
+No reinterpretes telemetría ni agregues conceptos nuevos.
+
+EVALUACIONES VALIDADAS:
+[{"classification":"PRIORITARIO","interpretation":"La vuelta muestra una presión de freno consistentemente menor que la referencia, mientras que la dirección y el acelerador presentan variaciones mixtas a lo largo del recorrido. La velocidad también es menor durante todo el episodio, lo que coincide temporalmente con estas diferencias.","hypotheses":["La menor presión de freno podría estar asociada con la menor velocidad observada, aunque no se puede afirmar una relación causal.","Las variaciones mixtas en dirección y acelerador podrían reflejar una secuencia de inputs diferente a la referencia, lo que podría contribuir a la diferencia de velocidad."],"recommendation":"Aumentá la presión de freno hacia la referencia y, en paralelo, replicá la secuencia de dirección y acelerador de la vuelta de referencia, prestando atención a la modulación en los sectores donde se alternan diferencias."},{"classification":"SECUNDARIO","interpretation":"se observaron variaciones sostenidas en la aplicación del freno, una magnitud de dirección/volante mayor y un uso del acelerador menor respecto de la vuelta de referencia","hypotheses":[],"recommendation":"revisar la coordinación entre freno, dirección/volante y acelerador en este episodio"},{"classification":"SECUNDARIO","interpretation":"La vuelta comparada muestra una secuencia de freno con una fase inicial más intensa y una fase posterior más suave, mientras el acelerador presenta una reducción marcada seguida de una aplicación mayor. La dirección se mantiene consistentemente más alta en magnitud durante el tramo analizado. La velocidad es menor en todo el episodio.","hypotheses":["La mayor magnitud de dirección podría estar asociada a la menor velocidad observada.","La secuencia de freno y acelerador podría estar relacionada con la evolución de la velocidad."],"recommendation":"Reducí la magnitud de dirección hacia la referencia y replicá la secuencia de freno y acelerador de la vuelta de referencia, manteniendo su modulación."},{"classification":"SECUNDARIO","interpretation":"El freno se mantiene por debajo de la referencia mientras la magnitud de dirección es mayor, y el acelerador presenta una secuencia mixta: primero menor y luego mayor. La velocidad concurrente es menor durante todo el episodio.","hypotheses":["La mayor magnitud de dirección podría estar asociada con la menor velocidad observada.","La secuencia mixta del acelerador podría reflejar una modulación distinta a la referencia."],"recommendation":"Aumentá el freno hacia la referencia, reducí la magnitud de dirección y replicá la secuencia del acelerador tal como aparece en la referencia."},{"classification":"SECUNDARIO","interpretation":"La vuelta comparada muestra una secuencia de freno con una fase inicial más intensa y una posterior más suave respecto de la referencia, mientras que el acelerador se mantiene por debajo en el primer tramo y por encima en el tramo final. La dirección acompaña con mayor magnitud en la zona intermedia y menor hacia el cierre, en coexistencia con una velocidad sostenidamente inferior a lo largo del episodio.","hypotheses":["La alternancia en la intensidad del freno podría estar asociada a la modulación de la velocidad en el tramo medio.","La variación en la magnitud de dirección podría acompañar la secuencia de freno y acelerador sin implicar un cambio de línea."],"recommendation":"Replicá la secuencia de freno con su fase inicial más intensa y posterior más suave, y reproducí la modulación del acelerador con menor apertura al inicio y mayor hacia el final, manteniendo la evolución de la dirección en correspondencia con esos cambios."},{"classification":"SECUNDARIO","interpretation":"El acelerador se mantiene por debajo de la referencia en un tramo extenso, mientras la dirección alterna entre mayor y menor magnitud en distintos sectores. La velocidad también es inferior durante gran parte del episodio, con una recuperación parcial posterior.","hypotheses":["La menor aplicación de acelerador podría estar asociada con la velocidad más baja observada.","La variación mixta en la dirección sugiere una secuencia de inputs distinta a la referencia."],"recommendation":"Aumentá la aplicación de acelerador hacia la referencia en el tramo donde se mantiene por debajo y replicá la secuencia de dirección de la vuelta de referencia, prestando atención a la modulación en los sectores donde difiere."},{"classification":"SECUNDARIO","interpretation":"El episodio muestra una secuencia de freno y acelerador con variaciones mixtas respecto de la referencia, mientras la magnitud de dirección se mantiene consistentemente mayor. La velocidad concurrente es menor durante todo el tramo.","hypotheses":["La mayor magnitud de dirección podría estar asociada a la menor velocidad observada, aunque no se puede afirmar causalidad."],"recommendation":"Reducí la magnitud de dirección hacia la referencia y replicá la secuencia de freno y acelerador tal como se observa en la vuelta de comparación."}]
+
+CONTRATO JSON EXACTO:
+- comparison_observations: lista de strings;
+- limitations: lista de strings;
+- conclusion: string.
+
+Las listas pueden ser [].
+No escribas cifras.
+No agregues ni omitas claves.
+La conclusion debe resumir la acción de coaching más importante ya presente
+en las evaluaciones, no limitarse a decir que existen diferencias.
+Conservá verbos operativos como reducir, aumentar o replicar cuando estén
+respaldados por las recomendaciones validadas.
+No sustituyas una recomendación concreta por "revisar", "comparar",
+"ajustar", "trabajar" o "mejorar".
+Las limitaciones deben ser neutrales y referirse sólo a lo que no
+puede inferirse de la evidencia disponible.
+
+Ejemplo de FORMA:
+{"comparison_observations":["observación cualitativa apoyada por evaluaciones validadas"],"limitations":["la causa no puede determinarse con la evidencia disponible"],"conclusion":"síntesis cualitativa sin cifras"}
+
+
+
+Respondé únicamente con el objeto JSON completo.

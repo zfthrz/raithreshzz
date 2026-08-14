@@ -1,0 +1,170 @@
+{
+  "source_csv": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\track_exports\\Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z_track_gps.csv",
+  "algorithm": {
+    "step_m": 2.0,
+    "heading_window_m": 20.0,
+    "smooth_window_m": 14.0,
+    "min_separation_m": 45.0,
+    "threshold_percentile": 0.7,
+    "global_abs_curvature_threshold_rad_per_m": 0.007317021285893767,
+    "requested_turn_count": 15
+  },
+  "track_distance_range_m": [
+    0.0,
+    4267.137407574008
+  ],
+  "candidate_count": 15,
+  "candidates": [
+    {
+      "candidate_number": 1,
+      "start_distance_m": 306.0,
+      "center_distance_m": 412.0,
+      "end_distance_m": 436.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.01997836370501851,
+      "mean_abs_curvature_rad_per_m": 0.014723999974100621,
+      "estimated_heading_change_deg": 111.50830277194757
+    },
+    {
+      "candidate_number": 2,
+      "start_distance_m": 302.0,
+      "center_distance_m": 480.0,
+      "end_distance_m": 526.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.01997836370501851,
+      "mean_abs_curvature_rad_per_m": 0.014030908885533048,
+      "estimated_heading_change_deg": 43.90851172960229
+    },
+    {
+      "candidate_number": 3,
+      "start_distance_m": 544.0,
+      "center_distance_m": 560.0,
+      "end_distance_m": 776.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.008800793489447154,
+      "mean_abs_curvature_rad_per_m": 0.006873549982515446,
+      "estimated_heading_change_deg": 92.06318203172395
+    },
+    {
+      "candidate_number": 4,
+      "start_distance_m": 544.0,
+      "center_distance_m": 634.0,
+      "end_distance_m": 776.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.008800793489447154,
+      "mean_abs_curvature_rad_per_m": 0.006873549982515446,
+      "estimated_heading_change_deg": 92.06318203172395
+    },
+    {
+      "candidate_number": 5,
+      "start_distance_m": 1372.0,
+      "center_distance_m": 1454.0,
+      "end_distance_m": 1504.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.014755310744915503,
+      "mean_abs_curvature_rad_per_m": 0.011975134379183959,
+      "estimated_heading_change_deg": 91.92635534993438
+    },
+    {
+      "candidate_number": 6,
+      "start_distance_m": 1992.0,
+      "center_distance_m": 2014.0,
+      "end_distance_m": 2240.0,
+      "direction": "right",
+      "peak_abs_curvature_rad_per_m": 0.011057664452273444,
+      "mean_abs_curvature_rad_per_m": 0.008920966288792437,
+      "estimated_heading_change_deg": -127.79574474129906
+    },
+    {
+      "candidate_number": 7,
+      "start_distance_m": 1992.0,
+      "center_distance_m": 2074.0,
+      "end_distance_m": 2240.0,
+      "direction": "right",
+      "peak_abs_curvature_rad_per_m": 0.011057664452273444,
+      "mean_abs_curvature_rad_per_m": 0.008920966288792437,
+      "estimated_heading_change_deg": -127.79574474129906
+    },
+    {
+      "candidate_number": 8,
+      "start_distance_m": 1992.0,
+      "center_distance_m": 2158.0,
+      "end_distance_m": 2240.0,
+      "direction": "right",
+      "peak_abs_curvature_rad_per_m": 0.011057664452273444,
+      "mean_abs_curvature_rad_per_m": 0.008920966288792437,
+      "estimated_heading_change_deg": -127.79574474129906
+    },
+    {
+      "candidate_number": 9,
+      "start_distance_m": 2316.0,
+      "center_distance_m": 2358.0,
+      "end_distance_m": 2390.0,
+      "direction": "right",
+      "peak_abs_curvature_rad_per_m": 0.0387725573089654,
+      "mean_abs_curvature_rad_per_m": 0.027951007620567014,
+      "estimated_heading_change_deg": -122.25479628412621
+    },
+    {
+      "candidate_number": 10,
+      "start_distance_m": 2406.0,
+      "center_distance_m": 2464.0,
+      "end_distance_m": 2552.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.024625867715852498,
+      "mean_abs_curvature_rad_per_m": 0.018723403686347673,
+      "estimated_heading_change_deg": 158.92097411997275
+    },
+    {
+      "candidate_number": 11,
+      "start_distance_m": 2716.0,
+      "center_distance_m": 2758.0,
+      "end_distance_m": 2824.0,
+      "direction": "right",
+      "peak_abs_curvature_rad_per_m": 0.035542174133549764,
+      "mean_abs_curvature_rad_per_m": 0.023690668973063794,
+      "estimated_heading_change_deg": -149.0920128162573
+    },
+    {
+      "candidate_number": 12,
+      "start_distance_m": 2860.0,
+      "center_distance_m": 2884.0,
+      "end_distance_m": 3076.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.010654444734980907,
+      "mean_abs_curvature_rad_per_m": 0.008290404372670207,
+      "estimated_heading_change_deg": 103.54434521946955
+    },
+    {
+      "candidate_number": 13,
+      "start_distance_m": 2860.0,
+      "center_distance_m": 2934.0,
+      "end_distance_m": 3076.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.010654444734980907,
+      "mean_abs_curvature_rad_per_m": 0.008290404372670207,
+      "estimated_heading_change_deg": 103.54434521946955
+    },
+    {
+      "candidate_number": 14,
+      "start_distance_m": 2860.0,
+      "center_distance_m": 2998.0,
+      "end_distance_m": 3076.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.010654444734980907,
+      "mean_abs_curvature_rad_per_m": 0.008290404372670207,
+      "estimated_heading_change_deg": 103.54434521946955
+    },
+    {
+      "candidate_number": 15,
+      "start_distance_m": 3212.0,
+      "center_distance_m": 3264.0,
+      "end_distance_m": 3330.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.020234102234554956,
+      "mean_abs_curvature_rad_per_m": 0.014416205126205752,
+      "estimated_heading_change_deg": 99.07367355118015
+    }
+  ],
+  "warning": "Estos son candidatos geométricos. No son nombres/números oficiales hasta completar la calibración contra una referencia verificada."
+}

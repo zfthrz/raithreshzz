@@ -1,0 +1,12 @@
+{
+  "metadata": {
+    "label_schema_version": "1.1",
+    "created_at_utc": "2026-08-14T14:29:56.769275+00:00",
+    "updated_at_utc": "2026-08-14T14:48:25.957087+00:00",
+    "source_queue_path": "/workspaces/raithreshzz/calibration_batches/circuit-de-spa-francorchamps--lmp2-elms-8929e0d6c1/pair_review_queue.json",
+    "source_queue_sha256": "d71145a1cffac8594a4fd51fc8cb1da531f0c98eb48ce3b63c382c6f7431ebac",
+    "reviewer": null,
+    "semantics": "Human calibration labels. SAME means same general location and driving-difference type, not proven identical causality."
+  },
+  "labels": []
+}

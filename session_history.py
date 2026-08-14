@@ -9,7 +9,7 @@ import duckdb
 
 
 # ============================================================
-# RACE ENGINEER - SESSION HISTORY v1.2
+# RACE ENGINEER - SESSION HISTORY v1.3
 # ============================================================
 #
 # Historial persistente de sesiones analizadas por
@@ -56,7 +56,7 @@ import duckdb
 
 HISTORY_DB_NAME = "race_engineer_history.duckdb"
 
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
 
 MIN_SUPPORTED_ANALYSIS_VERSION = (3, 8)
 
@@ -280,7 +280,7 @@ def validate_analysis_json(data):
         MIN_SUPPORTED_ANALYSIS_VERSION,
     ):
         raise ValueError(
-            "session_history v1.2 requiere "
+            "session_history v1.3 requiere "
             "analyze_telemetry v3.8+."
         )
 
@@ -368,6 +368,7 @@ CREATE TABLE IF NOT EXISTS sessions (
     setup_available BOOLEAN,
     lmu_session_type VARCHAR,
     lmu_track_name VARCHAR,
+    lmu_track_layout VARCHAR,
 
     same_vehicle BOOLEAN NOT NULL,
     vehicle_count INTEGER,
@@ -609,6 +610,7 @@ VEHICLE_CONTEXT_COLUMNS = {
     "setup_available": "BOOLEAN",
     "lmu_session_type": "VARCHAR",
     "lmu_track_name": "VARCHAR",
+    "lmu_track_layout": "VARCHAR",
 }
 
 
@@ -619,7 +621,7 @@ def session_column_names(connection):
     return {str(row[0]) for row in rows}
 
 
-def migrate_schema_v1_to_v2(connection):
+def _ensure_session_context_columns(connection):
     columns = session_column_names(connection)
 
     for name, data_type in VEHICLE_CONTEXT_COLUMNS.items():
@@ -629,6 +631,10 @@ def migrate_schema_v1_to_v2(connection):
         connection.execute(
             f"ALTER TABLE sessions ADD COLUMN {name} {data_type}"
         )
+
+
+def migrate_schema_v1_to_v2(connection):
+    _ensure_session_context_columns(connection)
 
     connection.execute(
         """
@@ -640,11 +646,26 @@ def migrate_schema_v1_to_v2(connection):
     )
 
 
+def migrate_schema_v2_to_v3(connection):
+    # v3 persiste identidad de layout explícita para que el matcher
+    # cross-session no mezcle layouts que compartan nombre de circuito.
+    _ensure_session_context_columns(connection)
+
+    connection.execute(
+        """
+        UPDATE history_meta
+        SET schema_version = 3,
+            updated_at_utc = ?
+        """,
+        [utc_now_iso()],
+    )
+
+
 def ensure_vehicle_context_indexes(connection):
     connection.execute(
         """
         CREATE INDEX IF NOT EXISTS idx_sessions_vehicle_context
-        ON sessions(track, vehicle_variant)
+        ON sessions(track, lmu_track_layout, vehicle_variant)
         """
     )
 
@@ -688,11 +709,17 @@ def initialize_schema(
             rows[0][0]
         )
 
-        if current_version == 1 and SCHEMA_VERSION == 2:
+        if current_version == 1:
             migrate_schema_v1_to_v2(
                 connection
             )
             current_version = 2
+
+        if current_version == 2:
+            migrate_schema_v2_to_v3(
+                connection
+            )
+            current_version = 3
 
         if current_version != SCHEMA_VERSION:
             raise RuntimeError(
@@ -1055,7 +1082,64 @@ def extract_vehicle_session_context(metadata):
         ),
         "lmu_session_type": context.get("lmu_session_type"),
         "lmu_track_name": context.get("lmu_track_name"),
+        "lmu_track_layout": context.get("lmu_track_layout"),
     }
+
+
+def refresh_missing_session_context(
+    connection,
+    session_id,
+    metadata,
+):
+    """
+    Completa sólo contexto persistente que quedó NULL en imports legacy.
+
+    No modifica laps/comparisons/episodes ni sobreescribe valores existentes.
+    Esto permite que un import idempotente refresque lmu_track_layout después
+    de migrar schema v2 -> v3.
+    """
+    context = extract_vehicle_session_context(
+        metadata
+    )
+
+    connection.execute(
+        """
+        UPDATE sessions
+        SET
+            vehicle_family = COALESCE(vehicle_family, ?),
+            vehicle_variant = COALESCE(vehicle_variant, ?),
+            car_class_raw = COALESCE(car_class_raw, ?),
+            car_name_raw = COALESCE(car_name_raw, ?),
+            vehicle_identity_source = COALESCE(vehicle_identity_source, ?),
+            vehicle_supported_domain = COALESCE(vehicle_supported_domain, ?),
+            weather_conditions = COALESCE(weather_conditions, ?),
+            setup_sha256 = COALESCE(setup_sha256, ?),
+            setup_raw_sha256 = COALESCE(setup_raw_sha256, ?),
+            setup_available = COALESCE(setup_available, ?),
+            lmu_session_type = COALESCE(lmu_session_type, ?),
+            lmu_track_name = COALESCE(lmu_track_name, ?),
+            lmu_track_layout = COALESCE(lmu_track_layout, ?)
+        WHERE session_id = ?
+        """,
+        [
+            context["vehicle_family"],
+            context["vehicle_variant"],
+            context["car_class_raw"],
+            context["car_name_raw"],
+            context["vehicle_identity_source"],
+            context["vehicle_supported_domain"],
+            context["weather_conditions"],
+            context["setup_sha256"],
+            context["setup_raw_sha256"],
+            context["setup_available"],
+            context["lmu_session_type"],
+            context["lmu_track_name"],
+            context["lmu_track_layout"],
+            session_id,
+        ],
+    )
+
+    return context
 
 
 def insert_session(
@@ -1112,6 +1196,7 @@ def insert_session(
             setup_available,
             lmu_session_type,
             lmu_track_name,
+            lmu_track_layout,
             same_vehicle,
             vehicle_count,
             lap_comparison_model,
@@ -1126,7 +1211,7 @@ def insert_session(
         )
         VALUES (
             ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-            ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+            ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
         )
         """,
         [
@@ -1162,6 +1247,7 @@ def insert_session(
             session_context["setup_available"],
             session_context["lmu_session_type"],
             session_context["lmu_track_name"],
+            session_context["lmu_track_layout"],
             bool(
                 metadata.get(
                     "same_vehicle"
@@ -1999,13 +2085,28 @@ def import_analysis_json(
     )
 
     if existing_session is not None:
+        data = load_analysis_json(
+            source_path
+        )
+
+        metadata, _, _ = validate_analysis_json(
+            data
+        )
+
+        refreshed_context = refresh_missing_session_context(
+            connection,
+            existing_session,
+            metadata,
+        )
+
         log_import(
             connection,
             source_path,
             source_hash,
             existing_session,
             "SKIPPED_DUPLICATE",
-            "El mismo contenido ya fue importado.",
+            "El mismo contenido ya fue importado; "
+            "se completó contexto persistente faltante cuando correspondía.",
         )
 
         return {
@@ -2017,6 +2118,9 @@ def import_analysis_json(
 
             "source_hash":
                 source_hash,
+
+            "context_refresh":
+                refreshed_context,
         }
 
     data = load_analysis_json(
@@ -2216,6 +2320,7 @@ def list_sessions(
             timestamp_utc,
             vehicle_family,
             vehicle_variant,
+            lmu_track_layout,
             car_name_raw,
             reference_lap,
             valid_lap_count,
@@ -2257,6 +2362,7 @@ def list_sessions(
             timestamp_utc,
             vehicle_family,
             vehicle_variant,
+            lmu_track_layout,
             car_name_raw,
             reference_lap,
             valid_lap_count,
@@ -2273,6 +2379,7 @@ def list_sessions(
 
         print(
             f"    vehicle={vehicle_family}/{vehicle_variant} | "
+            f"layout={lmu_track_layout} | "
             f"car={car_name_raw}"
         )
 
@@ -2302,6 +2409,7 @@ def inspect_session(
             weather_conditions,
             setup_sha256,
             lmu_session_type,
+            lmu_track_layout,
             reference_lap,
             reference_distance_m,
             source_analysis_version,
@@ -2351,6 +2459,10 @@ def inspect_session(
     )
 
     print(
+        f"Layout: {session[11]}"
+    )
+
+    print(
         f"Car class raw: {session[6]}"
     )
 
@@ -2371,19 +2483,19 @@ def inspect_session(
     )
 
     print(
-        f"Reference lap: {session[11]}"
+        f"Reference lap: {session[12]}"
     )
 
     print(
-        f"Reference distance: {session[12]}"
+        f"Reference distance: {session[13]}"
     )
 
     print(
-        f"Analyze version: {session[13]}"
+        f"Analyze version: {session[14]}"
     )
 
     print(
-        f"Source: {session[14]}"
+        f"Source: {session[15]}"
     )
 
     comparisons = connection.execute(
@@ -2754,6 +2866,7 @@ def print_history_stats(
         """
         SELECT
             s.track,
+            s.lmu_track_layout,
             s.vehicle_variant,
             COUNT(DISTINCT s.session_id) AS sessions,
             COUNT(DISTINCT c.comparison_id) AS comparisons,
@@ -2765,10 +2878,11 @@ def print_history_stats(
             ON c.session_id = s.session_id
         LEFT JOIN episodes e
             ON e.session_id = s.session_id
-        GROUP BY s.track, s.vehicle_variant
+        GROUP BY s.track, s.lmu_track_layout, s.vehicle_variant
         ORDER BY
             sessions DESC,
             s.track,
+            s.lmu_track_layout,
             s.vehicle_variant
         """
     ).fetchall()
@@ -2787,18 +2901,18 @@ def print_history_stats(
     for row in rows:
         print()
         print(
-            f"  {row[0]} | variant={row[1]}"
+            f"  {row[0]} | layout={row[1]} | variant={row[2]}"
         )
 
         print(
-            f"    sessions={row[2]} | "
-            f"comparisons={row[3]} | "
-            f"episodes={row[4]}"
+            f"    sessions={row[3]} | "
+            f"comparisons={row[4]} | "
+            f"episodes={row[5]}"
         )
 
         print(
-            f"    first={row[5]} | "
-            f"last={row[6]}"
+            f"    first={row[6]} | "
+            f"last={row[7]}"
         )
 
     channel_rows = connection.execute(

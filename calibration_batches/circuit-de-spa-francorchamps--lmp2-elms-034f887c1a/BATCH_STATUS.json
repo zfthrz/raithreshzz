@@ -1,0 +1,122 @@
+{
+  "orchestrator_version": "1.4",
+  "updated_at_utc": "2026-08-14T15:05:48.634961+00:00",
+  "project_root": "/workspaces/raithreshzz",
+  "input_dir": "/workspaces/raithreshzz/data/calibration_spa_lmp2_elms",
+  "history_db": "/workspaces/raithreshzz/race_engineer_history.duckdb",
+  "overall_status": "CALIBRATION_BATCH_READY_FOR_INSPECTION",
+  "track": "Circuit de Spa-Francorchamps",
+  "track_layout": "Circuit de Spa-Francorchamps",
+  "vehicle_family": "LMP2",
+  "vehicle_variant": "LMP2_ELMS",
+  "batch_id": "034f887c1a",
+  "batch_dir": "/workspaces/raithreshzz/calibration_batches/circuit-de-spa-francorchamps--lmp2-elms-034f887c1a",
+  "steps": {
+    "project_contract": {
+      "status": "PASS",
+      "required_scripts": [
+        "session_history.py",
+        "validate_history_db.py",
+        "episode_pair_features.py",
+        "pair_review_queue.py",
+        "label_episode_pairs.py",
+        "validate_pair_labels.py",
+        "build_calibration_dataset.py",
+        "calibration_feature_report.py"
+      ],
+      "dependency_contract": {
+        "session_history_schema": 3,
+        "pair_review_queue_schema": "1.1",
+        "max_review_pairs_default": 24
+      }
+    },
+    "input_directory": {
+      "status": "PASS",
+      "path": "/workspaces/raithreshzz/data/calibration_spa_lmp2_elms",
+      "json_files_seen": 6
+    },
+    "history_init": {
+      "status": "PASS",
+      "command": "/usr/local/bin/python /workspaces/raithreshzz/session_history.py --db /workspaces/raithreshzz/race_engineer_history.duckdb init"
+    },
+    "history_import": {
+      "status": "PASS",
+      "command": "/usr/local/bin/python /workspaces/raithreshzz/session_history.py --db /workspaces/raithreshzz/race_engineer_history.duckdb import-dir /workspaces/raithreshzz/data/calibration_spa_lmp2_elms",
+      "sessions_before": 6,
+      "sessions_after": 6,
+      "imported_session_delta": 0
+    },
+    "history_validation": {
+      "status": "PASS",
+      "command": "/usr/local/bin/python /workspaces/raithreshzz/validate_history_db.py --db /workspaces/raithreshzz/race_engineer_history.duckdb"
+    },
+    "vehicle_context_selection": {
+      "status": "PASS",
+      "selected_track": "Circuit de Spa-Francorchamps",
+      "selected_track_layout": "Circuit de Spa-Francorchamps",
+      "selected_vehicle_variant": "LMP2_ELMS",
+      "vehicle_family": "LMP2",
+      "session_count": 6,
+      "session_ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "session_signature": "034f887c1a79832edb50f2ad15ccf5de5a78e054fbf0871898219eb8048519f1",
+      "sessions_by_vehicle_context": {
+        "Circuit de Spa-Francorchamps | Circuit de Spa-Francorchamps | LMP2_ELMS": 6
+      }
+    },
+    "pair_features": {
+      "status": "REUSED",
+      "path": "/workspaces/raithreshzz/calibration_batches/circuit-de-spa-francorchamps--lmp2-elms-034f887c1a/episode_pair_features.json",
+      "pair_count": 5506
+    },
+    "review_queue": {
+      "status": "REUSED",
+      "path": "/workspaces/raithreshzz/calibration_batches/circuit-de-spa-francorchamps--lmp2-elms-034f887c1a/pair_review_queue.json",
+      "queue_pairs": 24,
+      "reuse_reason": "compatible"
+    },
+    "label_validation": {
+      "status": "PASS",
+      "command": "/usr/local/bin/python /workspaces/raithreshzz/validate_pair_labels.py /workspaces/raithreshzz/calibration_batches/circuit-de-spa-francorchamps--lmp2-elms-034f887c1a/pair_review_queue.json /workspaces/raithreshzz/calibration_batches/circuit-de-spa-francorchamps--lmp2-elms-034f887c1a/pair_labels.json"
+    },
+    "human_labels": {
+      "status": "PASS",
+      "labels_path": "/workspaces/raithreshzz/calibration_batches/circuit-de-spa-francorchamps--lmp2-elms-034f887c1a/pair_labels.json",
+      "exists": true,
+      "queue_pairs": 24,
+      "labeled_pairs": 24,
+      "unreviewed_pairs": 0,
+      "complete": true
+    },
+    "calibration_dataset": {
+      "status": "PASS",
+      "command": "/usr/local/bin/python /workspaces/raithreshzz/build_calibration_dataset.py /workspaces/raithreshzz/calibration_batches/circuit-de-spa-francorchamps--lmp2-elms-034f887c1a/pair_review_queue.json /workspaces/raithreshzz/calibration_batches/circuit-de-spa-francorchamps--lmp2-elms-034f887c1a/pair_labels.json --evaluation-fraction 0.25 --seed 20260810 --output /workspaces/raithreshzz/calibration_batches/circuit-de-spa-francorchamps--lmp2-elms-034f887c1a/calibration_dataset.json",
+      "path": "/workspaces/raithreshzz/calibration_batches/circuit-de-spa-francorchamps--lmp2-elms-034f887c1a/calibration_dataset.json",
+      "calibration_pairs": 2,
+      "evaluation_pairs": 1,
+      "cross_split_pairs_excluded": 21,
+      "calibration_ready": true,
+      "evaluation_ready": true
+    },
+    "feature_report": {
+      "status": "PASS",
+      "command": "/usr/local/bin/python /workspaces/raithreshzz/calibration_feature_report.py /workspaces/raithreshzz/calibration_batches/circuit-de-spa-francorchamps--lmp2-elms-034f887c1a/calibration_dataset.json --output /workspaces/raithreshzz/calibration_batches/circuit-de-spa-francorchamps--lmp2-elms-034f887c1a/calibration_feature_report.json",
+      "path": "/workspaces/raithreshzz/calibration_batches/circuit-de-spa-francorchamps--lmp2-elms-034f887c1a/calibration_feature_report.json"
+    },
+    "evaluation_readiness": {
+      "status": "PASS",
+      "evaluation_pairs": 1
+    }
+  },
+  "next_action": "Inspect calibration_feature_report.json. Do not select matcher thresholds from evaluation data.",
+  "matcher": {
+    "status": "BLOCKED_BY_REAL_DATA",
+    "reason": "No thresholds, weights, automatic matching, clustering, or persistent_pattern are implemented."
+  }
+}

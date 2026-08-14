@@ -9,7 +9,7 @@ import duckdb
 
 
 # ============================================================
-# RACE ENGINEER - EPISODE PAIR FEATURES v1.1
+# RACE ENGINEER - EPISODE PAIR FEATURES v1.2
 # ============================================================
 #
 # Extrae features neutrales entre episodios de distintas
@@ -406,6 +406,7 @@ def load_episodes(
     connection,
     track=None,
     vehicle_variant=None,
+    track_layout=None,
 ):
     params = []
 
@@ -431,6 +432,14 @@ def load_episodes(
         )
         params.append(
             vehicle_variant
+        )
+
+    if track_layout:
+        clauses.append(
+            "s.lmu_track_layout = ?"
+        )
+        params.append(
+            track_layout
         )
 
     where = ""
@@ -469,6 +478,7 @@ def load_episodes(
             s.setup_available,
             s.lmu_session_type,
             s.lmu_track_name,
+            s.lmu_track_layout,
 
             c.reference_lap,
             c.comparison_lap,
@@ -494,6 +504,7 @@ def load_episodes(
         {where}
         ORDER BY
             s.track,
+            s.lmu_track_layout,
             s.vehicle_variant,
             s.timestamp_utc,
             e.session_id,
@@ -537,23 +548,24 @@ def load_episodes(
             ),
             "lmu_session_type": row[19],
             "lmu_track_name": row[20],
+            "lmu_track_layout": row[21],
 
-            "reference_lap": safe_int(row[21]),
-            "comparison_lap": safe_int(row[22]),
-            "driver_analysis_priority_rank": safe_int(row[23]),
+            "reference_lap": safe_int(row[22]),
+            "comparison_lap": safe_int(row[23]),
+            "driver_analysis_priority_rank": safe_int(row[24]),
 
-            "start_distance_m": safe_float(row[24]),
-            "end_distance_m": safe_float(row[25]),
-            "center_distance_m": safe_float(row[26]),
-            "length_m": safe_float(row[27]),
+            "start_distance_m": safe_float(row[25]),
+            "end_distance_m": safe_float(row[26]),
+            "center_distance_m": safe_float(row[27]),
+            "length_m": safe_float(row[28]),
 
-            "start_lap_fraction": safe_float(row[28]),
-            "end_lap_fraction": safe_float(row[29]),
-            "center_lap_fraction": safe_float(row[30]),
+            "start_lap_fraction": safe_float(row[29]),
+            "end_lap_fraction": safe_float(row[30]),
+            "center_lap_fraction": safe_float(row[31]),
 
-            "action_time_loss_s": safe_float(row[31]),
-            "evidence_strength": row[32],
-            "has_speed_propagation": bool(row[33]),
+            "action_time_loss_s": safe_float(row[32]),
+            "evidence_strength": row[33],
+            "has_speed_propagation": bool(row[34]),
         })
 
     return result
@@ -886,6 +898,9 @@ def build_pair_record(
         "track":
             a["track"],
 
+        "track_layout":
+            a.get("lmu_track_layout"),
+
         "vehicle_family":
             a.get("vehicle_family"),
 
@@ -1166,6 +1181,22 @@ def build_all_cross_session_pairs(
             ):
                 continue
 
+            layout_a = a.get(
+                "lmu_track_layout"
+            )
+            layout_b = b.get(
+                "lmu_track_layout"
+            )
+
+            if (
+                not layout_a
+                or
+                not layout_b
+                or
+                layout_a != layout_b
+            ):
+                continue
+
             variant_a = a.get(
                 "vehicle_variant"
             )
@@ -1315,6 +1346,15 @@ def build_parser():
     )
 
     parser.add_argument(
+        "--track-layout",
+        default=None,
+        help=(
+            "Filtro de layout LMU exacto. H2 requiere layout "
+            "conocido e idéntico entre sesiones."
+        ),
+    )
+
+    parser.add_argument(
         "--format",
         choices=(
             "json",
@@ -1357,6 +1397,7 @@ def main():
             connection,
             track=args.track,
             vehicle_variant=args.vehicle_variant,
+            track_layout=args.track_layout,
         )
 
         channel_sets = (
@@ -1388,7 +1429,7 @@ def main():
     )
 
     print(
-        "RACE ENGINEER - EPISODE PAIR FEATURES v1.0"
+        "RACE ENGINEER - EPISODE PAIR FEATURES v1.2"
     )
 
     print(
@@ -1415,8 +1456,14 @@ def main():
             f"Vehicle variant filter: {args.vehicle_variant}"
         )
 
+    if args.track_layout:
+        print(
+            f"Track layout filter: {args.track_layout}"
+        )
+
     print(
-        "Pair hard gate: same track + same known supported vehicle variant"
+        "Pair hard gate: same track + same explicit layout + "
+        "same known supported vehicle variant"
     )
 
     print(

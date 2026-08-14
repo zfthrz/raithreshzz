@@ -1,0 +1,18 @@
+$ /usr/local/bin/python /workspaces/raithreshzz/calibration_feature_report.py /workspaces/raithreshzz/calibration_batches/circuit-de-spa-francorchamps--lmp2-elms-034f887c1a/calibration_dataset.json --output /workspaces/raithreshzz/calibration_batches/circuit-de-spa-francorchamps--lmp2-elms-034f887c1a/calibration_feature_report.json
+
+--- STDOUT ---
+
+========================================================================
+RACE ENGINEER - CALIBRATION FEATURE REPORT v1.0
+========================================================================
+
+calibration: pairs=2 labels={'SAME': 1, 'DIFFERENT': 1, 'AMBIGUOUS': 0}
+evaluation: pairs=1 labels={'SAME': 0, 'DIFFERENT': 1, 'AMBIGUOUS': 0}
+
+Output: /workspaces/raithreshzz/calibration_batches/circuit-de-spa-francorchamps--lmp2-elms-034f887c1a/calibration_feature_report.json
+No thresholds, weights, probabilities, or automatic match decisions were created.
+
+--- STDERR ---
+
+--- RETURN CODE ---
+0

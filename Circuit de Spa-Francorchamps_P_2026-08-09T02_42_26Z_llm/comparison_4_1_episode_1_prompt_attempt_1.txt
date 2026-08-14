@@ -1,0 +1,86 @@
+
+Interpretá únicamente ESTE episodio.
+
+No uses información de otros episodios.
+No clasifiques su prioridad; otra etapa comparará todos los episodios.
+No completes información por conocimiento general del circuito,
+del vehículo ni de conducción.
+
+VOCABULARIO DE ACCIÓN AUTORIZADO PARA ESTE EPISODIO:
+["dirección/volante","acelerador"]
+
+Si una palabra o concepto de acción no está representado por esa
+whitelist, no lo introduzcas.
+
+El payload incluye contexto explícito de velocidad. Podés describir coexistencia temporal o posible propagación, pero no afirmar que una acción causó la velocidad observada.
+
+EPISODIO SANEADO POR PYTHON:
+{"episode_id":1,"action_channels":["steering_magnitude","throttle"],"allowed_action_language":["dirección/volante","acelerador"],"channel_direction_contract":{"steering_magnitude":{"observed_relation":"mixed","interpretation_relation":"mixed","coaching_direction":"replicate_sequence"},"throttle":{"observed_relation":"mixed","interpretation_relation":"mixed","coaching_direction":"replicate_sequence"}},"action_evidence_by_channel":{"steering_magnitude":{"event_count":3,"supported_length_m":84.0,"mean_of_event_mean_differences":-6.391281709100416,"largest_abs_peak_difference":-17.640189478888853,"events":[{"type":"sustained_steering_magnitude_difference","direction":"higher_in_comparison_lap","start_distance_m":4449.0,"end_distance_m":4478.0,"length_m":29.0,"mean_difference":2.2153226138665336,"peak_difference":-12.20666682583175,"time_delta_change_during_event_s":0.1131913151143209,"persistent":true},{"type":"sustained_steering_magnitude_difference","direction":"lower_in_comparison_lap","start_distance_m":4533.0,"end_distance_m":4567.0,"length_m":34.0,"mean_difference":-12.804760540584509,"peak_difference":-17.640189478888853,"time_delta_change_during_event_s":0.08920698287820983,"persistent":true},{"type":"sustained_steering_magnitude_difference","direction":"lower_in_comparison_lap","start_distance_m":4580.0,"end_distance_m":4601.0,"length_m":21.0,"mean_difference":-8.584407200583273,"peak_difference":-14.108036183258525,"time_delta_change_during_event_s":0.05855482448957616,"persistent":true}]},"throttle":{"event_count":4,"supported_length_m":177.0,"mean_of_event_mean_differences":-20.094187373928527,"largest_abs_peak_difference":-65.71052802194218,"events":[{"type":"sustained_throttle_difference","direction":"lower_in_comparison_lap","start_distance_m":4391.0,"end_distance_m":4447.0,"length_m":56.0,"mean_difference":-47.37653384475709,"peak_difference":-65.71052802194218,"time_delta_change_during_event_s":0.21559007094870708,"persistent":true},{"type":"sustained_throttle_difference","direction":"lower_in_comparison_lap","start_distance_m":4467.0,"end_distance_m":4499.0,"length_m":32.0,"mean_difference":-38.20415915622279,"peak_difference":-60.267306064418435,"time_delta_change_during_event_s":0.13681141704259403,"persistent":true},{"type":"sustained_throttle_difference","direction":"higher_in_comparison_lap","start_distance_m":4504.0,"end_distance_m":4557.0,"length_m":53.0,"mean_difference":31.999152929803515,"peak_difference":46.30350238066946,"time_delta_change_during_event_s":0.18833924923758616,"persistent":true},{"type":"sustained_throttle_difference","direction":"lower_in_comparison_lap","start_distance_m":4567.0,"end_distance_m":4603.0,"length_m":36.0,"mean_difference":-26.79520942453774,"peak_difference":-32.492372069117934,"time_delta_change_during_event_s":0.09495510214640035,"persistent":true}]}},"speed_context":{"concurrent_speed_events":[{"type":"sustained_speed_difference","direction":"lower_in_comparison_lap","start_distance_m":4391.0,"end_distance_m":4731.0,"length_m":340.0,"mean_difference":-17.367516581544823,"peak_difference":-29.95575645410841,"time_delta_change_during_event_s":0.9409939875065589,"persistent":true}],"speed_propagation":[{"start_distance_m":4603.0,"end_distance_m":4731.0,"length_m":128.0,"time_delta_change_s":0.17556768076781282,"status":"continues_losing_time","speed_event":{"type":"sustained_speed_difference","direction":"lower_in_comparison_lap","start_distance_m":4391.0,"end_distance_m":4731.0,"length_m":340.0,"mean_difference":-17.367516581544823,"peak_difference":-29.95575645410841,"time_delta_change_during_event_s":0.9409939875065589,"persistent":true}}]}}
+
+CONTRATO DIRECCIONAL DETERMINISTA:
+{"steering_magnitude":{"observed_relation":"mixed","interpretation_relation":"mixed","coaching_direction":"replicate_sequence"},"throttle":{"observed_relation":"mixed","interpretation_relation":"mixed","coaching_direction":"replicate_sequence"}}
+
+Este contrato es AUTORITATIVO:
+- observed_relation describe lo medido por Python en la vuelta comparada;
+- interpretation debe respetar interpretation_relation;
+- si coaching_direction es increase, una orden explícita sólo puede aumentar
+  ese input hacia la referencia;
+- si coaching_direction es decrease, una orden explícita sólo puede reducir
+  ese input hacia la referencia;
+- si coaching_direction es replicate_sequence, no fuerces aumentar/reducir:
+  describí la variación como mixta y recomendá replicar su secuencia,
+  evolución o modulación respecto de la referencia.
+
+COACHING OPERATIVO:
+- interpretation debe describir qué diferencia observable existe;
+- recommendation debe convertir esa diferencia en una prueba concreta para
+  la próxima vuelta;
+- la vuelta comparada es sólo el objeto de descripción: NUNCA la uses como
+  modelo a replicar/acompañar/ajustar; toda acción debe orientarse a la referencia;
+- si el canal es consistentemente mayor en la comparación, recomendá reducir
+  ese input hacia la referencia;
+- si es consistentemente menor, recomendá aumentarlo hacia la referencia;
+- si dentro del canal aparecen direcciones opuestas, recomendá reproducir su
+  secuencia, evolución o modulación respecto de la referencia;
+- evitá como recomendación final "revisar", "comparar", "ajustar",
+  "trabajar" o "mejorar" si no están seguidos por una acción concreta;
+- no inventes punto de frenada, momento de aceleración, ápice, trayectoria
+  ni línea;
+- no introduzcas tracción, demanda de tracción, agarre/grip, balance,
+  transferencia de carga ni dinámica del vehículo, tampoco como hipótesis;
+- no deduzcas una distancia de coaching desde los límites de los eventos;
+- si hay varios canales, no inventes una jerarquía entre ellos que el payload
+  no contenga. Priorizá una instrucción principal sólo cuando la evidencia lo
+  permita claramente.
+
+STEERING EN ESTA RECOMENDACIÓN:
+steering_magnitude puede ser foco principal o ajuste secundario. No lo elijas automáticamente: comparalo con freno/acelerador y redactá una maniobra principal grounded. Si su dirección es mixed, usá replicar/acompañar la referencia.
+
+CAUSALIDAD:
+- describí coexistencia, asociación o compatibilidad;
+- podés usar expresiones prudentes como "podría contribuir";
+- no uses "causó", "generó", "provocó", "produjo", "se debe a",
+  "debido a" ni "como consecuencia directa".
+
+CONTRATO JSON EXACTO:
+- episode_id: entero idéntico al recibido;
+- interpretation: string ESTRICTAMENTE CUALITATIVO, sin ningún dígito;
+- hypotheses: lista de strings ESTRICTAMENTE CUALITATIVOS, sin ningún dígito;
+- recommendation: string ESTRICTAMENTE CUALITATIVO, sin ningún dígito.
+
+REGLA DE CIFRAS PARA ESTE CALL:
+- el ÚNICO número permitido en toda tu respuesta es episode_id;
+- no copies metros, segundos, porcentajes, número de curva ni ninguna otra
+  magnitud del payload dentro de interpretation, hypotheses o recommendation;
+- aunque exista un onset/release numérico autorizado en el payload, Python lo
+  renderiza por separado: NO lo repitas en estos tres campos de texto.
+
+No agregues ni omitas claves.
+Si no podés formular una hipótesis grounded, usá hypotheses: [].
+
+Ejemplo de FORMA:
+{"episode_id":1,"interpretation":"descripción cualitativa sin cifras","hypotheses":["hipótesis prudente limitada a la evidencia"],"recommendation":"recomendación cualitativa sin cifras"}
+
+
+
+Respondé únicamente con el objeto JSON completo.

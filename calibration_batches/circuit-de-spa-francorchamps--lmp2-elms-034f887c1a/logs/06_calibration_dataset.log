@@ -1,0 +1,42 @@
+$ /usr/local/bin/python /workspaces/raithreshzz/build_calibration_dataset.py /workspaces/raithreshzz/calibration_batches/circuit-de-spa-francorchamps--lmp2-elms-034f887c1a/pair_review_queue.json /workspaces/raithreshzz/calibration_batches/circuit-de-spa-francorchamps--lmp2-elms-034f887c1a/pair_labels.json --evaluation-fraction 0.25 --seed 20260810 --output /workspaces/raithreshzz/calibration_batches/circuit-de-spa-francorchamps--lmp2-elms-034f887c1a/calibration_dataset.json
+
+--- STDOUT ---
+
+========================================================================
+RACE ENGINEER - CALIBRATION DATASET BUILDER v1.0
+========================================================================
+
+{
+  "reviewed_usable_pairs": 24,
+  "ignored_skip_pairs": 0,
+  "usable_sessions": 6,
+  "calibration_sessions": 4,
+  "evaluation_sessions": 2,
+  "calibration_pairs": 2,
+  "evaluation_pairs": 1,
+  "cross_split_pairs_excluded": 21,
+  "calibration_labels": {
+    "SAME": 1,
+    "DIFFERENT": 1,
+    "AMBIGUOUS": 0
+  },
+  "evaluation_labels": {
+    "SAME": 0,
+    "DIFFERENT": 1,
+    "AMBIGUOUS": 0
+  },
+  "all_usable_labels": {
+    "SAME": 8,
+    "DIFFERENT": 15,
+    "AMBIGUOUS": 1
+  }
+}
+
+Output: /workspaces/raithreshzz/calibration_batches/circuit-de-spa-francorchamps--lmp2-elms-034f887c1a/calibration_dataset.json
+Session leakage check: PASS
+Matcher status: NO THRESHOLDS / NO SCORE / NO AUTOMATIC MATCHING
+
+--- STDERR ---
+
+--- RETURN CODE ---
+0

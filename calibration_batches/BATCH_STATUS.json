@@ -1,51 +1,18 @@
 {
-  "orchestrator_version": "1.1",
-  "updated_at_utc": "2026-08-10T22:27:12.579700+00:00",
-  "project_root": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz",
-  "input_dir": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\data\\calibration_spa_lmp2_elms",
-  "history_db": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\race_engineer_history.duckdb",
-  "overall_status": "BLOCKED_HISTORY_VALIDATION",
+  "orchestrator_version": "1.4",
+  "updated_at_utc": "2026-08-14T15:05:44.050277+00:00",
+  "project_root": "/workspaces/raithreshzz",
+  "input_dir": "/workspaces/raithreshzz/data/calibration_spa_lmp2_elms",
+  "history_db": "/workspaces/raithreshzz/race_engineer_history.duckdb",
+  "overall_status": "STARTING",
   "track": null,
+  "track_layout": null,
   "vehicle_family": null,
   "vehicle_variant": null,
   "batch_id": null,
   "batch_dir": null,
-  "steps": {
-    "project_contract": {
-      "status": "PASS",
-      "required_scripts": [
-        "session_history.py",
-        "validate_history_db.py",
-        "episode_pair_features.py",
-        "pair_review_queue.py",
-        "label_episode_pairs.py",
-        "validate_pair_labels.py",
-        "build_calibration_dataset.py",
-        "calibration_feature_report.py"
-      ]
-    },
-    "input_directory": {
-      "status": "PASS",
-      "path": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\data\\calibration_spa_lmp2_elms",
-      "json_files_seen": 6
-    },
-    "history_init": {
-      "status": "PASS",
-      "command": "'C:\\Users\\thres\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe' 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\session_history.py' --db 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\race_engineer_history.duckdb' init"
-    },
-    "history_import": {
-      "status": "PASS",
-      "command": "'C:\\Users\\thres\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe' 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\session_history.py' --db 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\race_engineer_history.duckdb' import-dir 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\data\\calibration_spa_lmp2_elms'",
-      "sessions_before": 0,
-      "sessions_after": 6,
-      "imported_session_delta": 6
-    },
-    "history_validation": {
-      "status": "FAIL",
-      "command": "'C:\\Users\\thres\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe' 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\validate_history_db.py' --db 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\race_engineer_history.duckdb'"
-    }
-  },
-  "next_action": "Fix History DB validation errors before pair generation.",
+  "steps": {},
+  "next_action": null,
   "matcher": {
     "status": "BLOCKED_BY_REAL_DATA",
     "reason": "No thresholds, weights, automatic matching, clustering, or persistent_pattern are implemented."

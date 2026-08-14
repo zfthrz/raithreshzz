@@ -1,43 +1,43 @@
-$ 'C:\Users\thres\AppData\Local\Python\pythoncore-3.14-64\python.exe' 'C:\Users\thres\Documents\GitHub\raithreshzz\session_history.py' --db 'C:\Users\thres\Documents\GitHub\raithreshzz\race_engineer_history.duckdb' import-dir 'C:\Users\thres\Documents\GitHub\raithreshzz\data\calibration_spa_lmp2_elms'
+$ /usr/local/bin/python /workspaces/raithreshzz/session_history.py --db /workspaces/raithreshzz/race_engineer_history.duckdb import-dir /workspaces/raithreshzz/data/calibration_spa_lmp2_elms
 
 --- STDOUT ---
 
 BATCH IMPORT RESULT
 {
   "files_discovered": 6,
-  "imported": 6,
-  "duplicates": 0,
+  "imported": 0,
+  "duplicates": 6,
   "skipped_not_analysis": 0,
   "failed": 0,
   "results": [
     {
-      "path": "c:\\users\\thres\\documents\\github\\raithreshzz\\data\\calibration_spa_lmp2_elms\\circuit de spa-francorchamps_p_2026-08-09t02_42_26z.json",
-      "status": "IMPORTED",
+      "path": "/workspaces/raithreshzz/data/calibration_spa_lmp2_elms/Circuit de Spa-Francorchamps_P_2026-08-09T02_42_26Z.json",
+      "status": "SKIPPED_DUPLICATE",
       "session_id": 1
     },
     {
-      "path": "c:\\users\\thres\\documents\\github\\raithreshzz\\data\\calibration_spa_lmp2_elms\\circuit de spa-francorchamps_p_2026-08-09t04_35_16z.json",
-      "status": "IMPORTED",
+      "path": "/workspaces/raithreshzz/data/calibration_spa_lmp2_elms/Circuit de Spa-Francorchamps_P_2026-08-09T04_35_16Z.json",
+      "status": "SKIPPED_DUPLICATE",
       "session_id": 2
     },
     {
-      "path": "c:\\users\\thres\\documents\\github\\raithreshzz\\data\\calibration_spa_lmp2_elms\\circuit de spa-francorchamps_p_2026-08-10t00_34_34z.json",
-      "status": "IMPORTED",
+      "path": "/workspaces/raithreshzz/data/calibration_spa_lmp2_elms/Circuit de Spa-Francorchamps_P_2026-08-10T00_34_34Z.json",
+      "status": "SKIPPED_DUPLICATE",
       "session_id": 3
     },
     {
-      "path": "c:\\users\\thres\\documents\\github\\raithreshzz\\data\\calibration_spa_lmp2_elms\\circuit de spa-francorchamps_q_2026-08-09t04_52_43z.json",
-      "status": "IMPORTED",
+      "path": "/workspaces/raithreshzz/data/calibration_spa_lmp2_elms/Circuit de Spa-Francorchamps_Q_2026-08-09T04_52_43Z.json",
+      "status": "SKIPPED_DUPLICATE",
       "session_id": 4
     },
     {
-      "path": "c:\\users\\thres\\documents\\github\\raithreshzz\\data\\calibration_spa_lmp2_elms\\circuit de spa-francorchamps_q_2026-08-10t00_53_48z.json",
-      "status": "IMPORTED",
+      "path": "/workspaces/raithreshzz/data/calibration_spa_lmp2_elms/Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z.json",
+      "status": "SKIPPED_DUPLICATE",
       "session_id": 5
     },
     {
-      "path": "c:\\users\\thres\\documents\\github\\raithreshzz\\data\\calibration_spa_lmp2_elms\\circuit de spa-francorchamps_r_2026-08-10t01_03_52z.json",
-      "status": "IMPORTED",
+      "path": "/workspaces/raithreshzz/data/calibration_spa_lmp2_elms/Circuit de Spa-Francorchamps_R_2026-08-10T01_03_52Z.json",
+      "status": "SKIPPED_DUPLICATE",
       "session_id": 6
     }
   ]

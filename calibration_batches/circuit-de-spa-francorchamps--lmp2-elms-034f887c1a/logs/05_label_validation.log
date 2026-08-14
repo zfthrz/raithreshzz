@@ -1,0 +1,47 @@
+$ /usr/local/bin/python /workspaces/raithreshzz/validate_pair_labels.py /workspaces/raithreshzz/calibration_batches/circuit-de-spa-francorchamps--lmp2-elms-034f887c1a/pair_review_queue.json /workspaces/raithreshzz/calibration_batches/circuit-de-spa-francorchamps--lmp2-elms-034f887c1a/pair_labels.json
+
+--- STDOUT ---
+
+======================================================================
+RACE ENGINEER - PAIR LABEL VALIDATOR v1.1
+======================================================================
+
+{
+  "queue_pairs": 24,
+  "label_records": 24,
+  "counts": {
+    "AMBIGUOUS": 1,
+    "SAME": 8,
+    "DIFFERENT": 15
+  },
+  "unreviewed": 0,
+  "sessions_by_label": {
+    "AMBIGUOUS": [
+      3,
+      5
+    ],
+    "SAME": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "DIFFERENT": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ]
+  }
+}
+
+PAIR LABEL VALIDATION: PASS
+
+--- STDERR ---
+
+--- RETURN CODE ---
+0

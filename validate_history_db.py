@@ -8,7 +8,7 @@ import duckdb
 
 
 # ============================================================
-# RACE ENGINEER - HISTORY DB VALIDATOR v1.1
+# RACE ENGINEER - HISTORY DB VALIDATOR v1.2
 # ============================================================
 #
 # Valida integridad interna de race_engineer_history.duckdb.
@@ -28,7 +28,7 @@ import duckdb
 
 DEFAULT_DB_NAME = "race_engineer_history.duckdb"
 
-EXPECTED_SCHEMA_VERSION = 2
+EXPECTED_SCHEMA_VERSION = 3
 
 ALLOWED_ACTION_CHANNELS = {
     "throttle",
@@ -162,6 +162,7 @@ VEHICLE_CONTEXT_COLUMNS = {
     "setup_available",
     "lmu_session_type",
     "lmu_track_name",
+    "lmu_track_layout",
 }
 
 
@@ -209,6 +210,7 @@ def validate_vehicle_context(
             setup_raw_sha256,
             setup_available,
             lmu_track_name,
+            lmu_track_layout,
             track
         FROM sessions
         ORDER BY session_id
@@ -232,6 +234,7 @@ def validate_vehicle_context(
             setup_raw_hash,
             setup_available,
             lmu_track_name,
+            lmu_track_layout,
             track,
         ) = row
 
@@ -311,6 +314,13 @@ def validate_vehicle_context(
             warnings.append(
                 f"session {session_id}: track filename/context difiere: "
                 f"track={track!r}, lmu_track_name={lmu_track_name!r}."
+            )
+
+        if not lmu_track_layout:
+            warnings.append(
+                f"session {session_id}: lmu_track_layout ausente; "
+                "la sesión queda almacenada pero no es elegible para "
+                "matching cross-session H2."
             )
 
 
@@ -1476,7 +1486,7 @@ def main():
     )
 
     print(
-        "RACE ENGINEER - HISTORY DB VALIDATOR v1.0"
+        "RACE ENGINEER - HISTORY DB VALIDATOR v1.2"
     )
 
     print(

@@ -1,0 +1,17 @@
+VALIDATION ERRORS
+=================
+conclusion global: steering_magnitude directo debe quedar anclado a una única zona A/B/C.
+
+RAW RESPONSE
+============
+{
+  "opportunities": [
+    "En la zona A, replicá la magnitud de dirección de la referencia.",
+    "En la zona B, replicá la magnitud de dirección de la referencia.",
+    "En la zona C, replicá la magnitud de dirección de la referencia."
+  ],
+  "repeated_observations": [],
+  "hypotheses": [],
+  "limitations": [],
+  "conclusion": "En la próxima tanda, enfocate en replicar la magnitud de dirección en las zonas A, B y C para acercar el input a la referencia."
+}

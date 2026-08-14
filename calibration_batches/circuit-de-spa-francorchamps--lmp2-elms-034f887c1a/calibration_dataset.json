@@ -1,0 +1,648 @@
+{
+  "metadata": {
+    "dataset_schema_version": "1.0",
+    "created_at_utc": "2026-08-14T15:05:47.421367+00:00",
+    "source_queue_path": "/workspaces/raithreshzz/calibration_batches/circuit-de-spa-francorchamps--lmp2-elms-034f887c1a/pair_review_queue.json",
+    "source_queue_sha256": "519f31b35df562fdaf789f9dcd4a2893f2ab056dfda99ae7ddcf8cae0c0272b8",
+    "source_labels_path": "/workspaces/raithreshzz/calibration_batches/circuit-de-spa-francorchamps--lmp2-elms-034f887c1a/pair_labels.json",
+    "source_labels_sha256": "125939ed95673c0d61f4d8431a7cbacce80dc49a633e209bfddea623844def70",
+    "split_unit": "session",
+    "evaluation_fraction_requested": 0.25,
+    "seed": 20260810,
+    "leakage_policy": "A session may belong to only one partition. Pairs crossing partitions are excluded from both.",
+    "skip_policy": "SKIP is excluded from calibration/evaluation ground truth.",
+    "ambiguous_policy": "AMBIGUOUS is preserved as a first-class human label.",
+    "matcher_status": "NO_THRESHOLDS_NO_MATCH_SCORE_NO_AUTOMATIC_MATCHING"
+  },
+  "validation": {
+    "pair_label_validation_summary": {
+      "queue_pairs": 24,
+      "label_records": 24,
+      "counts": {
+        "AMBIGUOUS": 1,
+        "SAME": 8,
+        "DIFFERENT": 15
+      },
+      "unreviewed": 0,
+      "sessions_by_label": {
+        "AMBIGUOUS": [
+          3,
+          5
+        ],
+        "SAME": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "DIFFERENT": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      }
+    },
+    "warnings": []
+  },
+  "session_assignment": [
+    {
+      "session_key": "[\"Circuit de Spa-Francorchamps\",1]",
+      "track": "Circuit de Spa-Francorchamps",
+      "session_id": 1,
+      "partition": "evaluation"
+    },
+    {
+      "session_key": "[\"Circuit de Spa-Francorchamps\",2]",
+      "track": "Circuit de Spa-Francorchamps",
+      "session_id": 2,
+      "partition": "calibration"
+    },
+    {
+      "session_key": "[\"Circuit de Spa-Francorchamps\",3]",
+      "track": "Circuit de Spa-Francorchamps",
+      "session_id": 3,
+      "partition": "calibration"
+    },
+    {
+      "session_key": "[\"Circuit de Spa-Francorchamps\",4]",
+      "track": "Circuit de Spa-Francorchamps",
+      "session_id": 4,
+      "partition": "calibration"
+    },
+    {
+      "session_key": "[\"Circuit de Spa-Francorchamps\",5]",
+      "track": "Circuit de Spa-Francorchamps",
+      "session_id": 5,
+      "partition": "evaluation"
+    },
+    {
+      "session_key": "[\"Circuit de Spa-Francorchamps\",6]",
+      "track": "Circuit de Spa-Francorchamps",
+      "session_id": 6,
+      "partition": "calibration"
+    }
+  ],
+  "counts": {
+    "reviewed_usable_pairs": 24,
+    "ignored_skip_pairs": 0,
+    "usable_sessions": 6,
+    "calibration_sessions": 4,
+    "evaluation_sessions": 2,
+    "calibration_pairs": 2,
+    "evaluation_pairs": 1,
+    "cross_split_pairs_excluded": 21,
+    "calibration_labels": {
+      "SAME": 1,
+      "DIFFERENT": 1,
+      "AMBIGUOUS": 0
+    },
+    "evaluation_labels": {
+      "SAME": 0,
+      "DIFFERENT": 1,
+      "AMBIGUOUS": 0
+    },
+    "all_usable_labels": {
+      "SAME": 8,
+      "DIFFERENT": 15,
+      "AMBIGUOUS": 1
+    }
+  },
+  "calibration": [
+    {
+      "pair_id": "7e80b9d31b210058b8cb",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-14T15:02:23.400289+00:00",
+      "selected_by": [
+        {
+          "lens": "deterministic_baseline",
+          "rank": 1
+        }
+      ],
+      "features": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "IDEC Sport #18:ELMS25",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "12047b833ca76325debb80f7f1fcdbf051000db0fdc7b8f3ae976fc7d8c8c469",
+        "setup_sha256_b": "eebb5db993e98c650dc876fede3d19bf13847ff06c8a212d6491e00d37d94ee1",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Light Clouds",
+        "weather_conditions_b": "Light Clouds",
+        "same_weather_conditions": true,
+        "same_session_type": false,
+        "session_a": 4,
+        "session_b": 3,
+        "timestamp_a": "2026-08-09T04:52:43Z",
+        "timestamp_b": "2026-08-10T00:34:34Z",
+        "session_type_a": "Q",
+        "session_type_b": "P",
+        "episode_pk_a": 78,
+        "episode_pk_b": 55,
+        "episode_id_a": 6,
+        "episode_id_b": 9,
+        "python_rank_a": 6,
+        "python_rank_b": 9,
+        "priority_rank_a": 1,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 2316.0,
+        "end_distance_a_m": 2361.0,
+        "center_distance_a_m": 2338.5,
+        "start_distance_b_m": 3669.0,
+        "end_distance_b_m": 3753.0,
+        "center_distance_b_m": 3711.0,
+        "center_distance_abs_diff_m": 1372.5,
+        "start_distance_abs_diff_m": 1353.0,
+        "end_distance_abs_diff_m": 1392.0,
+        "center_fraction_a": 0.33497243807090205,
+        "center_fraction_b": 0.5318877055597635,
+        "center_fraction_abs_diff": 0.19691526748886146,
+        "start_fraction_abs_diff": 0.19411847463502674,
+        "end_fraction_abs_diff": 0.19971206034269623,
+        "action_time_loss_a_s": 0.035245549264764975,
+        "action_time_loss_b_s": 0.06771644748876327,
+        "action_time_loss_similarity": 0.5204872755708804,
+        "evidence_strength_a": "moderate",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": true,
+        "speed_propagation_b": true,
+        "channels_a": [
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [
+          "steering_magnitude"
+        ],
+        "channel_jaccard": 0.5,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.11825396825396828,
+            "onset_offset_abs_diff_m": 5.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.5591093045872143,
+            "peak_difference_similarity": 0.5095135865974351,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 1437.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.5357142857142857,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "7e80b9d31b210058b8cb"
+      }
+    },
+    {
+      "pair_id": "66141b6573f6f350c71c",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-14T15:03:57.737700+00:00",
+      "selected_by": [
+        {
+          "lens": "highest_channel_similarity",
+          "rank": 4
+        },
+        {
+          "lens": "closest_centers",
+          "rank": 5
+        }
+      ],
+      "features": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "IDEC Sport #18:ELMS25",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "eebb5db993e98c650dc876fede3d19bf13847ff06c8a212d6491e00d37d94ee1",
+        "setup_sha256_b": "64f58c4fb1a00324cc2897bb541b69fb64169767453312509c221ff0f14010c7",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Light Clouds",
+        "weather_conditions_b": "Partially Cloudy",
+        "same_weather_conditions": false,
+        "same_session_type": false,
+        "session_a": 3,
+        "session_b": 6,
+        "timestamp_a": "2026-08-10T00:34:34Z",
+        "timestamp_b": "2026-08-10T01:03:52Z",
+        "session_type_a": "P",
+        "session_type_b": "R",
+        "episode_pk_a": 48,
+        "episode_pk_b": 139,
+        "episode_id_a": 2,
+        "episode_id_b": 6,
+        "python_rank_a": 2,
+        "python_rank_b": 6,
+        "priority_rank_a": 2,
+        "priority_rank_b": 1,
+        "start_distance_a_m": 2508.0,
+        "end_distance_a_m": 2570.0,
+        "center_distance_a_m": 2539.0,
+        "start_distance_b_m": 2522.0,
+        "end_distance_b_m": 2558.0,
+        "center_distance_b_m": 2540.0,
+        "center_distance_abs_diff_m": 1.0,
+        "start_distance_abs_diff_m": 14.0,
+        "end_distance_abs_diff_m": 12.0,
+        "center_fraction_a": 0.3639080798750309,
+        "center_fraction_b": 0.3634383755326337,
+        "center_fraction_abs_diff": 0.0004697043423971814,
+        "start_fraction_abs_diff": 0.0013978952102147169,
+        "end_fraction_abs_diff": 0.002337303895009135,
+        "action_time_loss_a_s": 0.33959439565361293,
+        "action_time_loss_b_s": 0.04153408245579726,
+        "action_time_loss_similarity": 0.12230497024503938,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "moderate",
+        "speed_propagation_a": true,
+        "speed_propagation_b": true,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "channel_jaccard": 1.0,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.22849462365591394,
+            "onset_offset_abs_diff_m": 16.0,
+            "end_offset_abs_diff_m": 15.0,
+            "mean_difference_similarity": 0.9507614388738223,
+            "peak_difference_similarity": 0.8386498129727422,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.4722222222222222,
+            "onset_offset_abs_diff_m": 17.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.7273600946271803,
+            "peak_difference_similarity": 0.5503467474985834,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 36.0,
+        "union_m": 62.0,
+        "overlap_over_union": 0.5806451612903226,
+        "overlap_over_shorter": 1.0,
+        "overlap_over_longer": 0.5806451612903226,
+        "length_similarity": 0.5806451612903226,
+        "fraction_overlap": 0.0051510950862893035,
+        "fraction_overlap_over_union": 0.5796674041254284,
+        "fraction_overlap_over_shorter": 1.0,
+        "pair_id": "66141b6573f6f350c71c"
+      }
+    }
+  ],
+  "evaluation": [
+    {
+      "pair_id": "f533d8e12aef5fa01b4f",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-14T15:02:08.555183+00:00",
+      "selected_by": [
+        {
+          "lens": "impact_divergence",
+          "rank": 1
+        }
+      ],
+      "features": {
+        "track": "Circuit de Spa-Francorchamps",
+        "track_layout": "Circuit de Spa-Francorchamps",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "IDEC Sport #18:ELMS25",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "a66fc51ec2c1c2d2ac4d0c7582227557887b3e3f699fa39d1e247bdf54479b12",
+        "setup_sha256_b": "4d1cff25525fd2c44b1d0360647a40dc7472fc5aae9bec74184078be8a719fae",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Light Clouds",
+        "weather_conditions_b": "Light Clouds",
+        "same_weather_conditions": true,
+        "same_session_type": false,
+        "session_a": 1,
+        "session_b": 5,
+        "timestamp_a": "2026-08-09T02:42:26Z",
+        "timestamp_b": "2026-08-10T00:53:48Z",
+        "session_type_a": "P",
+        "session_type_b": "Q",
+        "episode_pk_a": 5,
+        "episode_pk_b": 120,
+        "episode_id_a": 1,
+        "episode_id_b": 16,
+        "python_rank_a": 1,
+        "python_rank_b": 16,
+        "priority_rank_a": 2,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 2387.0,
+        "end_distance_a_m": 2595.0,
+        "center_distance_a_m": 2491.0,
+        "start_distance_b_m": 5104.0,
+        "end_distance_b_m": 5148.0,
+        "center_distance_b_m": 5126.0,
+        "center_distance_abs_diff_m": 2635.0,
+        "start_distance_abs_diff_m": 2717.0,
+        "end_distance_abs_diff_m": 2553.0,
+        "center_fraction_a": 0.3569553982075991,
+        "center_fraction_b": 0.7345540392940533,
+        "center_fraction_abs_diff": 0.3775986410864542,
+        "start_fraction_abs_diff": 0.38934904399182346,
+        "end_fraction_abs_diff": 0.36584823818108486,
+        "action_time_loss_a_s": 1.1061009843899683,
+        "action_time_loss_b_s": 0.020349786133991188,
+        "action_time_loss_similarity": 0.018397765141863975,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "weak",
+        "speed_propagation_a": true,
+        "speed_propagation_b": true,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude"
+        ],
+        "shared_channels": [
+          "steering_magnitude"
+        ],
+        "channels_only_a": [
+          "throttle"
+        ],
+        "channels_only_b": [],
+        "channel_jaccard": 0.5,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.08653846153846156,
+            "onset_offset_abs_diff_m": 9.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.2947534666591658,
+            "peak_difference_similarity": 0.3998465247998998,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 2761.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.21153846153846154,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "f533d8e12aef5fa01b4f"
+      }
+    }
+  ],
+  "excluded_cross_split": [
+    {
+      "pair_id": "49a7fb1c21ccca8af115",
+      "human_label": "AMBIGUOUS",
+      "track": "Circuit de Spa-Francorchamps",
+      "session_a": 3,
+      "session_b": 5,
+      "partition_a": "calibration",
+      "partition_b": "evaluation",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "da9e8ec1433a462abfba",
+      "human_label": "SAME",
+      "track": "Circuit de Spa-Francorchamps",
+      "session_a": 3,
+      "session_b": 5,
+      "partition_a": "calibration",
+      "partition_b": "evaluation",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "8930192a7c38686d03b2",
+      "human_label": "SAME",
+      "track": "Circuit de Spa-Francorchamps",
+      "session_a": 2,
+      "session_b": 5,
+      "partition_a": "calibration",
+      "partition_b": "evaluation",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "dcb7101384d218fbf9df",
+      "human_label": "DIFFERENT",
+      "track": "Circuit de Spa-Francorchamps",
+      "session_a": 2,
+      "session_b": 5,
+      "partition_a": "calibration",
+      "partition_b": "evaluation",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "fada2970eedf45a1004e",
+      "human_label": "SAME",
+      "track": "Circuit de Spa-Francorchamps",
+      "session_a": 1,
+      "session_b": 6,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "b9ab8739d780f0a39a80",
+      "human_label": "DIFFERENT",
+      "track": "Circuit de Spa-Francorchamps",
+      "session_a": 2,
+      "session_b": 5,
+      "partition_a": "calibration",
+      "partition_b": "evaluation",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "a86008f884b1855a2687",
+      "human_label": "DIFFERENT",
+      "track": "Circuit de Spa-Francorchamps",
+      "session_a": 1,
+      "session_b": 6,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "d8baff01f32ddd3405d8",
+      "human_label": "DIFFERENT",
+      "track": "Circuit de Spa-Francorchamps",
+      "session_a": 4,
+      "session_b": 5,
+      "partition_a": "calibration",
+      "partition_b": "evaluation",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "f0bbf56a8112373428f5",
+      "human_label": "SAME",
+      "track": "Circuit de Spa-Francorchamps",
+      "session_a": 4,
+      "session_b": 5,
+      "partition_a": "calibration",
+      "partition_b": "evaluation",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "3359dfbecf46e5fbd971",
+      "human_label": "DIFFERENT",
+      "track": "Circuit de Spa-Francorchamps",
+      "session_a": 3,
+      "session_b": 5,
+      "partition_a": "calibration",
+      "partition_b": "evaluation",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "8cb84d066102e0679172",
+      "human_label": "DIFFERENT",
+      "track": "Circuit de Spa-Francorchamps",
+      "session_a": 1,
+      "session_b": 6,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "2a14e28f3b22ef627f24",
+      "human_label": "DIFFERENT",
+      "track": "Circuit de Spa-Francorchamps",
+      "session_a": 2,
+      "session_b": 5,
+      "partition_a": "calibration",
+      "partition_b": "evaluation",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "4b2b7ab304030866839a",
+      "human_label": "SAME",
+      "track": "Circuit de Spa-Francorchamps",
+      "session_a": 5,
+      "session_b": 6,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "49c94a9b751af68b1632",
+      "human_label": "DIFFERENT",
+      "track": "Circuit de Spa-Francorchamps",
+      "session_a": 2,
+      "session_b": 5,
+      "partition_a": "calibration",
+      "partition_b": "evaluation",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "99b3e3e6dd5922b4ca44",
+      "human_label": "DIFFERENT",
+      "track": "Circuit de Spa-Francorchamps",
+      "session_a": 1,
+      "session_b": 6,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "f954c742567fd3ff7fdf",
+      "human_label": "DIFFERENT",
+      "track": "Circuit de Spa-Francorchamps",
+      "session_a": 4,
+      "session_b": 5,
+      "partition_a": "calibration",
+      "partition_b": "evaluation",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "3647b54060abf7621e2e",
+      "human_label": "SAME",
+      "track": "Circuit de Spa-Francorchamps",
+      "session_a": 5,
+      "session_b": 6,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "c91423c1e7cb0900eaef",
+      "human_label": "SAME",
+      "track": "Circuit de Spa-Francorchamps",
+      "session_a": 5,
+      "session_b": 6,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "0aa994665169b1236e8c",
+      "human_label": "DIFFERENT",
+      "track": "Circuit de Spa-Francorchamps",
+      "session_a": 3,
+      "session_b": 5,
+      "partition_a": "calibration",
+      "partition_b": "evaluation",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "c2efe5a858f0a84c9f7c",
+      "human_label": "DIFFERENT",
+      "track": "Circuit de Spa-Francorchamps",
+      "session_a": 1,
+      "session_b": 2,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "3baed4231601f166b94e",
+      "human_label": "DIFFERENT",
+      "track": "Circuit de Spa-Francorchamps",
+      "session_a": 4,
+      "session_b": 5,
+      "partition_a": "calibration",
+      "partition_b": "evaluation",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    }
+  ],
+  "ignored_skip": []
+}

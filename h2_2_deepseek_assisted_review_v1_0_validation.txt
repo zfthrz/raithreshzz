@@ -1,0 +1,27 @@
+H2.2 DEEPSEEK ASSISTED REVIEW v1.0 - OFFLINE VALIDATION
+========================================================
+
+Source human label files:
+- pair_labels.json: 24 labels (SAME 8, DIFFERENT 15, AMBIGUOUS 1)
+- boundary_pair_labels.json: 8 labels (SAME 4, AMBIGUOUS 4)
+- reject_boundary_pair_labels.json: 8 labels (SAME 1, DIFFERENT 4, AMBIGUOUS 3)
+
+Combined pool:
+- 40 unique pair_ids
+- SAME 13
+- DIFFERENT 19
+- AMBIGUOUS 8
+
+Checks:
+[PASS] All three Python scripts compile.
+[PASS] Blind queue generated with 40 unique pairs.
+[PASS] Blind pair payload contains no human_label, review_notes, reviewed_at_utc, selected_by, matcher_decision, or matcher_rule fields.
+[PASS] Reviewer dry-run loads all 40 pairs and sends no API request.
+[PASS] Reviewer uses one isolated request per pair.
+[PASS] Reviewer output is resumable and persisted after each pair.
+[PASS] Prompt explicitly forbids current matcher thresholds/rules and unsupported causal/dynamics inference.
+[PASS] Synthetic perfect-review benchmark: 40/40 exact, safety gate PASS.
+[PASS] Synthetic HIGH-confidence SAME->DIFFERENT injection: safety gate FAIL.
+[PASS] Safety gate contains no arbitrary overall-agreement threshold.
+
+No live DeepSeek request was made during offline validation.

@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "llm_analysis_version": "3.10.8.5.3",
+    "llm_analysis_version": "3.10.8.5.4",
     "report_presentation_version": "2.4",
     "source_json": "/workspaces/raithreshzz/Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z.json",
     "source_analysis_version": "3.8",
@@ -13,18 +13,18 @@
       "model": "deepseek-v4-pro",
       "http_request_count": 22,
       "usage_response_count": 22,
-      "prompt_tokens": 59595,
-      "prompt_cache_hit_tokens": 55040,
-      "prompt_cache_miss_tokens": 4555,
-      "completion_tokens": 4409,
-      "total_tokens": 64004,
+      "prompt_tokens": 59658,
+      "prompt_cache_hit_tokens": 52096,
+      "prompt_cache_miss_tokens": 7562,
+      "completion_tokens": 4104,
+      "total_tokens": 63762,
       "pricing_usd_per_million": {
         "input_cache_hit": 0.003625,
         "input_cache_miss": 0.435,
         "output": 0.87
       },
-      "estimated_cost_usd": 0.00601678,
-      "estimated_100_runs_usd": 0.601677,
+      "estimated_cost_usd": 0.0070488,
+      "estimated_100_runs_usd": 0.70488,
       "pricing_note": "pricing supplied for this DeepSeek experiment"
     },
     "context": 8192,
@@ -152,7 +152,7 @@
     },
     "structured_validation": "PASS",
     "factual_grounding_validation": "PASS",
-    "analysis_timestamp": "2026-08-14T15:57:11.402987+00:00"
+    "analysis_timestamp": "2026-08-14T16:08:37.459955+00:00"
   },
   "comparisons": [
     {
@@ -188,17 +188,9 @@
             "episode_id": 4,
             "attempts": 1,
             "fallback": null,
-            "deterministic_repairs": {
-              "replaced_fields": [
-                "recommendation"
-              ],
-              "pruned_hypothesis_indexes": [],
-              "target_reference_repairs": []
-            },
+            "deterministic_repairs": {},
             "pruned_hypothesis_indexes": [],
-            "original_validation_errors": [
-              "recommendation: menciona steering_magnitude pero ese canal no está autorizado por action_channels."
-            ]
+            "original_validation_errors": []
           },
           {
             "episode_id": 5,
@@ -245,8 +237,8 @@
             7,
             8
           ],
-          "priority_cut_rank": 3,
-          "no_actionable_start_rank": 7,
+          "priority_cut_rank": 4,
+          "no_actionable_start_rank": 8,
           "classifications": [
             {
               "episode_id": 1,
@@ -266,7 +258,7 @@
             {
               "episode_id": 4,
               "relative_priority_rank": 4,
-              "classification": "SECUNDARIO"
+              "classification": "PRIORITARIO"
             },
             {
               "episode_id": 5,
@@ -281,7 +273,7 @@
             {
               "episode_id": 7,
               "relative_priority_rank": 7,
-              "classification": "NO_ACCIONABLE"
+              "classification": "SECUNDARIO"
             },
             {
               "episode_id": 8,
@@ -292,9 +284,13 @@
         },
         "summary": {
           "attempts": 2,
-          "fallback": "DETERMINISTIC_FROM_VALIDATED_EPISODES",
+          "fallback": null,
           "pruned_summary_items": {},
-          "deterministic_repairs": {}
+          "deterministic_repairs": {
+            "target_reference": [
+              "conclusion"
+            ]
+          }
         }
       },
       "ground_truth": {
@@ -2365,91 +2361,96 @@
         "episode_assessments": [
           {
             "episode_id": 1,
-            "interpretation": "El volante se mantiene con mayor magnitud que la referencia mientras el acelerador queda por debajo, en un tramo donde la velocidad también es menor y la pérdida de tiempo continúa después del episodio.",
+            "interpretation": "En el tramo donde la velocidad es consistentemente menor, el volante se mantiene más girado y el acelerador se aplica con menor intensidad que en la referencia.",
             "hypotheses": [
-              "La mayor magnitud de volante podría estar asociada a una corrección que no se replica en la referencia.",
-              "El menor acelerador podría contribuir a la velocidad más baja observada en el mismo tramo."
+              "La mayor magnitud de dirección podría estar asociada a una menor aplicación de acelerador en ese sector.",
+              "La menor velocidad observada podría ser compatible con la combinación de mayor giro de volante y menor acelerador."
             ],
-            "recommendation": "Reducí la magnitud del volante hacia la referencia y aumentá el acelerador en la misma zona, replicando la secuencia de la referencia.",
+            "recommendation": "Reducí la magnitud de dirección hacia la referencia y aumentá la aplicación de acelerador en ese sector, replicando la secuencia de la referencia.",
             "classification": "PRIORITARIO"
           },
           {
             "episode_id": 2,
-            "interpretation": "El freno y el acelerador se mantienen más altos que la referencia en sus respectivos tramos, mientras la velocidad es menor en un sector amplio que los contiene.",
+            "interpretation": "El freno y el acelerador se mantienen más altos que la referencia en sectores consecutivos, mientras la velocidad es menor en un tramo amplio que los contiene.",
             "hypotheses": [
               "La mayor magnitud de freno podría contribuir a la menor velocidad observada en el sector.",
-              "El mayor acelerador podría estar asociado a una menor velocidad si se aplica en un contexto donde no se traduce en avance."
+              "El mayor acelerador podría no traducirse en mayor velocidad, lo que sugiere una posible ineficiencia en la aplicación."
             ],
-            "recommendation": "Reducí la magnitud del freno y del acelerador hacia la referencia en los tramos señalados.",
+            "recommendation": "Reducí la magnitud del freno y del acelerador hacia los valores de referencia, manteniendo la secuencia de aplicación.",
             "classification": "PRIORITARIO"
           },
           {
             "episode_id": 3,
             "interpretation": "El volante se mantiene con menor magnitud que la referencia en un tramo sostenido, mientras el acelerador presenta una secuencia mixta: primero menor y luego mayor. La velocidad también es menor en ese sector.",
             "hypotheses": [
-              "La menor magnitud de volante podría estar asociada a una diferencia en la secuencia de acelerador, aunque no se puede afirmar causalidad."
+              "La menor magnitud de volante podría estar asociada a una diferencia en la secuencia de acelerador, aunque la evidencia no permite establecer causalidad."
             ],
-            "recommendation": "Aumentá la magnitud del volante hacia la referencia en ese tramo y replicá la secuencia de acelerador de la referencia, con su evolución de menor a mayor.",
+            "recommendation": "Aumentá la magnitud del volante hacia la referencia y replicá la secuencia de acelerador de la referencia, acompañando la evolución de ambos inputs en el sector.",
             "classification": "PRIORITARIO"
           },
           {
             "episode_id": 4,
-            "interpretation": "El freno se mantiene más alto que la referencia en un tramo sostenido, mientras el acelerador muestra una secuencia mixta: primero menor y luego mayor que la referencia. La velocidad concurrente es menor durante parte del episodio.",
+            "interpretation": "El freno se mantiene más alto que la referencia durante un tramo sostenido, mientras el acelerador muestra una secuencia mixta: primero menor y luego mayor. La velocidad concurrente es menor en ese sector.",
             "hypotheses": [
-              "La mayor presión de freno podría estar asociada con la menor velocidad observada en el tramo inicial.",
-              "La modulación mixta del acelerador podría reflejar una secuencia distinta a la referencia, compatible con la velocidad menor registrada."
+              "La mayor presión de freno podría contribuir a la menor velocidad observada en el tramo.",
+              "La modulación mixta del acelerador podría estar asociada a la diferencia de velocidad."
             ],
-            "recommendation": "reducir la aplicación del freno hacia la referencia; replicar la secuencia y modulación del acelerador de la referencia",
-            "classification": "SECUNDARIO"
+            "recommendation": "Reducí la presión de freno hacia la referencia y replicá la secuencia de acelerador de la referencia, acompañando la modulación en el sector.",
+            "classification": "PRIORITARIO"
           },
           {
             "episode_id": 5,
-            "interpretation": "La vuelta comparada muestra una secuencia de dirección con variación mixta: primero mayor magnitud y luego menor respecto de la referencia, mientras el acelerador se mantiene por debajo en el mismo tramo inicial. La velocidad también es inferior y persiste más allá de los eventos de inputs.",
+            "interpretation": "La vuelta comparada muestra una secuencia de dirección con variación mixta: primero mayor magnitud y luego menor respecto de la referencia, mientras el acelerador se mantiene por debajo en el mismo tramo inicial. La velocidad también es menor y persiste más allá de los eventos de inputs.",
             "hypotheses": [
-              "La menor aplicación de acelerador podría estar asociada con la velocidad inferior observada en el tramo.",
-              "La variación mixta de dirección podría reflejar una modulación distinta a la referencia en esa sección."
+              "La menor aplicación de acelerador podría contribuir a la menor velocidad observada en el tramo.",
+              "La variación mixta de dirección podría estar asociada a una modulación diferente de la referencia."
             ],
             "recommendation": "Aumentá la aplicación de acelerador hacia la referencia en el tramo donde se mantiene por debajo y replicá la secuencia de dirección de la referencia, acompañando su evolución en lugar de forzar una magnitud fija.",
             "classification": "SECUNDARIO"
           },
           {
             "episode_id": 6,
-            "interpretation": "La vuelta comparada muestra una secuencia de dirección con variación mixta: primero mayor y luego menor que la referencia, mientras el acelerador se mantiene consistentemente más alto. La velocidad concurrente es menor en el tramo donde se concentran estas diferencias.",
+            "interpretation": "El acelerador se mantiene más alto que la referencia durante un tramo sostenido, mientras la dirección presenta una secuencia mixta: primero mayor y luego menor magnitud. La velocidad concurrente es menor que la referencia en ese sector.",
             "hypotheses": [
-              "La mayor apertura del acelerador podría estar asociada a la menor velocidad observada, aunque la evidencia no permite establecer una relación causal.",
-              "La variación mixta en la dirección podría reflejar una modulación distinta a la referencia en ese sector."
+              "El mayor acelerador podría estar asociado a una menor velocidad en ese tramo, aunque no se puede afirmar causalidad.",
+              "La variación mixta de dirección sugiere una modulación distinta a la referencia, posiblemente relacionada con la secuencia de inputs."
             ],
-            "recommendation": "Reducí la aplicación del acelerador hacia la referencia y replicá la secuencia de dirección de la vuelta de referencia, acompañando su evolución en el sector donde se concentran las diferencias.",
+            "recommendation": "Reducí el acelerador hacia la referencia en ese sector y replicá la secuencia de dirección de la vuelta de referencia, acompañando su evolución en lugar de forzar una magnitud fija.",
             "classification": "SECUNDARIO"
           },
           {
             "episode_id": 7,
             "interpretation": "La vuelta comparada muestra menor magnitud de dirección y menor acelerador en un tramo acotado, con la dirección sostenida por más distancia que el acelerador.",
             "hypotheses": [
-              "La menor magnitud de dirección podría estar asociada a una menor demanda de acelerador en ese sector, aunque la evidencia no permite establecer una relación causal."
+              "La menor magnitud de dirección podría estar asociada a una menor demanda de acelerador en ese sector, sin que la evidencia permita afirmar una relación causal."
             ],
             "recommendation": "Aumentá la magnitud de dirección y el acelerador hacia la referencia, priorizando la dirección como maniobra principal y acompañando con el acelerador en la misma secuencia.",
-            "classification": "NO_ACCIONABLE"
+            "classification": "SECUNDARIO"
           },
           {
             "episode_id": 8,
-            "interpretation": "En el tramo analizado, la dirección muestra una magnitud mayor que la referencia, mientras que el acelerador se mantiene por debajo. Ambas diferencias son sostenidas y coinciden parcialmente en distancia.",
+            "interpretation": "El volante se mantiene con mayor magnitud que la referencia en un tramo sostenido, mientras el acelerador queda por debajo en un sector que se superpone parcialmente con esa misma zona.",
             "hypotheses": [
-              "La mayor magnitud de dirección podría estar asociada a una corrección más amplia del volante en ese sector.",
-              "El menor uso del acelerador podría ser compatible con una fase de menor demanda de aceleración en la comparación."
+              "La mayor magnitud de volante podría estar asociada a una menor aplicación de acelerador en ese sector, aunque la evidencia no permite establecer una relación causal."
             ],
-            "recommendation": "Reducí la magnitud de dirección hacia la referencia y aumentá el acelerador en el mismo sector, manteniendo la secuencia de inputs.",
+            "recommendation": "Reducí la magnitud del volante hacia la referencia y aumentá el acelerador en el sector donde quedó por debajo, replicando la secuencia de la referencia.",
             "classification": "NO_ACCIONABLE"
           }
         ],
         "comparison_observations": [
-          "El volante se mantiene con mayor magnitud que la referencia mientras el acelerador queda por debajo, en un tramo donde la velocidad también es menor y la pérdida de tiempo continúa después del episodio.",
-          "El freno y el acelerador se mantienen más altos que la referencia en sus respectivos tramos, mientras la velocidad es menor en un sector amplio que los contiene."
+          "En varios sectores la vuelta comparada presenta menor velocidad que la referencia, asociada a diferencias en la magnitud y secuencia de dirección, freno y acelerador.",
+          "Se identifican tramos donde la dirección se mantiene más girada o menos girada que la referencia, con variaciones mixtas en la secuencia.",
+          "El freno y el acelerador muestran magnitudes superiores o inferiores a la referencia en distintos sectores, a menudo con modulaciones mixtas.",
+          "En algunos episodios la menor velocidad persiste más allá de los eventos de inputs, sugiriendo que las diferencias no se limitan a un único control."
         ],
-        "limitations": [],
-        "conclusion": "Replicá la secuencia de acelerador hacia la referencia; acompañá la dirección hacia la referencia."
+        "limitations": [
+          "La evidencia no permite establecer relaciones causales entre las diferencias de inputs y la menor velocidad.",
+          "No se puede determinar si las variaciones mixtas en dirección y acelerador responden a una estrategia intencional o a una limitación de ejecución.",
+          "La superposición parcial de sectores con diferencias en volante y acelerador impide aislar el efecto individual de cada control."
+        ],
+        "conclusion": "Priorizá replicar la secuencia de dirección de la referencia en los sectores donde la referencia muestra menor velocidad, acompañando con la modulación de freno y acelerador hacia los valores de referencia. En los tramos con freno o acelerador consistentemente más altos, reducí su magnitud; donde el acelerador queda por debajo, aumentalo. Evitá forzar magnitudes fijas y enfocate en reproducir la evolución temporal de los inputs de la referencia."
       },
-      "analysis": "# Debrief de vuelta — 4 → 3\n\n## Lectura rápida\n\nLa vuelta 3 quedó en 2:06.140, +1.8200 s respecto de la referencia de 2:04.320.\n\nPara la próxima vuelta, priorizá salida de T7 — Malmedy → T8 — Bruxelles: reducí la magnitud del volante hacia la referencia.\n\n## Puntos de trabajo\n\n### 1. salida de T7 — Malmedy → T8 — Bruxelles\n\nEl volante se mantiene con mayor magnitud que la referencia mientras el acelerador queda por debajo, en un tramo donde la velocidad también es menor y la pérdida de tiempo continúa después del episodio.\n\n**Qué probar:** Reducí la magnitud del volante hacia la referencia.\n\n**Referencia objetiva:** cambio de delta +0.2672 s; inputs: magnitud de dirección, acelerador; evidencia alta.\n\n**Contexto:** la diferencia de velocidad continuó después de terminar este bloque de acción.\n\n### 2. T8 — Bruxelles\n\nEl freno y el acelerador se mantienen más altos que la referencia en sus respectivos tramos, mientras la velocidad es menor en un sector amplio que los contiene.\n\n**Observación de coaching:** la recomendación validada no entra en el foco accionable de este debrief; queda como evidencia secundaria.\n\n**Referencia objetiva:** cambio de delta +0.1804 s; inputs: freno, acelerador; evidencia alta.\n\n### 3. T13 — Fagnes\n\nEl volante se mantiene con menor magnitud que la referencia en un tramo sostenido, mientras el acelerador presenta una secuencia mixta: primero menor y luego mayor. La velocidad también es menor en ese sector.\n\n**Observación de coaching:** la recomendación validada no entra en el foco accionable de este debrief; queda como evidencia secundaria.\n\n**Referencia objetiva:** cambio de delta +0.1383 s; inputs: magnitud de dirección, acelerador; evidencia alta.\n\n## Aspectos secundarios\n\n- **T12 — Fagnes:** observación solamente — El freno se mantiene más alto que la referencia en un tramo sostenido, mientras el acelerador muestra una secuencia mixta: primero menor y luego mayor que la referencia. La velocidad concurrente es menor durante parte del episodio.\n- **T9 — Jacky Ickx Curve:** observación solamente — La vuelta comparada muestra una secuencia de dirección con variación mixta: primero mayor magnitud y luego menor respecto de la referencia, mientras el acelerador se mantiene por debajo en el mismo tramo inicial. La velocidad también es inferior y persiste más allá de los eventos de inputs.\n- **T14 — Campus:** observación solamente — La vuelta comparada muestra una secuencia de dirección con variación mixta: primero mayor y luego menor que la referencia, mientras el acelerador se mantiene consistentemente más alto. La velocidad concurrente es menor en el tramo donde se concentran estas diferencias.\n\n## Respaldo técnico\n\nLa clasificación completa se mantiene en el JSON. Resumen de episodios:\n\n- #1 · PRIORITARIO · salida de T7 — Malmedy → T8 — Bruxelles · 2575 m–2658 m · +0.2672 s.\n- #2 · PRIORITARIO · T8 — Bruxelles · 2853 m–2918 m · +0.1804 s.\n- #3 · PRIORITARIO · T13 — Fagnes · 4465 m–4591 m · +0.1383 s.\n- #4 · SECUNDARIO · T12 — Fagnes · 4342 m–4430 m · +0.1140 s.\n- #5 · SECUNDARIO · T9 — Jacky Ickx Curve · 3193 m–3237 m · +0.0759 s.\n- #6 · SECUNDARIO · T14 — Campus · 4821 m–4882 m · +0.0717 s.\n- #7 · NO_ACCIONABLE · T1 — La Source · 241 m–292 m · +0.0661 s.\n- #8 · NO_ACCIONABLE · T19 — Bus Stop · 6666 m–6698 m · +0.0518 s.\n\nLos episodios no accionables permanecen registrados en el JSON y no se convierten en instrucciones de conducción."
+      "analysis": "# Debrief de vuelta — 4 → 3\n\n## Lectura rápida\n\nLa vuelta 3 quedó en 2:06.140, +1.8200 s respecto de la referencia de 2:04.320.\n\nPara la próxima vuelta, priorizá salida de T7 — Malmedy → T8 — Bruxelles: reducí la magnitud del volante hacia la referencia.\n\n## Puntos de trabajo\n\n### 1. salida de T7 — Malmedy → T8 — Bruxelles\n\nEn el tramo donde la velocidad es consistentemente menor, el volante se mantiene más girado y el acelerador se aplica con menor intensidad que en la referencia.\n\n**Qué probar:** Reducí la magnitud del volante hacia la referencia.\n\n**Referencia objetiva:** cambio de delta +0.2672 s; inputs: magnitud de dirección, acelerador; evidencia alta.\n\n**Contexto:** la diferencia de velocidad continuó después de terminar este bloque de acción.\n\n### 2. T8 — Bruxelles\n\nEl freno y el acelerador se mantienen más altos que la referencia en sectores consecutivos, mientras la velocidad es menor en un tramo amplio que los contiene.\n\n**Observación de coaching:** la recomendación validada no entra en el foco accionable de este debrief; queda como evidencia secundaria.\n\n**Referencia objetiva:** cambio de delta +0.1804 s; inputs: freno, acelerador; evidencia alta.\n\n### 3. T13 — Fagnes\n\nEl volante se mantiene con menor magnitud que la referencia en un tramo sostenido, mientras el acelerador presenta una secuencia mixta: primero menor y luego mayor. La velocidad también es menor en ese sector.\n\n**Observación de coaching:** la recomendación validada no entra en el foco accionable de este debrief; queda como evidencia secundaria.\n\n**Referencia objetiva:** cambio de delta +0.1383 s; inputs: magnitud de dirección, acelerador; evidencia alta.\n\n### 4. T12 — Fagnes\n\nEl freno se mantiene más alto que la referencia durante un tramo sostenido, mientras el acelerador muestra una secuencia mixta: primero menor y luego mayor. La velocidad concurrente es menor en ese sector.\n\n**Observación de coaching:** la recomendación validada no entra en el foco accionable de este debrief; queda como evidencia secundaria.\n\n**Referencia objetiva:** cambio de delta +0.1140 s; inputs: freno, acelerador; evidencia alta.\n\n## Aspectos secundarios\n\n- **T9 — Jacky Ickx Curve:** observación solamente — La vuelta comparada muestra una secuencia de dirección con variación mixta: primero mayor magnitud y luego menor respecto de la referencia, mientras el acelerador se mantiene por debajo en el mismo tramo inicial. La velocidad también es menor y persiste más allá de los eventos de inputs.\n- **T14 — Campus:** observación solamente — El acelerador se mantiene más alto que la referencia durante un tramo sostenido, mientras la dirección presenta una secuencia mixta: primero mayor y luego menor magnitud. La velocidad concurrente es menor que la referencia en ese sector.\n- **T1 — La Source:** observación solamente — La vuelta comparada muestra menor magnitud de dirección y menor acelerador en un tramo acotado, con la dirección sostenida por más distancia que el acelerador.\n\n## Respaldo técnico\n\nLa clasificación completa se mantiene en el JSON. Resumen de episodios:\n\n- #1 · PRIORITARIO · salida de T7 — Malmedy → T8 — Bruxelles · 2575 m–2658 m · +0.2672 s.\n- #2 · PRIORITARIO · T8 — Bruxelles · 2853 m–2918 m · +0.1804 s.\n- #3 · PRIORITARIO · T13 — Fagnes · 4465 m–4591 m · +0.1383 s.\n- #4 · PRIORITARIO · T12 — Fagnes · 4342 m–4430 m · +0.1140 s.\n- #5 · SECUNDARIO · T9 — Jacky Ickx Curve · 3193 m–3237 m · +0.0759 s.\n- #6 · SECUNDARIO · T14 — Campus · 4821 m–4882 m · +0.0717 s.\n- #7 · SECUNDARIO · T1 — La Source · 241 m–292 m · +0.0661 s.\n- #8 · NO_ACCIONABLE · T19 — Bus Stop · 6666 m–6698 m · +0.0518 s.\n\n## Límites de esta lectura\n\n- La evidencia no permite establecer relaciones causales entre las diferencias de inputs y la menor velocidad.\n- No se puede determinar si las variaciones mixtas en dirección y acelerador responden a una estrategia intencional o a una limitación de ejecución.\n\nLos episodios no accionables permanecen registrados en el JSON y no se convierten en instrucciones de conducción."
     },
     {
       "status": "VALID",
@@ -2460,9 +2461,19 @@
             "episode_id": 1,
             "attempts": 1,
             "fallback": null,
-            "deterministic_repairs": {},
-            "pruned_hypothesis_indexes": [],
-            "original_validation_errors": []
+            "deterministic_repairs": {
+              "replaced_fields": [],
+              "pruned_hypothesis_indexes": [
+                1
+              ],
+              "target_reference_repairs": []
+            },
+            "pruned_hypothesis_indexes": [
+              1
+            ],
+            "original_validation_errors": [
+              "hypotheses[1]: usa lenguaje causal asertivo (causalidad afirmada)."
+            ]
           },
           {
             "episode_id": 2,
@@ -5144,99 +5155,98 @@
         "episode_assessments": [
           {
             "episode_id": 1,
-            "interpretation": "El freno y el acelerador se mantienen más altos que la referencia en sus respectivos tramos, mientras la dirección alterna entre mayor y menor magnitud. La velocidad es consistentemente menor en el sector donde coinciden estas diferencias.",
+            "interpretation": "El freno y el acelerador se mantienen más altos que la referencia en sus respectivos tramos, mientras la dirección alterna entre mayor y menor magnitud. La velocidad es menor en un tramo que coincide con parte de esas diferencias.",
             "hypotheses": [
-              "El mayor freno y acelerador podrían estar asociados con la menor velocidad observada, aunque no se puede afirmar causalidad.",
-              "La variación mixta en la dirección sugiere una secuencia de volante distinta a la referencia."
+              "La mayor aplicación de freno podría contribuir a la menor velocidad observada en el tramo coincidente."
             ],
-            "recommendation": "Reducí el freno y el acelerador hacia la referencia en los tramos indicados y replicá la secuencia de dirección de la referencia, acompañando la evolución del volante en lugar de forzar una magnitud fija.",
+            "recommendation": "Reducí la presión de freno hacia la referencia en el tramo donde se mantiene más alto. Reducí la aplicación de acelerador hacia la referencia en su tramo. Replicá la secuencia de dirección de la referencia, alternando mayor y menor magnitud según corresponda.",
             "classification": "PRIORITARIO"
           },
           {
             "episode_id": 2,
-            "interpretation": "El acelerador se mantiene por debajo de la referencia en varios tramos, mientras la dirección alterna entre menor y mayor magnitud. La velocidad también es inferior durante un período extenso.",
+            "interpretation": "El acelerador se mantiene por debajo de la referencia en varios tramos, mientras la dirección alterna entre menor y mayor magnitud. La velocidad también es inferior en el mismo sector, lo que sugiere una posible relación entre la menor aplicación de acelerador y la pérdida de tiempo.",
             "hypotheses": [
               "La menor aplicación de acelerador podría contribuir a la velocidad inferior observada.",
-              "La variación mixta en la dirección sugiere una secuencia de volante distinta a la referencia."
+              "La variación mixta en la dirección podría estar asociada a la secuencia de entrada en la zona."
             ],
-            "recommendation": "Aumentá la aplicación de acelerador hacia la referencia y replicá la secuencia de dirección de la vuelta de referencia.",
+            "recommendation": "Aumentá la aplicación de acelerador hacia la referencia en los tramos donde se mantiene por debajo, y replicá la secuencia de dirección de la referencia, acompañando su evolución a lo largo del sector.",
             "classification": "PRIORITARIO"
           },
           {
             "episode_id": 3,
-            "interpretation": "El registro muestra una menor magnitud de dirección y una menor aplicación de acelerador en comparación con la referencia, con una velocidad también inferior que se extiende más allá del episodio de acelerador.",
+            "interpretation": "La vuelta comparada muestra una magnitud de dirección menor en un tramo sostenido, seguida de una aplicación de acelerador también menor en un tramo más extenso. La velocidad concurrente es inferior y continúa perdiendo tiempo después de que finaliza la diferencia de acelerador.",
             "hypotheses": [
-              "La menor magnitud de dirección podría estar asociada a una menor demanda de acelerador en el mismo tramo.",
-              "La velocidad inferior podría ser compatible con la menor aplicación de acelerador observada."
+              "La menor magnitud de dirección podría estar asociada a una menor demanda de cambio de dirección en ese tramo.",
+              "La menor aplicación de acelerador podría contribuir a la velocidad inferior observada."
             ],
-            "recommendation": "Aumentá la magnitud de dirección y la aplicación de acelerador hacia los valores de referencia, manteniendo la secuencia de inputs.",
+            "recommendation": "Aumentá la magnitud de dirección hacia la referencia en el tramo donde se observa menor, y luego aumentá la aplicación de acelerador hacia la referencia en el tramo siguiente, manteniendo la secuencia de ambos inputs.",
             "classification": "PRIORITARIO"
           },
           {
             "episode_id": 4,
-            "interpretation": "La vuelta comparada muestra una dirección con mayor magnitud sostenida y un acelerador con menor aplicación en el mismo tramo, coexistiendo con una velocidad inferior que se prolonga más allá del episodio.",
+            "interpretation": "En el tramo donde la velocidad es menor, el volante se mantiene más girado y el acelerador se aplica con menor intensidad que en la referencia.",
             "hypotheses": [
-              "La mayor magnitud de dirección podría estar asociada a una corrección más amplia del volante, compatible con la menor aplicación de acelerador observada.",
-              "La menor aplicación de acelerador podría contribuir a la velocidad inferior registrada en el tramo."
+              "La mayor magnitud de dirección podría estar asociada a una menor aplicación de acelerador en ese sector.",
+              "La menor velocidad podría ser compatible con la combinación de mayor ángulo de volante y menor acelerador."
             ],
-            "recommendation": "Reducí la magnitud de dirección hacia la referencia y aumentá la aplicación de acelerador en la misma zona, replicando la secuencia de la vuelta de referencia.",
+            "recommendation": "Reducí la magnitud de dirección hacia la referencia y aumentá la aplicación de acelerador en ese sector, manteniendo la secuencia de inputs.",
             "classification": "PRIORITARIO"
           },
           {
             "episode_id": 5,
-            "interpretation": "El volante se mantiene con menor magnitud que la referencia en un tramo sostenido, mientras el acelerador presenta una secuencia mixta: primero mayor y luego menor. La velocidad concurrente es menor en parte del episodio.",
+            "interpretation": "El volante se mantiene con menor magnitud que la referencia en un tramo sostenido, mientras el acelerador presenta una secuencia mixta: primero mayor y luego menor que la referencia. La velocidad también es menor en un tramo que coincide parcialmente con la mayor aplicación de acelerador.",
             "hypotheses": [
-              "La menor magnitud de volante podría estar asociada a una diferencia en la secuencia de acelerador, aunque no se puede afirmar causalidad."
+              "La menor magnitud de volante podría estar asociada a una diferencia en la secuencia de acelerador, aunque la evidencia no permite establecer una relación causal."
             ],
-            "recommendation": "Aumentá la magnitud del volante hacia la referencia en el tramo donde se mantiene menor y replicá la secuencia de acelerador de la referencia, con su modulación inicial mayor y posterior menor.",
+            "recommendation": "Aumentá la magnitud del volante hacia la referencia en el tramo donde se mantiene menor y replicá la secuencia de acelerador de la referencia, acompañando su evolución en lugar de forzar una dirección única.",
             "classification": "SECUNDARIO"
           },
           {
             "episode_id": 6,
-            "interpretation": "El episodio muestra una reducción sostenida en la magnitud de dirección y en la aplicación del acelerador respecto de la referencia, coincidiendo con una velocidad menor en el mismo tramo.",
+            "interpretation": "El registro muestra una reducción sostenida en la magnitud de dirección y en la aplicación del acelerador respecto de la referencia, coincidiendo con una velocidad menor en el mismo tramo.",
             "hypotheses": [
               "La menor magnitud de dirección podría estar asociada a una menor demanda de cambio de dirección en ese sector.",
-              "La menor aplicación del acelerador podría contribuir a la velocidad más baja observada."
+              "La menor aplicación del acelerador podría estar asociada a la menor velocidad observada."
             ],
-            "recommendation": "Aumentá la magnitud de dirección y la aplicación del acelerador hacia los valores de referencia, manteniendo la secuencia de inputs.",
+            "recommendation": "Aumentá la magnitud de dirección y la aplicación del acelerador hacia los valores de referencia en ese sector, manteniendo la secuencia de inputs.",
             "classification": "SECUNDARIO"
           },
           {
             "episode_id": 7,
-            "interpretation": "El freno presenta una secuencia mixta respecto de la referencia, con un tramo inicial más intenso y luego menor presión. El acelerador se mantiene por debajo de la referencia en los tramos donde se compara, coincidiendo con una velocidad también menor.",
+            "interpretation": "El freno presenta una secuencia mixta, con un tramo inicial más intenso y luego menor presión respecto de la referencia, mientras el acelerador se mantiene consistentemente por debajo en los sectores donde se registran diferencias. La velocidad también es menor en ese mismo tramo, lo que resulta compatible con la menor aplicación de acelerador.",
             "hypotheses": [
-              "La menor aplicación del acelerador podría contribuir a la velocidad más baja observada en el mismo tramo."
+              "La menor aplicación de acelerador podría contribuir a la velocidad más baja observada en el sector."
             ],
-            "recommendation": "Replicá la secuencia de freno de la referencia y aumentá la aplicación del acelerador hacia la referencia en los tramos donde se mantiene por debajo.",
+            "recommendation": "Replicá la secuencia de freno de la referencia y aumentá la aplicación de acelerador en los sectores donde se registra menor presión.",
             "classification": "SECUNDARIO"
           },
           {
             "episode_id": 8,
-            "interpretation": "La vuelta comparada muestra una dirección con mayor magnitud sostenida y un acelerador con menor aplicación, coexistiendo con una velocidad menor en el mismo tramo.",
+            "interpretation": "El volante se mantiene más cargado que la referencia en un tramo donde el acelerador está claramente menos abierto, y la velocidad es menor en ese mismo sector.",
             "hypotheses": [
-              "La mayor magnitud de dirección podría contribuir a la menor velocidad observada.",
-              "La menor aplicación de acelerador podría contribuir a la menor velocidad observada."
+              "La mayor carga de volante podría estar asociada a la menor apertura de acelerador y a la velocidad más baja en ese tramo."
             ],
-            "recommendation": "Reducí la magnitud de dirección hacia la referencia y aumentá la aplicación de acelerador hacia la referencia en el tramo señalado.",
+            "recommendation": "Reducí la carga de volante hacia la referencia y aumentá la apertura del acelerador en ese sector, acompañando la secuencia de la vuelta de referencia.",
             "classification": "NO_ACCIONABLE"
           }
         ],
         "comparison_observations": [
           "El freno y el acelerador se mantienen más altos que la referencia en sus respectivos tramos, mientras la dirección alterna entre mayor y menor magnitud.",
-          "El acelerador se mantiene por debajo de la referencia en varios tramos, con dirección alternando entre menor y mayor magnitud.",
-          "Se registra menor magnitud de dirección y menor aplicación de acelerador en comparación con la referencia.",
-          "La vuelta comparada muestra dirección con mayor magnitud sostenida y acelerador con menor aplicación en el mismo tramo.",
-          "El volante se mantiene con menor magnitud que la referencia en un tramo sostenido, con acelerador primero mayor y luego menor.",
-          "Se observa reducción sostenida en la magnitud de dirección y en la aplicación del acelerador respecto de la referencia.",
-          "El freno presenta secuencia mixta: inicial más intenso y luego menor presión; el acelerador se mantiene por debajo de la referencia."
+          "El acelerador se mantiene por debajo de la referencia en varios tramos, mientras la dirección alterna entre menor y mayor magnitud.",
+          "La vuelta comparada muestra una magnitud de dirección menor en un tramo sostenido, seguida de una aplicación de acelerador también menor en un tramo más extenso.",
+          "En el tramo donde la velocidad es menor, el volante se mantiene más girado y el acelerador se aplica con menor intensidad que en la referencia.",
+          "El volante se mantiene con menor magnitud que la referencia en un tramo sostenido, mientras el acelerador presenta una secuencia mixta: primero mayor y luego menor.",
+          "El registro muestra una reducción sostenida en la magnitud de dirección y en la aplicación del acelerador respecto de la referencia, coincidiendo con una velocidad menor.",
+          "El freno presenta una secuencia mixta, con un tramo inicial más intenso y luego menor presión, mientras el acelerador se mantiene consistentemente por debajo.",
+          "El volante se mantiene más cargado que la referencia en un tramo donde el acelerador está claramente menos abierto."
         ],
         "limitations": [
-          "La causalidad entre las diferencias de freno, acelerador, dirección y velocidad no puede determinarse con la evidencia disponible.",
-          "No es posible inferir si las variaciones en la dirección responden a una secuencia de volante distinta o a una corrección puntual."
+          "La causa de las diferencias no puede determinarse con la evidencia disponible.",
+          "No es posible establecer una relación causal entre la dirección y el acelerador en todos los sectores."
         ],
-        "conclusion": "El patrón prioritario es la coexistencia de diferencias en freno, acelerador y dirección con velocidad consistentemente menor. En la próxima vuelta, el piloto debe replicar la secuencia de dirección de la referencia y ajustar freno y acelerador hacia los valores de referencia, priorizando la modulación del acelerador en los tramos donde se mantiene por debajo."
+        "conclusion": "El patrón principal es la menor aplicación de acelerador en varios sectores, asociada a velocidad inferior. En la próxima vuelta, aumentá la aplicación de acelerador hacia la referencia en los tramos donde se mantiene por debajo, y replicá la secuencia de dirección de la referencia, acompañando su evolución en lugar de forzar una magnitud única. Donde el freno se mantiene más alto, reducí la presión hacia la referencia."
       },
-      "analysis": "# Debrief de vuelta — 4 → 2\n\n## Lectura rápida\n\nLa vuelta 2 quedó en 2:09.020, +4.7000 s respecto de la referencia de 2:04.320.\n\nPara la próxima vuelta, priorizá T8 — Bruxelles: replicá la secuencia de dirección de la referencia.\n\n## Puntos de trabajo\n\n### 1. T8 — Bruxelles\n\nEl freno y el acelerador se mantienen más altos que la referencia en sus respectivos tramos, mientras la dirección alterna entre mayor y menor magnitud. La velocidad es consistentemente menor en el sector donde coinciden estas diferencias.\n\n**Qué probar:** Replicá la secuencia de dirección de la referencia.\n\n**Referencia objetiva:** cambio de delta +0.2362 s; inputs: freno, magnitud de dirección, acelerador; evidencia alta.\n\n### 2. T10 — Pouhon\n\nEl acelerador se mantiene por debajo de la referencia en varios tramos, mientras la dirección alterna entre menor y mayor magnitud. La velocidad también es inferior durante un período extenso.\n\n**Observación de coaching:** la recomendación validada no entra en el foco accionable de este debrief; queda como evidencia secundaria.\n\n**Referencia objetiva:** cambio de delta +0.1971 s; inputs: magnitud de dirección, acelerador; evidencia alta.\n\n**Contexto:** la diferencia de velocidad continuó después de terminar este bloque de acción.\n\n### 3. T13 — Fagnes\n\nEl registro muestra una menor magnitud de dirección y una menor aplicación de acelerador en comparación con la referencia, con una velocidad también inferior que se extiende más allá del episodio de acelerador.\n\n**Observación de coaching:** la recomendación validada no entra en el foco accionable de este debrief; queda como evidencia secundaria.\n\n**Referencia objetiva:** cambio de delta +0.1856 s; inputs: magnitud de dirección, acelerador; evidencia alta.\n\n**Contexto:** la diferencia de velocidad continuó después de terminar este bloque de acción.\n\n### 4. T9 — Jacky Ickx Curve\n\nLa vuelta comparada muestra una dirección con mayor magnitud sostenida y un acelerador con menor aplicación en el mismo tramo, coexistiendo con una velocidad inferior que se prolonga más allá del episodio.\n\n**Observación de coaching:** la recomendación validada no entra en el foco accionable de este debrief; queda como evidencia secundaria.\n\n**Referencia objetiva:** cambio de delta +0.1784 s; inputs: magnitud de dirección, acelerador; evidencia alta.\n\n**Contexto:** la diferencia de velocidad continuó después de terminar este bloque de acción.\n\n## Aspectos secundarios\n\n- **T18–T19 — Bus Stop:** observación solamente — El volante se mantiene con menor magnitud que la referencia en un tramo sostenido, mientras el acelerador presenta una secuencia mixta: primero mayor y luego menor. La velocidad concurrente es menor en parte del episodio.\n- **T7 — Malmedy:** observación solamente — El episodio muestra una reducción sostenida en la magnitud de dirección y en la aplicación del acelerador respecto de la referencia, coincidiendo con una velocidad menor en el mismo tramo.\n- **T4 — Le Raidillon de l'Eau Rouge → entrada de T5 — Les Combes:** observación solamente — El freno presenta una secuencia mixta respecto de la referencia, con un tramo inicial más intenso y luego menor presión. El acelerador se mantiene por debajo de la referencia en los tramos donde se compara, coincidiendo con una velocidad también menor.\n\n## Respaldo técnico\n\nLa clasificación completa se mantiene en el JSON. Resumen de episodios:\n\n- #1 · PRIORITARIO · T8 — Bruxelles · 2854 m–2951 m · +0.2362 s.\n- #2 · PRIORITARIO · T10 — Pouhon · 3660 m–3846 m · +0.1971 s.\n- #3 · PRIORITARIO · T13 — Fagnes · 4463 m–4554 m · +0.1856 s.\n- #4 · PRIORITARIO · T9 — Jacky Ickx Curve · 3164 m–3219 m · +0.1784 s.\n- #5 · SECUNDARIO · T18–T19 — Bus Stop · 6605 m–6704 m · +0.1739 s.\n- #6 · SECUNDARIO · T7 — Malmedy · 2448 m–2503 m · +0.1393 s.\n- #7 · SECUNDARIO · T4 — Le Raidillon de l'Eau Rouge → entrada de T5 — Les Combes · 2141 m–2256 m · +0.1115 s.\n- #8 · NO_ACCIONABLE · T3–T4 — Le Raidillon de l'Eau Rouge · 1047 m–1194 m · +0.0954 s.\n\n## Límites de esta lectura\n\n- La causalidad entre las diferencias de freno, acelerador, dirección y velocidad no puede determinarse con la evidencia disponible.\n- No es posible inferir si las variaciones en la dirección responden a una secuencia de volante distinta o a una corrección puntual.\n\nLos episodios no accionables permanecen registrados en el JSON y no se convierten en instrucciones de conducción."
+      "analysis": "# Debrief de vuelta — 4 → 2\n\n## Lectura rápida\n\nLa vuelta 2 quedó en 2:09.020, +4.7000 s respecto de la referencia de 2:04.320.\n\nPara la próxima vuelta, priorizá T8 — Bruxelles: replicá la secuencia de dirección de la referencia.\n\n## Puntos de trabajo\n\n### 1. T8 — Bruxelles\n\nEl freno y el acelerador se mantienen más altos que la referencia en sus respectivos tramos, mientras la dirección alterna entre mayor y menor magnitud. La velocidad es menor en un tramo que coincide con parte de esas diferencias.\n\n**Qué probar:** Replicá la secuencia de dirección de la referencia.\n\n**Referencia objetiva:** cambio de delta +0.2362 s; inputs: freno, magnitud de dirección, acelerador; evidencia alta.\n\n### 2. T10 — Pouhon\n\nEl acelerador se mantiene por debajo de la referencia en varios tramos, mientras la dirección alterna entre menor y mayor magnitud. La velocidad también es inferior en el mismo sector, lo que sugiere una posible relación entre la menor aplicación de acelerador y la pérdida de tiempo.\n\n**Observación de coaching:** la recomendación validada no entra en el foco accionable de este debrief; queda como evidencia secundaria.\n\n**Referencia objetiva:** cambio de delta +0.1971 s; inputs: magnitud de dirección, acelerador; evidencia alta.\n\n**Contexto:** la diferencia de velocidad continuó después de terminar este bloque de acción.\n\n### 3. T13 — Fagnes\n\nLa vuelta comparada muestra una magnitud de dirección menor en un tramo sostenido, seguida de una aplicación de acelerador también menor en un tramo más extenso. La velocidad concurrente es inferior y continúa perdiendo tiempo después de que finaliza la diferencia de acelerador.\n\n**Observación de coaching:** la recomendación validada no entra en el foco accionable de este debrief; queda como evidencia secundaria.\n\n**Referencia objetiva:** cambio de delta +0.1856 s; inputs: magnitud de dirección, acelerador; evidencia alta.\n\n**Contexto:** la diferencia de velocidad continuó después de terminar este bloque de acción.\n\n### 4. T9 — Jacky Ickx Curve\n\nEn el tramo donde la velocidad es menor, el volante se mantiene más girado y el acelerador se aplica con menor intensidad que en la referencia.\n\n**Observación de coaching:** la recomendación validada no entra en el foco accionable de este debrief; queda como evidencia secundaria.\n\n**Referencia objetiva:** cambio de delta +0.1784 s; inputs: magnitud de dirección, acelerador; evidencia alta.\n\n**Contexto:** la diferencia de velocidad continuó después de terminar este bloque de acción.\n\n## Aspectos secundarios\n\n- **T18–T19 — Bus Stop:** observación solamente — El volante se mantiene con menor magnitud que la referencia en un tramo sostenido, mientras el acelerador presenta una secuencia mixta: primero mayor y luego menor que la referencia. La velocidad también es menor en un tramo que coincide parcialmente con la mayor aplicación de acelerador.\n- **T7 — Malmedy:** observación solamente — El registro muestra una reducción sostenida en la magnitud de dirección y en la aplicación del acelerador respecto de la referencia, coincidiendo con una velocidad menor en el mismo tramo.\n- **T4 — Le Raidillon de l'Eau Rouge → entrada de T5 — Les Combes:** observación solamente — El freno presenta una secuencia mixta, con un tramo inicial más intenso y luego menor presión respecto de la referencia, mientras el acelerador se mantiene consistentemente por debajo en los sectores donde se registran diferencias. La velocidad también es menor en ese mismo tramo, lo que resulta compatible con la menor aplicación de acelerador.\n\n## Respaldo técnico\n\nLa clasificación completa se mantiene en el JSON. Resumen de episodios:\n\n- #1 · PRIORITARIO · T8 — Bruxelles · 2854 m–2951 m · +0.2362 s.\n- #2 · PRIORITARIO · T10 — Pouhon · 3660 m–3846 m · +0.1971 s.\n- #3 · PRIORITARIO · T13 — Fagnes · 4463 m–4554 m · +0.1856 s.\n- #4 · PRIORITARIO · T9 — Jacky Ickx Curve · 3164 m–3219 m · +0.1784 s.\n- #5 · SECUNDARIO · T18–T19 — Bus Stop · 6605 m–6704 m · +0.1739 s.\n- #6 · SECUNDARIO · T7 — Malmedy · 2448 m–2503 m · +0.1393 s.\n- #7 · SECUNDARIO · T4 — Le Raidillon de l'Eau Rouge → entrada de T5 — Les Combes · 2141 m–2256 m · +0.1115 s.\n- #8 · NO_ACCIONABLE · T3–T4 — Le Raidillon de l'Eau Rouge · 1047 m–1194 m · +0.0954 s.\n\n## Límites de esta lectura\n\n- La causa de las diferencias no puede determinarse con la evidencia disponible.\n- No es posible establecer una relación causal entre la dirección y el acelerador en todos los sectores.\n\nLos episodios no accionables permanecen registrados en el JSON y no se convierten en instrucciones de conducción."
     },
     {
       "status": "VALID",
@@ -8451,7 +8461,7 @@
         "action_time_loss_s": 0.2671567409152118,
         "evidence_strength": "strong",
         "steering_coaching_requested": true,
-        "validated_recommendation": "Reducí la magnitud del volante hacia la referencia y aumentá el acelerador en la misma zona, replicando la secuencia de la referencia.",
+        "validated_recommendation": "Reducí la magnitud de dirección hacia la referencia y aumentá la aplicación de acelerador en ese sector, replicando la secuencia de la referencia.",
         "channels": [
           {
             "channel": "steering_magnitude",
@@ -8546,7 +8556,7 @@
         "action_time_loss_s": 0.18038390462049136,
         "evidence_strength": "strong",
         "steering_coaching_requested": false,
-        "validated_recommendation": "Reducí la magnitud del freno y del acelerador hacia la referencia en los tramos señalados.",
+        "validated_recommendation": "Reducí la magnitud del freno y del acelerador hacia los valores de referencia, manteniendo la secuencia de aplicación.",
         "channels": [
           {
             "channel": "brake",
@@ -8657,7 +8667,7 @@
         "action_time_loss_s": 0.13827204955487105,
         "evidence_strength": "strong",
         "steering_coaching_requested": true,
-        "validated_recommendation": "Aumentá la magnitud del volante hacia la referencia en ese tramo y replicá la secuencia de acelerador de la referencia, con su evolución de menor a mayor.",
+        "validated_recommendation": "Aumentá la magnitud del volante hacia la referencia y replicá la secuencia de acelerador de la referencia, acompañando la evolución de ambos inputs en el sector.",
         "channels": [
           {
             "channel": "steering_magnitude",
@@ -8714,6 +8724,125 @@
         "propagation_statuses": []
       },
       {
+        "comparison": "4->3",
+        "reference_lap": 4,
+        "comparison_lap": 3,
+        "comparison_minus_reference_s": 1.8199999999999932,
+        "comparison_priority_rank": 1,
+        "episode_id": 4,
+        "relative_priority_rank": 4,
+        "classification": "PRIORITARIO",
+        "start_distance_m": 4342.0,
+        "end_distance_m": 4430.0,
+        "track_location": {
+          "track": "Circuit de Spa-Francorchamps",
+          "profile_id": "spa-francorchamps-lmu-fia2026-v0.2",
+          "profile_status": "VALIDATED_MULTI_SESSION",
+          "numbering_scheme": "FIA/F1 Spa 2026 19-turn map",
+          "start_m": 4342.0,
+          "end_m": 4430.0,
+          "span_m": 88.0,
+          "label": "T12 — Fagnes",
+          "location_type": "corner",
+          "turn_coverage_share": 1.0,
+          "overlaps": [
+            {
+              "turn": 12,
+              "name": "Fagnes",
+              "group": "Fagnes",
+              "direction": "right",
+              "overlap_m": 88.0,
+              "overlap_share": 1.0,
+              "phase": "apex",
+              "turn_start_m": 4292.5,
+              "apex_m": 4400.5,
+              "turn_end_m": 4456.5
+            }
+          ],
+          "status": "RESOLVED"
+        },
+        "action_time_loss_s": 0.11395572255480602,
+        "evidence_strength": "strong",
+        "steering_coaching_requested": false,
+        "validated_recommendation": "Reducí la presión de freno hacia la referencia y replicá la secuencia de acelerador de la referencia, acompañando la modulación en el sector.",
+        "channels": [
+          {
+            "channel": "brake",
+            "direction": "higher_in_comparison_lap",
+            "description": "más freno",
+            "quantitative": {
+              "mean_difference": 19.22557706369464,
+              "peak_difference": 25.072421962914554,
+              "event_mean_min": 19.22557706369464,
+              "event_mean_max": 19.22557706369464,
+              "event_count": 1,
+              "unit": "percentage_points"
+            },
+            "event_intervals_m": [
+              [
+                4342.0,
+                4363.0
+              ]
+            ]
+          },
+          {
+            "channel": "throttle",
+            "direction": "mixed",
+            "description": "modulación distinta del acelerador",
+            "quantitative": {
+              "mean_difference": 2.6504789227873147,
+              "peak_difference": 60.741381340136726,
+              "event_mean_min": -33.62791755500139,
+              "event_mean_max": 38.92887540057602,
+              "event_count": 2,
+              "unit": "percentage_points"
+            },
+            "event_intervals_m": [
+              [
+                4363.0,
+                4382.0
+              ],
+              [
+                4388.0,
+                4430.0
+              ]
+            ]
+          }
+        ],
+        "brake_throttle_relation": {
+          "kind": "brake_then_throttle",
+          "overlap_m": 0.0,
+          "gap_m": 0.0,
+          "brake_event_length_m": 21.0,
+          "throttle_event_length_m": 61.0,
+          "brake_intervals_m": [
+            [
+              4342.0,
+              4363.0
+            ]
+          ],
+          "throttle_intervals_m": [
+            [
+              4363.0,
+              4382.0
+            ],
+            [
+              4388.0,
+              4430.0
+            ]
+          ]
+        },
+        "braking_point": null,
+        "brake_release": null,
+        "throttle_onset": null,
+        "throttle_release": null,
+        "speed_context_available": true,
+        "speed_directions": [
+          "lower_in_comparison_lap"
+        ],
+        "propagation_statuses": []
+      },
+      {
         "comparison": "4->2",
         "reference_lap": 4,
         "comparison_lap": 2,
@@ -8754,7 +8883,7 @@
         "action_time_loss_s": 0.23623675123783272,
         "evidence_strength": "strong",
         "steering_coaching_requested": true,
-        "validated_recommendation": "Reducí el freno y el acelerador hacia la referencia en los tramos indicados y replicá la secuencia de dirección de la referencia, acompañando la evolución del volante en lugar de forzar una magnitud fija.",
+        "validated_recommendation": "Reducí la presión de freno hacia la referencia en el tramo donde se mantiene más alto. Reducí la aplicación de acelerador hacia la referencia en su tramo. Replicá la secuencia de dirección de la referencia, alternando mayor y menor magnitud según corresponda.",
         "channels": [
           {
             "channel": "brake",
@@ -8888,7 +9017,7 @@
         "action_time_loss_s": 0.1970922465442584,
         "evidence_strength": "strong",
         "steering_coaching_requested": true,
-        "validated_recommendation": "Aumentá la aplicación de acelerador hacia la referencia y replicá la secuencia de dirección de la vuelta de referencia.",
+        "validated_recommendation": "Aumentá la aplicación de acelerador hacia la referencia en los tramos donde se mantiene por debajo, y replicá la secuencia de dirección de la referencia, acompañando su evolución a lo largo del sector.",
         "channels": [
           {
             "channel": "steering_magnitude",
@@ -8995,7 +9124,7 @@
         "action_time_loss_s": 0.18562388661709406,
         "evidence_strength": "strong",
         "steering_coaching_requested": true,
-        "validated_recommendation": "Aumentá la magnitud de dirección y la aplicación de acelerador hacia los valores de referencia, manteniendo la secuencia de inputs.",
+        "validated_recommendation": "Aumentá la magnitud de dirección hacia la referencia en el tramo donde se observa menor, y luego aumentá la aplicación de acelerador hacia la referencia en el tramo siguiente, manteniendo la secuencia de ambos inputs.",
         "channels": [
           {
             "channel": "steering_magnitude",
@@ -9090,7 +9219,7 @@
         "action_time_loss_s": 0.17840138837814834,
         "evidence_strength": "strong",
         "steering_coaching_requested": true,
-        "validated_recommendation": "Reducí la magnitud de dirección hacia la referencia y aumentá la aplicación de acelerador en la misma zona, replicando la secuencia de la vuelta de referencia.",
+        "validated_recommendation": "Reducí la magnitud de dirección hacia la referencia y aumentá la aplicación de acelerador en ese sector, manteniendo la secuencia de inputs.",
         "channels": [
           {
             "channel": "steering_magnitude",
@@ -9187,7 +9316,7 @@
         "action_time_loss_s": 0.2671567409152118,
         "evidence_strength": "strong",
         "steering_coaching_requested": true,
-        "validated_recommendation": "Reducí la magnitud del volante hacia la referencia y aumentá el acelerador en la misma zona, replicando la secuencia de la referencia.",
+        "validated_recommendation": "Reducí la magnitud de dirección hacia la referencia y aumentá la aplicación de acelerador en ese sector, replicando la secuencia de la referencia.",
         "channels": [
           {
             "channel": "steering_magnitude",
@@ -9282,7 +9411,7 @@
         "action_time_loss_s": 0.18038390462049136,
         "evidence_strength": "strong",
         "steering_coaching_requested": false,
-        "validated_recommendation": "Reducí la magnitud del freno y del acelerador hacia la referencia en los tramos señalados.",
+        "validated_recommendation": "Reducí la magnitud del freno y del acelerador hacia los valores de referencia, manteniendo la secuencia de aplicación.",
         "channels": [
           {
             "channel": "brake",
@@ -9393,7 +9522,7 @@
         "action_time_loss_s": 0.13827204955487105,
         "evidence_strength": "strong",
         "steering_coaching_requested": true,
-        "validated_recommendation": "Aumentá la magnitud del volante hacia la referencia en ese tramo y replicá la secuencia de acelerador de la referencia, con su evolución de menor a mayor.",
+        "validated_recommendation": "Aumentá la magnitud del volante hacia la referencia y replicá la secuencia de acelerador de la referencia, acompañando la evolución de ambos inputs en el sector.",
         "channels": [
           {
             "channel": "steering_magnitude",
@@ -9457,7 +9586,7 @@
         "comparison_priority_rank": 1,
         "episode_id": 4,
         "relative_priority_rank": 4,
-        "classification": "SECUNDARIO",
+        "classification": "PRIORITARIO",
         "start_distance_m": 4342.0,
         "end_distance_m": 4430.0,
         "track_location": {
@@ -9490,7 +9619,7 @@
         "action_time_loss_s": 0.11395572255480602,
         "evidence_strength": "strong",
         "steering_coaching_requested": false,
-        "validated_recommendation": "reducir la aplicación del freno hacia la referencia; replicar la secuencia y modulación del acelerador de la referencia",
+        "validated_recommendation": "Reducí la presión de freno hacia la referencia y replicá la secuencia de acelerador de la referencia, acompañando la modulación en el sector.",
         "channels": [
           {
             "channel": "brake",
@@ -9708,7 +9837,7 @@
         "action_time_loss_s": 0.07165742336863445,
         "evidence_strength": "strong",
         "steering_coaching_requested": true,
-        "validated_recommendation": "Reducí la aplicación del acelerador hacia la referencia y replicá la secuencia de dirección de la vuelta de referencia, acompañando su evolución en el sector donde se concentran las diferencias.",
+        "validated_recommendation": "Reducí el acelerador hacia la referencia en ese sector y replicá la secuencia de dirección de la vuelta de referencia, acompañando su evolución en lugar de forzar una magnitud fija.",
         "channels": [
           {
             "channel": "steering_magnitude",
@@ -9772,7 +9901,7 @@
         "comparison_priority_rank": 1,
         "episode_id": 7,
         "relative_priority_rank": 7,
-        "classification": "NO_ACCIONABLE",
+        "classification": "SECUNDARIO",
         "start_distance_m": 241.0,
         "end_distance_m": 292.0,
         "track_location": {
@@ -9896,7 +10025,7 @@
         "action_time_loss_s": 0.051786143043301536,
         "evidence_strength": "strong",
         "steering_coaching_requested": true,
-        "validated_recommendation": "Reducí la magnitud de dirección hacia la referencia y aumentá el acelerador en el mismo sector, manteniendo la secuencia de inputs.",
+        "validated_recommendation": "Reducí la magnitud del volante hacia la referencia y aumentá el acelerador en el sector donde quedó por debajo, replicando la secuencia de la referencia.",
         "channels": [
           {
             "channel": "steering_magnitude",
@@ -9987,7 +10116,7 @@
         "action_time_loss_s": 0.23623675123783272,
         "evidence_strength": "strong",
         "steering_coaching_requested": true,
-        "validated_recommendation": "Reducí el freno y el acelerador hacia la referencia en los tramos indicados y replicá la secuencia de dirección de la referencia, acompañando la evolución del volante en lugar de forzar una magnitud fija.",
+        "validated_recommendation": "Reducí la presión de freno hacia la referencia en el tramo donde se mantiene más alto. Reducí la aplicación de acelerador hacia la referencia en su tramo. Replicá la secuencia de dirección de la referencia, alternando mayor y menor magnitud según corresponda.",
         "channels": [
           {
             "channel": "brake",
@@ -10121,7 +10250,7 @@
         "action_time_loss_s": 0.1970922465442584,
         "evidence_strength": "strong",
         "steering_coaching_requested": true,
-        "validated_recommendation": "Aumentá la aplicación de acelerador hacia la referencia y replicá la secuencia de dirección de la vuelta de referencia.",
+        "validated_recommendation": "Aumentá la aplicación de acelerador hacia la referencia en los tramos donde se mantiene por debajo, y replicá la secuencia de dirección de la referencia, acompañando su evolución a lo largo del sector.",
         "channels": [
           {
             "channel": "steering_magnitude",
@@ -10228,7 +10357,7 @@
         "action_time_loss_s": 0.18562388661709406,
         "evidence_strength": "strong",
         "steering_coaching_requested": true,
-        "validated_recommendation": "Aumentá la magnitud de dirección y la aplicación de acelerador hacia los valores de referencia, manteniendo la secuencia de inputs.",
+        "validated_recommendation": "Aumentá la magnitud de dirección hacia la referencia en el tramo donde se observa menor, y luego aumentá la aplicación de acelerador hacia la referencia en el tramo siguiente, manteniendo la secuencia de ambos inputs.",
         "channels": [
           {
             "channel": "steering_magnitude",
@@ -10323,7 +10452,7 @@
         "action_time_loss_s": 0.17840138837814834,
         "evidence_strength": "strong",
         "steering_coaching_requested": true,
-        "validated_recommendation": "Reducí la magnitud de dirección hacia la referencia y aumentá la aplicación de acelerador en la misma zona, replicando la secuencia de la vuelta de referencia.",
+        "validated_recommendation": "Reducí la magnitud de dirección hacia la referencia y aumentá la aplicación de acelerador en ese sector, manteniendo la secuencia de inputs.",
         "channels": [
           {
             "channel": "steering_magnitude",
@@ -10430,7 +10559,7 @@
         "action_time_loss_s": 0.17390835961313655,
         "evidence_strength": "strong",
         "steering_coaching_requested": true,
-        "validated_recommendation": "Aumentá la magnitud del volante hacia la referencia en el tramo donde se mantiene menor y replicá la secuencia de acelerador de la referencia, con su modulación inicial mayor y posterior menor.",
+        "validated_recommendation": "Aumentá la magnitud del volante hacia la referencia en el tramo donde se mantiene menor y replicá la secuencia de acelerador de la referencia, acompañando su evolución en lugar de forzar una dirección única.",
         "channels": [
           {
             "channel": "steering_magnitude",
@@ -10539,7 +10668,7 @@
         "action_time_loss_s": 0.13931338206928956,
         "evidence_strength": "strong",
         "steering_coaching_requested": true,
-        "validated_recommendation": "Aumentá la magnitud de dirección y la aplicación del acelerador hacia los valores de referencia, manteniendo la secuencia de inputs.",
+        "validated_recommendation": "Aumentá la magnitud de dirección y la aplicación del acelerador hacia los valores de referencia en ese sector, manteniendo la secuencia de inputs.",
         "channels": [
           {
             "channel": "steering_magnitude",
@@ -10634,7 +10763,7 @@
         "action_time_loss_s": 0.11148423309622046,
         "evidence_strength": "strong",
         "steering_coaching_requested": false,
-        "validated_recommendation": "Replicá la secuencia de freno de la referencia y aumentá la aplicación del acelerador hacia la referencia en los tramos donde se mantiene por debajo.",
+        "validated_recommendation": "Replicá la secuencia de freno de la referencia y aumentá la aplicación de acelerador en los sectores donde se registra menor presión.",
         "channels": [
           {
             "channel": "brake",
@@ -10781,7 +10910,7 @@
         "action_time_loss_s": 0.09537867664471378,
         "evidence_strength": "strong",
         "steering_coaching_requested": true,
-        "validated_recommendation": "Reducí la magnitud de dirección hacia la referencia y aumentá la aplicación de acelerador hacia la referencia en el tramo señalado.",
+        "validated_recommendation": "Reducí la carga de volante hacia la referencia y aumentá la apertura del acelerador en ese sector, acompañando la secuencia de la vuelta de referencia.",
         "channels": [
           {
             "channel": "steering_magnitude",
@@ -10994,7 +11123,7 @@
             "action_time_loss_s": 0.18038390462049136,
             "evidence_strength": "strong",
             "steering_coaching_requested": false,
-            "validated_recommendation": "Reducí la magnitud del freno y del acelerador hacia la referencia en los tramos señalados.",
+            "validated_recommendation": "Reducí la magnitud del freno y del acelerador hacia los valores de referencia, manteniendo la secuencia de aplicación.",
             "channels": [
               {
                 "channel": "brake",
@@ -11105,7 +11234,7 @@
             "action_time_loss_s": 0.23623675123783272,
             "evidence_strength": "strong",
             "steering_coaching_requested": true,
-            "validated_recommendation": "Reducí el freno y el acelerador hacia la referencia en los tramos indicados y replicá la secuencia de dirección de la referencia, acompañando la evolución del volante en lugar de forzar una magnitud fija.",
+            "validated_recommendation": "Reducí la presión de freno hacia la referencia en el tramo donde se mantiene más alto. Reducí la aplicación de acelerador hacia la referencia en su tramo. Replicá la secuencia de dirección de la referencia, alternando mayor y menor magnitud según corresponda.",
             "channels": [
               {
                 "channel": "brake",
@@ -11333,7 +11462,7 @@
             "action_time_loss_s": 0.13827204955487105,
             "evidence_strength": "strong",
             "steering_coaching_requested": true,
-            "validated_recommendation": "Aumentá la magnitud del volante hacia la referencia en ese tramo y replicá la secuencia de acelerador de la referencia, con su evolución de menor a mayor.",
+            "validated_recommendation": "Aumentá la magnitud del volante hacia la referencia y replicá la secuencia de acelerador de la referencia, acompañando la evolución de ambos inputs en el sector.",
             "channels": [
               {
                 "channel": "steering_magnitude",
@@ -11430,7 +11559,7 @@
             "action_time_loss_s": 0.18562388661709406,
             "evidence_strength": "strong",
             "steering_coaching_requested": true,
-            "validated_recommendation": "Aumentá la magnitud de dirección y la aplicación de acelerador hacia los valores de referencia, manteniendo la secuencia de inputs.",
+            "validated_recommendation": "Aumentá la magnitud de dirección hacia la referencia en el tramo donde se observa menor, y luego aumentá la aplicación de acelerador hacia la referencia en el tramo siguiente, manteniendo la secuencia de ambos inputs.",
             "channels": [
               {
                 "channel": "steering_magnitude",
@@ -11576,7 +11705,7 @@
             "action_time_loss_s": 0.2671567409152118,
             "evidence_strength": "strong",
             "steering_coaching_requested": true,
-            "validated_recommendation": "Reducí la magnitud del volante hacia la referencia y aumentá el acelerador en la misma zona, replicando la secuencia de la referencia.",
+            "validated_recommendation": "Reducí la magnitud de dirección hacia la referencia y aumentá la aplicación de acelerador en ese sector, replicando la secuencia de la referencia.",
             "channels": [
               {
                 "channel": "steering_magnitude",
@@ -11722,7 +11851,7 @@
             "action_time_loss_s": 0.1970922465442584,
             "evidence_strength": "strong",
             "steering_coaching_requested": true,
-            "validated_recommendation": "Aumentá la aplicación de acelerador hacia la referencia y replicá la secuencia de dirección de la vuelta de referencia.",
+            "validated_recommendation": "Aumentá la aplicación de acelerador hacia la referencia en los tramos donde se mantiene por debajo, y replicá la secuencia de dirección de la referencia, acompañando su evolución a lo largo del sector.",
             "channels": [
               {
                 "channel": "steering_magnitude",
@@ -11880,7 +12009,7 @@
             "action_time_loss_s": 0.17840138837814834,
             "evidence_strength": "strong",
             "steering_coaching_requested": true,
-            "validated_recommendation": "Reducí la magnitud de dirección hacia la referencia y aumentá la aplicación de acelerador en la misma zona, replicando la secuencia de la vuelta de referencia.",
+            "validated_recommendation": "Reducí la magnitud de dirección hacia la referencia y aumentá la aplicación de acelerador en ese sector, manteniendo la secuencia de inputs.",
             "channels": [
               {
                 "channel": "steering_magnitude",
@@ -11959,6 +12088,213 @@
               "turn_start_m": 3092.5,
               "apex_m": 3166.5,
               "turn_end_m": 3248.5
+            }
+          ],
+          "status": "RESOLVED"
+        }
+      },
+      {
+        "start_distance_m": 4342.0,
+        "end_distance_m": 4430.0,
+        "comparison_count": 1,
+        "comparisons": [
+          "4->3"
+        ],
+        "recurrence_episode_count": 1,
+        "priority_episode_count": 1,
+        "best_comparison_priority_rank": 1,
+        "best_episode_priority_rank": 4,
+        "max_action_time_loss_s": 0.11395572255480602,
+        "repeated_differences": [],
+        "brake_throttle_relation": {
+          "comparison_count": 1,
+          "kinds": [
+            "brake_then_throttle"
+          ],
+          "families": [
+            "brake_then_throttle"
+          ],
+          "gap_min_m": 0.0,
+          "gap_max_m": 0.0,
+          "overlap_min_m": null,
+          "overlap_max_m": null,
+          "per_comparison": [
+            {
+              "comparison": "4->3",
+              "kind": "brake_then_throttle",
+              "overlap_m": 0.0,
+              "gap_m": 0.0,
+              "brake_event_length_m": 21.0,
+              "throttle_event_length_m": 61.0,
+              "brake_intervals_m": [
+                [
+                  4342.0,
+                  4363.0
+                ]
+              ],
+              "throttle_intervals_m": [
+                [
+                  4363.0,
+                  4382.0
+                ],
+                [
+                  4388.0,
+                  4430.0
+                ]
+              ]
+            }
+          ],
+          "kind": "brake_then_throttle"
+        },
+        "speed_directions": [
+          "lower_in_comparison_lap"
+        ],
+        "propagation_statuses": [],
+        "findings": [
+          {
+            "comparison": "4->3",
+            "reference_lap": 4,
+            "comparison_lap": 3,
+            "comparison_minus_reference_s": 1.8199999999999932,
+            "comparison_priority_rank": 1,
+            "episode_id": 4,
+            "relative_priority_rank": 4,
+            "classification": "PRIORITARIO",
+            "start_distance_m": 4342.0,
+            "end_distance_m": 4430.0,
+            "track_location": {
+              "track": "Circuit de Spa-Francorchamps",
+              "profile_id": "spa-francorchamps-lmu-fia2026-v0.2",
+              "profile_status": "VALIDATED_MULTI_SESSION",
+              "numbering_scheme": "FIA/F1 Spa 2026 19-turn map",
+              "start_m": 4342.0,
+              "end_m": 4430.0,
+              "span_m": 88.0,
+              "label": "T12 — Fagnes",
+              "location_type": "corner",
+              "turn_coverage_share": 1.0,
+              "overlaps": [
+                {
+                  "turn": 12,
+                  "name": "Fagnes",
+                  "group": "Fagnes",
+                  "direction": "right",
+                  "overlap_m": 88.0,
+                  "overlap_share": 1.0,
+                  "phase": "apex",
+                  "turn_start_m": 4292.5,
+                  "apex_m": 4400.5,
+                  "turn_end_m": 4456.5
+                }
+              ],
+              "status": "RESOLVED"
+            },
+            "action_time_loss_s": 0.11395572255480602,
+            "evidence_strength": "strong",
+            "steering_coaching_requested": false,
+            "validated_recommendation": "Reducí la presión de freno hacia la referencia y replicá la secuencia de acelerador de la referencia, acompañando la modulación en el sector.",
+            "channels": [
+              {
+                "channel": "brake",
+                "direction": "higher_in_comparison_lap",
+                "description": "más freno",
+                "quantitative": {
+                  "mean_difference": 19.22557706369464,
+                  "peak_difference": 25.072421962914554,
+                  "event_mean_min": 19.22557706369464,
+                  "event_mean_max": 19.22557706369464,
+                  "event_count": 1,
+                  "unit": "percentage_points"
+                },
+                "event_intervals_m": [
+                  [
+                    4342.0,
+                    4363.0
+                  ]
+                ]
+              },
+              {
+                "channel": "throttle",
+                "direction": "mixed",
+                "description": "modulación distinta del acelerador",
+                "quantitative": {
+                  "mean_difference": 2.6504789227873147,
+                  "peak_difference": 60.741381340136726,
+                  "event_mean_min": -33.62791755500139,
+                  "event_mean_max": 38.92887540057602,
+                  "event_count": 2,
+                  "unit": "percentage_points"
+                },
+                "event_intervals_m": [
+                  [
+                    4363.0,
+                    4382.0
+                  ],
+                  [
+                    4388.0,
+                    4430.0
+                  ]
+                ]
+              }
+            ],
+            "brake_throttle_relation": {
+              "kind": "brake_then_throttle",
+              "overlap_m": 0.0,
+              "gap_m": 0.0,
+              "brake_event_length_m": 21.0,
+              "throttle_event_length_m": 61.0,
+              "brake_intervals_m": [
+                [
+                  4342.0,
+                  4363.0
+                ]
+              ],
+              "throttle_intervals_m": [
+                [
+                  4363.0,
+                  4382.0
+                ],
+                [
+                  4388.0,
+                  4430.0
+                ]
+              ]
+            },
+            "braking_point": null,
+            "brake_release": null,
+            "throttle_onset": null,
+            "throttle_release": null,
+            "speed_context_available": true,
+            "speed_directions": [
+              "lower_in_comparison_lap"
+            ],
+            "propagation_statuses": []
+          }
+        ],
+        "region_label": "F",
+        "track_location": {
+          "track": "Circuit de Spa-Francorchamps",
+          "profile_id": "spa-francorchamps-lmu-fia2026-v0.2",
+          "profile_status": "VALIDATED_MULTI_SESSION",
+          "numbering_scheme": "FIA/F1 Spa 2026 19-turn map",
+          "start_m": 4342.0,
+          "end_m": 4430.0,
+          "span_m": 88.0,
+          "label": "T12 — Fagnes",
+          "location_type": "corner",
+          "turn_coverage_share": 1.0,
+          "overlaps": [
+            {
+              "turn": 12,
+              "name": "Fagnes",
+              "group": "Fagnes",
+              "direction": "right",
+              "overlap_m": 88.0,
+              "overlap_share": 1.0,
+              "phase": "apex",
+              "turn_start_m": 4292.5,
+              "apex_m": 4400.5,
+              "turn_end_m": 4456.5
             }
           ],
           "status": "RESOLVED"
@@ -12118,7 +12454,7 @@
             "action_time_loss_s": 0.23623675123783272,
             "evidence_strength": "strong",
             "steering_coaching_requested": true,
-            "validated_recommendation": "Reducí el freno y el acelerador hacia la referencia en los tramos indicados y replicá la secuencia de dirección de la referencia, acompañando la evolución del volante en lugar de forzar una magnitud fija.",
+            "validated_recommendation": "Reducí la presión de freno hacia la referencia en el tramo donde se mantiene más alto. Reducí la aplicación de acelerador hacia la referencia en su tramo. Replicá la secuencia de dirección de la referencia, alternando mayor y menor magnitud según corresponda.",
             "channels": [
               {
                 "channel": "brake",
@@ -12250,7 +12586,7 @@
             "action_time_loss_s": 0.18038390462049136,
             "evidence_strength": "strong",
             "steering_coaching_requested": false,
-            "validated_recommendation": "Reducí la magnitud del freno y del acelerador hacia la referencia en los tramos señalados.",
+            "validated_recommendation": "Reducí la magnitud del freno y del acelerador hacia los valores de referencia, manteniendo la secuencia de aplicación.",
             "channels": [
               {
                 "channel": "brake",
@@ -12452,7 +12788,7 @@
             "action_time_loss_s": 0.18562388661709406,
             "evidence_strength": "strong",
             "steering_coaching_requested": true,
-            "validated_recommendation": "Aumentá la magnitud de dirección y la aplicación de acelerador hacia los valores de referencia, manteniendo la secuencia de inputs.",
+            "validated_recommendation": "Aumentá la magnitud de dirección hacia la referencia en el tramo donde se observa menor, y luego aumentá la aplicación de acelerador hacia la referencia en el tramo siguiente, manteniendo la secuencia de ambos inputs.",
             "channels": [
               {
                 "channel": "steering_magnitude",
@@ -12545,7 +12881,7 @@
             "action_time_loss_s": 0.13827204955487105,
             "evidence_strength": "strong",
             "steering_coaching_requested": true,
-            "validated_recommendation": "Aumentá la magnitud del volante hacia la referencia en ese tramo y replicá la secuencia de acelerador de la referencia, con su evolución de menor a mayor.",
+            "validated_recommendation": "Aumentá la magnitud del volante hacia la referencia y replicá la secuencia de acelerador de la referencia, acompañando la evolución de ambos inputs en el sector.",
             "channels": [
               {
                 "channel": "steering_magnitude",
@@ -12733,7 +13069,7 @@
             "action_time_loss_s": 0.17840138837814834,
             "evidence_strength": "strong",
             "steering_coaching_requested": true,
-            "validated_recommendation": "Reducí la magnitud de dirección hacia la referencia y aumentá la aplicación de acelerador en la misma zona, replicando la secuencia de la vuelta de referencia.",
+            "validated_recommendation": "Reducí la magnitud de dirección hacia la referencia y aumentá la aplicación de acelerador en ese sector, manteniendo la secuencia de inputs.",
             "channels": [
               {
                 "channel": "steering_magnitude",
@@ -13026,7 +13362,7 @@
             "action_time_loss_s": 0.17390835961313655,
             "evidence_strength": "strong",
             "steering_coaching_requested": true,
-            "validated_recommendation": "Aumentá la magnitud del volante hacia la referencia en el tramo donde se mantiene menor y replicá la secuencia de acelerador de la referencia, con su modulación inicial mayor y posterior menor.",
+            "validated_recommendation": "Aumentá la magnitud del volante hacia la referencia en el tramo donde se mantiene menor y replicá la secuencia de acelerador de la referencia, acompañando su evolución en lugar de forzar una dirección única.",
             "channels": [
               {
                 "channel": "steering_magnitude",
@@ -13121,7 +13457,7 @@
             "action_time_loss_s": 0.051786143043301536,
             "evidence_strength": "strong",
             "steering_coaching_requested": true,
-            "validated_recommendation": "Reducí la magnitud de dirección hacia la referencia y aumentá el acelerador en el mismo sector, manteniendo la secuencia de inputs.",
+            "validated_recommendation": "Reducí la magnitud del volante hacia la referencia y aumentá el acelerador en el sector donde quedó por debajo, replicando la secuencia de la referencia.",
             "channels": [
               {
                 "channel": "steering_magnitude",
@@ -13274,7 +13610,7 @@
             "action_time_loss_s": 0.2671567409152118,
             "evidence_strength": "strong",
             "steering_coaching_requested": true,
-            "validated_recommendation": "Reducí la magnitud del volante hacia la referencia y aumentá el acelerador en la misma zona, replicando la secuencia de la referencia.",
+            "validated_recommendation": "Reducí la magnitud de dirección hacia la referencia y aumentá la aplicación de acelerador en ese sector, replicando la secuencia de la referencia.",
             "channels": [
               {
                 "channel": "steering_magnitude",
@@ -13419,7 +13755,7 @@
             "action_time_loss_s": 0.1970922465442584,
             "evidence_strength": "strong",
             "steering_coaching_requested": true,
-            "validated_recommendation": "Aumentá la aplicación de acelerador hacia la referencia y replicá la secuencia de dirección de la vuelta de referencia.",
+            "validated_recommendation": "Aumentá la aplicación de acelerador hacia la referencia en los tramos donde se mantiene por debajo, y replicá la secuencia de dirección de la referencia, acompañando su evolución a lo largo del sector.",
             "channels": [
               {
                 "channel": "steering_magnitude",
@@ -13588,7 +13924,7 @@
             "action_time_loss_s": 0.13931338206928956,
             "evidence_strength": "strong",
             "steering_coaching_requested": true,
-            "validated_recommendation": "Aumentá la magnitud de dirección y la aplicación del acelerador hacia los valores de referencia, manteniendo la secuencia de inputs.",
+            "validated_recommendation": "Aumentá la magnitud de dirección y la aplicación del acelerador hacia los valores de referencia en ese sector, manteniendo la secuencia de inputs.",
             "channels": [
               {
                 "channel": "steering_magnitude",
@@ -13782,7 +14118,7 @@
             "action_time_loss_s": 0.11395572255480602,
             "evidence_strength": "strong",
             "steering_coaching_requested": false,
-            "validated_recommendation": "reducir la aplicación del freno hacia la referencia; replicar la secuencia y modulación del acelerador de la referencia",
+            "validated_recommendation": "Reducí la presión de freno hacia la referencia y replicá la secuencia de acelerador de la referencia, acompañando la modulación en el sector.",
             "channels": [
               {
                 "channel": "brake",
@@ -13996,7 +14332,7 @@
             "action_time_loss_s": 0.11148423309622046,
             "evidence_strength": "strong",
             "steering_coaching_requested": false,
-            "validated_recommendation": "Replicá la secuencia de freno de la referencia y aumentá la aplicación del acelerador hacia la referencia en los tramos donde se mantiene por debajo.",
+            "validated_recommendation": "Replicá la secuencia de freno de la referencia y aumentá la aplicación de acelerador en los sectores donde se registra menor presión.",
             "channels": [
               {
                 "channel": "brake",
@@ -14191,7 +14527,7 @@
             "action_time_loss_s": 0.09537867664471378,
             "evidence_strength": "strong",
             "steering_coaching_requested": true,
-            "validated_recommendation": "Reducí la magnitud de dirección hacia la referencia y aumentá la aplicación de acelerador hacia la referencia en el tramo señalado.",
+            "validated_recommendation": "Reducí la carga de volante hacia la referencia y aumentá la apertura del acelerador en ese sector, acompañando la secuencia de la vuelta de referencia.",
             "channels": [
               {
                 "channel": "steering_magnitude",
@@ -14344,7 +14680,7 @@
             "action_time_loss_s": 0.07165742336863445,
             "evidence_strength": "strong",
             "steering_coaching_requested": true,
-            "validated_recommendation": "Reducí la aplicación del acelerador hacia la referencia y replicá la secuencia de dirección de la vuelta de referencia, acompañando su evolución en el sector donde se concentran las diferencias.",
+            "validated_recommendation": "Reducí el acelerador hacia la referencia en ese sector y replicá la secuencia de dirección de la vuelta de referencia, acompañando su evolución en lugar de forzar una magnitud fija.",
             "channels": [
               {
                 "channel": "steering_magnitude",
@@ -15437,10 +15773,11 @@
           "menos acelerador"
         ],
         "observation_only_differences": [
-          "mayor magnitud de dirección/volante",
-          "menos acelerador"
+          "mayor magnitud de dirección/volante"
         ],
-        "targets": [],
+        "targets": [
+          "aumentar el acelerador hacia la referencia"
+        ],
         "reference_action_profiles": [],
         "quantitative_observations": [
           "mayor magnitud de dirección/volante: promedio +15.6 unidades de input de volante; pico +22.4 unidades de input de volante",
@@ -15466,7 +15803,7 @@
         "episode_priority_rank": 1,
         "action_time_loss_s": 0.2671567409152118,
         "steering_coaching_requested": true,
-        "validated_recommendation": "Reducí la magnitud del volante hacia la referencia y aumentá el acelerador en la misma zona, replicando la secuencia de la referencia.",
+        "validated_recommendation": "Reducí la magnitud de dirección hacia la referencia y aumentá la aplicación de acelerador en ese sector, replicando la secuencia de la referencia.",
         "steering_direction": "higher_in_comparison_lap",
         "source_priority": {
           "comparison_priority_rank": 1,
@@ -15507,6 +15844,17 @@
         },
         "driver_cues": [
           {
+            "channel": "throttle",
+            "channels": [
+              "throttle"
+            ],
+            "kind": "qualitative_reference_level",
+            "text": "aumentá el acelerador",
+            "source": "deterministic_observed_level_to_reference",
+            "point_comparison_count": 0,
+            "region_comparison_count": 1
+          },
+          {
             "channel": "steering_magnitude",
             "kind": "validated_llm_steering",
             "text": "reducí la magnitud del volante hacia la referencia",
@@ -15515,10 +15863,108 @@
             "region_comparison_count": 1
           }
         ],
-        "actionable_cue_count": 1
+        "actionable_cue_count": 2
       },
       {
         "plan_label": "B",
+        "kind": "single_priority_finding",
+        "start_distance_m": 2853.0,
+        "end_distance_m": 2918.0,
+        "comparisons": [
+          "4->3"
+        ],
+        "comparison_count": 1,
+        "observed_differences": [
+          "más freno",
+          "más acelerador"
+        ],
+        "observation_only_differences": [],
+        "targets": [
+          "reducir el freno hacia la referencia",
+          "reducir el acelerador hacia la referencia"
+        ],
+        "reference_action_profiles": [],
+        "quantitative_observations": [
+          "más freno: promedio +16.1 pp; pico +18.9 pp",
+          "más acelerador: promedio +46.5 pp; pico +57.2 pp"
+        ],
+        "temporal_relationships": [
+          "freno primero y acelerador después, sin solapamiento; separación aproximada 11 m"
+        ],
+        "temporal_target": null,
+        "braking_point_patterns": [],
+        "braking_point_target": null,
+        "brake_release_patterns": [],
+        "brake_release_target": null,
+        "throttle_onset_patterns": [],
+        "throttle_onset_target": null,
+        "throttle_release_patterns": [],
+        "throttle_release_target": null,
+        "speed_directions": [
+          "lower_in_comparison_lap"
+        ],
+        "propagation_statuses": [],
+        "comparison_priority_rank": 1,
+        "episode_priority_rank": 2,
+        "action_time_loss_s": 0.18038390462049136,
+        "steering_coaching_requested": false,
+        "validated_recommendation": "Reducí la magnitud del freno y del acelerador hacia los valores de referencia, manteniendo la secuencia de aplicación.",
+        "steering_direction": null,
+        "source_priority": {
+          "comparison_priority_rank": 1,
+          "episode_priority_rank": 2
+        },
+        "track_location": {
+          "track": "Circuit de Spa-Francorchamps",
+          "profile_id": "spa-francorchamps-lmu-fia2026-v0.2",
+          "profile_status": "VALIDATED_MULTI_SESSION",
+          "numbering_scheme": "FIA/F1 Spa 2026 19-turn map",
+          "start_m": 2853.0,
+          "end_m": 2918.0,
+          "span_m": 65.0,
+          "label": "T8 — Bruxelles",
+          "location_type": "corner",
+          "turn_coverage_share": 1.0,
+          "overlaps": [
+            {
+              "turn": 8,
+              "name": "Bruxelles",
+              "group": "Bruxelles",
+              "direction": "right",
+              "overlap_m": 65.0,
+              "overlap_share": 1.0,
+              "phase": "entry",
+              "turn_start_m": 2836.5,
+              "apex_m": 2944.5,
+              "turn_end_m": 3058.5
+            }
+          ],
+          "status": "RESOLVED"
+        },
+        "session_priority_basis": {
+          "policy_version": "1.8",
+          "kind": "single_priority_finding",
+          "comparison_count": 1,
+          "repeated_evidence": false
+        },
+        "driver_cues": [
+          {
+            "channel": "brake+throttle",
+            "channels": [
+              "brake",
+              "throttle"
+            ],
+            "kind": "qualitative_reference_level",
+            "text": "reducí el freno y reducí el acelerador",
+            "source": "deterministic_observed_level_to_reference",
+            "point_comparison_count": 0,
+            "region_comparison_count": 1
+          }
+        ],
+        "actionable_cue_count": 1
+      },
+      {
+        "plan_label": "C",
         "kind": "single_priority_finding",
         "start_distance_m": 4465.0,
         "end_distance_m": 4591.0,
@@ -15558,7 +16004,7 @@
         "episode_priority_rank": 3,
         "action_time_loss_s": 0.13827204955487105,
         "steering_coaching_requested": true,
-        "validated_recommendation": "Aumentá la magnitud del volante hacia la referencia en ese tramo y replicá la secuencia de acelerador de la referencia, con su evolución de menor a mayor.",
+        "validated_recommendation": "Aumentá la magnitud del volante hacia la referencia y replicá la secuencia de acelerador de la referencia, acompañando la evolución de ambos inputs en el sector.",
         "steering_direction": "lower_in_comparison_lap",
         "source_priority": {
           "comparison_priority_rank": 1,
@@ -15608,103 +16054,6 @@
           }
         ],
         "actionable_cue_count": 1
-      },
-      {
-        "plan_label": "C",
-        "kind": "single_priority_finding",
-        "start_distance_m": 2854.0,
-        "end_distance_m": 2951.0,
-        "comparisons": [
-          "4->2"
-        ],
-        "comparison_count": 1,
-        "observed_differences": [
-          "más freno",
-          "magnitud distinta de dirección/volante",
-          "más acelerador"
-        ],
-        "observation_only_differences": [
-          "más freno",
-          "magnitud distinta de dirección/volante",
-          "más acelerador"
-        ],
-        "targets": [],
-        "reference_action_profiles": [],
-        "quantitative_observations": [
-          "más freno: promedio +14.4 pp; pico +16.0 pp",
-          "magnitud distinta de dirección/volante: medias por evento entre -7.8 unidades de input de volante y +12.4 unidades de input de volante; pico de mayor magnitud +19.8 unidades de input de volante",
-          "más acelerador: promedio +39.2 pp; pico +51.8 pp"
-        ],
-        "temporal_relationships": [
-          "freno primero y acelerador después, sin solapamiento; separación aproximada 42 m"
-        ],
-        "temporal_target": null,
-        "braking_point_patterns": [],
-        "braking_point_target": null,
-        "brake_release_patterns": [],
-        "brake_release_target": null,
-        "throttle_onset_patterns": [],
-        "throttle_onset_target": null,
-        "throttle_release_patterns": [],
-        "throttle_release_target": null,
-        "speed_directions": [
-          "lower_in_comparison_lap"
-        ],
-        "propagation_statuses": [],
-        "comparison_priority_rank": 2,
-        "episode_priority_rank": 1,
-        "action_time_loss_s": 0.23623675123783272,
-        "steering_coaching_requested": true,
-        "validated_recommendation": "Reducí el freno y el acelerador hacia la referencia en los tramos indicados y replicá la secuencia de dirección de la referencia, acompañando la evolución del volante en lugar de forzar una magnitud fija.",
-        "steering_direction": "mixed",
-        "source_priority": {
-          "comparison_priority_rank": 2,
-          "episode_priority_rank": 1
-        },
-        "track_location": {
-          "track": "Circuit de Spa-Francorchamps",
-          "profile_id": "spa-francorchamps-lmu-fia2026-v0.2",
-          "profile_status": "VALIDATED_MULTI_SESSION",
-          "numbering_scheme": "FIA/F1 Spa 2026 19-turn map",
-          "start_m": 2854.0,
-          "end_m": 2951.0,
-          "span_m": 97.0,
-          "label": "T8 — Bruxelles",
-          "location_type": "corner",
-          "turn_coverage_share": 1.0,
-          "overlaps": [
-            {
-              "turn": 8,
-              "name": "Bruxelles",
-              "group": "Bruxelles",
-              "direction": "right",
-              "overlap_m": 97.0,
-              "overlap_share": 1.0,
-              "phase": "apex",
-              "turn_start_m": 2836.5,
-              "apex_m": 2944.5,
-              "turn_end_m": 3058.5
-            }
-          ],
-          "status": "RESOLVED"
-        },
-        "session_priority_basis": {
-          "policy_version": "1.8",
-          "kind": "single_priority_finding",
-          "comparison_count": 1,
-          "repeated_evidence": false
-        },
-        "driver_cues": [
-          {
-            "channel": "steering_magnitude",
-            "kind": "validated_llm_steering",
-            "text": "replicá la secuencia de dirección de la referencia",
-            "source": "validated_llm_recommendation+python_direction",
-            "point_comparison_count": 0,
-            "region_comparison_count": 1
-          }
-        ],
-        "actionable_cue_count": 1
       }
     ],
     "session_priority_policy": {
@@ -15730,8 +16079,8 @@
       "temporal_observation_policy": "descriptive_only_without_temporal_target",
       "mixed_throttle_target_policy": "reference_action_profile_or_omit",
       "mixed_brake_target_policy": "reference_action_profile_or_omit",
-      "actionability_policy_version": "1.3",
-      "generic_channel_difference_policy": "observation_only_except_validated_priority_steering",
+      "actionability_policy_version": "1.4",
+      "generic_channel_difference_policy": "qualitative_reference_alignment_for_unambiguous_brake_throttle; steering_separate_validated_path",
       "steering_target_policy": "validated_llm_direct_or_secondary_low_priority_no_causal_claim",
       "driver_cue_limit_per_zone": 2,
       "reference_action_profile_source": {
@@ -15739,35 +16088,28 @@
         "brake": "driver_action_episode_ranking.braking_point_comparison+brake_release_point_comparison"
       }
     },
-    "priority_finding_count": 7,
+    "priority_finding_count": 8,
     "recurrence_finding_count": 16
   },
   "global_validation_audit": {
     "status": "VALID",
-    "attempts": 1,
-    "deterministic_repairs": {
-      "global_steering_conclusion": {
-        "field": "conclusion",
-        "reason": "direct_steering_without_single_zone_anchor",
-        "strategy": "deterministic_conclusion_from_next_stint_plan"
-      }
-    }
+    "attempts": 1
   },
   "global_structured": {
     "opportunities": [
-      "En la zona A, replicá la magnitud de dirección/volante de la referencia.",
-      "En la zona B, replicá la magnitud de dirección/volante de la referencia.",
-      "En la zona C, replicá la magnitud de dirección/volante de la referencia."
+      "En la zona prioritaria A, aumentá el nivel de acelerador para acercarlo a la referencia; acompañá con una magnitud de volante acorde a la referencia.",
+      "En la zona prioritaria B, reducí tanto el freno como el acelerador para acercar ambos inputs a la referencia.",
+      "En la zona prioritaria C, replicá la magnitud de volante de la referencia."
     ],
     "repeated_observations": [],
     "hypotheses": [],
     "limitations": [],
-    "conclusion": "En la próxima tanda, concentrá la ejecución en los inputs repetidos de las zonas prioritarias.",
+    "conclusion": "La próxima tanda debe enfocarse en acercar los niveles de freno y acelerador a la referencia en las zonas prioritarias A y B, y en replicar la magnitud de volante en la zona C. Probá primero la reducción de freno y acelerador en B, luego el aumento de acelerador en A, y finalmente la magnitud de volante en C.",
     "next_session_priorities": [
-      "Zona prioritaria A: reducí la magnitud del volante hacia la referencia",
-      "Zona prioritaria B: aumentá la magnitud del volante hacia la referencia",
-      "Zona prioritaria C: replicá la secuencia de dirección de la referencia"
+      "Zona prioritaria A: aumentá el acelerador; reducí la magnitud del volante hacia la referencia",
+      "Zona prioritaria B: reducí el freno y reducí el acelerador",
+      "Zona prioritaria C: aumentá la magnitud del volante hacia la referencia"
     ]
   },
-  "global_analysis": "# Debrief de ingeniería — Circuit de Spa-Francorchamps · Q\n\n## Lectura de la sesión\n\nLa referencia de trabajo fue la vuelta 4, con 2:04.320.\nEl plan de la próxima tanda queda concentrado en 3 zonas prioritarias.\n\nPriorizá zona A (salida de T7 — Malmedy → T8 — Bruxelles): reducí la magnitud del volante hacia la referencia; zona B (T13 — Fagnes): aumentá la magnitud del volante hacia la referencia; zona C (T8 — Bruxelles): replicá la secuencia de dirección de la referencia.\n\nUna comparación globalmente no representativa quedó fuera del agregado de coaching de esta sesión; permanece disponible en el JSON.\n\n## Plan para la próxima tanda\n\n### 1. Zona A — salida de T7 — Malmedy → T8 — Bruxelles\n\n**Qué cambiar:** Reducí la magnitud del volante hacia la referencia.\n\n**Por qué está en el plan:** Es el hallazgo individual mejor priorizado; el contexto mostró velocidad inferior a la referencia; el delta siguió empeorando después de terminar la acción.\n\n**Qué observamos:** Mayor magnitud de dirección/volante, menos acelerador.\n\n### 2. Zona B — T13 — Fagnes\n\n**Qué cambiar:** Aumentá la magnitud del volante hacia la referencia.\n\n**Por qué está en el plan:** Es el hallazgo individual mejor priorizado; el contexto mostró velocidad inferior a la referencia.\n\n**Qué observamos:** Menor magnitud de dirección/volante, modulación distinta del acelerador.\n\n### 3. Zona C — T8 — Bruxelles\n\n**Qué cambiar:** Replicá la secuencia de dirección de la referencia.\n\n**Por qué está en el plan:** Es el hallazgo individual mejor priorizado; el contexto mostró velocidad inferior a la referencia.\n\n**Qué observamos:** Más freno, magnitud distinta de dirección/volante, más acelerador.\n\n**Secuencia medida:** freno primero y acelerador después, sin solapamiento; separación aproximada 42 m.\n\n## Respaldo técnico\n\n**Comparaciones:** 4→3 +1.8200 s, 4→2 +4.7000 s, 4→1 +30.3975 s [excluida del plan].\n\n**Observaciones cuantitativas por zona:**\n- Zona A: mayor magnitud de dirección/volante: promedio +15.6 unidades de input de volante; pico +22.4 unidades de input de volante; menos acelerador: promedio -57.2 pp; pico -93.7 pp.\n- Zona B: menor magnitud de dirección/volante: promedio -8.9 unidades de input de volante; pico -13.2 unidades de input de volante; modulación distinta del acelerador: medias por evento entre -25.8 pp y +21.6 pp; pico de mayor magnitud -61.3 pp.\n- Zona C: más freno: promedio +14.4 pp; pico +16.0 pp; magnitud distinta de dirección/volante: medias por evento entre -7.8 unidades de input de volante y +12.4 unidades de input de volante; pico de mayor magnitud +19.8 unidades de input de volante; más acelerador: promedio +39.2 pp; pico +51.8 pp.\n\n**Episodios que más pesan en la priorización:**\n- 4->3 · episodio #1 · salida de T7 — Malmedy → T8 — Bruxelles · +0.2672 s de pérdida durante la acción.\n- 4->3 · episodio #2 · T8 — Bruxelles · +0.1804 s de pérdida durante la acción.\n- 4->3 · episodio #3 · T13 — Fagnes · +0.1383 s de pérdida durante la acción.\n- 4->2 · episodio #1 · T8 — Bruxelles · +0.2362 s de pérdida durante la acción.\n\n_La evidencia completa, los episodios descartados, las magnitudes por canal y las asignaciones onset/release permanecen disponibles en el JSON._"
+  "global_analysis": "# Debrief de ingeniería — Circuit de Spa-Francorchamps · Q\n\n## Lectura de la sesión\n\nLa referencia de trabajo fue la vuelta 4, con 2:04.320.\nEl plan de la próxima tanda queda concentrado en 3 zonas prioritarias.\n\nPriorizá zona A (salida de T7 — Malmedy → T8 — Bruxelles): aumentá el acelerador; zona B (T8 — Bruxelles): reducí el freno y reducí el acelerador; zona C (T13 — Fagnes): aumentá la magnitud del volante hacia la referencia.\n\nUna comparación globalmente no representativa quedó fuera del agregado de coaching de esta sesión; permanece disponible en el JSON.\n\n## Plan para la próxima tanda\n\n### 1. Zona A — salida de T7 — Malmedy → T8 — Bruxelles\n\n**Qué cambiar:** Aumentá el acelerador.\n\n**Segundo cue:** Reducí la magnitud del volante hacia la referencia.\n\n**Por qué está en el plan:** Es el hallazgo individual mejor priorizado; el contexto mostró velocidad inferior a la referencia; el delta siguió empeorando después de terminar la acción.\n\n**Qué observamos:** Mayor magnitud de dirección/volante, menos acelerador.\n\n### 2. Zona B — T8 — Bruxelles\n\n**Qué cambiar:** Reducí el freno y reducí el acelerador.\n\n**Por qué está en el plan:** Es el hallazgo individual mejor priorizado; el contexto mostró velocidad inferior a la referencia.\n\n**Qué observamos:** Más freno, más acelerador.\n\n**Secuencia medida:** freno primero y acelerador después, sin solapamiento; separación aproximada 11 m.\n\n### 3. Zona C — T13 — Fagnes\n\n**Qué cambiar:** Aumentá la magnitud del volante hacia la referencia.\n\n**Por qué está en el plan:** Es el hallazgo individual mejor priorizado; el contexto mostró velocidad inferior a la referencia.\n\n**Qué observamos:** Menor magnitud de dirección/volante, modulación distinta del acelerador.\n\n## Respaldo técnico\n\n**Comparaciones:** 4→3 +1.8200 s, 4→2 +4.7000 s, 4→1 +30.3975 s [excluida del plan].\n\n**Observaciones cuantitativas por zona:**\n- Zona A: mayor magnitud de dirección/volante: promedio +15.6 unidades de input de volante; pico +22.4 unidades de input de volante; menos acelerador: promedio -57.2 pp; pico -93.7 pp.\n- Zona B: más freno: promedio +16.1 pp; pico +18.9 pp; más acelerador: promedio +46.5 pp; pico +57.2 pp.\n- Zona C: menor magnitud de dirección/volante: promedio -8.9 unidades de input de volante; pico -13.2 unidades de input de volante; modulación distinta del acelerador: medias por evento entre -25.8 pp y +21.6 pp; pico de mayor magnitud -61.3 pp.\n\n**Episodios que más pesan en la priorización:**\n- 4->3 · episodio #1 · salida de T7 — Malmedy → T8 — Bruxelles · +0.2672 s de pérdida durante la acción.\n- 4->3 · episodio #2 · T8 — Bruxelles · +0.1804 s de pérdida durante la acción.\n- 4->3 · episodio #3 · T13 — Fagnes · +0.1383 s de pérdida durante la acción.\n- 4->3 · episodio #4 · T12 — Fagnes · +0.1140 s de pérdida durante la acción.\n\n_La evidencia completa, los episodios descartados, las magnitudes por canal y las asignaciones onset/release permanecen disponibles en el JSON._"
 }

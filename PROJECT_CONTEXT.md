@@ -169,16 +169,16 @@ Checkpoint: **2026-08-14 integration v0.1**.
 | H3 persistent patterns | v0.1 / derived |
 | H4 historical reference | v0.2 |
 | H5.1 dual reference | v0.2 |
-| H5.2 | interface/probe designed; raw cross-session comparison pending |
+| H5.2 | v0.1 raw cross-session comparison; LLM authorization/integration pending |
 
 Current validated checkpoint:
 
 ```text
-pytest:                         58 PASS / 0 FAIL / 1 SKIP
+pytest:                         58 PASS / 0 FAIL / 0 SKIP
 Objective Python regressions:  55 PASS / 0 FAIL / 0 SKIP
 ```
 
-The portable integration environment skipped one environment/data-dependent test because DuckDB was unavailable there; this was not considered an application regression.
+The H5.2 integration environment included DuckDB and completed the full current suite without skips.
 
 ---
 
@@ -259,6 +259,7 @@ repo-root/
 │  │  ├─ llm_debug/
 │  │  ├─ h4/
 │  │  ├─ h5_1/
+│  │  ├─ h5_2/
 │  │  └─ runs/
 │  ├─ local/                        # persistent local state; ignored
 │  │  └─ race_engineer_history.duckdb
@@ -304,6 +305,7 @@ data/generated/llm_results/
 data/generated/llm_debug/
 data/generated/h4/
 data/generated/h5_1/
+data/generated/h5_2/
 data/generated/runs/
 data/local/race_engineer_history.duckdb
 ```
@@ -365,7 +367,7 @@ H4 historical reference when target is eligible
    ↓
 H5.1 dual-reference context
    ↓
-H5.2 SKIPPED_NOT_APPLICABLE until both raw DuckDBs can be resolved
+H5.2 raw cross-session comparison when both DuckDBs resolve; otherwise SKIPPED_NOT_APPLICABLE
 ```
 
 The orchestration entry point is:
@@ -710,21 +712,44 @@ Historical performance may be faster, but without raw validated cross-session co
 
 # 20. H5.2 — raw cross-session comparison
 
-H5.2 is not complete.
+Current implementation:
 
-The interface/probe has been designed, but actual raw cross-session comparison requires reliable access to:
+```text
+build_cross_session_comparison.py
+version = 0.1
+schema = 1.0
+validator = validate_cross_session_comparison.py
+```
 
-- the current session DuckDB;
-- the selected historical session DuckDB;
-- compatible context and trustworthy raw alignment.
+H5.2 resolves the current and selected historical raw DuckDBs through History,
+requires exact track/layout/vehicle/car context, opens two independent
+`Telemetry`/`LapAnalyzer` instances, and reuses `DeltaComparison` plus
+`SectorAnalysis` on a common spatial grid.
 
-The repository package does not normally contain the user’s `telemetria/` directory, so portable/offline repo analysis cannot execute H5.2 end to end.
+`DeltaComparison` remains backward compatible with its one-session constructor and
+accepts an optional second `LapAnalyzer` for the current/comparison lap.
 
-Current normal orchestrator behavior is therefore:
+The output contains deterministic temporal validation and observational spatial zone
+summaries. At v0.1 it deliberately keeps:
+
+```text
+session_reference_remains_authority = true
+historical_actions_authorized = false
+```
+
+The real Fuji validation checkpoint compared historical session 7 lap 8 against
+current session 8 lap 5, reproduced `current - historical = +1.280 s`, passed temporal
+validation, emitted 7 spatial zone summaries, and then reused the H5.2 stage on rerun.
+
+When either raw DuckDB cannot be resolved, the orchestrator reports:
 
 ```text
 H5.2 = SKIPPED_NOT_APPLICABLE
 ```
+
+LLM consumption/authorization of H5.2 evidence is still pending. Do not convert the
+observational H5.2 zone summaries into historical coaching actions until a dedicated
+prompt/output/validator contract authorizes only deterministic cross-session evidence.
 
 Do not fake H5.2 by comparing only derived History rows or LLM prose and calling it raw telemetry comparison.
 
@@ -859,7 +884,7 @@ Do not:
 - promote H2 v0.3 thresholds to universal truth;
 - treat DeepSeek pre-review as human ground truth;
 - use historical reference as the current-session coaching authority;
-- claim H5.2 exists without both raw DuckDBs and a validated cross-session interface;
+- claim H5.2 coaching authority without both raw DuckDBs, validated comparison and a dedicated LLM authorization contract;
 - normalize `LMP2_ELMS` and `LMP2`;
 - move deterministic telemetry logic into the LLM because it seems easier;
 - re-track runtime/generated outputs;
@@ -889,14 +914,12 @@ Do not clutter the repo root with every historical release; place superseded rel
 
 Priority order after integration checkpoint:
 
-1. Apply repo hygiene once on the real Git checkout and establish a clean baseline commit.
-2. Run `race_engineer.py analyze` against real DuckDB telemetry in `telemetria/`.
-3. Verify stage reuse against a repeated run of the same DuckDB.
-4. Continue debrief refinement, especially brake-vs-throttle actionability.
-5. Integrate H3 only when calibrated matcher provenance/applicability can be resolved for the current context.
-6. Make raw telemetry provenance discoverable from History well enough to support H5.2.
-7. Implement and validate true raw cross-session comparison.
-8. Expand H2 calibration beyond the current limited context before calling it general.
+1. Define the H5.2 evidence subset that may be consumed by the LLM without replacing current-session coaching authority.
+2. Add a dedicated H5.2 prompt/output/validator contract before enabling historical coaching language.
+3. Continue debrief refinement, especially brake-vs-throttle actionability.
+4. Integrate H3 only when calibrated matcher provenance/applicability can be resolved for the current context.
+5. Exercise H5.2 on additional real track/vehicle pairs and keep hard context gates conservative.
+6. Expand H2 calibration beyond the current limited context before calling it general.
 
 Do not skip directly to “learning from all history” before context isolation and raw-validation gates are trustworthy.
 
@@ -1006,5 +1029,5 @@ Historical details belong in versioned notes or `legacy/`.
 
 # 36. One-paragraph mental model
 
-Race Engineer takes an LMU DuckDB, extracts and validates deterministic lap/zone/action evidence in Python, asks an LLM only to prioritize and explain authorized evidence, validates that narrative, stores the deterministic session in a schema-4 History DB, optionally selects a context-compatible historical benchmark through H4, preserves current-session coaching authority through H5.1 dual reference, and deliberately stops short of historical causal coaching until H5.2 can compare both raw telemetry sources safely. H2/H3 are the calibrated cross-session pattern-learning path and remain context-limited rather than universal. The repo must stay clean: source/provenance is tracked, runtime telemetry/debug/results stay under ignored `telemetria/`, `data/generated/` and `data/local/` paths.
+Race Engineer takes an LMU DuckDB, extracts and validates deterministic lap/zone/action evidence in Python, asks an LLM only to prioritize and explain authorized evidence, validates that narrative, stores the deterministic session in a schema-4 History DB, optionally selects a context-compatible historical benchmark through H4, preserves current-session coaching authority through H5.1 dual reference, and can compare both compatible raw reference laps deterministically through observational H5.2. H5.2 evidence is not yet authorized for LLM historical coaching. H2/H3 are the calibrated cross-session pattern-learning path and remain context-limited rather than universal. The repo must stay clean: source/provenance is tracked, runtime telemetry/debug/results stay under ignored `telemetria/`, `data/generated/` and `data/local/` paths.
 

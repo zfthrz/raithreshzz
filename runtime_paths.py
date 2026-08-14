@@ -82,3 +82,9 @@ def dual_reference_output_path(
     database_path: str | os.PathLike[str],
 ) -> Path:
     return stage_output_dir(database_path, "h5_1") / "dual_reference_context.json"
+
+
+def cross_session_output_path(
+    database_path: str | os.PathLike[str],
+) -> Path:
+    return stage_output_dir(database_path, "h5_2") / "cross_session_comparison.json"

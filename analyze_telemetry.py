@@ -20,6 +20,7 @@ from throttle_physical_point_profile_v1_0 import enrich_analysis_with_throttle_p
 from throttle_coaching_evidence_gate_v1_0 import enrich_analysis_with_throttle_coaching_evidence_gate
 
 from vehicle_context import extract_lmu_context_from_duckdb
+from runtime_paths import analysis_output_path
 
 
 # ============================================================
@@ -206,11 +207,8 @@ LMU_CONTEXT = extract_lmu_context_from_duckdb(DB_PATH)
 # OUTPUT
 # ============================================================
 
-OUTPUT_PATH = os.path.join(
-    BASE_DIR,
-    os.path.splitext(
-        os.path.basename(DB_PATH)
-    )[0] + ".json",
+OUTPUT_PATH = str(
+    analysis_output_path(DB_PATH)
 )
 
 

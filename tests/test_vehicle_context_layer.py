@@ -105,7 +105,7 @@ def create_v1_history_skeleton(db_path: Path) -> None:
         connection.close()
 
 
-def test_history_schema_v1_migrates_to_v2(tmp_path):
+def test_history_schema_v1_migrates_to_current_schema(tmp_path):
     module = load_module("session_history_migration", "session_history.py")
     db_path = tmp_path / "history.duckdb"
     create_v1_history_skeleton(db_path)
@@ -123,7 +123,7 @@ def test_history_schema_v1_migrates_to_v2(tmp_path):
     finally:
         connection.close()
 
-    assert version == 2
+    assert version == 4
     assert "vehicle_variant" in columns
     assert "setup_sha256" in columns
     assert "weather_conditions" in columns
@@ -222,6 +222,7 @@ def episode(episode_pk: int, session_id: int, variant: str | None, *, supported=
         "setup_available": bool(setup),
         "lmu_session_type": "Practice",
         "lmu_track_name": "Spa",
+        "lmu_track_layout": "Spa",
         "reference_lap": 1,
         "comparison_lap": 2,
         "driver_analysis_priority_rank": 1,

@@ -1125,7 +1125,7 @@ Si una salida falla:
 
 ---
 
-# PARTE I — QUÉ TODAVÍA NO HACER
+# PARTE I — HISTORIAL ACTUAL Y LÍMITES
 
 ## 35. Persistent patterns / historical reference
 
@@ -1134,15 +1134,20 @@ El roadmap histórico continúa:
 ```text
 H1 persistence/history
 H2 calibrated matcher
-H2.2 assisted calibration/review      <- etapa actual
+H2.2 assisted calibration/review
 H3 persistent pattern types
 H4 historical benchmark selector
-H5 dual reference
+H5.1 dual reference
+H5.2 raw cross-session comparison     <- disponible en modo observacional
 ```
 
 Todavía no crear `persistent_pattern` automáticamente sólo porque dos episodios fueron `MATCH`.
 
-Tampoco seleccionar automáticamente una `historical_reference` para coaching hasta cerrar la calibración del matcher y definir la política de persistencia.
+H4 selecciona una `historical_reference` compatible y H5.1 conserva separadas la referencia de la sesión y la histórica.
+
+H5.2 v0.1 compara ambas vueltas desde sus DuckDB raw cuando están disponibles. La comparación es determinista, valida el delta temporal y produce zonas espaciales observacionales. Si falta cualquiera de los dos DuckDB, la etapa queda `SKIPPED_NOT_APPLICABLE`.
+
+Todavía no usar esas zonas históricas como instrucciones de coaching del LLM: en v0.1 `session_reference` sigue siendo la autoridad y `historical_actions_authorized=false` hasta definir un contrato específico de prompt, output y validator.
 
 ---
 
@@ -1156,6 +1161,8 @@ Tampoco seleccionar automáticamente una `historical_reference` para coaching ha
 [ ] revisar debrief A/B/C
 [ ] validate_llm_analysis_output.py
 [ ] conservar JSON determinista para History
+[ ] H4/H5.1 si existe referencia histórica compatible
+[ ] H5.2 si ambos DuckDB raw están disponibles
 ```
 
 ---
@@ -1163,7 +1170,7 @@ Tampoco seleccionar automáticamente una `historical_reference` para coaching ha
 # 37. Checklist rápido — H2
 
 ```text
-[ ] History schema 3
+[ ] History schema 4
 [ ] layout explícito
 [ ] vehicle_variant correcto
 [ ] validate_history_db.py PASS

@@ -78,6 +78,7 @@ def episode_row():
         True,                # setup_available
         "Qualify",           # lmu_session_type
         "Spa",               # lmu_track_name
+        "Spa",               # lmu_track_layout
         4,                   # reference_lap
         3,                   # comparison_lap
         1,                   # driver_analysis_priority_rank

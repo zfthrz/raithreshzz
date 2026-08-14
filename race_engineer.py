@@ -12,11 +12,16 @@ from typing import Any
 from runtime_paths import (
     PROJECT_ROOT,
     analysis_output_path,
+    cross_session_output_path,
     dual_reference_output_path,
     historical_reference_output_path,
     history_db_default_path,
     llm_result_dir,
     run_state_path,
+)
+from cross_session_context import (
+    CrossSessionNotApplicableError,
+    resolve_cross_session_pair,
 )
 
 
@@ -234,6 +239,8 @@ def analyze_command(args: argparse.Namespace) -> int:
     history_script = PROJECT_ROOT / "session_history.py"
     h4_script = PROJECT_ROOT / "select_historical_reference.py"
     h5_script = PROJECT_ROOT / "build_dual_reference_context.py"
+    h5_2_script = PROJECT_ROOT / "build_cross_session_comparison.py"
+    h5_2_validator = PROJECT_ROOT / "validate_cross_session_comparison.py"
     analysis_json = analysis_output_path(database)
 
     stage_results: dict[str, str] = {}
@@ -579,12 +586,81 @@ def analyze_command(args: argparse.Namespace) -> int:
                     stage_results["h5_1"] = STATUS_RUN
                     print_stage("h5_1", STATUS_RUN, str(h5_output))
 
-                stage_results["h5_2"] = STATUS_SKIPPED
-                print_stage(
-                    "h5_2",
-                    STATUS_SKIPPED,
-                    "requiere DuckDB raw de sesión actual + histórica",
-                )
+                # ------------------------------------------------
+                # H5.2 raw cross-session comparison
+                # ------------------------------------------------
+                try:
+                    h5_2_pair = resolve_cross_session_pair(
+                        h5_output,
+                        db_path,
+                        PROJECT_ROOT / "telemetria",
+                    )
+                except CrossSessionNotApplicableError as exc:
+                    stage_results["h5_2"] = STATUS_SKIPPED
+                    print_stage("h5_2", STATUS_SKIPPED, str(exc))
+                else:
+                    h5_2_output = cross_session_output_path(database)
+                    h5_2_signature = {
+                        "h5_1_sha256": sha256_file(h5_output),
+                        "history_db": stat_signature(db_path),
+                        "current_raw": stat_signature(h5_2_pair["current"]["database"]),
+                        "historical_raw": stat_signature(
+                            h5_2_pair["historical"]["database"]
+                        ),
+                        "builder": script_signature(h5_2_script),
+                        "validator": script_signature(h5_2_validator),
+                        "delta_comparison": script_signature(
+                            PROJECT_ROOT / "delta_comparison.py"
+                        ),
+                        "sector_analysis": script_signature(
+                            PROJECT_ROOT / "sector_analysis.py"
+                        ),
+                    }
+                    reuse_h5_2 = (
+                        not args.force
+                        and stage_is_reusable(
+                            state,
+                            "h5_2",
+                            h5_2_signature,
+                            required_paths=(h5_2_output,),
+                        )
+                    )
+                    if reuse_h5_2:
+                        stage_results["h5_2"] = STATUS_REUSED
+                        print_stage("h5_2", STATUS_REUSED, str(h5_2_output))
+                    else:
+                        try:
+                            run_checked([
+                                sys.executable,
+                                str(h5_2_script),
+                                str(h5_output),
+                                "--history-db",
+                                str(db_path),
+                                "--telemetry-dir",
+                                str(PROJECT_ROOT / "telemetria"),
+                                "--output",
+                                str(h5_2_output),
+                            ])
+                            run_checked([
+                                sys.executable,
+                                str(h5_2_validator),
+                                str(h5_2_output),
+                            ])
+                        except subprocess.CalledProcessError:
+                            stage_results["h5_2"] = STATUS_FAILED
+                            print_stage("h5_2", STATUS_FAILED)
+                            return 1
+                        record_stage(
+                            state,
+                            "h5_2",
+                            signature=h5_2_signature,
+                            status=STATUS_RUN,
+                            output=str(h5_2_output),
+                            details={"h5_2_sha256": sha256_file(h5_2_output)},
+                        )
+                        save_state(state_path, state)
+                        stage_results["h5_2"] = STATUS_RUN
+                        print_stage("h5_2", STATUS_RUN, str(h5_2_output))
 
     state["last_summary"] = stage_results
     save_state(state_path, state)
@@ -608,7 +684,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     analyze = subparsers.add_parser(
         "analyze",
-        help="DuckDB -> análisis determinista -> LLM -> validator -> History -> H4 -> H5.1",
+        help="DuckDB -> análisis determinista -> LLM -> validator -> History -> H4 -> H5.1 -> H5.2",
     )
     analyze.add_argument("database", help="DuckDB de telemetría, normalmente telemetria\\archivo.duckdb")
     analyze.add_argument(

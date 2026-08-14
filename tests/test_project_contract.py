@@ -20,7 +20,18 @@ def test_active_python_files_compile():
         "validate_llm_analysis_output.py",
         "compare_llm_analysis_outputs.py",
         "vehicle_context.py",
+        "cross_session_context.py",
+        "build_cross_session_comparison.py",
+        "validate_cross_session_comparison.py",
+        "race_engineer.py",
+        "runtime_paths.py",
     ]
     for name in names:
         path = ROOT / name
         compile(path.read_text(encoding="utf-8"), str(path), "exec")
+
+
+def test_analyzer_uses_centralized_runtime_output_path():
+    source = (ROOT / "analyze_telemetry.py").read_text(encoding="utf-8")
+    assert "from runtime_paths import analysis_output_path" in source
+    assert "analysis_output_path(DB_PATH)" in source

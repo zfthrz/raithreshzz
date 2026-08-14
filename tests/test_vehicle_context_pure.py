@@ -114,16 +114,16 @@ def test_orchestrator_selects_track_plus_variant_context():
     module = load_module("batch_context_pure", "prepare_calibration_batch.py")
 
     rows = [
-        {"session_id": 1, "track": "Spa", "vehicle_family": "LMP2", "vehicle_variant": "LMP2_ELMS", "vehicle_supported_domain": True},
-        {"session_id": 2, "track": "Spa", "vehicle_family": "LMP2", "vehicle_variant": "LMP2_ELMS", "vehicle_supported_domain": True},
-        {"session_id": 3, "track": "Spa", "vehicle_family": "LMP2", "vehicle_variant": "LMP2_WEC", "vehicle_supported_domain": True},
-        {"session_id": 4, "track": "Monza", "vehicle_family": "HYPERCAR", "vehicle_variant": "HYPER", "vehicle_supported_domain": True},
+        {"session_id": 1, "track": "Spa", "lmu_track_layout": "Spa", "vehicle_family": "LMP2", "vehicle_variant": "LMP2_ELMS", "vehicle_supported_domain": True},
+        {"session_id": 2, "track": "Spa", "lmu_track_layout": "Spa", "vehicle_family": "LMP2", "vehicle_variant": "LMP2_ELMS", "vehicle_supported_domain": True},
+        {"session_id": 3, "track": "Spa", "lmu_track_layout": "Spa", "vehicle_family": "LMP2", "vehicle_variant": "LMP2_WEC", "vehicle_supported_domain": True},
+        {"session_id": 4, "track": "Monza", "lmu_track_layout": "Monza", "vehicle_family": "HYPERCAR", "vehicle_variant": "HYPER", "vehicle_supported_domain": True},
     ]
 
     grouped = module.group_history_by_context(rows)
-    context, reason = module.choose_context(grouped, None, None)
+    context, reason = module.choose_context(grouped, None, None, None)
 
-    assert context == ("Spa", "LMP2_ELMS")
+    assert context == ("Spa", "Spa", "LMP2_ELMS")
     assert reason is None
 
 

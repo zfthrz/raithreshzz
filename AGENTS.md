@@ -57,13 +57,13 @@ episode_pair_matcher.py      H2 0.3
 build_persistent_patterns.py H3 0.1
 select_historical_reference.py H4 0.2
 build_dual_reference_context.py H5.1 0.2
-H5.2                        pending raw cross-session implementation
+build_cross_session_comparison.py H5.2 0.1 / raw observational comparison
 ```
 
 Validated integration checkpoint:
 
 ```text
-pytest:                         58 PASS / 0 FAIL / 1 SKIP
+pytest:                         58 PASS / 0 FAIL / 0 SKIP
 Objective Python regressions:  55 PASS / 0 FAIL / 0 SKIP
 ```
 

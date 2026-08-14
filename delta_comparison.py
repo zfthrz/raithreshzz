@@ -40,14 +40,19 @@ class DeltaComparison:
     se gana o pierde tiempo sin perder la contabilidad temporal real.
     """
 
-    def __init__(self, lap_analyzer):
+    def __init__(self, lap_analyzer, comparison_lap_analyzer=None):
         self.laps = lap_analyzer
+        self.comparison_laps = (
+            comparison_lap_analyzer
+            if comparison_lap_analyzer is not None
+            else lap_analyzer
+        )
 
     # ========================================================
     # PREPARAR VUELTA
     # ========================================================
 
-    def _prepare_lap(self, lap_number):
+    def _prepare_lap(self, lap_number, lap_analyzer=None):
         """
         Obtiene una vuelta y construye una distancia continua.
 
@@ -55,7 +60,13 @@ class DeltaComparison:
         está disponible mediante lap_summary().
         """
 
-        data = self.laps.get_lap_data(
+        analyzer = (
+            lap_analyzer
+            if lap_analyzer is not None
+            else self.laps
+        )
+
+        data = analyzer.get_lap_data(
             lap_number
         )
 
@@ -161,7 +172,7 @@ class DeltaComparison:
 
         try:
 
-            summary = self.laps.lap_summary(
+            summary = analyzer.lap_summary(
                 lap_number
             )
 
@@ -654,11 +665,13 @@ class DeltaComparison:
         # ----------------------------------------------------
 
         data_a = self._prepare_lap(
-            lap_a
+            lap_a,
+            self.laps,
         )
 
         data_b = self._prepare_lap(
-            lap_b
+            lap_b,
+            self.comparison_laps,
         )
 
         # ----------------------------------------------------
@@ -1132,7 +1145,7 @@ class DeltaComparison:
             lap_a
         )
 
-        summary_b = self.laps.lap_summary(
+        summary_b = self.comparison_laps.lap_summary(
             lap_b
         )
 

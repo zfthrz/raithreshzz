@@ -11,6 +11,8 @@ import urllib.error
 import urllib.request
 from datetime import datetime, timezone
 
+from runtime_paths import llm_debug_dir, llm_result_dir
+
 
 # ============================================================
 # RACE ENGINEER - LLM ANALYSIS v3.10.8.5.4 / DeepSeek provisional v1
@@ -17617,12 +17619,7 @@ def save_result(
         )
     )[0]
 
-    output_dir = os.path.join(
-        os.path.dirname(
-            input_path
-        ),
-        stem + "_llm",
-    )
+    output_dir = str(llm_result_dir(input_path))
 
     os.makedirs(
         output_dir,
@@ -17631,7 +17628,7 @@ def save_result(
 
     output_path = os.path.join(
         output_dir,
-        stem + f"_llm_analysis_v3_10_8_5_3_deepseek_v2_{MODEL_NAME}.json",
+        stem + f"_llm_analysis_v3_10_8_5_4_deepseek_v2_{MODEL_NAME}.json",
     )
 
     braking_point_detection = next(
@@ -17843,12 +17840,7 @@ def main():
         )
     )[0]
 
-    output_dir = os.path.join(
-        os.path.dirname(
-            input_path
-        ),
-        stem + "_llm",
-    )
+    output_dir = str(llm_debug_dir(input_path, backend="deepseek"))
 
     os.makedirs(
         output_dir,

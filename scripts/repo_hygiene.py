@@ -15,11 +15,17 @@ REFERENCE_SESSION_RE = re.compile(
 )
 
 RUNTIME_PATHSPECS = (
+    ":(glob)telemetria/**",
+    ":(glob)data/local/**",
+    ":(glob)data/generated/**",
+    ":(glob)data/raw/**",
     ":(glob)*_llm/**",
     ":(glob)*_llm_analysis*.json",
     "race_engineer_history.duckdb",
     "race_engineer_history_backup.duckdb",
     ":(glob)*.pre_objective_python_recovery.bak",
+    ":(exclude)data/generated/.gitkeep",
+    ":(exclude)data/raw/.gitkeep",
 )
 
 # Releases históricos que ya no deben vivir en la raíz operativa.

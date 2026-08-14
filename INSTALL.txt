@@ -1,0 +1,8 @@
+Race Engineer LLM context v1.0
+
+Copy/extract these two files into the repository root:
+
+  AGENTS.md
+  PROJECT_CONTEXT.md
+
+Codex reads AGENTS.md automatically. AGENTS.md instructs the agent to read PROJECT_CONTEXT.md before non-trivial work.

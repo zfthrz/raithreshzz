@@ -13,10 +13,17 @@ Thumbs.db
 
 
 # Keep raw telemetry / generated outputs out of Git by default
+telemetria/
 data/raw/*
 !data/raw/.gitkeep
 data/generated/*
 !data/generated/.gitkeep
+data/local/
+*_llm/
+*_llm_analysis*.json
+race_engineer_history.duckdb
+race_engineer_history_backup.duckdb
+*.pre_objective_python_recovery.bak
 
 # Local secrets / overrides
 .env

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import re
 import shutil
 import subprocess
@@ -67,6 +68,155 @@ def git(*args: str, check: bool = True) -> subprocess.CompletedProcess[str]:
         stderr=subprocess.PIPE,
         check=check,
     )
+
+
+def current_head() -> str:
+    return git("rev-parse", "HEAD").stdout.strip()
+
+
+def require_clean_tracked_worktree() -> None:
+    result = git("status", "--porcelain=v1", "--untracked-files=no")
+    if result.stdout.strip():
+        raise RuntimeError(
+            "Hay cambios trackeados sin commit. Creá un checkpoint limpio antes "
+            "de aplicar la higiene."
+        )
+
+
+def verified_bundle(path_argument: str, approved_head: str | None) -> Path:
+    bundle = Path(path_argument).expanduser().resolve()
+    root = ROOT.resolve()
+    if root == bundle or root in bundle.parents:
+        raise RuntimeError("El bundle verificado debe estar fuera del repositorio.")
+    if not bundle.is_file():
+        raise FileNotFoundError(f"No existe el bundle: {bundle}")
+
+    head = current_head()
+    if approved_head != head:
+        raise RuntimeError(
+            "La confirmación --approved-head debe coincidir exactamente con HEAD: "
+            f"{head}"
+        )
+
+    verification = git("bundle", "verify", str(bundle), check=False)
+    if verification.returncode != 0:
+        raise RuntimeError(
+            "git bundle verify falló:\n"
+            + (verification.stderr or verification.stdout)
+        )
+
+    listed = git("bundle", "list-heads", str(bundle), check=False)
+    if listed.returncode != 0:
+        raise RuntimeError(listed.stderr or listed.stdout)
+    bundled_commits = {
+        line.split(maxsplit=1)[0]
+        for line in listed.stdout.splitlines()
+        if line.strip()
+    }
+    if head not in bundled_commits:
+        raise RuntimeError(
+            "El bundle no contiene el commit HEAD actual; creá un backup nuevo."
+        )
+
+    require_clean_tracked_worktree()
+    return bundle
+
+
+def sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def files_under(paths: list[Path]) -> list[Path]:
+    rows: list[Path] = []
+    for path in paths:
+        if path.is_symlink():
+            raise RuntimeError(f"No se permiten symlinks en una acción de higiene: {path}")
+        if path.is_file():
+            rows.append(path)
+        elif path.is_dir():
+            for candidate in path.rglob("*"):
+                if candidate.is_symlink():
+                    raise RuntimeError(
+                        "No se permiten symlinks en una acción de higiene: "
+                        f"{candidate}"
+                    )
+                if candidate.is_file():
+                    rows.append(candidate)
+    return rows
+
+
+def affected_files(
+    references: list[Path],
+    superseded: list[tuple[Path, Path]],
+    runtime_on_disk: list[Path],
+) -> list[Path]:
+    sources = list(references)
+    sources.extend(source for source, _ in superseded)
+    sources.extend(runtime_on_disk)
+    return files_under(sources)
+
+
+def runtime_destination(source: Path) -> Path:
+    archive_root = ROOT / "data" / "local" / "legacy_runtime"
+    bucket = "llm_runs" if source.is_dir() and source.name.endswith("_llm") else "misc"
+    if source.is_file() and "_llm_analysis" in source.name:
+        bucket = "llm_results"
+    elif source.name.endswith(".bak"):
+        bucket = "backups"
+    elif source.name == "race_engineer_history_backup.duckdb":
+        bucket = "backups"
+    if source.name == "race_engineer_history.duckdb":
+        return ROOT / "data" / "local" / source.name
+    return archive_root / bucket / source.name
+
+
+def preflight_destinations(
+    references: list[Path],
+    superseded: list[tuple[Path, Path]],
+    runtime_on_disk: list[Path],
+) -> None:
+    for source in references:
+        if existing_reference_copy(source) is not None:
+            continue
+        destination = REFERENCE_SESSION_DIR / source.name
+        if destination.exists() and source.read_bytes() != destination.read_bytes():
+            raise FileExistsError(
+                f"Destino de referencia existente y diferente: {destination}"
+            )
+
+    for source, destination in superseded:
+        if destination.exists() and source.read_bytes() != destination.read_bytes():
+            raise FileExistsError(
+                f"Destino legacy existente y diferente: {destination}"
+            )
+
+    destinations: set[Path] = set()
+    for source in runtime_on_disk:
+        destination = runtime_destination(source)
+        if destination in destinations:
+            raise RuntimeError(f"Dos artefactos colisionan en: {destination}")
+        destinations.add(destination)
+        if destination.exists():
+            raise FileExistsError(f"Destino runtime ya existente: {destination}")
+
+
+def verify_hashes_still_exist(expected_hashes: set[str]) -> None:
+    remaining = set(expected_hashes)
+    for path in ROOT.rglob("*"):
+        if not remaining:
+            return
+        if ".git" in path.parts or path.is_symlink() or not path.is_file():
+            continue
+        digest = sha256_file(path)
+        remaining.discard(digest)
+    if remaining:
+        raise RuntimeError(
+            f"Verificación posterior falló: desaparecieron {len(remaining)} hash(es)."
+        )
 
 
 def tracked_runtime_files() -> list[str]:
@@ -187,20 +337,9 @@ def root_runtime_artifacts() -> list[Path]:
 
 
 def archive_runtime_artifacts() -> list[tuple[str, str]]:
-    archive_root = ROOT / "data" / "local" / "legacy_runtime"
     moved: list[tuple[str, str]] = []
     for source in root_runtime_artifacts():
-        bucket = "llm_runs" if source.is_dir() and source.name.endswith("_llm") else "misc"
-        if source.is_file() and "_llm_analysis" in source.name:
-            bucket = "llm_results"
-        elif source.name.endswith(".bak"):
-            bucket = "backups"
-        elif source.name == "race_engineer_history_backup.duckdb":
-            bucket = "backups"
-        if source.name == "race_engineer_history.duckdb":
-            destination = ROOT / "data" / "local" / source.name
-        else:
-            destination = archive_root / bucket / source.name
+        destination = runtime_destination(source)
         destination.parent.mkdir(parents=True, exist_ok=True)
         if destination.exists():
             raise FileExistsError(
@@ -278,6 +417,16 @@ def main() -> int:
         action="store_true",
         help="Aplicar layout + source + index cleanup y archivar runtime histórico.",
     )
+    parser.add_argument(
+        "--verified-bundle",
+        metavar="PATH",
+        help="Bundle Git externo que debe contener el HEAD actual.",
+    )
+    parser.add_argument(
+        "--approved-head",
+        metavar="SHA",
+        help="Confirmación explícita del commit exacto autorizado para la limpieza.",
+    )
     args = parser.parse_args()
 
     inside = git("rev-parse", "--is-inside-work-tree", check=False)
@@ -315,6 +464,27 @@ def main() -> int:
     apply_source = args.apply_source_cleanup or args.apply_all
     apply_index = args.apply_index_cleanup or args.apply_all
     apply_archive = args.archive_runtime or args.apply_all
+    applying = apply_layout or apply_source or apply_index or apply_archive
+
+    expected_hashes: set[str] = set()
+    if applying:
+        if not args.verified_bundle:
+            print("BLOCKED: toda aplicación exige --verified-bundle PATH.")
+            return 2
+        try:
+            bundle = verified_bundle(args.verified_bundle, args.approved_head)
+            preflight_destinations(references, superseded, runtime_on_disk)
+            expected_hashes = {
+                sha256_file(path)
+                for path in affected_files(references, superseded, runtime_on_disk)
+            }
+        except (OSError, RuntimeError) as exc:
+            print(f"BLOCKED: {exc}")
+            return 2
+        print()
+        print(f"Backup verificado: {bundle}")
+        print(f"HEAD autorizado: {current_head()}")
+        print(f"Hashes previos protegidos: {len(expected_hashes)}")
 
     if apply_layout and references:
         moved = move_reference_sessions()
@@ -344,6 +514,11 @@ def main() -> int:
         if len(moved) > 20:
             print(f"  ... y {len(moved) - 20} artifact(s) más")
 
+    if applying:
+        verify_hashes_still_exist(expected_hashes)
+        print()
+        print("Verificación SHA-256 posterior: PASS")
+
     remaining_runtime = tracked_runtime_files()
     remaining_references = root_reference_sessions()
     remaining_superseded = superseded_root_releases()
@@ -366,8 +541,8 @@ def main() -> int:
 
     if not (apply_layout or apply_source or apply_index or apply_archive):
         print()
-        print("Limpieza recomendada:")
-        print("  python scripts/repo_hygiene.py --apply-all")
+        print("Auditoría solamente: no se realizaron cambios.")
+        print("Para aplicar se exige bundle externo verificado + HEAD aprobado.")
     else:
         if remaining_references and not apply_layout:
             print("Falta aplicar --apply-layout-cleanup.")

@@ -326,10 +326,17 @@ One-time cleanup of an old real Git checkout is performed by:
 
 ```powershell
 python scripts\repo_hygiene.py
-python scripts\repo_hygiene.py --apply-all
+python scripts\repo_hygiene.py --apply-all `
+  --verified-bundle "C:\ruta\backup.bundle" `
+  --approved-head "SHA_COMPLETO_DE_HEAD"
 ```
 
 The cleanup is intended to preserve useful local files while removing runtime garbage from Git tracking and moving superseded material to the correct locations.
+
+The command without apply flags is audit-only. Every apply mode must verify an
+external Git bundle containing the exact current `HEAD`, require explicit approval
+of that full commit SHA, reject tracked working-tree changes and destination
+collisions, and verify afterward that no protected SHA-256 content disappeared.
 
 Do not reintroduce generated prompt/debug files into tracked source directories.
 

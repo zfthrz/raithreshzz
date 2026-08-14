@@ -1,0 +1,448 @@
+# Repository inventory
+
+> Safe audit: no existing files were moved, deleted, or untracked.
+
+## Summary
+
+- Commit: `c7a49a6be7eea03ae39f0709125820003f5a1b0a`
+- Branch: `main`
+- Total files: 581
+- Total size: 225.1 MiB
+- Tracked: 538
+- Untracked: 1
+- Ignored: 42
+- Keep: 160
+- Keep local/untracked: 42
+- Review required: 379
+- Exact duplicate groups: 7
+- Files at least 10.0 MiB: 7
+- Suspicious names: 0
+- Scan errors: 0
+
+## Review required
+
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z.json` — Root-level timestamped session JSON; proposed destination: `data/sessions/Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z.json`
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_34_47Z.json` — Root-level timestamped session JSON; proposed destination: `data/sessions/Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_34_47Z.json`
+- `Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z.json` — Root-level timestamped session JSON; proposed destination: `data/sessions/Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z.json`
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z.json` — Root-level timestamped session JSON; proposed destination: `data/sessions/Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z.json`
+- `Circuit de Spa-Francorchamps_P_2026-08-09T02_42_26Z.json` — Root-level timestamped session JSON; proposed destination: `data/sessions/Circuit de Spa-Francorchamps_P_2026-08-09T02_42_26Z.json`
+- `Circuit de Spa-Francorchamps_P_2026-08-09T04_35_16Z.json` — Root-level timestamped session JSON; proposed destination: `data/sessions/Circuit de Spa-Francorchamps_P_2026-08-09T04_35_16Z.json`
+- `Circuit de Spa-Francorchamps_P_2026-08-10T00_34_34Z.json` — Root-level timestamped session JSON; proposed destination: `data/sessions/Circuit de Spa-Francorchamps_P_2026-08-10T00_34_34Z.json`
+- `Circuit de Spa-Francorchamps_Q_2026-08-09T04_52_43Z.json` — Root-level timestamped session JSON; proposed destination: `data/sessions/Circuit de Spa-Francorchamps_Q_2026-08-09T04_52_43Z.json`
+- `Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z(1).json` — Root-level timestamped session JSON; proposed destination: `data/sessions/Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z(1).json`
+- `Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z.json` — Root-level timestamped session JSON; proposed destination: `data/sessions/Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z.json`
+- `Circuit de Spa-Francorchamps_R_2026-08-09T05_04_13Z.json` — Root-level timestamped session JSON; proposed destination: `data/sessions/Circuit de Spa-Francorchamps_R_2026-08-09T05_04_13Z.json`
+- `Circuit de Spa-Francorchamps_R_2026-08-10T01_03_52Z.json` — Root-level timestamped session JSON; proposed destination: `data/sessions/Circuit de Spa-Francorchamps_R_2026-08-10T01_03_52Z.json`
+- `Fuji Speedway_P_2026-08-13T21_40_16Z.json` — Root-level timestamped session JSON; proposed destination: `data/sessions/Fuji Speedway_P_2026-08-13T21_40_16Z.json`
+- `Fuji Speedway_P_2026-08-13T22_40_32Z.json` — Root-level timestamped session JSON; proposed destination: `data/sessions/Fuji Speedway_P_2026-08-13T22_40_32Z.json`
+- `braking_point_v2_1.py` — Root-level versioned Python artifact; proposed destination: `legacy/python_releases/braking_point_v2_1.py`
+- `full_throttle_recurrence_v1_0.py` — Root-level versioned Python artifact; proposed destination: `legacy/python_releases/full_throttle_recurrence_v1_0.py`
+- `llm_analysis_v3_10_0_deepseek_v2.py` — Root-level versioned Python artifact; proposed destination: `legacy/python_releases/llm_analysis_v3_10_0_deepseek_v2.py`
+- `llm_analysis_v3_10_8_4_deepseek_v2.py` — Root-level versioned Python artifact; proposed destination: `legacy/python_releases/llm_analysis_v3_10_8_4_deepseek_v2.py`
+- `llm_analysis_v3_10_8_4_ingenierov3.py` — Root-level versioned Python artifact; proposed destination: `legacy/python_releases/llm_analysis_v3_10_8_4_ingenierov3.py`
+- `llm_analysis_v3_10_8_5_1_deepseek_v2.py` — Root-level versioned Python artifact; proposed destination: `legacy/python_releases/llm_analysis_v3_10_8_5_1_deepseek_v2.py`
+- `llm_analysis_v3_10_8_5_1_ingenierov3.py` — Root-level versioned Python artifact; proposed destination: `legacy/python_releases/llm_analysis_v3_10_8_5_1_ingenierov3.py`
+- `llm_analysis_v3_8_17.py` — Root-level versioned Python artifact; proposed destination: `legacy/python_releases/llm_analysis_v3_8_17.py`
+- `throttle_coaching_evidence_gate_v1_0.py` — Root-level versioned Python artifact; proposed destination: `legacy/python_releases/throttle_coaching_evidence_gate_v1_0.py`
+- `throttle_episode_sequence_v1_0.py` — Root-level versioned Python artifact; proposed destination: `legacy/python_releases/throttle_episode_sequence_v1_0.py`
+- `throttle_modulation_recurrence_v1_0.py` — Root-level versioned Python artifact; proposed destination: `legacy/python_releases/throttle_modulation_recurrence_v1_0.py`
+- `throttle_physical_point_profile_v1_0.py` — Root-level versioned Python artifact; proposed destination: `legacy/python_releases/throttle_physical_point_profile_v1_0.py`
+- `throttle_point_v1_1.py` — Root-level versioned Python artifact; proposed destination: `legacy/python_releases/throttle_point_v1_1.py`
+- `throttle_point_v1_2_1.py` — Root-level versioned Python artifact; proposed destination: `legacy/python_releases/throttle_point_v1_2_1.py`
+- `throttle_sustained_modulation_v1_0.py` — Root-level versioned Python artifact; proposed destination: `legacy/python_releases/throttle_sustained_modulation_v1_0.py`
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm_analysis_v3_10_1_deepseek_v2_deepseek-v4-pro.json` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm_analysis_v3_10_1_ingenierov3.json` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm_analysis_v3_10_3_deepseek_v2_deepseek-v4-pro.json` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm_analysis_v3_10_3_ingenierov3.json` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm_analysis_v3_10_5_deepseek_v2_deepseek-v4-pro.json` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm_analysis_v3_10_5_ingenierov3.json` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm_analysis_v3_10_6_3_ingenierov3.json` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm_analysis_v3_10_6_deepseek_v2_deepseek-v4-pro.json` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm_analysis_v3_10_7_deepseek_v2_deepseek-v4-pro.json` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm_analysis_v3_10_8_5_1_deepseek_v2_deepseek-v4-pro.json` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/comparison_4_1_episode_1_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/comparison_4_1_episode_1_prompt_attempt_2.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/comparison_4_1_episode_2_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/comparison_4_1_episode_2_prompt_attempt_2.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/comparison_4_1_episode_3_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/comparison_4_1_episode_3_prompt_attempt_2.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/comparison_4_1_episode_4_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/comparison_4_1_episode_4_prompt_attempt_2.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/comparison_4_1_episode_5_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/comparison_4_1_episode_6_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/comparison_4_1_episode_6_prompt_attempt_2.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/comparison_4_1_episode_7_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/comparison_4_1_episode_8_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/comparison_4_1_episode_8_prompt_attempt_2.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/comparison_4_1_ranker_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/comparison_4_1_summary_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/comparison_4_1_summary_prompt_attempt_2.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/comparison_4_2_episode_1_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/comparison_4_2_episode_1_prompt_attempt_2.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/comparison_4_2_episode_2_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/comparison_4_2_episode_3_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/comparison_4_2_episode_3_prompt_attempt_2.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/comparison_4_2_episode_4_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/comparison_4_2_episode_5_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/comparison_4_2_episode_6_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/comparison_4_2_episode_7_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/comparison_4_2_episode_8_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/comparison_4_2_ranker_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/comparison_4_2_summary_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/comparison_4_2_summary_prompt_attempt_2.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/comparison_4_3_episode_1_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/comparison_4_3_episode_1_prompt_attempt_2.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/comparison_4_3_episode_2_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/comparison_4_3_episode_2_prompt_attempt_2.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/comparison_4_3_episode_3_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/comparison_4_3_episode_3_prompt_attempt_2.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/comparison_4_3_episode_4_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/comparison_4_3_episode_4_prompt_attempt_2.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/comparison_4_3_episode_5_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/comparison_4_3_episode_5_prompt_attempt_2.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/comparison_4_3_episode_6_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/comparison_4_3_episode_6_prompt_attempt_2.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/comparison_4_3_ranker_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/comparison_4_3_summary_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/comparison_4_3_summary_prompt_attempt_2.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/global_REJECTED.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/global_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/global_prompt_attempt_2.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/global_prompt_attempt_3.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/global_raw_attempt_2_INVALID.txt` — Tracked *_llm output
+- `Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z_llm/global_raw_attempt_3_INVALID.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z_llm/Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z_llm_analysis_v3_10_7_deepseek_v2_deepseek-v4-pro.json` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z_llm/comparison_7_4_episode_1_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z_llm/comparison_7_4_episode_2_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z_llm/comparison_7_4_episode_3_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z_llm/comparison_7_4_episode_4_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z_llm/comparison_7_4_episode_5_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z_llm/comparison_7_4_episode_6_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z_llm/comparison_7_4_episode_7_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z_llm/comparison_7_4_episode_8_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z_llm/comparison_7_4_ranker_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z_llm/comparison_7_4_summary_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z_llm/comparison_7_5_episode_1_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z_llm/comparison_7_5_episode_2_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z_llm/comparison_7_5_episode_3_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z_llm/comparison_7_5_episode_4_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z_llm/comparison_7_5_ranker_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z_llm/comparison_7_5_summary_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z_llm/comparison_7_6_episode_1_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z_llm/comparison_7_6_episode_2_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z_llm/comparison_7_6_episode_3_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z_llm/comparison_7_6_episode_4_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z_llm/comparison_7_6_episode_5_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z_llm/comparison_7_6_episode_6_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z_llm/comparison_7_6_episode_7_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z_llm/comparison_7_6_episode_8_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z_llm/comparison_7_6_ranker_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z_llm/comparison_7_6_summary_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z_llm/comparison_7_8_episode_1_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z_llm/comparison_7_8_episode_2_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z_llm/comparison_7_8_episode_3_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z_llm/comparison_7_8_episode_4_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z_llm/comparison_7_8_episode_5_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z_llm/comparison_7_8_episode_6_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z_llm/comparison_7_8_episode_7_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z_llm/comparison_7_8_episode_8_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z_llm/comparison_7_8_ranker_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z_llm/comparison_7_8_summary_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z_llm/global_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm_analysis_v3_10_0_deepseek_v2_deepseek-v4-pro.json` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm_analysis_v3_10_1_deepseek_v2_deepseek-v4-pro.json` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm_analysis_v3_10_3_deepseek_v2_deepseek-v4-pro.json` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm_analysis_v3_10_7_deepseek_v2_deepseek-v4-pro.json` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm_analysis_v3_10_7_ingenierov3.json` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm_analysis_v3_10_8_1_deepseek_v2_deepseek-v4-pro.json` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm_analysis_v3_10_8_2_deepseek_v2_deepseek-v4-pro.json` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm_analysis_v3_10_8_3_deepseek_v2_deepseek-v4-pro.json` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/comparison_13_11_episode_1_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/comparison_13_11_episode_2_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/comparison_13_11_episode_2_prompt_attempt_2.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/comparison_13_11_episode_3_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/comparison_13_11_episode_4_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/comparison_13_11_episode_5_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/comparison_13_11_episode_5_prompt_attempt_2.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/comparison_13_11_episode_6_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/comparison_13_11_episode_7_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/comparison_13_11_ranker_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/comparison_13_11_summary_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/comparison_13_11_summary_prompt_attempt_2.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/comparison_13_12_episode_1_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/comparison_13_12_episode_2_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/comparison_13_12_episode_3_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/comparison_13_12_episode_4_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/comparison_13_12_episode_5_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/comparison_13_12_ranker_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/comparison_13_12_summary_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/comparison_13_14_episode_1_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/comparison_13_14_episode_2_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/comparison_13_14_episode_3_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/comparison_13_14_ranker_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/comparison_13_14_summary_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/comparison_13_14_summary_prompt_attempt_2.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/comparison_13_15_episode_1_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/comparison_13_15_episode_2_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/comparison_13_15_episode_3_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/comparison_13_15_episode_4_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/comparison_13_15_episode_5_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/comparison_13_15_episode_5_prompt_attempt_2.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/comparison_13_15_ranker_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/comparison_13_15_summary_REJECTED.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/comparison_13_15_summary_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/comparison_13_15_summary_prompt_attempt_2.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/global_prompt_attempt_1.txt` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/llm_analysis_v3_10_8_3_deepseek_v2.py` — Tracked *_llm output
+- `Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z_llm/llm_analysis_v3_10_8_3_ingenierov3.py` — Tracked *_llm output
+- `Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z(1)_llm/Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z(1)_llm_analysis_v3_10_0_deepseek_v2_deepseek-v4-pro.json` — Tracked *_llm output
+- `Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z(1)_llm/comparison_4_1_episode_1_prompt_attempt_1.txt` — Tracked *_llm output
+- `Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z(1)_llm/comparison_4_1_episode_2_prompt_attempt_1.txt` — Tracked *_llm output
+- `Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z(1)_llm/comparison_4_1_episode_3_prompt_attempt_1.txt` — Tracked *_llm output
+- `Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z(1)_llm/comparison_4_1_episode_4_prompt_attempt_1.txt` — Tracked *_llm output
+- `Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z(1)_llm/comparison_4_1_episode_5_prompt_attempt_1.txt` — Tracked *_llm output
+- `Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z(1)_llm/comparison_4_1_episode_6_prompt_attempt_1.txt` — Tracked *_llm output
+- `Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z(1)_llm/comparison_4_1_episode_7_prompt_attempt_1.txt` — Tracked *_llm output
+- `Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z(1)_llm/comparison_4_1_episode_8_prompt_attempt_1.txt` — Tracked *_llm output
+- `Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z(1)_llm/comparison_4_1_ranker_prompt_attempt_1.txt` — Tracked *_llm output
+- `Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z(1)_llm/comparison_4_1_summary_prompt_attempt_1.txt` — Tracked *_llm output
+- `Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z(1)_llm/comparison_4_2_episode_1_prompt_attempt_1.txt` — Tracked *_llm output
+- `Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z(1)_llm/comparison_4_2_episode_2_prompt_attempt_1.txt` — Tracked *_llm output
+- `Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z(1)_llm/comparison_4_2_episode_3_prompt_attempt_1.txt` — Tracked *_llm output
+- `Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z(1)_llm/comparison_4_2_episode_4_prompt_attempt_1.txt` — Tracked *_llm output
+- `Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z(1)_llm/comparison_4_2_episode_5_prompt_attempt_1.txt` — Tracked *_llm output
+- `Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z(1)_llm/comparison_4_2_episode_6_prompt_attempt_1.txt` — Tracked *_llm output
+- `Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z(1)_llm/comparison_4_2_episode_6_prompt_attempt_2.txt` — Tracked *_llm output
+- `Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z(1)_llm/comparison_4_2_episode_7_prompt_attempt_1.txt` — Tracked *_llm output
+- `Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z(1)_llm/comparison_4_2_episode_8_prompt_attempt_1.txt` — Tracked *_llm output
+- `Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z(1)_llm/comparison_4_2_ranker_prompt_attempt_1.txt` — Tracked *_llm output
+- `Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z(1)_llm/comparison_4_2_summary_prompt_attempt_1.txt` — Tracked *_llm output
+- `Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z(1)_llm/comparison_4_3_episode_1_prompt_attempt_1.txt` — Tracked *_llm output
+- `Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z(1)_llm/comparison_4_3_episode_2_prompt_attempt_1.txt` — Tracked *_llm output
+- `Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z(1)_llm/comparison_4_3_episode_3_prompt_attempt_1.txt` — Tracked *_llm output
+- `Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z(1)_llm/comparison_4_3_episode_4_prompt_attempt_1.txt` — Tracked *_llm output
+- `Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z(1)_llm/comparison_4_3_episode_5_prompt_attempt_1.txt` — Tracked *_llm output
+- `Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z(1)_llm/comparison_4_3_episode_6_prompt_attempt_1.txt` — Tracked *_llm output
+- `Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z(1)_llm/comparison_4_3_episode_7_prompt_attempt_1.txt` — Tracked *_llm output
+- `Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z(1)_llm/comparison_4_3_episode_8_prompt_attempt_1.txt` — Tracked *_llm output
+- `Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z(1)_llm/comparison_4_3_ranker_prompt_attempt_1.txt` — Tracked *_llm output
+- `Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z(1)_llm/comparison_4_3_summary_prompt_attempt_1.txt` — Tracked *_llm output
+- `Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z(1)_llm/global_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/Fuji Speedway_P_2026-08-13T21_40_16Z_llm_analysis_v3_10_0_deepseek_v2_deepseek-v4-pro.json` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/Fuji Speedway_P_2026-08-13T21_40_16Z_llm_analysis_v3_10_0_ingenierov3.json` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_1_episode_1_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_1_episode_1_prompt_attempt_2.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_1_episode_2_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_1_episode_3_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_1_episode_4_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_1_episode_4_prompt_attempt_2.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_1_episode_5_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_1_episode_6_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_1_episode_6_prompt_attempt_2.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_1_episode_7_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_1_episode_8_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_1_ranker_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_1_summary_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_2_episode_1_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_2_episode_2_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_2_episode_2_prompt_attempt_2.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_2_episode_3_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_2_episode_3_prompt_attempt_2.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_2_episode_4_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_2_episode_5_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_2_episode_6_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_2_episode_7_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_2_episode_8_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_2_ranker_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_2_summary_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_3_episode_1_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_3_episode_1_prompt_attempt_2.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_3_episode_2_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_3_episode_2_prompt_attempt_2.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_3_episode_3_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_3_episode_3_prompt_attempt_2.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_3_episode_4_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_3_episode_5_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_3_episode_5_prompt_attempt_2.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_3_episode_6_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_3_episode_7_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_3_episode_8_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_3_episode_8_prompt_attempt_2.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_3_ranker_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_3_summary_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_4_episode_1_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_4_episode_1_prompt_attempt_2.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_4_episode_2_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_4_episode_3_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_4_episode_4_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_4_episode_5_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_4_episode_6_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_4_episode_6_prompt_attempt_2.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_4_episode_7_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_4_episode_8_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_4_ranker_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_4_summary_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_5_episode_1_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_5_episode_2_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_5_episode_3_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_5_episode_4_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_5_episode_5_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_5_episode_6_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_5_episode_7_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_5_ranker_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_5_summary_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_6_episode_1_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_6_episode_2_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_6_episode_3_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_6_episode_4_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_6_episode_5_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_6_episode_6_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_6_episode_7_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_6_episode_8_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_6_episode_8_prompt_attempt_2.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_6_ranker_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_6_summary_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_7_episode_1_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_7_episode_2_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_7_episode_3_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_7_episode_4_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_7_episode_5_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_7_episode_6_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_7_episode_6_prompt_attempt_2.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_7_episode_7_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_7_episode_8_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_7_episode_8_prompt_attempt_2.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_7_ranker_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/comparison_8_7_summary_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T21_40_16Z_llm/global_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/Fuji Speedway_P_2026-08-13T22_40_32Z_llm_analysis_v3_10_0_deepseek_v2_deepseek-v4-pro.json` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/Fuji Speedway_P_2026-08-13T22_40_32Z_llm_analysis_v3_10_0_ingenierov3.json` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/Fuji Speedway_P_2026-08-13T22_40_32Z_llm_analysis_v3_10_7_deepseek_v2_deepseek-v4-pro.json` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/Fuji Speedway_P_2026-08-13T22_40_32Z_llm_analysis_v3_10_8_1_deepseek_v2_deepseek-v4-pro.json` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/Fuji Speedway_P_2026-08-13T22_40_32Z_llm_analysis_v3_10_8_2_deepseek_v2_deepseek-v4-pro.json` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/Fuji Speedway_P_2026-08-13T22_40_32Z_llm_analysis_v3_10_8_2_ingenierov3.json` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/Fuji Speedway_P_2026-08-13T22_40_32Z_llm_analysis_v3_10_8_3_deepseek_v2_deepseek-v4-pro.json` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/Fuji Speedway_P_2026-08-13T22_40_32Z_llm_analysis_v3_10_8_3_ingenierov3.json` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/Fuji Speedway_P_2026-08-13T22_40_32Z_llm_analysis_v3_10_8_5_1_deepseek_v2_deepseek-v4-pro.json` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/Fuji Speedway_P_2026-08-13T22_40_32Z_llm_analysis_v3_10_8_5_2_deepseek_v2_deepseek-v4-pro.json` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/Fuji Speedway_P_2026-08-13T22_40_32Z_llm_analysis_v3_10_8_5_2_ingenierov3.json` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_1_episode_1_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_1_episode_2_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_1_episode_3_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_1_episode_4_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_1_episode_5_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_1_episode_5_prompt_attempt_2.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_1_episode_6_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_1_episode_7_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_1_ranker_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_1_summary_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_1_summary_prompt_attempt_2.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_2_episode_1_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_2_episode_1_prompt_attempt_2.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_2_episode_2_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_2_episode_3_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_2_episode_3_prompt_attempt_2.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_2_episode_4_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_2_episode_5_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_2_episode_5_prompt_attempt_2.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_2_episode_6_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_2_episode_7_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_2_episode_7_prompt_attempt_2.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_2_episode_8_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_2_episode_8_prompt_attempt_2.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_2_ranker_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_2_summary_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_2_summary_prompt_attempt_2.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_3_episode_1_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_3_episode_2_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_3_episode_3_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_3_episode_3_prompt_attempt_2.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_3_episode_4_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_3_episode_4_prompt_attempt_2.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_3_episode_5_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_3_episode_6_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_3_episode_6_prompt_attempt_2.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_3_episode_7_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_3_episode_8_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_3_episode_8_prompt_attempt_2.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_3_ranker_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_3_summary_REJECTED.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_3_summary_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_3_summary_prompt_attempt_2.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_4_episode_1_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_4_episode_1_prompt_attempt_2.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_4_episode_2_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_4_episode_2_prompt_attempt_2.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_4_episode_3_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_4_episode_3_prompt_attempt_2.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_4_episode_4_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_4_episode_5_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_4_episode_6_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_4_episode_6_prompt_attempt_2.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_4_episode_7_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_4_episode_8_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_4_episode_8_prompt_attempt_2.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_4_ranker_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_4_summary_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/comparison_5_4_summary_prompt_attempt_2.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/global_REJECTED.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/global_prompt_attempt_1.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/global_prompt_attempt_2.txt` — Tracked *_llm output
+- `Fuji Speedway_P_2026-08-13T22_40_32Z_llm/global_prompt_attempt_3.txt` — Tracked *_llm output
+- `calibration_batches/00_history_init.log` — Calibration material may contain human labels or source data
+- `calibration_batches/01_history_import.log` — Calibration material may contain human labels or source data
+- `calibration_batches/02_history_validation.log` — Calibration material may contain human labels or source data
+- `calibration_batches/BATCH_STATUS.json` — Calibration material may contain human labels or source data
+- `scripts/repository_hygiene.py` — Untracked file requires an explicit keep/ignore decision
+- `telemetria/Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z.duckdb` — Tracked DuckDB database may be local runtime state
+- `telemetria/Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_34_47Z.duckdb` — Tracked DuckDB database may be local runtime state
+- `telemetria/Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z.duckdb` — Tracked DuckDB database may be local runtime state
+- `telemetria/Autódromo José Carlos Pace_P_2026-08-14T03_14_04Z.duckdb` — Tracked DuckDB database may be local runtime state
+- `telemetria/Fuji Speedway_P_2026-08-13T21_40_16Z.duckdb` — Tracked DuckDB database may be local runtime state
+- `telemetria/Fuji Speedway_P_2026-08-13T22_40_32Z.duckdb` — Tracked DuckDB database may be local runtime state
+
+## Exact duplicate groups
+
+- `cdd80e3984fd2074bfe5795975f0deb5e4f510a2f126982fe0eb4303cc8a8514`
+  - `Circuit de Spa-Francorchamps_P_2026-08-09T02_42_26Z.json`
+  - `data/calibration_spa_lmp2_elms/Circuit de Spa-Francorchamps_P_2026-08-09T02_42_26Z.json`
+- `91236e6d934836dd8fe34fee8965a9841b6a85e176d8c8ba57948920afa53670`
+  - `Circuit de Spa-Francorchamps_P_2026-08-09T04_35_16Z.json`
+  - `data/calibration_spa_lmp2_elms/Circuit de Spa-Francorchamps_P_2026-08-09T04_35_16Z.json`
+- `ee44c21f5362605e051dae0761f5ddb0a3aad3c7c8452133842fe333bc7e4e60`
+  - `Circuit de Spa-Francorchamps_P_2026-08-10T00_34_34Z.json`
+  - `data/calibration_spa_lmp2_elms/Circuit de Spa-Francorchamps_P_2026-08-10T00_34_34Z.json`
+- `0ff9ccce12390a45f33a29a86617908c7b99a2948e2bf07d3c0a619ae46dde79`
+  - `Circuit de Spa-Francorchamps_Q_2026-08-09T04_52_43Z.json`
+  - `data/calibration_spa_lmp2_elms/Circuit de Spa-Francorchamps_Q_2026-08-09T04_52_43Z.json`
+- `64f40fc6418d02795e5b32b7b2d76090219d5afcb8d7d215b0735b063f415485`
+  - `Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z(1).json`
+  - `Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z.json`
+  - `data/calibration_spa_lmp2_elms/Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z.json`
+- `aafcccb507c50fa318a534c0519e2525cc9ea953be5931af9164f32d3949fc7a`
+  - `Circuit de Spa-Francorchamps_R_2026-08-10T01_03_52Z.json`
+  - `data/calibration_spa_lmp2_elms/Circuit de Spa-Francorchamps_R_2026-08-10T01_03_52Z.json`
+- `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+  - `data/generated/.gitkeep`
+  - `data/raw/.gitkeep`
+
+## Large files
+
+- `telemetria/Fuji Speedway_P_2026-08-13T21_40_16Z.duckdb` — 20.8 MiB
+- `Circuit de Spa-Francorchamps_R_2026-08-10T01_03_52Z.json` — 15.8 MiB
+- `data/calibration_spa_lmp2_elms/Circuit de Spa-Francorchamps_R_2026-08-10T01_03_52Z.json` — 15.8 MiB
+- `telemetria/Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_34_47Z.duckdb` — 14.1 MiB
+- `telemetria/Fuji Speedway_P_2026-08-13T22_40_32Z.duckdb` — 11.8 MiB
+- `telemetria/Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z.duckdb` — 11.0 MiB
+- `telemetria/Autódromo José Carlos Pace_P_2026-08-14T03_03_08Z.duckdb` — 10.2 MiB
+
+## Suspicious names
+
+- None detected.
+
+## Interpretation
+
+- `KEEP` means no automated action is proposed.
+- `KEEP_LOCAL_UNTRACKED` means Git already ignores the file; this audit does not change it.
+- `REVIEW_REQUIRED` is a finding, not permission to move or delete anything.
+- Proposed destinations are suggestions only and are never applied by `audit`.

@@ -39,6 +39,7 @@ Implemented:
 - H4 historical reference selector `0.2`
 - H5.1 dual reference context `0.2`
 - H5.2 raw cross-session comparison `0.1`
+- H5.2 validated observational LLM narrative `0.1`
 
 H5.2 resolves both raw DuckDBs through History, applies exact context gates, compares
 independent historical/current `LapAnalyzer` sources, validates the temporal delta and
@@ -52,11 +53,14 @@ Real checkpoint:
 - spatial zone summaries: `7`
 - second orchestrator run: H5.2 `REUSED`
 
-H5.2 historical actions remain disabled. LLM prompt/output/validator integration is the
-next development block; `session_reference` remains coaching authority.
+The H5.2 LLM contract can select up to three validated spatial zones and only the
+observation codes authorized by Python for each zone. LLM free text is disabled;
+Python owns the complete rendering. The validator rejects invented zones, extra
+fields, unauthorized codes and evidence tampering.
+Historical actions remain disabled and `session_reference` remains coaching authority.
 
 Validation:
-- pytest: `58 PASS / 0 FAIL / 0 SKIP`
+- pytest: `68 PASS / 0 FAIL / 0 SKIP`
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP`
 - Objective recovery check: `READY`
 
@@ -72,6 +76,6 @@ Require H4 selection plus H5.1 dual-reference context.
 Require H5.2 temporal validation and its structural validator.
 
 ### Gate D
-Define a dedicated LLM authorization contract before historical evidence can alter wording or coaching.
+Require the dedicated H5.2 LLM validator before historical evidence can alter observational wording. Historical evidence cannot authorize coaching actions.
 
 Do not let `historical_reference` silently replace the current session reference.

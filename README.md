@@ -1139,6 +1139,7 @@ H3 persistent pattern types
 H4 historical benchmark selector
 H5.1 dual reference
 H5.2 raw cross-session comparison     <- disponible en modo observacional
+H5.2 LLM historical narrative         <- observacional y validada
 ```
 
 Todavía no crear `persistent_pattern` automáticamente sólo porque dos episodios fueron `MATCH`.
@@ -1147,7 +1148,9 @@ H4 selecciona una `historical_reference` compatible y H5.1 conserva separadas la
 
 H5.2 v0.1 compara ambas vueltas desde sus DuckDB raw cuando están disponibles. La comparación es determinista, valida el delta temporal y produce zonas espaciales observacionales. Si falta cualquiera de los dos DuckDB, la etapa queda `SKIPPED_NOT_APPLICABLE`.
 
-Todavía no usar esas zonas históricas como instrucciones de coaching del LLM: en v0.1 `session_reference` sigue siendo la autoridad y `historical_actions_authorized=false` hasta definir un contrato específico de prompt, output y validator.
+El contrato LLM histórico v0.1 puede seleccionar hasta tres zonas H5.2 y únicamente códigos observacionales autorizados por Python para cada una. El LLM no escribe texto libre: Python arma todo el render final con hechos y cifras exactos. Un validator separado rechaza zonas inventadas, claves adicionales, códigos no autorizados o evidencia alterada.
+
+Las zonas históricas siguen sin autorizar instrucciones de coaching: `session_reference` continúa como autoridad y `historical_actions_authorized=false`.
 
 ---
 
@@ -1163,6 +1166,7 @@ Todavía no usar esas zonas históricas como instrucciones de coaching del LLM: 
 [ ] conservar JSON determinista para History
 [ ] H4/H5.1 si existe referencia histórica compatible
 [ ] H5.2 si ambos DuckDB raw están disponibles
+[ ] narrativa histórica H5.2 validada si el LLM está habilitado
 ```
 
 ---

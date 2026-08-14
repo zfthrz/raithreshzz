@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import re
 from pathlib import Path
 
 
@@ -88,3 +89,33 @@ def cross_session_output_path(
     database_path: str | os.PathLike[str],
 ) -> Path:
     return stage_output_dir(database_path, "h5_2") / "cross_session_comparison.json"
+
+
+def _safe_runtime_component(value: str) -> str:
+    cleaned = re.sub(r"[^A-Za-z0-9._-]+", "_", value).strip("._")
+    return cleaned or "unknown"
+
+
+def historical_llm_output_path(
+    database_path: str | os.PathLike[str],
+    *,
+    backend: str,
+    model: str,
+) -> Path:
+    filename = (
+        "historical_comparison_v0_1_"
+        f"{_safe_runtime_component(backend)}_{_safe_runtime_component(model)}.json"
+    )
+    return stage_output_dir(database_path, "h5_2_llm") / filename
+
+
+def historical_llm_debug_dir(
+    database_path: str | os.PathLike[str],
+    *,
+    backend: str,
+) -> Path:
+    return ensure_dir(
+        stage_output_dir(database_path, "h5_2_llm")
+        / "debug"
+        / _safe_runtime_component(backend)
+    )

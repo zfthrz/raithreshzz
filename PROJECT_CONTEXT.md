@@ -151,7 +151,7 @@ Checkpoint: **2026-08-14 integration v0.1**.
 
 | Component | Current operational baseline |
 |---|---|
-| `race_engineer.py` | orchestrator v0.1 |
+| `race_engineer.py` | orchestrator v0.2 |
 | `analyze_telemetry.py` | v3.8 + Objective Python v6 |
 | Brake point | 2.1 / schema 2.1 |
 | Throttle point | 1.2.1 / schema 1.2 |
@@ -169,12 +169,12 @@ Checkpoint: **2026-08-14 integration v0.1**.
 | H3 persistent patterns | v0.1 / derived |
 | H4 historical reference | v0.2 |
 | H5.1 dual reference | v0.2 |
-| H5.2 | v0.1 raw cross-session comparison; LLM authorization/integration pending |
+| H5.2 | v0.1 raw comparison + v0.1 validated observational LLM narrative |
 
 Current validated checkpoint:
 
 ```text
-pytest:                         58 PASS / 0 FAIL / 0 SKIP
+pytest:                         68 PASS / 0 FAIL / 0 SKIP
 Objective Python regressions:  55 PASS / 0 FAIL / 0 SKIP
 ```
 
@@ -368,6 +368,8 @@ H4 historical reference when target is eligible
 H5.1 dual-reference context
    ↓
 H5.2 raw cross-session comparison when both DuckDBs resolve; otherwise SKIPPED_NOT_APPLICABLE
+   ↓
+H5.2 LLM observational narrative when LLM is enabled; historical actions remain disabled
 ```
 
 The orchestration entry point is:
@@ -747,9 +749,16 @@ When either raw DuckDB cannot be resolved, the orchestrator reports:
 H5.2 = SKIPPED_NOT_APPLICABLE
 ```
 
-LLM consumption/authorization of H5.2 evidence is still pending. Do not convert the
-observational H5.2 zone summaries into historical coaching actions until a dedicated
-prompt/output/validator contract authorizes only deterministic cross-session evidence.
+The dedicated H5.2 LLM v0.1 contract consumes only the compact evidence subset built
+by Python and selects at most three existing zone IDs plus observation/limitation
+codes already authorized for each zone. LLM free text is disabled.
+`validate_historical_llm_analysis.py` rejects unknown zones, extra keys, unauthorized
+codes, tampered deterministic evidence or any change in coaching authority. Python
+owns every statement, exact distance and delta in the final Spanish rendering.
+
+This authorization is for observational narrative only. It does not authorize
+historical coaching actions and does not let `historical_reference` replace
+`session_reference`.
 
 Do not fake H5.2 by comparing only derived History rows or LLM prose and calling it raw telemetry comparison.
 
@@ -914,12 +923,11 @@ Do not clutter the repo root with every historical release; place superseded rel
 
 Priority order after integration checkpoint:
 
-1. Define the H5.2 evidence subset that may be consumed by the LLM without replacing current-session coaching authority.
-2. Add a dedicated H5.2 prompt/output/validator contract before enabling historical coaching language.
+1. Exercise the H5.2 observational narrative on the real Fuji pair with the selected backend and preserve its validator audit.
+2. Exercise H5.2 on additional real track/vehicle pairs and keep hard context gates conservative.
 3. Continue debrief refinement, especially brake-vs-throttle actionability.
 4. Integrate H3 only when calibrated matcher provenance/applicability can be resolved for the current context.
-5. Exercise H5.2 on additional real track/vehicle pairs and keep hard context gates conservative.
-6. Expand H2 calibration beyond the current limited context before calling it general.
+5. Expand H2 calibration beyond the current limited context before calling it general.
 
 Do not skip directly to “learning from all history” before context isolation and raw-validation gates are trustworthy.
 
@@ -1029,5 +1037,5 @@ Historical details belong in versioned notes or `legacy/`.
 
 # 36. One-paragraph mental model
 
-Race Engineer takes an LMU DuckDB, extracts and validates deterministic lap/zone/action evidence in Python, asks an LLM only to prioritize and explain authorized evidence, validates that narrative, stores the deterministic session in a schema-4 History DB, optionally selects a context-compatible historical benchmark through H4, preserves current-session coaching authority through H5.1 dual reference, and can compare both compatible raw reference laps deterministically through observational H5.2. H5.2 evidence is not yet authorized for LLM historical coaching. H2/H3 are the calibrated cross-session pattern-learning path and remain context-limited rather than universal. The repo must stay clean: source/provenance is tracked, runtime telemetry/debug/results stay under ignored `telemetria/`, `data/generated/` and `data/local/` paths.
+Race Engineer takes an LMU DuckDB, extracts and validates deterministic lap/zone/action evidence in Python, asks an LLM only to prioritize and explain authorized evidence, validates that narrative, stores the deterministic session in a schema-4 History DB, optionally selects a context-compatible historical benchmark through H4, preserves current-session coaching authority through H5.1 dual reference, and compares both compatible raw reference laps deterministically through H5.2. A separate validated H5.2 LLM contract may select only Python-authorized zone and observation codes; Python renders every historical statement and number, while causal claims and driving recommendations remain impossible. H2/H3 are the calibrated cross-session pattern-learning path and remain context-limited rather than universal. The repo must stay clean: source/provenance is tracked, runtime telemetry/debug/results stay under ignored `telemetria/`, `data/generated/` and `data/local/` paths.
 

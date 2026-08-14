@@ -40,16 +40,16 @@ python race_engineer.py analyze "telemetria\ARCHIVO.duckdb" --backend ollama
 - For H2, prefer `AMBIGUOUS` over an unsupported MATCH/REJECT.
 - Human labels are stronger ground truth than DeepSeek pseudo-labels.
 - H5.1 `session_reference` remains coaching authority; `historical_reference` is observational.
-- Do not claim H5.2 raw cross-session coaching without both compatible raw DuckDBs and validated comparison.
+- H5.2 LLM output is a controlled-code selection only: Python authorizes and renders every observation; free text, historical actions, causal claims and replacement of `session_reference` are forbidden.
 - H2 matcher v0.3 is provisional/context-limited, not a universal multi-track matcher.
 - H3 is calibration-derived and is not forced on every per-session run.
 
 ## Current baseline
 
-Checkpoint: 2026-08-14 integration v0.1.
+Checkpoint: 2026-08-14 integration v0.2.
 
 ```text
-race_engineer.py             orchestrator 0.1
+race_engineer.py             orchestrator 0.2
 analyze_telemetry.py         3.8 + Objective Python v6
 llm_analysis*.py             3.10.8.5.4
 session_history.py           1.4 / schema 4
@@ -58,12 +58,13 @@ build_persistent_patterns.py H3 0.1
 select_historical_reference.py H4 0.2
 build_dual_reference_context.py H5.1 0.2
 build_cross_session_comparison.py H5.2 0.1 / raw observational comparison
+historical_llm_analysis.py   H5.2 LLM 0.1 / validated observational narrative
 ```
 
 Validated integration checkpoint:
 
 ```text
-pytest:                         58 PASS / 0 FAIL / 0 SKIP
+pytest:                         68 PASS / 0 FAIL / 0 SKIP
 Objective Python regressions:  55 PASS / 0 FAIL / 0 SKIP
 ```
 

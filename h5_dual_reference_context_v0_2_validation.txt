@@ -1,0 +1,17 @@
+H5.1 Dual Reference Context v0.2 - real H4 schema compatibility validation
+
+py_compile:
+- build_dual_reference_context_v0_2.py: PASS
+- validate_dual_reference_context_v0_2.py: PASS
+- audit_dual_reference_context_v0_2.py: PASS
+
+synthetic exact-H4-schema runs:
+- real_h4_schema_positive: builder=PASS validator=PASS
+  status=DUAL_REFERENCE_AVAILABLE
+  historical=session 5 lap 4 124.32s
+  current_minus_historical_s=1.1400000000000006
+- real_h4_schema_fallback: builder=PASS validator=PASS
+  status=SESSION_REFERENCE_ONLY
+  historical_reference=None
+
+RESULT: PASS

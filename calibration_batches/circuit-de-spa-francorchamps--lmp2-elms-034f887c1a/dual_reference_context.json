@@ -1,0 +1,74 @@
+{
+  "metadata": {
+    "schema_version": "1.0",
+    "dual_reference_version": "0.2",
+    "created_at_utc": "2026-08-14T19:15:20.147493+00:00",
+    "source_analysis_json": "/workspaces/raithreshzz/Circuit de Spa-Francorchamps_R_2026-08-10T01_03_52Z.json",
+    "source_analysis_sha256": "eb67fc111a966e8e57d5762b3f2339f292c82472933d4b299d9bf9f90615f2df",
+    "source_h4_selection_json": "/workspaces/raithreshzz/calibration_batches/circuit-de-spa-francorchamps--lmp2-elms-034f887c1a/historical_reference_selection.json",
+    "source_h4_selection_sha256": "f4486a0a383de2cecaa05e8237d619b1131a7d83f56457cf463b1cd5969a4ef0",
+    "h4_selector_version": "0.2",
+    "policy": {
+      "session_reference_role": "operational_coaching_reference",
+      "historical_reference_role": "long_term_progress_benchmark",
+      "historical_reference_replaces_session_reference": false,
+      "historical_action_coaching_enabled": false,
+      "historical_telemetry_reconstruction_from_history_allowed": false,
+      "fallback_when_no_historical_reference": "continue_with_session_reference_only"
+    }
+  },
+  "status": "DUAL_REFERENCE_AVAILABLE",
+  "context": {
+    "track": "Circuit de Spa-Francorchamps",
+    "track_layout": "Circuit de Spa-Francorchamps",
+    "vehicle_variant": "LMP2_ELMS",
+    "car_name_raw": "IDEC Sport #18:ELMS25"
+  },
+  "target_session": {
+    "session_id": 6,
+    "timestamp_utc": "2026-08-10T01:03:52Z",
+    "session_type": "R",
+    "weather_conditions": "Partially Cloudy",
+    "weather_class": "DRY"
+  },
+  "session_reference": {
+    "role": "operational_coaching_reference",
+    "lap": 3,
+    "duration_s": 125.45999999999992,
+    "samples": 12546,
+    "lap_distance_m": 6972.4873046875
+  },
+  "historical_reference": {
+    "role": "long_term_benchmark",
+    "session_id": 5,
+    "lap": 4,
+    "duration_s": 124.32,
+    "timestamp_utc": "2026-08-10T00:53:48Z",
+    "session_type": "Q",
+    "weather_conditions": "Light Clouds",
+    "weather_class": "DRY",
+    "same_setup_sha256": false,
+    "source_database_path": null,
+    "source_json_path": "/workspaces/raithreshzz/data/calibration_spa_lmp2_elms/Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z.json",
+    "selection_rank": null
+  },
+  "long_term_progress": {
+    "historical_reference_available": true,
+    "current_minus_historical_s": 1.1399999999999295,
+    "historical_minus_current_s": -1.1399999999999295,
+    "status": "BEHIND_HISTORICAL_BENCHMARK",
+    "interpretation": "current_session_reference_is_slower",
+    "equality_tolerance_s": 0.001
+  },
+  "coaching_authority": {
+    "active_reference": "session_reference",
+    "historical_reference_can_change_driver_cues": false,
+    "historical_reference_can_change_global_ABC_plan": false,
+    "historical_reference_is_observational_only": true
+  },
+  "next_stage": {
+    "cross_session_telemetry_comparison_required_for_historical_actions": true,
+    "required_source": "raw DuckDB telemetry from both sessions",
+    "history_episode_summaries_are_not_sufficient": true
+  }
+}

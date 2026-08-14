@@ -1,0 +1,17 @@
+H5.1 Dual Reference Context v0.1 validation
+
+py_compile:
+- build_dual_reference_context_v0_1.py: PASS
+- validate_dual_reference_context_v0_1.py: PASS
+- audit_dual_reference_context_v0_1.py: PASS
+
+synthetic runs:
+- positive: builder=PASS validator=PASS
+  current_minus_historical_s=1.1400000000000006
+  progress_status=BEHIND_HISTORICAL_BENCHMARK
+  active_reference=session_reference
+- fallback: builder=PASS validator=PASS
+  status=SESSION_REFERENCE_ONLY
+  historical_reference=None
+
+RESULT: PASS

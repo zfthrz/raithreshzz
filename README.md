@@ -1150,6 +1150,8 @@ H5.2 v0.1 compara ambas vueltas desde sus DuckDB raw cuando están disponibles. 
 
 El contrato LLM histórico v0.1 puede seleccionar hasta tres zonas H5.2 y únicamente códigos observacionales autorizados por Python para cada una. El LLM no escribe texto libre: Python arma todo el render final con hechos y cifras exactos. Un validator separado rechaza zonas inventadas, claves adicionales, códigos no autorizados o evidencia alterada.
 
+El checkpoint multitrack real cubre Fuji, Imola, Interlagos y Monza. En los cuatro casos pasaron tanto el validator raw como el validator de narrativa histórica. El conjunto incluye vueltas actuales más lentas (`+1.280 s`, `+0.600 s`) y más rápidas (`-0.180 s`, `-1.120 s`) que la referencia histórica, sin cambiar la autoridad de coaching. Monza también confirmó que H4 rechaza mezclar Hypercar con LMP2_ELMS. Los detalles están en `docs/H5_2_MULTITRACK_VALIDATION_V0_1.md`.
+
 Las zonas históricas siguen sin autorizar instrucciones de coaching: `session_reference` continúa como autoridad y `historical_actions_authorized=false`.
 
 ---

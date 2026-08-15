@@ -45,13 +45,18 @@ H5.2 resolves both raw DuckDBs through History, applies exact context gates, com
 independent historical/current `LapAnalyzer` sources, validates the temporal delta and
 emits observational spatial zone summaries.
 
-Real checkpoint:
-- Fuji historical session 7 lap 8: `90.980 s`
-- Fuji current session 8 lap 5: `92.260 s`
-- current minus historical: `+1.280 s`
-- temporal validation: `PASS`
-- spatial zone summaries: `7`
-- second orchestrator run: H5.2 `REUSED`
+Real multitrack checkpoint:
+
+| Track | Historical reference | Current reference | Current - historical | Raw zones | LLM-selected zones | Validators |
+|---|---:|---:|---:|---:|---:|---:|
+| Fuji | session 7 lap 8, `90.980 s` | session 8 lap 5, `92.260 s` | `+1.280 s` | 7 | 3 | `PASS` |
+| Imola | session 9 lap 4, `93.660 s` | session 10 lap 4, `94.260 s` | `+0.600 s` | 3 | 3 | `PASS` |
+| Interlagos | session 11 lap 7, `87.320 s` | session 12 lap 13, `87.140 s` | `-0.180 s` | 4 | 3 | `PASS` |
+| Monza | session 14 lap 1, `99.140 s` | session 16 lap 8, `98.020 s` | `-1.120 s` | 5 | 3 | `PASS` |
+
+Fuji also completed an orchestrator reuse check with H5.2 `REUSED`. The four
+historical narratives use DeepSeek `deepseek-v4-pro`, disable free text and keep
+historical coaching disabled. See `docs/H5_2_MULTITRACK_VALIDATION_V0_1.md`.
 
 The H5.2 LLM contract can select up to three validated spatial zones and only the
 observation codes authorized by Python for each zone. LLM free text is disabled;

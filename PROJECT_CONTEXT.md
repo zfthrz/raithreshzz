@@ -921,13 +921,18 @@ Do not clutter the repo root with every historical release; place superseded rel
 
 # 29. Current known debt / roadmap
 
-Priority order after integration checkpoint:
+Completed after the integration checkpoint:
 
-1. Exercise the H5.2 observational narrative on the real Fuji pair with the selected backend and preserve its validator audit.
-2. Exercise H5.2 on additional real track/vehicle pairs and keep hard context gates conservative.
-3. Continue debrief refinement, especially brake-vs-throttle actionability.
-4. Integrate H3 only when calibrated matcher provenance/applicability can be resolved for the current context.
-5. Expand H2 calibration beyond the current limited context before calling it general.
+1. The H5.2 observational narrative passed on the real Fuji pair with DeepSeek and its dedicated validator.
+2. The same raw and narrative contracts passed on Imola, Interlagos and Monza, including both positive and negative current-minus-historical lap deltas.
+3. Monza confirmed that exact vehicle/context isolation rejects Hypercar-to-LMP2_ELMS history while accepting two compatible Toyota Hypercar sessions.
+
+Current priority order:
+
+1. Continue debrief refinement, especially brake-vs-throttle actionability.
+2. Integrate H3 only when calibrated matcher provenance/applicability can be resolved for the current context.
+3. Expand H2 calibration beyond the current limited context before calling it general.
+4. Continue adding real H5.2 contexts without relaxing the track/layout/vehicle/car gates.
 
 Do not skip directly to “learning from all history” before context isolation and raw-validation gates are trustworthy.
 

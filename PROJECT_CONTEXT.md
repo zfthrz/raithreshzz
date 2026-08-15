@@ -174,7 +174,7 @@ Checkpoint: **2026-08-14 integration v0.1**.
 Current validated checkpoint:
 
 ```text
-pytest:                         70 PASS / 0 FAIL / 0 SKIP
+pytest:                         71 PASS / 0 FAIL / 0 SKIP
 Objective Python regressions:  55 PASS / 0 FAIL / 0 SKIP
 ```
 
@@ -465,6 +465,11 @@ physical onset/release point with authority
         > qualitative brake/throttle adjustment toward reference
             > validated steering cue
 ```
+
+Within the repeated physical-point tier, the number of comparisons supporting
+the point itself is evaluated before the broader recurrence count of its enclosing
+region. This rule is channel-neutral: stronger point support wins whether the cue
+belongs to brake or throttle.
 
 Examples of qualitative transformations that can be valid when the underlying relationship is deterministic:
 

@@ -57,7 +57,7 @@ nor does it make the context gates less strict.
 ## Repository validation checkpoint
 
 ```text
-pytest:                         70 PASS / 0 FAIL / 0 SKIP
+pytest:                         71 PASS / 0 FAIL / 0 SKIP
 Objective Python regressions:  55 PASS / 0 FAIL / 0 SKIP
 Objective recovery check:      READY
 ```

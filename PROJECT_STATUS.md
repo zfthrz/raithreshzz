@@ -64,8 +64,15 @@ Python owns the complete rendering. The validator rejects invented zones, extra
 fields, unauthorized codes and evidence tampering.
 Historical actions remain disabled and `session_reference` remains coaching authority.
 
+Debrief actionability:
+- session priority policy `1.9` ranks repeated physical points by their own
+  cross-comparison support before the broader recurrence of the enclosing region;
+- the rule is channel-neutral and does not hard-code brake over throttle;
+- on the real Imola audit, the brake point supported in 3 comparisons ranks ahead
+  of the throttle point supported in 2, despite the throttle region appearing in 5.
+
 Validation:
-- pytest: `70 PASS / 0 FAIL / 0 SKIP`
+- pytest: `71 PASS / 0 FAIL / 0 SKIP`
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP`
 - Objective recovery check: `READY`
 

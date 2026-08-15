@@ -11943,7 +11943,7 @@ def _build_next_stint_plan(
 # PRIORIDAD DE SESIÓN POR RECURRENCIA v3.10.8
 # ============================================================
 
-SESSION_PRIORITY_POLICY_VERSION = "1.8"
+SESSION_PRIORITY_POLICY_VERSION = "1.9"
 
 
 def _plan_overlap_m(
@@ -12338,6 +12338,11 @@ def _session_plan_sort_key(
       3) reference_action_profile concreto;
       4) resto de evidencia accionable.
 
+    Dentro del tier de puntos repetidos, el soporte del propio punto físico
+    precede a la recurrencia más amplia de la zona. Esto evita que una zona
+    frecuente con un punto observado pocas veces desplace a un punto físico
+    mejor repetido.
+
     Dentro del tier individual, el orden es:
       comparison_priority_rank -> episode_priority_rank -> pérdida local.
     La posición en pista es únicamente el último desempate absoluto.
@@ -12360,6 +12365,14 @@ def _session_plan_sort_key(
     repeated_point_count = sum(
         1 for pattern in point_patterns
         if pattern.get("status") == "REPEATED"
+    )
+    repeated_point_support_count = max(
+        [
+            safe_int(pattern.get("comparison_count")) or 1
+            for pattern in point_patterns
+            if pattern.get("status") == "REPEATED"
+        ],
+        default=0,
     )
     single_authorized_point_count = sum(
         1 for pattern in point_patterns
@@ -12411,8 +12424,9 @@ def _session_plan_sort_key(
     if evidence_tier == 0:
         return (
             0,
-            -comparison_count,
+            -repeated_point_support_count,
             -repeated_point_count,
+            -comparison_count,
             comparison_rank,
             episode_rank,
             -max_loss,
@@ -13745,7 +13759,7 @@ def build_session_coaching_facts(
             "version":
                 SESSION_PRIORITY_POLICY_VERSION,
             "method":
-                "physical_point_specificity_then_priority_rank",
+                "physical_point_support_then_specificity_then_priority_rank",
             "order":
                 [
                     "repeated_physical_point",

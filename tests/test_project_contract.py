@@ -1,3 +1,4 @@
+import importlib
 import json
 import hashlib
 from pathlib import Path
@@ -72,3 +73,46 @@ def test_llm_scripts_use_centralized_runtime_paths_and_current_version():
         assert debug_contract in source
         assert filename_contract in source
         assert "_llm_analysis_v3_10_8_5_3" not in source
+
+
+def test_llm_session_braking_constants_execute_both_fact_paths():
+    for module_name in ("llm_analysis", "llm_analysis_deepseek"):
+        module = importlib.import_module(module_name)
+        assert module.BRAKING_POINT_SESSION_MIN_DELTA_M == 8.0
+        assert module.BRAKING_POINT_PATTERN_ONSET_TOLERANCE_M == 8.0
+        assert module.BRAKE_RELEASE_SESSION_MIN_DELTA_M == 8.0
+        assert module.BRAKE_RELEASE_PATTERN_REFERENCE_TOLERANCE_M == 8.0
+
+        braking = module._session_braking_point_fact(
+            {
+                "braking_point_comparison": {
+                    "status": "VALID",
+                    "braking_pair_id": "pair",
+                    "reference_event_id": "reference",
+                    "comparison_event_id": "comparison",
+                    "reference_onset_m": 100.0,
+                    "comparison_onset_m": 110.0,
+                    "comparison_minus_reference_m": 10.0,
+                    "authorized_numeric_coaching": True,
+                }
+            }
+        )
+        assert braking["coaching_direction"] == "earlier"
+        assert braking["coaching_magnitude_m"] == 10
+
+        release = module._session_brake_release_fact(
+            {
+                "brake_release_point_comparison": {
+                    "status": "VALID",
+                    "braking_pair_id": "pair",
+                    "reference_event_id": "reference",
+                    "comparison_event_id": "comparison",
+                    "reference_release_m": 200.0,
+                    "comparison_release_m": 190.0,
+                    "comparison_minus_reference_m": -10.0,
+                    "authorized_numeric_coaching": True,
+                }
+            }
+        )
+        assert release["coaching_direction"] == "later"
+        assert release["coaching_magnitude_m"] == 10

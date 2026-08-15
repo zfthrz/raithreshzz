@@ -10506,6 +10506,11 @@ def _single_finding_plan_item(
         },
     }
 
+BRAKING_POINT_SESSION_MIN_DELTA_M = 8.0
+BRAKING_POINT_PATTERN_ONSET_TOLERANCE_M = 8.0
+BRAKE_RELEASE_SESSION_MIN_DELTA_M = 8.0
+BRAKE_RELEASE_PATTERN_REFERENCE_TOLERANCE_M = 8.0
+
 def _session_braking_point_fact(episode):
     """
     Extrae evidencia física de punto de frenada para la agregación de sesión.

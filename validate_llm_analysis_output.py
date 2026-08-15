@@ -3,9 +3,11 @@ import os
 import re
 import sys
 
+import llm_analysis as llm_renderer
+
 
 # ============================================================
-# RACE ENGINEER - LLM OUTPUT VALIDATOR v1.0
+# RACE ENGINEER - LLM OUTPUT VALIDATOR v1.1
 # ============================================================
 #
 # Valida el archivo *_llm_analysis.json generado por
@@ -29,6 +31,10 @@ import sys
 # - llm_analysis v3.8.1:
 #   * episodios omitidos
 #   * ground truth ignorado
+#
+# - presentation v2.1+:
+#   * deriva entre el JSON estructurado y el render determinista
+#   * prioridades de sesión distintas de las autorizadas por Python
 #
 # ============================================================
 
@@ -629,73 +635,29 @@ def validate_rendered_comparison(
             "'No disponible en datos'."
         )
 
-    gt = comparison.get(
-        "ground_truth",
-        {},
-    )
-
-    reference_time = safe_float(
-        gt.get(
-            "reference_time_s"
+    try:
+        expected_analysis = (
+            llm_renderer.render_comparison_analysis(
+                comparison,
+                comparison.get(
+                    "episode_ground_truth"
+                ),
+                comparison.get(
+                    "llm_structured"
+                ),
+            )
         )
-    )
-
-    comparison_time = safe_float(
-        gt.get(
-            "comparison_time_s"
+    except Exception as exc:
+        errors.append(
+            f"{base}.analysis no se pudo reconstruir "
+            f"con el renderizador determinista: {exc}"
         )
-    )
-
-    delta = safe_float(
-        gt.get(
-            "comparison_minus_reference_s"
-        )
-    )
-
-    expected_strings = []
-
-    if reference_time is not None:
-        expected_strings.append(
-            f"{reference_time:.4f} s"
-        )
-
-    if comparison_time is not None:
-        expected_strings.append(
-            f"{comparison_time:.4f} s"
-        )
-
-    if delta is not None:
-        expected_strings.append(
-            f"{delta:+.4f} s"
-        )
-
-    for expected in expected_strings:
-        if expected not in analysis:
+    else:
+        if analysis != expected_analysis:
             errors.append(
-                f"{base}.analysis no contiene "
-                f"ground truth renderizado: {expected}"
+                f"{base}.analysis no coincide exactamente "
+                "con el renderizador determinista de Python."
             )
-
-    episode_count = safe_int(
-        comparison.get(
-            "driver_action_episode_count"
-        )
-    )
-
-    if episode_count is not None:
-        for episode_id in range(
-            1,
-            episode_count + 1,
-        ):
-            token = (
-                f"Episodio #{episode_id}"
-            )
-
-            if token not in analysis:
-                errors.append(
-                    f"{base}.analysis no menciona "
-                    f"{token}."
-                )
 
     causal_phrases = (
         "causó exactamente",
@@ -735,10 +697,8 @@ def validate_global_structured(
 
     for field in (
         "opportunities",
-        "repeated_observations",
         "hypotheses",
         "limitations",
-        "next_session_priorities",
     ):
         validate_text_list_no_digits(
             structured.get(
@@ -747,6 +707,48 @@ def validate_global_structured(
             f"global_structured.{field}",
             errors,
         )
+
+    session_coaching_facts = data.get(
+        "session_coaching_facts"
+    )
+
+    if not isinstance(
+        session_coaching_facts,
+        dict,
+    ):
+        errors.append(
+            "session_coaching_facts ausente o inválido."
+        )
+    else:
+        deterministic_fields = (
+            (
+                "repeated_observations",
+                llm_renderer.build_deterministic_repeated_observations,
+            ),
+            (
+                "next_session_priorities",
+                llm_renderer.build_deterministic_next_session_priorities,
+            ),
+        )
+
+        for field, builder in deterministic_fields:
+            try:
+                expected = builder(
+                    session_coaching_facts
+                )
+            except Exception as exc:
+                errors.append(
+                    f"global_structured.{field}: no se pudo "
+                    f"reconstruir desde Python: {exc}"
+                )
+                continue
+
+            if structured.get(field) != expected:
+                errors.append(
+                    f"global_structured.{field}: no coincide "
+                    "exactamente con los hechos deterministas "
+                    "autorizados por Python."
+                )
 
     conclusion = structured.get(
         "conclusion"
@@ -795,65 +797,26 @@ def validate_global_render(
             "'No disponible en datos'."
         )
 
-    comparisons = data.get(
-        "comparisons",
-        [],
-    )
-
-    for index, comparison in enumerate(
-        comparisons
-    ):
-        gt = comparison.get(
-            "ground_truth",
-            {},
-        )
-
-        reference_time = safe_float(
-            gt.get(
-                "reference_time_s"
+    try:
+        expected_analysis = (
+            llm_renderer.render_global_analysis(
+                data.get("metadata", {}),
+                data.get("comparisons", []),
+                data.get("session_coaching_facts", {}),
+                data.get("global_structured", {}),
             )
         )
-
-        comparison_time = safe_float(
-            gt.get(
-                "comparison_time_s"
-            )
+    except Exception as exc:
+        errors.append(
+            "global_analysis no se pudo reconstruir con el "
+            f"renderizador determinista: {exc}"
         )
-
-        delta = safe_float(
-            gt.get(
-                "comparison_minus_reference_s"
+    else:
+        if analysis != expected_analysis:
+            errors.append(
+                "global_analysis no coincide exactamente con el "
+                "renderizador determinista de Python."
             )
-        )
-
-        # El global no necesita repetir cada tiempo dos veces,
-        # pero debe incluir al menos los tiempos y delta
-        # autoritativos de cada comparación analizada.
-
-        expected = []
-
-        if reference_time is not None:
-            expected.append(
-                f"{reference_time:.4f} s"
-            )
-
-        if comparison_time is not None:
-            expected.append(
-                f"{comparison_time:.4f} s"
-            )
-
-        if delta is not None:
-            expected.append(
-                f"{delta:+.4f} s"
-            )
-
-        for token in expected:
-            if token not in analysis:
-                errors.append(
-                    "global_analysis no contiene "
-                    f"ground truth de comparación "
-                    f"{index}: {token}"
-                )
 
 
 def validate_file(
@@ -947,7 +910,7 @@ def validate_file(
 def main():
     print()
     print("=" * 60)
-    print("RACE ENGINEER - LLM OUTPUT VALIDATOR v1.0")
+    print("RACE ENGINEER - LLM OUTPUT VALIDATOR v1.1")
     print("=" * 60)
     print()
 

@@ -158,7 +158,10 @@ def build_comparison(
             "session_reference_remains_authority": True,
             "historical_reference_is_observational": True,
             "historical_actions_authorized": False,
-            "reason": "LLM authorization contract for H5.2 is not integrated yet",
+            "reason": (
+                "H5.2 LLM permits controlled observational selection only; "
+                "historical actions remain disabled"
+            ),
         },
     }
 

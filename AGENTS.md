@@ -64,7 +64,7 @@ historical_llm_analysis.py   H5.2 LLM 0.1 / validated observational narrative
 Validated integration checkpoint:
 
 ```text
-pytest:                         68 PASS / 0 FAIL / 0 SKIP
+pytest:                         70 PASS / 0 FAIL / 0 SKIP
 Objective Python regressions:  55 PASS / 0 FAIL / 0 SKIP
 ```
 

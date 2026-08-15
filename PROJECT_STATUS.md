@@ -60,7 +60,7 @@ fields, unauthorized codes and evidence tampering.
 Historical actions remain disabled and `session_reference` remains coaching authority.
 
 Validation:
-- pytest: `68 PASS / 0 FAIL / 0 SKIP`
+- pytest: `70 PASS / 0 FAIL / 0 SKIP`
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP`
 - Objective recovery check: `READY`
 

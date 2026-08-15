@@ -1,0 +1,1607 @@
+{
+  "metadata": {
+    "label_schema_version": "1.1",
+    "created_at_utc": "2026-08-15T19:39:43.595109+00:00",
+    "updated_at_utc": "2026-08-15T19:43:40.666464+00:00",
+    "source_queue_path": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\autodromo-nazionale-monza--hyper-636633bd5e\\pair_review_queue.json",
+    "source_queue_sha256": "4acbd0c7f951f02ec9038c52cf24ffca3db1e7d11958fe0e1159abf655ddcc51",
+    "reviewer": null,
+    "semantics": "Human calibration labels. SAME means same general location and driving-difference type, not proven identical causality."
+  },
+  "labels": [
+    {
+      "pair_id": "3040661024b90b02bc22",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-15T19:41:44.703946+00:00",
+      "selected_by": [
+        {
+          "lens": "closest_centers",
+          "rank": 1
+        },
+        {
+          "lens": "nearby_channel_disagreement",
+          "rank": 1
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Nazionale Monza",
+        "session_a": 13,
+        "session_b": 14,
+        "episode_pk_a": 502,
+        "episode_pk_b": 505,
+        "episode_id_a": 4,
+        "episode_id_b": 1,
+        "start_distance_a_m": 5027.0,
+        "end_distance_a_m": 5115.0,
+        "center_distance_a_m": 5071.0,
+        "start_distance_b_m": 4947.0,
+        "end_distance_b_m": 5198.0,
+        "center_distance_b_m": 5072.5,
+        "center_distance_abs_diff_m": 1.5,
+        "overlap_m": 88.0,
+        "overlap_over_union": 0.350597609561753,
+        "overlap_over_shorter": 1.0,
+        "channel_jaccard": 0.3333333333333333,
+        "channels_a": [
+          "brake"
+        ],
+        "channels_b": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "brake"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "action_time_loss_a_s": 0.05057508269099742,
+        "action_time_loss_b_s": 0.44577919920715203,
+        "action_time_loss_similarity": 0.11345321356615241,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.16733067729083662,
+            "onset_offset_abs_diff_m": 3.0,
+            "end_offset_abs_diff_m": 33.0,
+            "mean_difference_similarity": 0.9883313702656361,
+            "peak_difference_similarity": 0.23989112568222995,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "mixed"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "e8d7e53ff119b8834609",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-15T19:41:54.680173+00:00",
+      "selected_by": [
+        {
+          "lens": "highest_spatial_overlap",
+          "rank": 1
+        },
+        {
+          "lens": "closest_centers",
+          "rank": 2
+        },
+        {
+          "lens": "nearby_channel_disagreement",
+          "rank": 2
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Nazionale Monza",
+        "session_a": 13,
+        "session_b": 14,
+        "episode_pk_a": 500,
+        "episode_pk_b": 508,
+        "episode_id_a": 2,
+        "episode_id_b": 4,
+        "start_distance_a_m": 4004.0,
+        "end_distance_a_m": 4078.0,
+        "center_distance_a_m": 4041.0,
+        "start_distance_b_m": 3990.0,
+        "end_distance_b_m": 4082.0,
+        "center_distance_b_m": 4036.0,
+        "center_distance_abs_diff_m": 5.0,
+        "overlap_m": 74.0,
+        "overlap_over_union": 0.8043478260869565,
+        "overlap_over_shorter": 1.0,
+        "channel_jaccard": 0.5,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [
+          "steering_magnitude"
+        ],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.1552380112800904,
+        "action_time_loss_b_s": 0.10112877281135013,
+        "action_time_loss_similarity": 0.6514433673650141,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.30244679409790415,
+            "peak_difference_similarity": 0.7662061273682299,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "eade66e1be95c774af63",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-15T19:41:58.192183+00:00",
+      "selected_by": [
+        {
+          "lens": "highest_channel_similarity",
+          "rank": 1
+        },
+        {
+          "lens": "closest_centers",
+          "rank": 4
+        },
+        {
+          "lens": "nearby_channel_disagreement",
+          "rank": 4
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Nazionale Monza",
+        "session_a": 13,
+        "session_b": 17,
+        "episode_pk_a": 504,
+        "episode_pk_b": 561,
+        "episode_id_a": 6,
+        "episode_id_b": 5,
+        "start_distance_a_m": 4129.0,
+        "end_distance_a_m": 4149.0,
+        "center_distance_a_m": 4139.0,
+        "start_distance_b_m": 4120.0,
+        "end_distance_b_m": 4143.0,
+        "center_distance_b_m": 4131.5,
+        "center_distance_abs_diff_m": 7.5,
+        "overlap_m": 14.0,
+        "overlap_over_union": 0.4827586206896552,
+        "overlap_over_shorter": 0.7,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "throttle"
+        ],
+        "channels_b": [
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.02724021440856461,
+        "action_time_loss_b_s": 0.03601716009335121,
+        "action_time_loss_similarity": 0.7563121117256875,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.9749068300121688,
+            "peak_difference_similarity": 0.8923974147395177,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "f333ae599c614741774e",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-15T19:42:04.128356+00:00",
+      "selected_by": [
+        {
+          "lens": "similar_channels_farther_apart",
+          "rank": 1
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Nazionale Monza",
+        "session_a": 17,
+        "session_b": 16,
+        "episode_pk_a": 563,
+        "episode_pk_b": 551,
+        "episode_id_a": 1,
+        "episode_id_b": 2,
+        "start_distance_a_m": 5208.0,
+        "end_distance_a_m": 5307.0,
+        "center_distance_a_m": 5257.5,
+        "start_distance_b_m": 629.0,
+        "end_distance_b_m": 910.0,
+        "center_distance_b_m": 769.5,
+        "center_distance_abs_diff_m": 4488.0,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.7768404483886826,
+        "action_time_loss_b_s": 4.982094048583587,
+        "action_time_loss_similarity": 0.15592649211620943,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.6352133433983967,
+            "onset_offset_abs_diff_m": 6.0,
+            "end_offset_abs_diff_m": 65.0,
+            "mean_difference_similarity": 0.7392804652027312,
+            "peak_difference_similarity": 0.14614702806817007,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.3945864337323412,
+            "onset_offset_abs_diff_m": 168.0,
+            "end_offset_abs_diff_m": 13.0,
+            "mean_difference_similarity": 0.40597846986576985,
+            "peak_difference_similarity": 0.3415973187080225,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.35231316725978645,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.05344851043641949,
+            "peak_difference_similarity": 1.0,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "mixed"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "4178d1cef7330096d423",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-15T19:42:07.288396+00:00",
+      "selected_by": [
+        {
+          "lens": "impact_divergence",
+          "rank": 1
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Nazionale Monza",
+        "session_a": 14,
+        "session_b": 16,
+        "episode_pk_a": 514,
+        "episode_pk_b": 550,
+        "episode_id_a": 5,
+        "episode_id_b": 1,
+        "start_distance_a_m": 957.0,
+        "end_distance_a_m": 997.0,
+        "center_distance_a_m": 977.0,
+        "start_distance_b_m": 1.0,
+        "end_distance_b_m": 237.0,
+        "center_distance_b_m": 119.0,
+        "center_distance_abs_diff_m": 858.0,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 0.5,
+        "channels_a": [
+          "steering_magnitude"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [
+          "throttle"
+        ],
+        "action_time_loss_a_s": 0.022348726993374868,
+        "action_time_loss_b_s": 12.252519162248419,
+        "action_time_loss_similarity": 0.001824010776676372,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.423728813559322,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 100.0,
+            "mean_difference_similarity": 0.9814445653905315,
+            "peak_difference_similarity": 0.4817122272584167,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "47cf75ec8ca453eefb17",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-15T19:42:08.760468+00:00",
+      "selected_by": [
+        {
+          "lens": "deterministic_baseline",
+          "rank": 1
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Nazionale Monza",
+        "session_a": 17,
+        "session_b": 16,
+        "episode_pk_a": 565,
+        "episode_pk_b": 548,
+        "episode_id_a": 3,
+        "episode_id_b": 5,
+        "start_distance_a_m": 4174.0,
+        "end_distance_a_m": 4281.0,
+        "center_distance_a_m": 4227.5,
+        "start_distance_b_m": 2140.0,
+        "end_distance_b_m": 2164.0,
+        "center_distance_b_m": 2152.0,
+        "center_distance_abs_diff_m": 2075.5,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 0.5,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude"
+        ],
+        "shared_channels": [
+          "steering_magnitude"
+        ],
+        "channels_only_a": [
+          "throttle"
+        ],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.20952757011789913,
+        "action_time_loss_b_s": 0.05013809272281122,
+        "action_time_loss_similarity": 0.23929114767378348,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.42056074766355145,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 45.0,
+            "mean_difference_similarity": 0.7293701703158767,
+            "peak_difference_similarity": 0.9180532503712951,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "6af7369f4f6fa6834d03",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-15T19:42:12.904916+00:00",
+      "selected_by": [
+        {
+          "lens": "highest_spatial_overlap",
+          "rank": 2
+        },
+        {
+          "lens": "closest_centers",
+          "rank": 5
+        },
+        {
+          "lens": "nearby_channel_disagreement",
+          "rank": 5
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Nazionale Monza",
+        "session_a": 13,
+        "session_b": 14,
+        "episode_pk_a": 503,
+        "episode_pk_b": 513,
+        "episode_id_a": 5,
+        "episode_id_b": 4,
+        "start_distance_a_m": 2814.0,
+        "end_distance_a_m": 2869.0,
+        "center_distance_a_m": 2841.5,
+        "start_distance_b_m": 2808.0,
+        "end_distance_b_m": 2859.0,
+        "center_distance_b_m": 2833.5,
+        "center_distance_abs_diff_m": 8.0,
+        "overlap_m": 45.0,
+        "overlap_over_union": 0.7377049180327869,
+        "overlap_over_shorter": 0.8823529411764706,
+        "channel_jaccard": 0.5,
+        "channels_a": [
+          "brake",
+          "throttle"
+        ],
+        "channels_b": [
+          "brake"
+        ],
+        "shared_channels": [
+          "brake"
+        ],
+        "channels_only_a": [
+          "throttle"
+        ],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.03929284464951621,
+        "action_time_loss_b_s": 0.029767492632551296,
+        "action_time_loss_similarity": 0.7575804932951782,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.18181818181818177,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 10.0,
+            "mean_difference_similarity": 0.7102679629882204,
+            "peak_difference_similarity": 0.6902397404444762,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "516998d119b240a447f9",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-15T19:42:16.896577+00:00",
+      "selected_by": [
+        {
+          "lens": "highest_channel_similarity",
+          "rank": 2
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Nazionale Monza",
+        "session_a": 13,
+        "session_b": 17,
+        "episode_pk_a": 500,
+        "episode_pk_b": 560,
+        "episode_id_a": 2,
+        "episode_id_b": 4,
+        "start_distance_a_m": 4004.0,
+        "end_distance_a_m": 4078.0,
+        "center_distance_a_m": 4041.0,
+        "start_distance_b_m": 4034.0,
+        "end_distance_b_m": 4094.0,
+        "center_distance_b_m": 4064.0,
+        "center_distance_abs_diff_m": 23.0,
+        "overlap_m": 44.0,
+        "overlap_over_union": 0.4888888888888889,
+        "overlap_over_shorter": 0.7333333333333333,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.1552380112800904,
+        "action_time_loss_b_s": 0.10799668926478034,
+        "action_time_loss_similarity": 0.6956845709001371,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.14954954954954958,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 12.0,
+            "mean_difference_similarity": 0.6872727946146556,
+            "peak_difference_similarity": 0.6772825312717468,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.1166666666666667,
+            "onset_offset_abs_diff_m": 7.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.5459749215387758,
+            "peak_difference_similarity": 0.763710645423855,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "4b8f4489bb24048b06fa",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-15T19:42:22.976919+00:00",
+      "selected_by": [
+        {
+          "lens": "similar_channels_farther_apart",
+          "rank": 2
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Nazionale Monza",
+        "session_a": 17,
+        "session_b": 16,
+        "episode_pk_a": 558,
+        "episode_pk_b": 551,
+        "episode_id_a": 2,
+        "episode_id_b": 2,
+        "start_distance_a_m": 5188.0,
+        "end_distance_a_m": 5257.0,
+        "center_distance_a_m": 5222.5,
+        "start_distance_b_m": 629.0,
+        "end_distance_b_m": 910.0,
+        "center_distance_b_m": 769.5,
+        "center_distance_abs_diff_m": 4453.0,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.36888339114916846,
+        "action_time_loss_b_s": 4.982094048583587,
+        "action_time_loss_similarity": 0.074041836133953,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.7032853679921605,
+            "onset_offset_abs_diff_m": 6.0,
+            "end_offset_abs_diff_m": 50.0,
+            "mean_difference_similarity": 0.48649649570541315,
+            "peak_difference_similarity": 0.2718569404604499,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.4051266181855691,
+            "onset_offset_abs_diff_m": 168.0,
+            "end_offset_abs_diff_m": 5.0,
+            "mean_difference_similarity": 0.2894860648358269,
+            "peak_difference_similarity": 0.2315942807415183,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.35231316725978645,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.06776986459014085,
+            "peak_difference_similarity": 0.8686995586458753,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "mixed"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "8633784345da5df0b76f",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-15T19:42:25.832768+00:00",
+      "selected_by": [
+        {
+          "lens": "impact_divergence",
+          "rank": 2
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Nazionale Monza",
+        "session_a": 17,
+        "session_b": 16,
+        "episode_pk_a": 562,
+        "episode_pk_b": 550,
+        "episode_id_a": 6,
+        "episode_id_b": 1,
+        "start_distance_a_m": 4171.0,
+        "end_distance_a_m": 4188.0,
+        "center_distance_a_m": 4179.5,
+        "start_distance_b_m": 1.0,
+        "end_distance_b_m": 237.0,
+        "center_distance_b_m": 119.0,
+        "center_distance_abs_diff_m": 4060.5,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 0.5,
+        "channels_a": [
+          "steering_magnitude"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [
+          "throttle"
+        ],
+        "action_time_loss_a_s": 0.023650181840082496,
+        "action_time_loss_b_s": 12.252519162248419,
+        "action_time_loss_similarity": 0.0019302301450751236,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.423728813559322,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 100.0,
+            "mean_difference_similarity": 0.402067599968715,
+            "peak_difference_similarity": 0.1909491574598567,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "2cb6fffe0ce193e4f86a",
+      "human_label": "AMBIGUOUS",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-15T19:42:40.569089+00:00",
+      "selected_by": [
+        {
+          "lens": "deterministic_baseline",
+          "rank": 2
+        },
+        {
+          "lens": "highest_channel_similarity",
+          "rank": 5
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Nazionale Monza",
+        "session_a": 13,
+        "session_b": 16,
+        "episode_pk_a": 503,
+        "episode_pk_b": 549,
+        "episode_id_a": 5,
+        "episode_id_b": 6,
+        "start_distance_a_m": 2814.0,
+        "end_distance_a_m": 2869.0,
+        "center_distance_a_m": 2841.5,
+        "start_distance_b_m": 2772.0,
+        "end_distance_b_m": 2835.0,
+        "center_distance_b_m": 2803.5,
+        "center_distance_abs_diff_m": 38.0,
+        "overlap_m": 21.0,
+        "overlap_over_union": 0.21649484536082475,
+        "overlap_over_shorter": 0.38181818181818183,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "brake",
+          "throttle"
+        ],
+        "channels_b": [
+          "brake",
+          "throttle"
+        ],
+        "shared_channels": [
+          "brake",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.03929284464951621,
+        "action_time_loss_b_s": 0.03159142513304403,
+        "action_time_loss_similarity": 0.8039994409881187,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.10245310245310235,
+            "onset_offset_abs_diff_m": 5.0,
+            "end_offset_abs_diff_m": 10.0,
+            "mean_difference_similarity": 0.44587010011255745,
+            "peak_difference_similarity": 0.2837743615973506,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.31226551226551225,
+            "onset_offset_abs_diff_m": 39.0,
+            "end_offset_abs_diff_m": 12.0,
+            "mean_difference_similarity": 0.6698186979083163,
+            "peak_difference_similarity": 0.26380236191872053,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "91264defa03c2fc620bf",
+      "human_label": "AMBIGUOUS",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-15T19:42:45.265793+00:00",
+      "selected_by": [
+        {
+          "lens": "closest_centers",
+          "rank": 3
+        },
+        {
+          "lens": "nearby_channel_disagreement",
+          "rank": 3
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Nazionale Monza",
+        "session_a": 17,
+        "session_b": 16,
+        "episode_pk_a": 564,
+        "episode_pk_b": 548,
+        "episode_id_a": 2,
+        "episode_id_b": 5,
+        "start_distance_a_m": 2116.0,
+        "end_distance_a_m": 2202.0,
+        "center_distance_a_m": 2159.0,
+        "start_distance_b_m": 2140.0,
+        "end_distance_b_m": 2164.0,
+        "center_distance_b_m": 2152.0,
+        "center_distance_abs_diff_m": 7.0,
+        "overlap_m": 24.0,
+        "overlap_over_union": 0.27906976744186046,
+        "overlap_over_shorter": 1.0,
+        "channel_jaccard": 0.3333333333333333,
+        "channels_a": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude"
+        ],
+        "shared_channels": [
+          "steering_magnitude"
+        ],
+        "channels_only_a": [
+          "brake",
+          "throttle"
+        ],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.39723134098352375,
+        "action_time_loss_b_s": 0.05013809272281122,
+        "action_time_loss_similarity": 0.1262188743684523,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.046511627906976716,
+            "onset_offset_abs_diff_m": 4.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.4881718265726942,
+            "peak_difference_similarity": 0.5623015293189464,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "9f2740519d25839dbccd",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-15T19:43:00.873766+00:00",
+      "selected_by": [
+        {
+          "lens": "highest_spatial_overlap",
+          "rank": 3
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Nazionale Monza",
+        "session_a": 13,
+        "session_b": 14,
+        "episode_pk_a": 503,
+        "episode_pk_b": 509,
+        "episode_id_a": 5,
+        "episode_id_b": 5,
+        "start_distance_a_m": 2814.0,
+        "end_distance_a_m": 2869.0,
+        "center_distance_a_m": 2841.5,
+        "start_distance_b_m": 2808.0,
+        "end_distance_b_m": 2858.0,
+        "center_distance_b_m": 2833.0,
+        "center_distance_abs_diff_m": 8.5,
+        "overlap_m": 44.0,
+        "overlap_over_union": 0.7213114754098361,
+        "overlap_over_shorter": 0.88,
+        "channel_jaccard": 0.3333333333333333,
+        "channels_a": [
+          "brake",
+          "throttle"
+        ],
+        "channels_b": [
+          "brake",
+          "steering_magnitude"
+        ],
+        "shared_channels": [
+          "brake"
+        ],
+        "channels_only_a": [
+          "throttle"
+        ],
+        "channels_only_b": [
+          "steering_magnitude"
+        ],
+        "action_time_loss_a_s": 0.03929284464951621,
+        "action_time_loss_b_s": 0.057593452469618,
+        "action_time_loss_similarity": 0.6822449942594461,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.18181818181818177,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 10.0,
+            "mean_difference_similarity": 0.7064314028122001,
+            "peak_difference_similarity": 0.6008952771565905,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "2ab738ee4c049fdea3e7",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-15T19:43:04.161584+00:00",
+      "selected_by": [
+        {
+          "lens": "highest_channel_similarity",
+          "rank": 3
+        },
+        {
+          "lens": "highest_spatial_overlap",
+          "rank": 5
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Nazionale Monza",
+        "session_a": 17,
+        "session_b": 14,
+        "episode_pk_a": 565,
+        "episode_pk_b": 510,
+        "episode_id_a": 3,
+        "episode_id_b": 1,
+        "start_distance_a_m": 4174.0,
+        "end_distance_a_m": 4281.0,
+        "center_distance_a_m": 4227.5,
+        "start_distance_b_m": 4137.0,
+        "end_distance_b_m": 4266.0,
+        "center_distance_b_m": 4201.5,
+        "center_distance_abs_diff_m": 26.0,
+        "overlap_m": 92.0,
+        "overlap_over_union": 0.6388888888888888,
+        "overlap_over_shorter": 0.8598130841121495,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.20952757011789913,
+        "action_time_loss_b_s": 0.26690898729624735,
+        "action_time_loss_similarity": 0.7850150429192574,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.3158733608635803,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 50.0,
+            "mean_difference_similarity": 0.9860621135253421,
+            "peak_difference_similarity": 0.7871790153591672,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.9601015191902529,
+            "peak_difference_similarity": 0.7137814297274052,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "0134d60fd984de2ffa26",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-15T19:43:10.025726+00:00",
+      "selected_by": [
+        {
+          "lens": "similar_channels_farther_apart",
+          "rank": 3
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Nazionale Monza",
+        "session_a": 14,
+        "session_b": 16,
+        "episode_pk_a": 505,
+        "episode_pk_b": 551,
+        "episode_id_a": 1,
+        "episode_id_b": 2,
+        "start_distance_a_m": 4947.0,
+        "end_distance_a_m": 5198.0,
+        "center_distance_a_m": 5072.5,
+        "start_distance_b_m": 629.0,
+        "end_distance_b_m": 910.0,
+        "center_distance_b_m": 769.5,
+        "center_distance_abs_diff_m": 4303.0,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.44577919920715203,
+        "action_time_loss_b_s": 4.982094048583587,
+        "action_time_loss_similarity": 0.08947627139513502,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.1459783641235768,
+            "onset_offset_abs_diff_m": 3.0,
+            "end_offset_abs_diff_m": 33.0,
+            "mean_difference_similarity": 0.5447367249390698,
+            "peak_difference_similarity": 0.9227563705445838,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "consistent"
+          },
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.12394549914222114,
+            "onset_offset_abs_diff_m": 23.0,
+            "end_offset_abs_diff_m": 11.0,
+            "mean_difference_similarity": 0.23297486336293535,
+            "peak_difference_similarity": 0.23528400906996505,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.2851370319434008,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 68.0,
+            "mean_difference_similarity": 0.1812551280865537,
+            "peak_difference_similarity": 1.0,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "mixed"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "ac4cc9bb6bbdd207ca39",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-15T19:43:14.129828+00:00",
+      "selected_by": [
+        {
+          "lens": "impact_divergence",
+          "rank": 3
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Nazionale Monza",
+        "session_a": 13,
+        "session_b": 16,
+        "episode_pk_a": 504,
+        "episode_pk_b": 550,
+        "episode_id_a": 6,
+        "episode_id_b": 1,
+        "start_distance_a_m": 4129.0,
+        "end_distance_a_m": 4149.0,
+        "center_distance_a_m": 4139.0,
+        "start_distance_b_m": 1.0,
+        "end_distance_b_m": 237.0,
+        "center_distance_b_m": 119.0,
+        "center_distance_abs_diff_m": 4020.0,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 0.5,
+        "channels_a": [
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [
+          "steering_magnitude"
+        ],
+        "action_time_loss_a_s": 0.02724021440856461,
+        "action_time_loss_b_s": 12.252519162248419,
+        "action_time_loss_similarity": 0.0022232337732223427,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.08898305084745761,
+            "onset_offset_abs_diff_m": 21.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.4003252414517302,
+            "peak_difference_similarity": 0.4857806508745938,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "2085ecabcc422e1120f5",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-15T19:43:16.322092+00:00",
+      "selected_by": [
+        {
+          "lens": "deterministic_baseline",
+          "rank": 3
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Nazionale Monza",
+        "session_a": 17,
+        "session_b": 14,
+        "episode_pk_a": 567,
+        "episode_pk_b": 513,
+        "episode_id_a": 5,
+        "episode_id_b": 4,
+        "start_distance_a_m": 2032.0,
+        "end_distance_a_m": 2048.0,
+        "center_distance_a_m": 2040.0,
+        "start_distance_b_m": 2808.0,
+        "end_distance_b_m": 2859.0,
+        "center_distance_b_m": 2833.5,
+        "center_distance_abs_diff_m": 793.5,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "brake"
+        ],
+        "channels_b": [
+          "brake"
+        ],
+        "shared_channels": [
+          "brake"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.03261014830203379,
+        "action_time_loss_b_s": 0.029767492632551296,
+        "action_time_loss_similarity": 0.9128291094185178,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.6347648900351541,
+            "peak_difference_similarity": 0.5347454143550036,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "92c2d754fe94443d76d1",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-15T19:43:20.065988+00:00",
+      "selected_by": [
+        {
+          "lens": "highest_spatial_overlap",
+          "rank": 4
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Nazionale Monza",
+        "session_a": 14,
+        "session_b": 16,
+        "episode_pk_a": 505,
+        "episode_pk_b": 554,
+        "episode_id_a": 1,
+        "episode_id_b": 5,
+        "start_distance_a_m": 4947.0,
+        "end_distance_a_m": 5198.0,
+        "center_distance_a_m": 5072.5,
+        "start_distance_b_m": 4904.0,
+        "end_distance_b_m": 5150.0,
+        "center_distance_b_m": 5027.0,
+        "center_distance_abs_diff_m": 45.5,
+        "overlap_m": 203.0,
+        "overlap_over_union": 0.6904761904761905,
+        "overlap_over_shorter": 0.8252032520325203,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.44577919920715203,
+        "action_time_loss_b_s": 1.4053298682738387,
+        "action_time_loss_similarity": 0.3172060946478715,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.14700547403880404,
+            "onset_offset_abs_diff_m": 3.0,
+            "end_offset_abs_diff_m": 33.0,
+            "mean_difference_similarity": 0.6466843119910958,
+            "peak_difference_similarity": 0.9170525645167701,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "mixed"
+          },
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.2690862565996178,
+            "onset_offset_abs_diff_m": 102.0,
+            "end_offset_abs_diff_m": 32.0,
+            "mean_difference_similarity": 0.5782837097770434,
+            "peak_difference_similarity": 0.7532898466634319,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.393547760178797,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 68.0,
+            "mean_difference_similarity": 0.045304529581047,
+            "peak_difference_similarity": 1.0,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "mixed"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "ebff48024af16fffa5b4",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-15T19:43:27.130187+00:00",
+      "selected_by": [
+        {
+          "lens": "highest_channel_similarity",
+          "rank": 4
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Nazionale Monza",
+        "session_a": 13,
+        "session_b": 16,
+        "episode_pk_a": 500,
+        "episode_pk_b": 546,
+        "episode_id_a": 2,
+        "episode_id_b": 3,
+        "start_distance_a_m": 4004.0,
+        "end_distance_a_m": 4078.0,
+        "center_distance_a_m": 4041.0,
+        "start_distance_b_m": 3950.0,
+        "end_distance_b_m": 4066.0,
+        "center_distance_b_m": 4008.0,
+        "center_distance_abs_diff_m": 33.0,
+        "overlap_m": 62.0,
+        "overlap_over_union": 0.484375,
+        "overlap_over_shorter": 0.8378378378378378,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.1552380112800904,
+        "action_time_loss_b_s": 0.19721549711717046,
+        "action_time_loss_similarity": 0.7871491518126478,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.5941286113699906,
+            "onset_offset_abs_diff_m": 13.0,
+            "end_offset_abs_diff_m": 65.0,
+            "mean_difference_similarity": 0.7828999065576101,
+            "peak_difference_similarity": 0.8929929036668657,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.07758620689655171,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.613944555326051,
+            "peak_difference_similarity": 0.8543540726010403,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "2764861551341c0d3e46",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-15T19:43:28.922463+00:00",
+      "selected_by": [
+        {
+          "lens": "similar_channels_farther_apart",
+          "rank": 4
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Nazionale Monza",
+        "session_a": 17,
+        "session_b": 16,
+        "episode_pk_a": 565,
+        "episode_pk_b": 550,
+        "episode_id_a": 3,
+        "episode_id_b": 1,
+        "start_distance_a_m": 4174.0,
+        "end_distance_a_m": 4281.0,
+        "center_distance_a_m": 4227.5,
+        "start_distance_b_m": 1.0,
+        "end_distance_b_m": 237.0,
+        "center_distance_b_m": 119.0,
+        "center_distance_abs_diff_m": 4108.5,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.20952757011789913,
+        "action_time_loss_b_s": 12.252519162248419,
+        "action_time_loss_similarity": 0.01710077473402208,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.0031680658957705665,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 55.0,
+            "mean_difference_similarity": 0.6969931797470593,
+            "peak_difference_similarity": 0.3808370436646584,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.08898305084745761,
+            "onset_offset_abs_diff_m": 21.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.4176003446350335,
+            "peak_difference_similarity": 0.9957769709214831,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "d13082b5b6e439c2f15a",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-15T19:43:35.746599+00:00",
+      "selected_by": [
+        {
+          "lens": "impact_divergence",
+          "rank": 4
+        },
+        {
+          "lens": "deterministic_baseline",
+          "rank": 4
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Nazionale Monza",
+        "session_a": 14,
+        "session_b": 16,
+        "episode_pk_a": 513,
+        "episode_pk_b": 550,
+        "episode_id_a": 4,
+        "episode_id_b": 1,
+        "start_distance_a_m": 2808.0,
+        "end_distance_a_m": 2859.0,
+        "center_distance_a_m": 2833.5,
+        "start_distance_b_m": 1.0,
+        "end_distance_b_m": 237.0,
+        "center_distance_b_m": 119.0,
+        "center_distance_abs_diff_m": 2714.5,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 0.0,
+        "channels_a": [
+          "brake"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [],
+        "channels_only_a": [
+          "brake"
+        ],
+        "channels_only_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "action_time_loss_a_s": 0.029767492632551296,
+        "action_time_loss_b_s": 12.252519162248419,
+        "action_time_loss_similarity": 0.0024294997819116868,
+        "per_channel_metrics": {}
+      }
+    },
+    {
+      "pair_id": "5828b9e6f6e8aedb943b",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-15T19:43:37.578371+00:00",
+      "selected_by": [
+        {
+          "lens": "similar_channels_farther_apart",
+          "rank": 5
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Nazionale Monza",
+        "session_a": 14,
+        "session_b": 16,
+        "episode_pk_a": 510,
+        "episode_pk_b": 550,
+        "episode_id_a": 1,
+        "episode_id_b": 1,
+        "start_distance_a_m": 4137.0,
+        "end_distance_a_m": 4266.0,
+        "center_distance_a_m": 4201.5,
+        "start_distance_b_m": 1.0,
+        "end_distance_b_m": 237.0,
+        "center_distance_b_m": 119.0,
+        "center_distance_abs_diff_m": 4082.5,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.26690898729624735,
+        "action_time_loss_b_s": 12.252519162248419,
+        "action_time_loss_similarity": 0.02178400896679502,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.31270529496780974,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 5.0,
+            "mean_difference_similarity": 0.687278567934134,
+            "peak_difference_similarity": 0.4837997917041696,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.08898305084745761,
+            "onset_offset_abs_diff_m": 21.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.4349543629378241,
+            "peak_difference_similarity": 0.710767109993961,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "4be7e7656ad762ab683f",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-15T19:43:39.219032+00:00",
+      "selected_by": [
+        {
+          "lens": "impact_divergence",
+          "rank": 5
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Nazionale Monza",
+        "session_a": 17,
+        "session_b": 16,
+        "episode_pk_a": 567,
+        "episode_pk_b": 550,
+        "episode_id_a": 5,
+        "episode_id_b": 1,
+        "start_distance_a_m": 2032.0,
+        "end_distance_a_m": 2048.0,
+        "center_distance_a_m": 2040.0,
+        "start_distance_b_m": 1.0,
+        "end_distance_b_m": 237.0,
+        "center_distance_b_m": 119.0,
+        "center_distance_abs_diff_m": 1921.0,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 0.0,
+        "channels_a": [
+          "brake"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [],
+        "channels_only_a": [
+          "brake"
+        ],
+        "channels_only_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "action_time_loss_a_s": 0.03261014830203379,
+        "action_time_loss_b_s": 12.252519162248419,
+        "action_time_loss_similarity": 0.002661505594907359,
+        "per_channel_metrics": {}
+      }
+    },
+    {
+      "pair_id": "6f3145bfddbcb725b42b",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-15T19:43:40.666405+00:00",
+      "selected_by": [
+        {
+          "lens": "deterministic_baseline",
+          "rank": 5
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Nazionale Monza",
+        "session_a": 13,
+        "session_b": 16,
+        "episode_pk_a": 504,
+        "episode_pk_b": 548,
+        "episode_id_a": 6,
+        "episode_id_b": 5,
+        "start_distance_a_m": 4129.0,
+        "end_distance_a_m": 4149.0,
+        "center_distance_a_m": 4139.0,
+        "start_distance_b_m": 2140.0,
+        "end_distance_b_m": 2164.0,
+        "center_distance_b_m": 2152.0,
+        "center_distance_abs_diff_m": 1987.0,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 0.0,
+        "channels_a": [
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude"
+        ],
+        "shared_channels": [],
+        "channels_only_a": [
+          "throttle"
+        ],
+        "channels_only_b": [
+          "steering_magnitude"
+        ],
+        "action_time_loss_a_s": 0.02724021440856461,
+        "action_time_loss_b_s": 0.05013809272281122,
+        "action_time_loss_similarity": 0.5433037622544263,
+        "per_channel_metrics": {}
+      }
+    }
+  ]
+}

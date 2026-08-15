@@ -661,6 +661,20 @@ Known real Spa batch result at the integration checkpoint:
 
 This demonstrates the layer works on real data, but it does not imply general calibration across all tracks/vehicles.
 
+A separate Monza Hypercar calibration batch now provides initial human evidence from
+4 independent Toyota sessions. Its 24 reviewed pairs contain 9 `SAME`, 13
+`DIFFERENT` and 2 `AMBIGUOUS` labels. The session-level leakage-safe split retains
+13 calibration pairs but no internal evaluation pairs, so its status is
+`READY_FOR_MORE_REAL_DATA`. It does not authorize Monza matcher thresholds, automatic
+matching or H3 patterns. See `docs/H2_MONZA_HYPER_CALIBRATION_V0_1.md`.
+
+A separate Monza `LMP2_ELMS` batch contains 3 independent IDEC Sport #18 sessions
+and 24 human-reviewed pairs: 11 `SAME`, 12 `DIFFERENT` and 1 `AMBIGUOUS`. Its
+leakage-safe split retains 5 calibration pairs and no internal evaluation pairs,
+with 19 cross-partition pairs excluded. Its status is also
+`READY_FOR_MORE_REAL_DATA`; it does not authorize matcher thresholds, automatic
+matching or H3. See `docs/H2_MONZA_LMP2_ELMS_CALIBRATION_V0_1.md`.
+
 ---
 
 # 18. H4 — historical reference selection
@@ -942,6 +956,8 @@ Completed after the integration checkpoint:
 1. The H5.2 observational narrative passed on the real Fuji pair with DeepSeek and its dedicated validator.
 2. The same raw and narrative contracts passed on Imola, Interlagos and Monza, including both positive and negative current-minus-historical lap deltas.
 3. Monza confirmed that exact vehicle/context isolation rejects Hypercar-to-LMP2_ELMS history while accepting two compatible Toyota Hypercar sessions.
+4. A first Monza Hypercar H2 batch completed human review and feature reporting, but its leakage-safe evaluation partition is empty; more independent sessions are required before matcher evaluation.
+5. A separate Monza `LMP2_ELMS` H2 batch completed 24 human reviews across 3 sessions; its independent evaluation partition is also empty and remains blocked by real data.
 
 Current priority order:
 

@@ -1,0 +1,1604 @@
+{
+  "metadata": {
+    "dataset_schema_version": "1.0",
+    "created_at_utc": "2026-08-15T19:44:19.988864+00:00",
+    "source_queue_path": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\autodromo-nazionale-monza--hyper-636633bd5e\\pair_review_queue.json",
+    "source_queue_sha256": "4acbd0c7f951f02ec9038c52cf24ffca3db1e7d11958fe0e1159abf655ddcc51",
+    "source_labels_path": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\autodromo-nazionale-monza--hyper-636633bd5e\\pair_labels.json",
+    "source_labels_sha256": "b8cac59d11824426fc9ea4eae74f1745f0658e35251b70d4e22deef4f0cf7354",
+    "split_unit": "session",
+    "evaluation_fraction_requested": 0.25,
+    "seed": 20260810,
+    "leakage_policy": "A session may belong to only one partition. Pairs crossing partitions are excluded from both.",
+    "skip_policy": "SKIP is excluded from calibration/evaluation ground truth.",
+    "ambiguous_policy": "AMBIGUOUS is preserved as a first-class human label.",
+    "matcher_status": "NO_THRESHOLDS_NO_MATCH_SCORE_NO_AUTOMATIC_MATCHING"
+  },
+  "validation": {
+    "pair_label_validation_summary": {
+      "queue_pairs": 24,
+      "label_records": 24,
+      "counts": {
+        "SAME": 9,
+        "DIFFERENT": 13,
+        "AMBIGUOUS": 2
+      },
+      "unreviewed": 0,
+      "sessions_by_label": {
+        "SAME": [
+          13,
+          14,
+          16,
+          17
+        ],
+        "DIFFERENT": [
+          13,
+          14,
+          16,
+          17
+        ],
+        "AMBIGUOUS": [
+          13,
+          16,
+          17
+        ]
+      }
+    },
+    "warnings": [
+      "El split dejó evaluación sin pares internos. Esto puede ocurrir con pocos pares/sesiones porque los pares cross-partition se excluyen."
+    ]
+  },
+  "session_assignment": [
+    {
+      "session_key": "[\"Autodromo Nazionale Monza\",13]",
+      "track": "Autodromo Nazionale Monza",
+      "session_id": 13,
+      "partition": "calibration"
+    },
+    {
+      "session_key": "[\"Autodromo Nazionale Monza\",14]",
+      "track": "Autodromo Nazionale Monza",
+      "session_id": 14,
+      "partition": "evaluation"
+    },
+    {
+      "session_key": "[\"Autodromo Nazionale Monza\",16]",
+      "track": "Autodromo Nazionale Monza",
+      "session_id": 16,
+      "partition": "calibration"
+    },
+    {
+      "session_key": "[\"Autodromo Nazionale Monza\",17]",
+      "track": "Autodromo Nazionale Monza",
+      "session_id": 17,
+      "partition": "calibration"
+    }
+  ],
+  "counts": {
+    "reviewed_usable_pairs": 24,
+    "ignored_skip_pairs": 0,
+    "usable_sessions": 4,
+    "calibration_sessions": 3,
+    "evaluation_sessions": 1,
+    "calibration_pairs": 13,
+    "evaluation_pairs": 0,
+    "cross_split_pairs_excluded": 11,
+    "calibration_labels": {
+      "SAME": 3,
+      "DIFFERENT": 8,
+      "AMBIGUOUS": 2
+    },
+    "evaluation_labels": {
+      "SAME": 0,
+      "DIFFERENT": 0,
+      "AMBIGUOUS": 0
+    },
+    "all_usable_labels": {
+      "SAME": 9,
+      "DIFFERENT": 13,
+      "AMBIGUOUS": 2
+    }
+  },
+  "calibration": [
+    {
+      "pair_id": "eade66e1be95c774af63",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-15T19:41:58.192183+00:00",
+      "selected_by": [
+        {
+          "lens": "highest_channel_similarity",
+          "rank": 1
+        },
+        {
+          "lens": "closest_centers",
+          "rank": 4
+        },
+        {
+          "lens": "nearby_channel_disagreement",
+          "rank": 4
+        }
+      ],
+      "features": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_family": "HYPERCAR",
+        "vehicle_variant": "HYPER",
+        "car_class_raw_a": "Hyper",
+        "car_class_raw_b": "Hyper",
+        "car_name_raw_a": "Toyota Racing 2026 #7:LM",
+        "car_name_raw_b": "Toyota Racing 2026 #7:LM",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "9ca5f3859da605a4d1b631f5d5cac9cc7913aaace5311997f7d2f5fe97625620",
+        "setup_sha256_b": "83b08ba2ae82878e7f1c985b1859593087443aa8558891fd05cc81d5d6fb474d",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Light Clouds",
+        "weather_conditions_b": "Light Clouds",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 13,
+        "session_b": 17,
+        "timestamp_a": "2026-08-07T23:34:25Z",
+        "timestamp_b": "2026-08-11T00:40:07Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 504,
+        "episode_pk_b": 561,
+        "episode_id_a": 6,
+        "episode_id_b": 5,
+        "python_rank_a": 6,
+        "python_rank_b": 5,
+        "priority_rank_a": 1,
+        "priority_rank_b": 1,
+        "start_distance_a_m": 4129.0,
+        "end_distance_a_m": 4149.0,
+        "center_distance_a_m": 4139.0,
+        "start_distance_b_m": 4120.0,
+        "end_distance_b_m": 4143.0,
+        "center_distance_b_m": 4131.5,
+        "center_distance_abs_diff_m": 7.5,
+        "start_distance_abs_diff_m": 9.0,
+        "end_distance_abs_diff_m": 6.0,
+        "center_fraction_a": 0.7167631660967797,
+        "center_fraction_b": 0.7152545032068188,
+        "center_fraction_abs_diff": 0.0015086628899608767,
+        "start_fraction_abs_diff": 0.0017678382749466426,
+        "end_fraction_abs_diff": 0.0012494875049751109,
+        "action_time_loss_a_s": 0.02724021440856461,
+        "action_time_loss_b_s": 0.03601716009335121,
+        "action_time_loss_similarity": 0.7563121117256875,
+        "evidence_strength_a": "weak",
+        "evidence_strength_b": "moderate",
+        "speed_propagation_a": true,
+        "speed_propagation_b": true,
+        "channels_a": [
+          "throttle"
+        ],
+        "channels_b": [
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "channel_jaccard": 1.0,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.9749068300121688,
+            "peak_difference_similarity": 0.8923974147395177,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 14.0,
+        "union_m": 29.0,
+        "overlap_over_union": 0.4827586206896552,
+        "overlap_over_shorter": 0.7,
+        "overlap_over_longer": 0.6086956521739131,
+        "length_similarity": 0.8695652173913043,
+        "fraction_overlap": 0.002213973070510633,
+        "fraction_overlap_over_union": 0.4232167065599091,
+        "fraction_overlap_over_shorter": 0.6392372663864169,
+        "pair_id": "eade66e1be95c774af63"
+      }
+    },
+    {
+      "pair_id": "f333ae599c614741774e",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-15T19:42:04.128356+00:00",
+      "selected_by": [
+        {
+          "lens": "similar_channels_farther_apart",
+          "rank": 1
+        }
+      ],
+      "features": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_family": "HYPERCAR",
+        "vehicle_variant": "HYPER",
+        "car_class_raw_a": "Hyper",
+        "car_class_raw_b": "Hyper",
+        "car_name_raw_a": "Toyota Racing 2026 #7:LM",
+        "car_name_raw_b": "Toyota Racing 2026 #7:LM",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "83b08ba2ae82878e7f1c985b1859593087443aa8558891fd05cc81d5d6fb474d",
+        "setup_sha256_b": "ec623a1a646201726cca5f8e370c28505bf811361d8aeb27329f671f595855e3",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Light Clouds",
+        "weather_conditions_b": "Clear",
+        "same_weather_conditions": false,
+        "same_session_type": true,
+        "session_a": 17,
+        "session_b": 16,
+        "timestamp_a": "2026-08-11T00:40:07Z",
+        "timestamp_b": "2026-08-11T01:01:32Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 563,
+        "episode_pk_b": 551,
+        "episode_id_a": 1,
+        "episode_id_b": 2,
+        "python_rank_a": 1,
+        "python_rank_b": 2,
+        "priority_rank_a": 2,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 5208.0,
+        "end_distance_a_m": 5307.0,
+        "center_distance_a_m": 5257.5,
+        "start_distance_b_m": 629.0,
+        "end_distance_b_m": 910.0,
+        "center_distance_b_m": 769.5,
+        "center_distance_abs_diff_m": 4488.0,
+        "start_distance_abs_diff_m": 4579.0,
+        "end_distance_abs_diff_m": 4397.0,
+        "center_fraction_a": 0.9101901369018154,
+        "center_fraction_b": 0.1331561225998606,
+        "center_fraction_abs_diff": 0.7770340143019547,
+        "start_fraction_abs_diff": 0.7927769202307139,
+        "end_fraction_abs_diff": 0.7612911083731956,
+        "action_time_loss_a_s": 0.7768404483886826,
+        "action_time_loss_b_s": 4.982094048583587,
+        "action_time_loss_similarity": 0.15592649211620943,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": true,
+        "speed_propagation_b": false,
+        "channels_a": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "channel_jaccard": 1.0,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.6352133433983967,
+            "onset_offset_abs_diff_m": 6.0,
+            "end_offset_abs_diff_m": 65.0,
+            "mean_difference_similarity": 0.7392804652027312,
+            "peak_difference_similarity": 0.14614702806817007,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.3945864337323412,
+            "onset_offset_abs_diff_m": 168.0,
+            "end_offset_abs_diff_m": 13.0,
+            "mean_difference_similarity": 0.40597846986576985,
+            "peak_difference_similarity": 0.3415973187080225,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.35231316725978645,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.05344851043641949,
+            "peak_difference_similarity": 1.0,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "mixed"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 4678.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.35231316725978645,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "f333ae599c614741774e"
+      }
+    },
+    {
+      "pair_id": "47cf75ec8ca453eefb17",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-15T19:42:08.760468+00:00",
+      "selected_by": [
+        {
+          "lens": "deterministic_baseline",
+          "rank": 1
+        }
+      ],
+      "features": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_family": "HYPERCAR",
+        "vehicle_variant": "HYPER",
+        "car_class_raw_a": "Hyper",
+        "car_class_raw_b": "Hyper",
+        "car_name_raw_a": "Toyota Racing 2026 #7:LM",
+        "car_name_raw_b": "Toyota Racing 2026 #7:LM",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "83b08ba2ae82878e7f1c985b1859593087443aa8558891fd05cc81d5d6fb474d",
+        "setup_sha256_b": "ec623a1a646201726cca5f8e370c28505bf811361d8aeb27329f671f595855e3",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Light Clouds",
+        "weather_conditions_b": "Clear",
+        "same_weather_conditions": false,
+        "same_session_type": true,
+        "session_a": 17,
+        "session_b": 16,
+        "timestamp_a": "2026-08-11T00:40:07Z",
+        "timestamp_b": "2026-08-11T01:01:32Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 565,
+        "episode_pk_b": 548,
+        "episode_id_a": 3,
+        "episode_id_b": 5,
+        "python_rank_a": 3,
+        "python_rank_b": 5,
+        "priority_rank_a": 2,
+        "priority_rank_b": 1,
+        "start_distance_a_m": 4174.0,
+        "end_distance_a_m": 4281.0,
+        "center_distance_a_m": 4227.5,
+        "start_distance_b_m": 2140.0,
+        "end_distance_b_m": 2164.0,
+        "center_distance_b_m": 2152.0,
+        "center_distance_abs_diff_m": 2075.5,
+        "start_distance_abs_diff_m": 2034.0,
+        "end_distance_abs_diff_m": 2117.0,
+        "center_fraction_a": 0.7318742375182928,
+        "center_fraction_b": 0.37238723305380117,
+        "center_fraction_abs_diff": 0.35948700446449167,
+        "start_fraction_abs_diff": 0.35230147376499393,
+        "end_fraction_abs_diff": 0.36667253516398945,
+        "action_time_loss_a_s": 0.20952757011789913,
+        "action_time_loss_b_s": 0.05013809272281122,
+        "action_time_loss_similarity": 0.23929114767378348,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "moderate",
+        "speed_propagation_a": true,
+        "speed_propagation_b": false,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude"
+        ],
+        "shared_channels": [
+          "steering_magnitude"
+        ],
+        "channels_only_a": [
+          "throttle"
+        ],
+        "channels_only_b": [],
+        "channel_jaccard": 0.5,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.42056074766355145,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 45.0,
+            "mean_difference_similarity": 0.7293701703158767,
+            "peak_difference_similarity": 0.9180532503712951,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 2141.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.22429906542056074,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "47cf75ec8ca453eefb17"
+      }
+    },
+    {
+      "pair_id": "516998d119b240a447f9",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-15T19:42:16.896577+00:00",
+      "selected_by": [
+        {
+          "lens": "highest_channel_similarity",
+          "rank": 2
+        }
+      ],
+      "features": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_family": "HYPERCAR",
+        "vehicle_variant": "HYPER",
+        "car_class_raw_a": "Hyper",
+        "car_class_raw_b": "Hyper",
+        "car_name_raw_a": "Toyota Racing 2026 #7:LM",
+        "car_name_raw_b": "Toyota Racing 2026 #7:LM",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "9ca5f3859da605a4d1b631f5d5cac9cc7913aaace5311997f7d2f5fe97625620",
+        "setup_sha256_b": "83b08ba2ae82878e7f1c985b1859593087443aa8558891fd05cc81d5d6fb474d",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Light Clouds",
+        "weather_conditions_b": "Light Clouds",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 13,
+        "session_b": 17,
+        "timestamp_a": "2026-08-07T23:34:25Z",
+        "timestamp_b": "2026-08-11T00:40:07Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 500,
+        "episode_pk_b": 560,
+        "episode_id_a": 2,
+        "episode_id_b": 4,
+        "python_rank_a": 2,
+        "python_rank_b": 4,
+        "priority_rank_a": 1,
+        "priority_rank_b": 1,
+        "start_distance_a_m": 4004.0,
+        "end_distance_a_m": 4078.0,
+        "center_distance_a_m": 4041.0,
+        "start_distance_b_m": 4034.0,
+        "end_distance_b_m": 4094.0,
+        "center_distance_b_m": 4064.0,
+        "center_distance_abs_diff_m": 23.0,
+        "start_distance_abs_diff_m": 30.0,
+        "end_distance_abs_diff_m": 16.0,
+        "center_fraction_a": 0.6997922092768994,
+        "center_fraction_b": 0.7035687525190637,
+        "center_fraction_abs_diff": 0.003776543242164254,
+        "start_fraction_abs_diff": 0.004990278334477294,
+        "end_fraction_abs_diff": 0.0025628081498512145,
+        "action_time_loss_a_s": 0.1552380112800904,
+        "action_time_loss_b_s": 0.10799668926478034,
+        "action_time_loss_similarity": 0.6956845709001371,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": true,
+        "speed_propagation_b": true,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "channel_jaccard": 1.0,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.14954954954954958,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 12.0,
+            "mean_difference_similarity": 0.6872727946146556,
+            "peak_difference_similarity": 0.6772825312717468,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.1166666666666667,
+            "onset_offset_abs_diff_m": 7.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.5459749215387758,
+            "peak_difference_similarity": 0.763710645423855,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 44.0,
+        "union_m": 90.0,
+        "overlap_over_union": 0.4888888888888889,
+        "overlap_over_shorter": 0.7333333333333333,
+        "overlap_over_longer": 0.5945945945945946,
+        "length_similarity": 0.8108108108108109,
+        "fraction_overlap": 0.007824525794819959,
+        "fraction_overlap_over_union": 0.5088257951092808,
+        "fraction_overlap_over_shorter": 0.7532756563424087,
+        "pair_id": "516998d119b240a447f9"
+      }
+    },
+    {
+      "pair_id": "4b8f4489bb24048b06fa",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-15T19:42:22.976919+00:00",
+      "selected_by": [
+        {
+          "lens": "similar_channels_farther_apart",
+          "rank": 2
+        }
+      ],
+      "features": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_family": "HYPERCAR",
+        "vehicle_variant": "HYPER",
+        "car_class_raw_a": "Hyper",
+        "car_class_raw_b": "Hyper",
+        "car_name_raw_a": "Toyota Racing 2026 #7:LM",
+        "car_name_raw_b": "Toyota Racing 2026 #7:LM",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "83b08ba2ae82878e7f1c985b1859593087443aa8558891fd05cc81d5d6fb474d",
+        "setup_sha256_b": "ec623a1a646201726cca5f8e370c28505bf811361d8aeb27329f671f595855e3",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Light Clouds",
+        "weather_conditions_b": "Clear",
+        "same_weather_conditions": false,
+        "same_session_type": true,
+        "session_a": 17,
+        "session_b": 16,
+        "timestamp_a": "2026-08-11T00:40:07Z",
+        "timestamp_b": "2026-08-11T01:01:32Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 558,
+        "episode_pk_b": 551,
+        "episode_id_a": 2,
+        "episode_id_b": 2,
+        "python_rank_a": 2,
+        "python_rank_b": 2,
+        "priority_rank_a": 1,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 5188.0,
+        "end_distance_a_m": 5257.0,
+        "center_distance_a_m": 5222.5,
+        "start_distance_b_m": 629.0,
+        "end_distance_b_m": 910.0,
+        "center_distance_b_m": 769.5,
+        "center_distance_abs_diff_m": 4453.0,
+        "start_distance_abs_diff_m": 4559.0,
+        "end_distance_abs_diff_m": 4347.0,
+        "center_fraction_a": 0.9041308587674238,
+        "center_fraction_b": 0.1331561225998606,
+        "center_fraction_abs_diff": 0.7709747361675632,
+        "start_fraction_abs_diff": 0.7893144755824901,
+        "end_fraction_abs_diff": 0.7526349967526362,
+        "action_time_loss_a_s": 0.36888339114916846,
+        "action_time_loss_b_s": 4.982094048583587,
+        "action_time_loss_similarity": 0.074041836133953,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": true,
+        "speed_propagation_b": false,
+        "channels_a": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "channel_jaccard": 1.0,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.7032853679921605,
+            "onset_offset_abs_diff_m": 6.0,
+            "end_offset_abs_diff_m": 50.0,
+            "mean_difference_similarity": 0.48649649570541315,
+            "peak_difference_similarity": 0.2718569404604499,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.4051266181855691,
+            "onset_offset_abs_diff_m": 168.0,
+            "end_offset_abs_diff_m": 5.0,
+            "mean_difference_similarity": 0.2894860648358269,
+            "peak_difference_similarity": 0.2315942807415183,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.35231316725978645,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.06776986459014085,
+            "peak_difference_similarity": 0.8686995586458753,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "mixed"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 4628.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.24555160142348753,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "4b8f4489bb24048b06fa"
+      }
+    },
+    {
+      "pair_id": "8633784345da5df0b76f",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-15T19:42:25.832768+00:00",
+      "selected_by": [
+        {
+          "lens": "impact_divergence",
+          "rank": 2
+        }
+      ],
+      "features": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_family": "HYPERCAR",
+        "vehicle_variant": "HYPER",
+        "car_class_raw_a": "Hyper",
+        "car_class_raw_b": "Hyper",
+        "car_name_raw_a": "Toyota Racing 2026 #7:LM",
+        "car_name_raw_b": "Toyota Racing 2026 #7:LM",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "83b08ba2ae82878e7f1c985b1859593087443aa8558891fd05cc81d5d6fb474d",
+        "setup_sha256_b": "ec623a1a646201726cca5f8e370c28505bf811361d8aeb27329f671f595855e3",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Light Clouds",
+        "weather_conditions_b": "Clear",
+        "same_weather_conditions": false,
+        "same_session_type": true,
+        "session_a": 17,
+        "session_b": 16,
+        "timestamp_a": "2026-08-11T00:40:07Z",
+        "timestamp_b": "2026-08-11T01:01:32Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 562,
+        "episode_pk_b": 550,
+        "episode_id_a": 6,
+        "episode_id_b": 1,
+        "python_rank_a": 6,
+        "python_rank_b": 1,
+        "priority_rank_a": 1,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 4171.0,
+        "end_distance_a_m": 4188.0,
+        "center_distance_a_m": 4179.5,
+        "start_distance_b_m": 1.0,
+        "end_distance_b_m": 237.0,
+        "center_distance_b_m": 119.0,
+        "center_distance_abs_diff_m": 4060.5,
+        "start_distance_abs_diff_m": 4170.0,
+        "end_distance_abs_diff_m": 3951.0,
+        "center_fraction_a": 0.7235643703625558,
+        "center_fraction_b": 0.02059204495046577,
+        "center_fraction_abs_diff": 0.7029723254120901,
+        "start_fraction_abs_diff": 0.721919788992519,
+        "end_fraction_abs_diff": 0.6840248618316611,
+        "action_time_loss_a_s": 0.023650181840082496,
+        "action_time_loss_b_s": 12.252519162248419,
+        "action_time_loss_similarity": 0.0019302301450751236,
+        "evidence_strength_a": "weak",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": true,
+        "speed_propagation_b": true,
+        "channels_a": [
+          "steering_magnitude"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [
+          "throttle"
+        ],
+        "channel_jaccard": 0.5,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.423728813559322,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 100.0,
+            "mean_difference_similarity": 0.402067599968715,
+            "peak_difference_similarity": 0.1909491574598567,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 4187.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.07203389830508475,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "8633784345da5df0b76f"
+      }
+    },
+    {
+      "pair_id": "2cb6fffe0ce193e4f86a",
+      "human_label": "AMBIGUOUS",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-15T19:42:40.569089+00:00",
+      "selected_by": [
+        {
+          "lens": "deterministic_baseline",
+          "rank": 2
+        },
+        {
+          "lens": "highest_channel_similarity",
+          "rank": 5
+        }
+      ],
+      "features": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_family": "HYPERCAR",
+        "vehicle_variant": "HYPER",
+        "car_class_raw_a": "Hyper",
+        "car_class_raw_b": "Hyper",
+        "car_name_raw_a": "Toyota Racing 2026 #7:LM",
+        "car_name_raw_b": "Toyota Racing 2026 #7:LM",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "9ca5f3859da605a4d1b631f5d5cac9cc7913aaace5311997f7d2f5fe97625620",
+        "setup_sha256_b": "ec623a1a646201726cca5f8e370c28505bf811361d8aeb27329f671f595855e3",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Light Clouds",
+        "weather_conditions_b": "Clear",
+        "same_weather_conditions": false,
+        "same_session_type": true,
+        "session_a": 13,
+        "session_b": 16,
+        "timestamp_a": "2026-08-07T23:34:25Z",
+        "timestamp_b": "2026-08-11T01:01:32Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 503,
+        "episode_pk_b": 549,
+        "episode_id_a": 5,
+        "episode_id_b": 6,
+        "python_rank_a": 5,
+        "python_rank_b": 6,
+        "priority_rank_a": 1,
+        "priority_rank_b": 1,
+        "start_distance_a_m": 2814.0,
+        "end_distance_a_m": 2869.0,
+        "center_distance_a_m": 2841.5,
+        "start_distance_b_m": 2772.0,
+        "end_distance_b_m": 2835.0,
+        "center_distance_b_m": 2803.5,
+        "center_distance_abs_diff_m": 38.0,
+        "start_distance_abs_diff_m": 42.0,
+        "end_distance_abs_diff_m": 34.0,
+        "center_fraction_a": 0.4920711612621405,
+        "center_fraction_b": 0.4851243530977377,
+        "center_fraction_abs_diff": 0.006946808164402796,
+        "start_fraction_abs_diff": 0.007635385301174358,
+        "end_fraction_abs_diff": 0.006258231027631234,
+        "action_time_loss_a_s": 0.03929284464951621,
+        "action_time_loss_b_s": 0.03159142513304403,
+        "action_time_loss_similarity": 0.8039994409881187,
+        "evidence_strength_a": "moderate",
+        "evidence_strength_b": "moderate",
+        "speed_propagation_a": false,
+        "speed_propagation_b": false,
+        "channels_a": [
+          "brake",
+          "throttle"
+        ],
+        "channels_b": [
+          "brake",
+          "throttle"
+        ],
+        "shared_channels": [
+          "brake",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "channel_jaccard": 1.0,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.10245310245310235,
+            "onset_offset_abs_diff_m": 5.0,
+            "end_offset_abs_diff_m": 10.0,
+            "mean_difference_similarity": 0.44587010011255745,
+            "peak_difference_similarity": 0.2837743615973506,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.31226551226551225,
+            "onset_offset_abs_diff_m": 39.0,
+            "end_offset_abs_diff_m": 12.0,
+            "mean_difference_similarity": 0.6698186979083163,
+            "peak_difference_similarity": 0.26380236191872053,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 21.0,
+        "union_m": 97.0,
+        "overlap_over_union": 0.21649484536082475,
+        "overlap_over_shorter": 0.38181818181818183,
+        "overlap_over_longer": 0.3333333333333333,
+        "length_similarity": 0.873015873015873,
+        "fraction_overlap": 0.0032662855549546177,
+        "fraction_overlap_over_union": 0.19034406939387954,
+        "fraction_overlap_over_shorter": 0.34293452340946423,
+        "pair_id": "2cb6fffe0ce193e4f86a"
+      }
+    },
+    {
+      "pair_id": "91264defa03c2fc620bf",
+      "human_label": "AMBIGUOUS",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-15T19:42:45.265793+00:00",
+      "selected_by": [
+        {
+          "lens": "closest_centers",
+          "rank": 3
+        },
+        {
+          "lens": "nearby_channel_disagreement",
+          "rank": 3
+        }
+      ],
+      "features": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_family": "HYPERCAR",
+        "vehicle_variant": "HYPER",
+        "car_class_raw_a": "Hyper",
+        "car_class_raw_b": "Hyper",
+        "car_name_raw_a": "Toyota Racing 2026 #7:LM",
+        "car_name_raw_b": "Toyota Racing 2026 #7:LM",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "83b08ba2ae82878e7f1c985b1859593087443aa8558891fd05cc81d5d6fb474d",
+        "setup_sha256_b": "ec623a1a646201726cca5f8e370c28505bf811361d8aeb27329f671f595855e3",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Light Clouds",
+        "weather_conditions_b": "Clear",
+        "same_weather_conditions": false,
+        "same_session_type": true,
+        "session_a": 17,
+        "session_b": 16,
+        "timestamp_a": "2026-08-11T00:40:07Z",
+        "timestamp_b": "2026-08-11T01:01:32Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 564,
+        "episode_pk_b": 548,
+        "episode_id_a": 2,
+        "episode_id_b": 5,
+        "python_rank_a": 2,
+        "python_rank_b": 5,
+        "priority_rank_a": 2,
+        "priority_rank_b": 1,
+        "start_distance_a_m": 2116.0,
+        "end_distance_a_m": 2202.0,
+        "center_distance_a_m": 2159.0,
+        "start_distance_b_m": 2140.0,
+        "end_distance_b_m": 2164.0,
+        "center_distance_b_m": 2152.0,
+        "center_distance_abs_diff_m": 7.0,
+        "start_distance_abs_diff_m": 24.0,
+        "end_distance_abs_diff_m": 38.0,
+        "center_fraction_a": 0.3737708997757526,
+        "center_fraction_b": 0.37238723305380117,
+        "center_fraction_abs_diff": 0.0013836667219514487,
+        "start_fraction_abs_diff": 0.003984080537228818,
+        "end_fraction_abs_diff": 0.006751413981131771,
+        "action_time_loss_a_s": 0.39723134098352375,
+        "action_time_loss_b_s": 0.05013809272281122,
+        "action_time_loss_similarity": 0.1262188743684523,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "moderate",
+        "speed_propagation_a": false,
+        "speed_propagation_b": false,
+        "channels_a": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude"
+        ],
+        "shared_channels": [
+          "steering_magnitude"
+        ],
+        "channels_only_a": [
+          "brake",
+          "throttle"
+        ],
+        "channels_only_b": [],
+        "channel_jaccard": 0.3333333333333333,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.046511627906976716,
+            "onset_offset_abs_diff_m": 4.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.4881718265726942,
+            "peak_difference_similarity": 0.5623015293189464,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 24.0,
+        "union_m": 86.0,
+        "overlap_over_union": 0.27906976744186046,
+        "overlap_over_shorter": 1.0,
+        "overlap_over_longer": 0.27906976744186046,
+        "length_similarity": 0.27906976744186046,
+        "fraction_overlap": 0.004153017469001485,
+        "fraction_overlap_over_union": 0.278941070304858,
+        "fraction_overlap_over_shorter": 1.0,
+        "pair_id": "91264defa03c2fc620bf"
+      }
+    },
+    {
+      "pair_id": "ac4cc9bb6bbdd207ca39",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-15T19:43:14.129828+00:00",
+      "selected_by": [
+        {
+          "lens": "impact_divergence",
+          "rank": 3
+        }
+      ],
+      "features": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_family": "HYPERCAR",
+        "vehicle_variant": "HYPER",
+        "car_class_raw_a": "Hyper",
+        "car_class_raw_b": "Hyper",
+        "car_name_raw_a": "Toyota Racing 2026 #7:LM",
+        "car_name_raw_b": "Toyota Racing 2026 #7:LM",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "9ca5f3859da605a4d1b631f5d5cac9cc7913aaace5311997f7d2f5fe97625620",
+        "setup_sha256_b": "ec623a1a646201726cca5f8e370c28505bf811361d8aeb27329f671f595855e3",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Light Clouds",
+        "weather_conditions_b": "Clear",
+        "same_weather_conditions": false,
+        "same_session_type": true,
+        "session_a": 13,
+        "session_b": 16,
+        "timestamp_a": "2026-08-07T23:34:25Z",
+        "timestamp_b": "2026-08-11T01:01:32Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 504,
+        "episode_pk_b": 550,
+        "episode_id_a": 6,
+        "episode_id_b": 1,
+        "python_rank_a": 6,
+        "python_rank_b": 1,
+        "priority_rank_a": 1,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 4129.0,
+        "end_distance_a_m": 4149.0,
+        "center_distance_a_m": 4139.0,
+        "start_distance_b_m": 1.0,
+        "end_distance_b_m": 237.0,
+        "center_distance_b_m": 119.0,
+        "center_distance_abs_diff_m": 4020.0,
+        "start_distance_abs_diff_m": 4128.0,
+        "end_distance_abs_diff_m": 3912.0,
+        "center_fraction_a": 0.7167631660967797,
+        "center_fraction_b": 0.02059204495046577,
+        "center_fraction_abs_diff": 0.696171121146314,
+        "start_fraction_abs_diff": 0.7148583934144951,
+        "end_fraction_abs_diff": 0.6774838488781327,
+        "action_time_loss_a_s": 0.02724021440856461,
+        "action_time_loss_b_s": 12.252519162248419,
+        "action_time_loss_similarity": 0.0022232337732223427,
+        "evidence_strength_a": "weak",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": true,
+        "speed_propagation_b": true,
+        "channels_a": [
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [
+          "steering_magnitude"
+        ],
+        "channel_jaccard": 0.5,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.08898305084745761,
+            "onset_offset_abs_diff_m": 21.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.4003252414517302,
+            "peak_difference_similarity": 0.4857806508745938,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 4148.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.0847457627118644,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "ac4cc9bb6bbdd207ca39"
+      }
+    },
+    {
+      "pair_id": "ebff48024af16fffa5b4",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-15T19:43:27.130187+00:00",
+      "selected_by": [
+        {
+          "lens": "highest_channel_similarity",
+          "rank": 4
+        }
+      ],
+      "features": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_family": "HYPERCAR",
+        "vehicle_variant": "HYPER",
+        "car_class_raw_a": "Hyper",
+        "car_class_raw_b": "Hyper",
+        "car_name_raw_a": "Toyota Racing 2026 #7:LM",
+        "car_name_raw_b": "Toyota Racing 2026 #7:LM",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "9ca5f3859da605a4d1b631f5d5cac9cc7913aaace5311997f7d2f5fe97625620",
+        "setup_sha256_b": "ec623a1a646201726cca5f8e370c28505bf811361d8aeb27329f671f595855e3",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Light Clouds",
+        "weather_conditions_b": "Clear",
+        "same_weather_conditions": false,
+        "same_session_type": true,
+        "session_a": 13,
+        "session_b": 16,
+        "timestamp_a": "2026-08-07T23:34:25Z",
+        "timestamp_b": "2026-08-11T01:01:32Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 500,
+        "episode_pk_b": 546,
+        "episode_id_a": 2,
+        "episode_id_b": 3,
+        "python_rank_a": 2,
+        "python_rank_b": 3,
+        "priority_rank_a": 1,
+        "priority_rank_b": 1,
+        "start_distance_a_m": 4004.0,
+        "end_distance_a_m": 4078.0,
+        "center_distance_a_m": 4041.0,
+        "start_distance_b_m": 3950.0,
+        "end_distance_b_m": 4066.0,
+        "center_distance_b_m": 4008.0,
+        "center_distance_abs_diff_m": 33.0,
+        "start_distance_abs_diff_m": 54.0,
+        "end_distance_abs_diff_m": 12.0,
+        "center_fraction_a": 0.6997922092768994,
+        "center_fraction_b": 0.6935539173232504,
+        "center_fraction_abs_diff": 0.006238291953649,
+        "start_fraction_abs_diff": 0.009867348772420681,
+        "end_fraction_abs_diff": 0.002609235134877319,
+        "action_time_loss_a_s": 0.1552380112800904,
+        "action_time_loss_b_s": 0.19721549711717046,
+        "action_time_loss_similarity": 0.7871491518126478,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": true,
+        "speed_propagation_b": false,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "channel_jaccard": 1.0,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.5941286113699906,
+            "onset_offset_abs_diff_m": 13.0,
+            "end_offset_abs_diff_m": 65.0,
+            "mean_difference_similarity": 0.7828999065576101,
+            "peak_difference_similarity": 0.8929929036668657,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.07758620689655171,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.613944555326051,
+            "peak_difference_similarity": 0.8543540726010403,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 62.0,
+        "union_m": 128.0,
+        "overlap_over_union": 0.484375,
+        "overlap_over_shorter": 0.8378378378378378,
+        "overlap_over_longer": 0.5344827586206896,
+        "length_similarity": 0.6379310344827587,
+        "fraction_overlap": 0.010205568994419933,
+        "fraction_overlap_over_union": 0.44993828578093087,
+        "fraction_overlap_over_shorter": 0.7963889959962731,
+        "pair_id": "ebff48024af16fffa5b4"
+      }
+    },
+    {
+      "pair_id": "2764861551341c0d3e46",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-15T19:43:28.922463+00:00",
+      "selected_by": [
+        {
+          "lens": "similar_channels_farther_apart",
+          "rank": 4
+        }
+      ],
+      "features": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_family": "HYPERCAR",
+        "vehicle_variant": "HYPER",
+        "car_class_raw_a": "Hyper",
+        "car_class_raw_b": "Hyper",
+        "car_name_raw_a": "Toyota Racing 2026 #7:LM",
+        "car_name_raw_b": "Toyota Racing 2026 #7:LM",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "83b08ba2ae82878e7f1c985b1859593087443aa8558891fd05cc81d5d6fb474d",
+        "setup_sha256_b": "ec623a1a646201726cca5f8e370c28505bf811361d8aeb27329f671f595855e3",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Light Clouds",
+        "weather_conditions_b": "Clear",
+        "same_weather_conditions": false,
+        "same_session_type": true,
+        "session_a": 17,
+        "session_b": 16,
+        "timestamp_a": "2026-08-11T00:40:07Z",
+        "timestamp_b": "2026-08-11T01:01:32Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 565,
+        "episode_pk_b": 550,
+        "episode_id_a": 3,
+        "episode_id_b": 1,
+        "python_rank_a": 3,
+        "python_rank_b": 1,
+        "priority_rank_a": 2,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 4174.0,
+        "end_distance_a_m": 4281.0,
+        "center_distance_a_m": 4227.5,
+        "start_distance_b_m": 1.0,
+        "end_distance_b_m": 237.0,
+        "center_distance_b_m": 119.0,
+        "center_distance_abs_diff_m": 4108.5,
+        "start_distance_abs_diff_m": 4173.0,
+        "end_distance_abs_diff_m": 4044.0,
+        "center_fraction_a": 0.7318742375182928,
+        "center_fraction_b": 0.02059204495046577,
+        "center_fraction_abs_diff": 0.7112821925678271,
+        "start_fraction_abs_diff": 0.7224391556897526,
+        "end_fraction_abs_diff": 0.7001252294459015,
+        "action_time_loss_a_s": 0.20952757011789913,
+        "action_time_loss_b_s": 12.252519162248419,
+        "action_time_loss_similarity": 0.01710077473402208,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": true,
+        "speed_propagation_b": true,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "channel_jaccard": 1.0,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.0031680658957705665,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 55.0,
+            "mean_difference_similarity": 0.6969931797470593,
+            "peak_difference_similarity": 0.3808370436646584,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.08898305084745761,
+            "onset_offset_abs_diff_m": 21.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.4176003446350335,
+            "peak_difference_similarity": 0.9957769709214831,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 4280.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.4533898305084746,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "2764861551341c0d3e46"
+      }
+    },
+    {
+      "pair_id": "4be7e7656ad762ab683f",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-15T19:43:39.219032+00:00",
+      "selected_by": [
+        {
+          "lens": "impact_divergence",
+          "rank": 5
+        }
+      ],
+      "features": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_family": "HYPERCAR",
+        "vehicle_variant": "HYPER",
+        "car_class_raw_a": "Hyper",
+        "car_class_raw_b": "Hyper",
+        "car_name_raw_a": "Toyota Racing 2026 #7:LM",
+        "car_name_raw_b": "Toyota Racing 2026 #7:LM",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "83b08ba2ae82878e7f1c985b1859593087443aa8558891fd05cc81d5d6fb474d",
+        "setup_sha256_b": "ec623a1a646201726cca5f8e370c28505bf811361d8aeb27329f671f595855e3",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Light Clouds",
+        "weather_conditions_b": "Clear",
+        "same_weather_conditions": false,
+        "same_session_type": true,
+        "session_a": 17,
+        "session_b": 16,
+        "timestamp_a": "2026-08-11T00:40:07Z",
+        "timestamp_b": "2026-08-11T01:01:32Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 567,
+        "episode_pk_b": 550,
+        "episode_id_a": 5,
+        "episode_id_b": 1,
+        "python_rank_a": 5,
+        "python_rank_b": 1,
+        "priority_rank_a": 2,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 2032.0,
+        "end_distance_a_m": 2048.0,
+        "center_distance_a_m": 2040.0,
+        "start_distance_b_m": 1.0,
+        "end_distance_b_m": 237.0,
+        "center_distance_b_m": 119.0,
+        "center_distance_abs_diff_m": 1921.0,
+        "start_distance_abs_diff_m": 2031.0,
+        "end_distance_abs_diff_m": 1811.0,
+        "center_fraction_a": 0.3531693541188214,
+        "center_fraction_b": 0.02059204495046577,
+        "center_fraction_abs_diff": 0.3325773091683556,
+        "start_fraction_abs_diff": 0.3516113338649901,
+        "end_fraction_abs_diff": 0.3135432844717211,
+        "action_time_loss_a_s": 0.03261014830203379,
+        "action_time_loss_b_s": 12.252519162248419,
+        "action_time_loss_similarity": 0.002661505594907359,
+        "evidence_strength_a": "moderate",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": true,
+        "speed_propagation_b": true,
+        "channels_a": [
+          "brake"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [],
+        "channels_only_a": [
+          "brake"
+        ],
+        "channels_only_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channel_jaccard": 0.0,
+        "per_channel_metrics": {},
+        "overlap_m": 0.0,
+        "union_m": 2047.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.06779661016949153,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "4be7e7656ad762ab683f"
+      }
+    },
+    {
+      "pair_id": "6f3145bfddbcb725b42b",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-15T19:43:40.666405+00:00",
+      "selected_by": [
+        {
+          "lens": "deterministic_baseline",
+          "rank": 5
+        }
+      ],
+      "features": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_family": "HYPERCAR",
+        "vehicle_variant": "HYPER",
+        "car_class_raw_a": "Hyper",
+        "car_class_raw_b": "Hyper",
+        "car_name_raw_a": "Toyota Racing 2026 #7:LM",
+        "car_name_raw_b": "Toyota Racing 2026 #7:LM",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "9ca5f3859da605a4d1b631f5d5cac9cc7913aaace5311997f7d2f5fe97625620",
+        "setup_sha256_b": "ec623a1a646201726cca5f8e370c28505bf811361d8aeb27329f671f595855e3",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Light Clouds",
+        "weather_conditions_b": "Clear",
+        "same_weather_conditions": false,
+        "same_session_type": true,
+        "session_a": 13,
+        "session_b": 16,
+        "timestamp_a": "2026-08-07T23:34:25Z",
+        "timestamp_b": "2026-08-11T01:01:32Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 504,
+        "episode_pk_b": 548,
+        "episode_id_a": 6,
+        "episode_id_b": 5,
+        "python_rank_a": 6,
+        "python_rank_b": 5,
+        "priority_rank_a": 1,
+        "priority_rank_b": 1,
+        "start_distance_a_m": 4129.0,
+        "end_distance_a_m": 4149.0,
+        "center_distance_a_m": 4139.0,
+        "start_distance_b_m": 2140.0,
+        "end_distance_b_m": 2164.0,
+        "center_distance_b_m": 2152.0,
+        "center_distance_abs_diff_m": 1987.0,
+        "start_distance_abs_diff_m": 1989.0,
+        "end_distance_abs_diff_m": 1985.0,
+        "center_fraction_a": 0.7167631660967797,
+        "center_fraction_b": 0.37238723305380117,
+        "center_fraction_abs_diff": 0.34437593304297853,
+        "start_fraction_abs_diff": 0.34472071148973643,
+        "end_fraction_abs_diff": 0.3440311545962207,
+        "action_time_loss_a_s": 0.02724021440856461,
+        "action_time_loss_b_s": 0.05013809272281122,
+        "action_time_loss_similarity": 0.5433037622544263,
+        "evidence_strength_a": "weak",
+        "evidence_strength_b": "moderate",
+        "speed_propagation_a": true,
+        "speed_propagation_b": false,
+        "channels_a": [
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude"
+        ],
+        "shared_channels": [],
+        "channels_only_a": [
+          "throttle"
+        ],
+        "channels_only_b": [
+          "steering_magnitude"
+        ],
+        "channel_jaccard": 0.0,
+        "per_channel_metrics": {},
+        "overlap_m": 0.0,
+        "union_m": 2009.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.8333333333333334,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "6f3145bfddbcb725b42b"
+      }
+    }
+  ],
+  "evaluation": [],
+  "excluded_cross_split": [
+    {
+      "pair_id": "3040661024b90b02bc22",
+      "human_label": "SAME",
+      "track": "Autodromo Nazionale Monza",
+      "session_a": 13,
+      "session_b": 14,
+      "partition_a": "calibration",
+      "partition_b": "evaluation",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "e8d7e53ff119b8834609",
+      "human_label": "SAME",
+      "track": "Autodromo Nazionale Monza",
+      "session_a": 13,
+      "session_b": 14,
+      "partition_a": "calibration",
+      "partition_b": "evaluation",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "4178d1cef7330096d423",
+      "human_label": "DIFFERENT",
+      "track": "Autodromo Nazionale Monza",
+      "session_a": 14,
+      "session_b": 16,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "6af7369f4f6fa6834d03",
+      "human_label": "SAME",
+      "track": "Autodromo Nazionale Monza",
+      "session_a": 13,
+      "session_b": 14,
+      "partition_a": "calibration",
+      "partition_b": "evaluation",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "9f2740519d25839dbccd",
+      "human_label": "SAME",
+      "track": "Autodromo Nazionale Monza",
+      "session_a": 13,
+      "session_b": 14,
+      "partition_a": "calibration",
+      "partition_b": "evaluation",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "2ab738ee4c049fdea3e7",
+      "human_label": "SAME",
+      "track": "Autodromo Nazionale Monza",
+      "session_a": 17,
+      "session_b": 14,
+      "partition_a": "calibration",
+      "partition_b": "evaluation",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "0134d60fd984de2ffa26",
+      "human_label": "DIFFERENT",
+      "track": "Autodromo Nazionale Monza",
+      "session_a": 14,
+      "session_b": 16,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "2085ecabcc422e1120f5",
+      "human_label": "DIFFERENT",
+      "track": "Autodromo Nazionale Monza",
+      "session_a": 17,
+      "session_b": 14,
+      "partition_a": "calibration",
+      "partition_b": "evaluation",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "92c2d754fe94443d76d1",
+      "human_label": "SAME",
+      "track": "Autodromo Nazionale Monza",
+      "session_a": 14,
+      "session_b": 16,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "d13082b5b6e439c2f15a",
+      "human_label": "DIFFERENT",
+      "track": "Autodromo Nazionale Monza",
+      "session_a": 14,
+      "session_b": 16,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "5828b9e6f6e8aedb943b",
+      "human_label": "DIFFERENT",
+      "track": "Autodromo Nazionale Monza",
+      "session_a": 14,
+      "session_b": 16,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    }
+  ],
+  "ignored_skip": []
+}

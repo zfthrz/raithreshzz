@@ -6,6 +6,8 @@ Este README documenta el flujo operativo actual del proyecto: análisis de una s
 
 > Para comandos de uso normal se usan nombres **genéricos sin sufijos de versión** (`llm_analysis.py`, `episode_pair_matcher.py`, etc.). Los archivos versionados se conservan como releases/historial, pero no hace falta escribir la versión en cada comando.
 
+> Guía práctica del orquestador: [`docs/RACE_ENGINEER_COMMAND_GUIDE.md`](docs/RACE_ENGINEER_COMMAND_GUIDE.md).
+
 ---
 
 ## 1. Estado actual del proyecto
@@ -1145,6 +1147,18 @@ H5.2 LLM historical narrative         <- observacional y validada
 ```
 
 Todavía no crear `persistent_pattern` automáticamente sólo porque dos episodios fueron `MATCH`.
+
+El primer batch H2 de Monza Hypercar tiene 24 pares revisados por una persona
+(`9 SAME`, `13 DIFFERENT`, `2 AMBIGUOUS`). El split por sesión dejó 13 pares de
+calibración y ningún par interno de evaluación, por lo que el resultado se conserva
+como evidencia inicial `READY_FOR_MORE_REAL_DATA`; no habilita todavía un matcher
+Monza ni H3. Detalles: `docs/H2_MONZA_HYPER_CALIBRATION_V0_1.md`.
+
+El batch independiente de Monza `LMP2_ELMS` reúne 3 sesiones del IDEC Sport #18 y
+24 pares revisados (`11 SAME`, `12 DIFFERENT`, `1 AMBIGUOUS`). El split conserva
+5 pares de calibración, excluye 19 pares cross-partition y tampoco obtiene pares
+internos de evaluación. Su estado es `READY_FOR_MORE_REAL_DATA` y no habilita
+matcher ni H3. Detalles: `docs/H2_MONZA_LMP2_ELMS_CALIBRATION_V0_1.md`.
 
 H4 selecciona una `historical_reference` compatible y H5.1 conserva separadas la referencia de la sesión y la histórica.
 

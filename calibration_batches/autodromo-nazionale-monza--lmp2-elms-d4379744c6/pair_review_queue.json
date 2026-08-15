@@ -1,0 +1,2506 @@
+{
+  "metadata": {
+    "queue_schema_version": "1.1",
+    "created_at_utc": "2026-08-15T20:32:53.431192+00:00",
+    "source_features_path": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\autodromo-nazionale-monza--lmp2-elms-d4379744c6\\episode_pair_features.json",
+    "source_features_sha256": "977d315d8533e44ad43a3d0fd1b02a64063fafa106b59df49e1e173887eb812d",
+    "source_pair_count": 455,
+    "selected_pair_count": 24,
+    "per_lens": 6,
+    "max_total": 24,
+    "seed": 20260810,
+    "selection_policy": "round_robin_stratified_v1.1",
+    "semantics": "Selection lenses are review-ordering only. They are not matching decisions or labels. The queue is intentionally capped for manageable human review."
+  },
+  "queue": [
+    {
+      "pair_id": "22ec22d52d0b8fc4d4e5",
+      "selected_by": [
+        {
+          "lens": "closest_centers",
+          "rank": 1
+        },
+        {
+          "lens": "highest_spatial_overlap",
+          "rank": 1
+        },
+        {
+          "lens": "highest_channel_similarity",
+          "rank": 1
+        },
+        {
+          "lens": "nearby_channel_disagreement",
+          "rank": 1
+        }
+      ],
+      "features": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "IDEC Sport #18:ELMS25",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "6d0bbccbe585fd4c748841906fd50fc75f3222a1322f25be3c25534e2d6e5d6f",
+        "setup_sha256_b": "96ed563c0cd622ae26069fea310390855e01efc6db531016fcf05dbe3528fb92",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Light Clouds",
+        "weather_conditions_b": "Light Clouds",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 18,
+        "session_b": 19,
+        "timestamp_a": "2026-08-09T17:11:58Z",
+        "timestamp_b": "2026-08-15T20:03:24Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 588,
+        "episode_pk_b": 593,
+        "episode_id_a": 8,
+        "episode_id_b": 1,
+        "python_rank_a": 8,
+        "python_rank_b": 1,
+        "priority_rank_a": 2,
+        "priority_rank_b": 1,
+        "start_distance_a_m": 5155.0,
+        "end_distance_a_m": 5259.0,
+        "center_distance_a_m": 5207.0,
+        "start_distance_b_m": 5154.0,
+        "end_distance_b_m": 5256.0,
+        "center_distance_b_m": 5205.0,
+        "center_distance_abs_diff_m": 2.0,
+        "start_distance_abs_diff_m": 1.0,
+        "end_distance_abs_diff_m": 3.0,
+        "center_fraction_a": 0.9011512902157233,
+        "center_fraction_b": 0.9007140505135794,
+        "center_fraction_abs_diff": 0.00043723970214382124,
+        "start_fraction_abs_diff": 0.00026328163905631197,
+        "end_fraction_abs_diff": 0.0006111977652312195,
+        "action_time_loss_a_s": 0.16322565179115145,
+        "action_time_loss_b_s": 0.14817758440607065,
+        "action_time_loss_similarity": 0.9078081954646754,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": false,
+        "speed_propagation_b": false,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "channel_jaccard": 1.0,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.11255656108597278,
+            "onset_offset_abs_diff_m": 27.0,
+            "end_offset_abs_diff_m": 8.0,
+            "mean_difference_similarity": 0.3719493024128543,
+            "peak_difference_similarity": 0.55232606873945,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "mixed"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.16572398190045257,
+            "onset_offset_abs_diff_m": 63.0,
+            "end_offset_abs_diff_m": 47.0,
+            "mean_difference_similarity": 0.4887424928147856,
+            "peak_difference_similarity": 0.37039052747474027,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 101.0,
+        "union_m": 105.0,
+        "overlap_over_union": 0.9619047619047619,
+        "overlap_over_shorter": 0.9901960784313726,
+        "overlap_over_longer": 0.9711538461538461,
+        "length_similarity": 0.9807692307692307,
+        "fraction_overlap": 0.017387598889740064,
+        "fraction_overlap_over_union": 0.9521150117632822,
+        "fraction_overlap_over_shorter": 0.9850839373918608,
+        "pair_id": "22ec22d52d0b8fc4d4e5"
+      },
+      "queue_position": 1
+    },
+    {
+      "pair_id": "5805602df987c7b79610",
+      "selected_by": [
+        {
+          "lens": "similar_channels_farther_apart",
+          "rank": 1
+        }
+      ],
+      "features": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "IDEC Sport #18:ELMS25",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "6d0bbccbe585fd4c748841906fd50fc75f3222a1322f25be3c25534e2d6e5d6f",
+        "setup_sha256_b": "96ed563c0cd622ae26069fea310390855e01efc6db531016fcf05dbe3528fb92",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Light Clouds",
+        "weather_conditions_b": "Light Clouds",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 18,
+        "session_b": 19,
+        "timestamp_a": "2026-08-09T17:11:58Z",
+        "timestamp_b": "2026-08-15T20:03:24Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 581,
+        "episode_pk_b": 593,
+        "episode_id_a": 1,
+        "episode_id_b": 1,
+        "python_rank_a": 1,
+        "python_rank_b": 1,
+        "priority_rank_a": 2,
+        "priority_rank_b": 1,
+        "start_distance_a_m": 0.0,
+        "end_distance_a_m": 339.0,
+        "center_distance_a_m": 169.5,
+        "start_distance_b_m": 5154.0,
+        "end_distance_b_m": 5256.0,
+        "center_distance_b_m": 5205.0,
+        "center_distance_abs_diff_m": 5035.5,
+        "start_distance_abs_diff_m": 5154.0,
+        "end_distance_abs_diff_m": 4917.0,
+        "center_fraction_a": 0.02933457724055408,
+        "center_fraction_b": 0.9007140505135794,
+        "center_fraction_abs_diff": 0.8713794732730253,
+        "start_fraction_abs_diff": 0.8918886102491813,
+        "end_fraction_abs_diff": 0.8508703362968695,
+        "action_time_loss_a_s": 58.890376759110154,
+        "action_time_loss_b_s": 0.14817758440607065,
+        "action_time_loss_similarity": 0.0025161595588390944,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": true,
+        "speed_propagation_b": false,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "channel_jaccard": 1.0,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.6376019434322401,
+            "onset_offset_abs_diff_m": 173.0,
+            "end_offset_abs_diff_m": 80.0,
+            "mean_difference_similarity": 0.20605357227823154,
+            "peak_difference_similarity": 0.4800208026219596,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "mixed"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.6176470588235294,
+            "onset_offset_abs_diff_m": 63.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.20197658559933038,
+            "peak_difference_similarity": 0.21410116926920394,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 5256.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.3008849557522124,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "5805602df987c7b79610"
+      },
+      "queue_position": 2
+    },
+    {
+      "pair_id": "00cbab030e5c1a53ff1f",
+      "selected_by": [
+        {
+          "lens": "impact_divergence",
+          "rank": 1
+        }
+      ],
+      "features": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "IDEC Sport #18:ELMS25",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "6d0bbccbe585fd4c748841906fd50fc75f3222a1322f25be3c25534e2d6e5d6f",
+        "setup_sha256_b": "96ed563c0cd622ae26069fea310390855e01efc6db531016fcf05dbe3528fb92",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Light Clouds",
+        "weather_conditions_b": "Light Clouds",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 18,
+        "session_b": 19,
+        "timestamp_a": "2026-08-09T17:11:58Z",
+        "timestamp_b": "2026-08-15T20:03:24Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 581,
+        "episode_pk_b": 599,
+        "episode_id_a": 1,
+        "episode_id_b": 5,
+        "python_rank_a": 1,
+        "python_rank_b": 5,
+        "priority_rank_a": 2,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 0.0,
+        "end_distance_a_m": 339.0,
+        "center_distance_a_m": 169.5,
+        "start_distance_b_m": 3940.0,
+        "end_distance_b_m": 3956.0,
+        "center_distance_b_m": 3948.0,
+        "center_distance_abs_diff_m": 3778.5,
+        "start_distance_abs_diff_m": 3940.0,
+        "end_distance_abs_diff_m": 3617.0,
+        "center_fraction_a": 0.02933457724055408,
+        "center_fraction_b": 0.6831929051734125,
+        "center_fraction_abs_diff": 0.6538583279328584,
+        "start_fraction_abs_diff": 0.6818085223868402,
+        "end_fraction_abs_diff": 0.6259081334788765,
+        "action_time_loss_a_s": 58.890376759110154,
+        "action_time_loss_b_s": 0.023442231360945698,
+        "action_time_loss_similarity": 0.0003980655694704697,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "weak",
+        "speed_propagation_a": true,
+        "speed_propagation_b": true,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [
+          "steering_magnitude"
+        ],
+        "channels_only_b": [],
+        "channel_jaccard": 0.5,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.26258274164238027,
+            "peak_difference_similarity": 0.2895607488018508,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 3956.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.0471976401179941,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "00cbab030e5c1a53ff1f"
+      },
+      "queue_position": 3
+    },
+    {
+      "pair_id": "3816dcdf726c05b26676",
+      "selected_by": [
+        {
+          "lens": "deterministic_baseline",
+          "rank": 1
+        }
+      ],
+      "features": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "IDEC Sport #18:ELMS25",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "d420aa3128f9ea939806a5e27115bea6032dcfd1dcd86e0d156b09f06f42e551",
+        "setup_sha256_b": "96ed563c0cd622ae26069fea310390855e01efc6db531016fcf05dbe3528fb92",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Light Clouds",
+        "weather_conditions_b": "Light Clouds",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 15,
+        "session_b": 19,
+        "timestamp_a": "2026-08-12T04:29:40Z",
+        "timestamp_b": "2026-08-15T20:03:24Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 529,
+        "episode_pk_b": 599,
+        "episode_id_a": 8,
+        "episode_id_b": 5,
+        "python_rank_a": 8,
+        "python_rank_b": 5,
+        "priority_rank_a": 2,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 2141.0,
+        "end_distance_a_m": 2167.0,
+        "center_distance_a_m": 2154.0,
+        "start_distance_b_m": 3940.0,
+        "end_distance_b_m": 3956.0,
+        "center_distance_b_m": 3948.0,
+        "center_distance_abs_diff_m": 1794.0,
+        "start_distance_abs_diff_m": 1799.0,
+        "end_distance_abs_diff_m": 1789.0,
+        "center_fraction_a": 0.3728765737758779,
+        "center_fraction_b": 0.6831929051734125,
+        "center_fraction_abs_diff": 0.31031633139753456,
+        "start_fraction_abs_diff": 0.31118236433012963,
+        "end_fraction_abs_diff": 0.3094502984649395,
+        "action_time_loss_a_s": 0.04617093310686471,
+        "action_time_loss_b_s": 0.023442231360945698,
+        "action_time_loss_similarity": 0.5077270434774969,
+        "evidence_strength_a": "moderate",
+        "evidence_strength_b": "weak",
+        "speed_propagation_a": false,
+        "speed_propagation_b": true,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [
+          "steering_magnitude"
+        ],
+        "channels_only_b": [],
+        "channel_jaccard": 0.5,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.8629678930094541,
+            "peak_difference_similarity": 0.5929819846376646,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 1815.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.6153846153846154,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "3816dcdf726c05b26676"
+      },
+      "queue_position": 4
+    },
+    {
+      "pair_id": "7ce894f2db5e6a8c10ab",
+      "selected_by": [
+        {
+          "lens": "closest_centers",
+          "rank": 2
+        },
+        {
+          "lens": "nearby_channel_disagreement",
+          "rank": 2
+        }
+      ],
+      "features": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "IDEC Sport #18:ELMS25",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "d420aa3128f9ea939806a5e27115bea6032dcfd1dcd86e0d156b09f06f42e551",
+        "setup_sha256_b": "96ed563c0cd622ae26069fea310390855e01efc6db531016fcf05dbe3528fb92",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Light Clouds",
+        "weather_conditions_b": "Light Clouds",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 15,
+        "session_b": 19,
+        "timestamp_a": "2026-08-12T04:29:40Z",
+        "timestamp_b": "2026-08-15T20:03:24Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 528,
+        "episode_pk_b": 599,
+        "episode_id_a": 7,
+        "episode_id_b": 5,
+        "python_rank_a": 7,
+        "python_rank_b": 5,
+        "priority_rank_a": 2,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 3922.0,
+        "end_distance_a_m": 3965.0,
+        "center_distance_a_m": 3943.5,
+        "start_distance_b_m": 3940.0,
+        "end_distance_b_m": 3956.0,
+        "center_distance_b_m": 3948.0,
+        "center_distance_abs_diff_m": 4.5,
+        "start_distance_abs_diff_m": 18.0,
+        "end_distance_abs_diff_m": 9.0,
+        "center_fraction_a": 0.6826549529643335,
+        "center_fraction_b": 0.6831929051734125,
+        "center_fraction_abs_diff": 0.000537952209078929,
+        "start_fraction_abs_diff": 0.002875410804206391,
+        "end_fraction_abs_diff": 0.0017995063860486438,
+        "action_time_loss_a_s": 0.05043217329819072,
+        "action_time_loss_b_s": 0.023442231360945698,
+        "action_time_loss_similarity": 0.46482691162918216,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "weak",
+        "speed_propagation_a": false,
+        "speed_propagation_b": true,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [
+          "steering_magnitude"
+        ],
+        "channels_only_b": [],
+        "channel_jaccard": 0.5,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.2325581395348837,
+            "onset_offset_abs_diff_m": 7.0,
+            "end_offset_abs_diff_m": 3.0,
+            "mean_difference_similarity": 0.694490951895454,
+            "peak_difference_similarity": 0.6395709727468314,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 16.0,
+        "union_m": 43.0,
+        "overlap_over_union": 0.37209302325581395,
+        "overlap_over_shorter": 1.0,
+        "overlap_over_longer": 0.37209302325581395,
+        "length_similarity": 0.37209302325581395,
+        "fraction_overlap": 0.002768765573144538,
+        "fraction_overlap_over_union": 0.37196179111212246,
+        "fraction_overlap_over_shorter": 1.0,
+        "pair_id": "7ce894f2db5e6a8c10ab"
+      },
+      "queue_position": 5
+    },
+    {
+      "pair_id": "436f56e9fc3813589d06",
+      "selected_by": [
+        {
+          "lens": "highest_spatial_overlap",
+          "rank": 2
+        },
+        {
+          "lens": "closest_centers",
+          "rank": 3
+        },
+        {
+          "lens": "nearby_channel_disagreement",
+          "rank": 3
+        }
+      ],
+      "features": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "IDEC Sport #18:ELMS25",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "6d0bbccbe585fd4c748841906fd50fc75f3222a1322f25be3c25534e2d6e5d6f",
+        "setup_sha256_b": "d420aa3128f9ea939806a5e27115bea6032dcfd1dcd86e0d156b09f06f42e551",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Light Clouds",
+        "weather_conditions_b": "Light Clouds",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 18,
+        "session_b": 15,
+        "timestamp_a": "2026-08-09T17:11:58Z",
+        "timestamp_b": "2026-08-12T04:29:40Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 577,
+        "episode_pk_b": 524,
+        "episode_id_a": 2,
+        "episode_id_b": 3,
+        "python_rank_a": 2,
+        "python_rank_b": 3,
+        "priority_rank_a": 1,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 5210.0,
+        "end_distance_a_m": 5302.0,
+        "center_distance_a_m": 5256.0,
+        "start_distance_b_m": 5233.0,
+        "end_distance_b_m": 5295.0,
+        "center_distance_b_m": 5264.0,
+        "center_distance_abs_diff_m": 8.0,
+        "start_distance_abs_diff_m": 23.0,
+        "end_distance_abs_diff_m": 7.0,
+        "center_fraction_a": 0.909631492485854,
+        "center_fraction_b": 0.9112452573612912,
+        "center_fraction_abs_diff": 0.0016137648754372957,
+        "start_fraction_abs_diff": 0.0042083951425062605,
+        "end_fraction_abs_diff": 0.00098086539163178,
+        "action_time_loss_a_s": 0.18984293860418688,
+        "action_time_loss_b_s": 0.11679330641685226,
+        "action_time_loss_similarity": 0.615210169393556,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": true,
+        "speed_propagation_b": true,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [
+          "steering_magnitude"
+        ],
+        "channels_only_b": [],
+        "channel_jaccard": 0.5,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.21739130434782605,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.27806575951206425,
+            "peak_difference_similarity": 0.5248815990269462,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 62.0,
+        "union_m": 92.0,
+        "overlap_over_union": 0.6739130434782609,
+        "overlap_over_shorter": 1.0,
+        "overlap_over_longer": 0.6739130434782609,
+        "length_similarity": 0.6739130434782609,
+        "fraction_overlap": 0.010732751891413428,
+        "fraction_overlap_over_union": 0.6740826225075435,
+        "fraction_overlap_over_shorter": 1.0,
+        "pair_id": "436f56e9fc3813589d06"
+      },
+      "queue_position": 6
+    },
+    {
+      "pair_id": "cd7a98c3a0a7cf5f1f13",
+      "selected_by": [
+        {
+          "lens": "highest_channel_similarity",
+          "rank": 2
+        },
+        {
+          "lens": "closest_centers",
+          "rank": 5
+        },
+        {
+          "lens": "nearby_channel_disagreement",
+          "rank": 5
+        }
+      ],
+      "features": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "IDEC Sport #18:ELMS25",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "6d0bbccbe585fd4c748841906fd50fc75f3222a1322f25be3c25534e2d6e5d6f",
+        "setup_sha256_b": "d420aa3128f9ea939806a5e27115bea6032dcfd1dcd86e0d156b09f06f42e551",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Light Clouds",
+        "weather_conditions_b": "Light Clouds",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 18,
+        "session_b": 15,
+        "timestamp_a": "2026-08-09T17:11:58Z",
+        "timestamp_b": "2026-08-12T04:29:40Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 584,
+        "episode_pk_b": 521,
+        "episode_id_a": 4,
+        "episode_id_b": 3,
+        "python_rank_a": 4,
+        "python_rank_b": 3,
+        "priority_rank_a": 2,
+        "priority_rank_b": 1,
+        "start_distance_a_m": 944.0,
+        "end_distance_a_m": 1010.0,
+        "center_distance_a_m": 977.0,
+        "start_distance_b_m": 978.0,
+        "end_distance_b_m": 997.0,
+        "center_distance_b_m": 987.5,
+        "center_distance_abs_diff_m": 10.5,
+        "start_distance_abs_diff_m": 34.0,
+        "end_distance_abs_diff_m": 13.0,
+        "center_fraction_a": 0.1690848493452586,
+        "center_fraction_b": 0.1709450402059793,
+        "center_fraction_abs_diff": 0.0018601908607207007,
+        "start_fraction_abs_diff": 0.005926812927618125,
+        "end_fraction_abs_diff": 0.002206431206176751,
+        "action_time_loss_a_s": 0.3274990149836299,
+        "action_time_loss_b_s": 0.031591322478002226,
+        "action_time_loss_similarity": 0.09646234349615167,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "moderate",
+        "speed_propagation_a": false,
+        "speed_propagation_b": false,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "channel_jaccard": 1.0,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.21052631578947367,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 4.0,
+            "mean_difference_similarity": 0.762474359903716,
+            "peak_difference_similarity": 0.7335168998951813,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.4696969696969697,
+            "onset_offset_abs_diff_m": 22.0,
+            "end_offset_abs_diff_m": 3.0,
+            "mean_difference_similarity": 0.4895810452867414,
+            "peak_difference_similarity": 0.9756121423510511,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 19.0,
+        "union_m": 66.0,
+        "overlap_over_union": 0.2878787878787879,
+        "overlap_over_shorter": 1.0,
+        "overlap_over_longer": 0.2878787878787879,
+        "length_similarity": 0.2878787878787879,
+        "fraction_overlap": 0.0032890691280137996,
+        "fraction_overlap_over_union": 0.2879512277964778,
+        "fraction_overlap_over_shorter": 1.0,
+        "pair_id": "cd7a98c3a0a7cf5f1f13"
+      },
+      "queue_position": 7
+    },
+    {
+      "pair_id": "d69c20acc33cbbe79168",
+      "selected_by": [
+        {
+          "lens": "similar_channels_farther_apart",
+          "rank": 2
+        }
+      ],
+      "features": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "IDEC Sport #18:ELMS25",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "6d0bbccbe585fd4c748841906fd50fc75f3222a1322f25be3c25534e2d6e5d6f",
+        "setup_sha256_b": "d420aa3128f9ea939806a5e27115bea6032dcfd1dcd86e0d156b09f06f42e551",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Light Clouds",
+        "weather_conditions_b": "Light Clouds",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 18,
+        "session_b": 15,
+        "timestamp_a": "2026-08-09T17:11:58Z",
+        "timestamp_b": "2026-08-12T04:29:40Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 587,
+        "episode_pk_b": 526,
+        "episode_id_a": 7,
+        "episode_id_b": 5,
+        "python_rank_a": 7,
+        "python_rank_b": 5,
+        "priority_rank_a": 2,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 730.0,
+        "end_distance_a_m": 782.0,
+        "center_distance_a_m": 756.0,
+        "start_distance_b_m": 5083.0,
+        "end_distance_b_m": 5165.0,
+        "center_distance_b_m": 5124.0,
+        "center_distance_abs_diff_m": 4368.0,
+        "start_distance_abs_diff_m": 4353.0,
+        "end_distance_abs_diff_m": 4383.0,
+        "center_fraction_a": 0.13083740645344474,
+        "center_fraction_b": 0.8870100111548739,
+        "center_fraction_abs_diff": 0.7561726047014291,
+        "start_fraction_abs_diff": 0.7535748389047211,
+        "end_fraction_abs_diff": 0.7587703704981371,
+        "action_time_loss_a_s": 0.1905246245292389,
+        "action_time_loss_b_s": 0.07825965986548056,
+        "action_time_loss_similarity": 0.41075876705622594,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": true,
+        "speed_propagation_b": false,
+        "channels_a": [
+          "brake",
+          "throttle"
+        ],
+        "channels_b": [
+          "brake",
+          "throttle"
+        ],
+        "shared_channels": [
+          "brake",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "channel_jaccard": 1.0,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.5365853658536586,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 44.0,
+            "mean_difference_similarity": 0.3176295142427189,
+            "peak_difference_similarity": 0.26582186232365596,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.03705440900562851,
+            "onset_offset_abs_diff_m": 31.0,
+            "end_offset_abs_diff_m": 17.0,
+            "mean_difference_similarity": 0.7277945069954551,
+            "peak_difference_similarity": 0.5249428200803866,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 4435.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.6341463414634146,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "d69c20acc33cbbe79168"
+      },
+      "queue_position": 8
+    },
+    {
+      "pair_id": "9d00d120f9bc504b7ac9",
+      "selected_by": [
+        {
+          "lens": "impact_divergence",
+          "rank": 2
+        }
+      ],
+      "features": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "IDEC Sport #18:ELMS25",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "6d0bbccbe585fd4c748841906fd50fc75f3222a1322f25be3c25534e2d6e5d6f",
+        "setup_sha256_b": "d420aa3128f9ea939806a5e27115bea6032dcfd1dcd86e0d156b09f06f42e551",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Light Clouds",
+        "weather_conditions_b": "Light Clouds",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 18,
+        "session_b": 15,
+        "timestamp_a": "2026-08-09T17:11:58Z",
+        "timestamp_b": "2026-08-12T04:29:40Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 581,
+        "episode_pk_b": 532,
+        "episode_id_a": 1,
+        "episode_id_b": 11,
+        "python_rank_a": 1,
+        "python_rank_b": 11,
+        "priority_rank_a": 2,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 0.0,
+        "end_distance_a_m": 339.0,
+        "center_distance_a_m": 169.5,
+        "start_distance_b_m": 2099.0,
+        "end_distance_b_m": 2124.0,
+        "center_distance_b_m": 2111.5,
+        "center_distance_abs_diff_m": 1942.0,
+        "start_distance_abs_diff_m": 2099.0,
+        "end_distance_abs_diff_m": 1785.0,
+        "center_fraction_a": 0.02933457724055408,
+        "center_fraction_b": 0.3655194454632155,
+        "center_fraction_abs_diff": 0.3361848682226614,
+        "start_fraction_abs_diff": 0.36335558419478536,
+        "end_fraction_abs_diff": 0.30901415225053747,
+        "action_time_loss_a_s": 58.890376759110154,
+        "action_time_loss_b_s": 0.025907332964784757,
+        "action_time_loss_similarity": 0.00043992472778291364,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "weak",
+        "speed_propagation_a": true,
+        "speed_propagation_b": true,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "brake"
+        ],
+        "shared_channels": [],
+        "channels_only_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_b": [
+          "brake"
+        ],
+        "channel_jaccard": 0.0,
+        "per_channel_metrics": {},
+        "overlap_m": 0.0,
+        "union_m": 2124.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.07374631268436578,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "9d00d120f9bc504b7ac9"
+      },
+      "queue_position": 9
+    },
+    {
+      "pair_id": "982806041b260307b815",
+      "selected_by": [
+        {
+          "lens": "deterministic_baseline",
+          "rank": 2
+        }
+      ],
+      "features": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "IDEC Sport #18:ELMS25",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "6d0bbccbe585fd4c748841906fd50fc75f3222a1322f25be3c25534e2d6e5d6f",
+        "setup_sha256_b": "96ed563c0cd622ae26069fea310390855e01efc6db531016fcf05dbe3528fb92",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Light Clouds",
+        "weather_conditions_b": "Light Clouds",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 18,
+        "session_b": 19,
+        "timestamp_a": "2026-08-09T17:11:58Z",
+        "timestamp_b": "2026-08-15T20:03:24Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 578,
+        "episode_pk_b": 594,
+        "episode_id_a": 3,
+        "episode_id_b": 2,
+        "python_rank_a": 3,
+        "python_rank_b": 2,
+        "priority_rank_a": 1,
+        "priority_rank_b": 1,
+        "start_distance_a_m": 2614.0,
+        "end_distance_a_m": 2656.0,
+        "center_distance_a_m": 2635.0,
+        "start_distance_b_m": 932.0,
+        "end_distance_b_m": 950.0,
+        "center_distance_b_m": 941.0,
+        "center_distance_abs_diff_m": 1694.0,
+        "start_distance_abs_diff_m": 1682.0,
+        "end_distance_abs_diff_m": 1706.0,
+        "center_fraction_a": 0.4560272037100885,
+        "center_fraction_b": 0.1628380252705626,
+        "center_fraction_abs_diff": 0.29318917843952585,
+        "start_fraction_abs_diff": 0.2911122366729351,
+        "end_fraction_abs_diff": 0.29526612020611664,
+        "action_time_loss_a_s": 0.03857202224836698,
+        "action_time_loss_b_s": 0.06423746855736745,
+        "action_time_loss_similarity": 0.6004598735692726,
+        "evidence_strength_a": "moderate",
+        "evidence_strength_b": "moderate",
+        "speed_propagation_a": false,
+        "speed_propagation_b": true,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [
+          "steering_magnitude"
+        ],
+        "channels_only_b": [],
+        "channel_jaccard": 0.5,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.2142857142857143,
+            "onset_offset_abs_diff_m": 3.0,
+            "end_offset_abs_diff_m": 6.0,
+            "mean_difference_similarity": 0.7237615197142991,
+            "peak_difference_similarity": 0.9733236899250247,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 1724.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.42857142857142855,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "982806041b260307b815"
+      },
+      "queue_position": 10
+    },
+    {
+      "pair_id": "371562b25fe1bc74abd5",
+      "selected_by": [
+        {
+          "lens": "highest_spatial_overlap",
+          "rank": 3
+        }
+      ],
+      "features": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "IDEC Sport #18:ELMS25",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "d420aa3128f9ea939806a5e27115bea6032dcfd1dcd86e0d156b09f06f42e551",
+        "setup_sha256_b": "96ed563c0cd622ae26069fea310390855e01efc6db531016fcf05dbe3528fb92",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Light Clouds",
+        "weather_conditions_b": "Light Clouds",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 15,
+        "session_b": 19,
+        "timestamp_a": "2026-08-12T04:29:40Z",
+        "timestamp_b": "2026-08-15T20:03:24Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 520,
+        "episode_pk_b": 598,
+        "episode_id_a": 2,
+        "episode_id_b": 4,
+        "python_rank_a": 2,
+        "python_rank_b": 4,
+        "priority_rank_a": 1,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 5046.0,
+        "end_distance_a_m": 5139.0,
+        "center_distance_a_m": 5092.5,
+        "start_distance_b_m": 5079.0,
+        "end_distance_b_m": 5128.0,
+        "center_distance_b_m": 5103.5,
+        "center_distance_abs_diff_m": 11.0,
+        "start_distance_abs_diff_m": 33.0,
+        "end_distance_abs_diff_m": 11.0,
+        "center_fraction_a": 0.88155708075843,
+        "center_fraction_b": 0.8831496939089439,
+        "center_fraction_abs_diff": 0.0015926131505139551,
+        "start_fraction_abs_diff": 0.005402504785196438,
+        "end_fraction_abs_diff": 0.002217278484168639,
+        "action_time_loss_a_s": 0.09119263102070363,
+        "action_time_loss_b_s": 0.030832365234033432,
+        "action_time_loss_similarity": 0.33810149887038027,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "moderate",
+        "speed_propagation_a": false,
+        "speed_propagation_b": false,
+        "channels_a": [
+          "brake",
+          "steering_magnitude"
+        ],
+        "channels_b": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "brake",
+          "steering_magnitude"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [
+          "throttle"
+        ],
+        "channel_jaccard": 0.6666666666666666,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.29734474434935265,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 7.0,
+            "mean_difference_similarity": 0.5163168387665271,
+            "peak_difference_similarity": 0.5017439799103306,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.23173140223831468,
+            "onset_offset_abs_diff_m": 55.0,
+            "end_offset_abs_diff_m": 11.0,
+            "mean_difference_similarity": 0.9736684689531169,
+            "peak_difference_similarity": 0.9599717177340508,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 49.0,
+        "union_m": 93.0,
+        "overlap_over_union": 0.5268817204301075,
+        "overlap_over_shorter": 1.0,
+        "overlap_over_longer": 0.5268817204301075,
+        "length_similarity": 0.5268817204301075,
+        "fraction_overlap": 0.00847934456775501,
+        "fraction_overlap_over_union": 0.5266958964201782,
+        "fraction_overlap_over_shorter": 1.0,
+        "pair_id": "371562b25fe1bc74abd5"
+      },
+      "queue_position": 11
+    },
+    {
+      "pair_id": "c154f9faf15aeaf915d8",
+      "selected_by": [
+        {
+          "lens": "highest_channel_similarity",
+          "rank": 3
+        }
+      ],
+      "features": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "IDEC Sport #18:ELMS25",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "6d0bbccbe585fd4c748841906fd50fc75f3222a1322f25be3c25534e2d6e5d6f",
+        "setup_sha256_b": "d420aa3128f9ea939806a5e27115bea6032dcfd1dcd86e0d156b09f06f42e551",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Light Clouds",
+        "weather_conditions_b": "Light Clouds",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 18,
+        "session_b": 15,
+        "timestamp_a": "2026-08-09T17:11:58Z",
+        "timestamp_b": "2026-08-12T04:29:40Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 589,
+        "episode_pk_b": 525,
+        "episode_id_a": 9,
+        "episode_id_b": 4,
+        "python_rank_a": 9,
+        "python_rank_b": 4,
+        "priority_rank_a": 2,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 862.0,
+        "end_distance_a_m": 881.0,
+        "center_distance_a_m": 871.5,
+        "start_distance_b_m": 834.0,
+        "end_distance_b_m": 865.0,
+        "center_distance_b_m": 849.5,
+        "center_distance_abs_diff_m": 22.0,
+        "start_distance_abs_diff_m": 28.0,
+        "end_distance_abs_diff_m": 16.0,
+        "center_fraction_a": 0.1508264546616099,
+        "center_fraction_b": 0.1470560118025108,
+        "center_fraction_abs_diff": 0.00377044285909911,
+        "start_fraction_abs_diff": 0.004809509983661808,
+        "end_fraction_abs_diff": 0.002731375734536412,
+        "action_time_loss_a_s": 0.11182860783483761,
+        "action_time_loss_b_s": 0.08211863446814327,
+        "action_time_loss_similarity": 0.73432582286481,
+        "evidence_strength_a": "moderate",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": false,
+        "speed_propagation_b": false,
+        "channels_a": [
+          "brake"
+        ],
+        "channels_b": [
+          "brake"
+        ],
+        "shared_channels": [
+          "brake"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "channel_jaccard": 1.0,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.8734799192647144,
+            "peak_difference_similarity": 0.844314230387716,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 3.0,
+        "union_m": 47.0,
+        "overlap_over_union": 0.06382978723404255,
+        "overlap_over_shorter": 0.15789473684210525,
+        "overlap_over_longer": 0.0967741935483871,
+        "length_similarity": 0.6129032258064516,
+        "fraction_overlap": 0.0005568659620448779,
+        "fraction_overlap_over_union": 0.06876797215250746,
+        "fraction_overlap_over_shorter": 0.1693506783956419,
+        "pair_id": "c154f9faf15aeaf915d8"
+      },
+      "queue_position": 12
+    },
+    {
+      "pair_id": "93ac94ded90205652542",
+      "selected_by": [
+        {
+          "lens": "similar_channels_farther_apart",
+          "rank": 3
+        }
+      ],
+      "features": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "IDEC Sport #18:ELMS25",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "6d0bbccbe585fd4c748841906fd50fc75f3222a1322f25be3c25534e2d6e5d6f",
+        "setup_sha256_b": "96ed563c0cd622ae26069fea310390855e01efc6db531016fcf05dbe3528fb92",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Light Clouds",
+        "weather_conditions_b": "Light Clouds",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 18,
+        "session_b": 19,
+        "timestamp_a": "2026-08-09T17:11:58Z",
+        "timestamp_b": "2026-08-15T20:03:24Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 591,
+        "episode_pk_b": 594,
+        "episode_id_a": 11,
+        "episode_id_b": 2,
+        "python_rank_a": 11,
+        "python_rank_b": 2,
+        "priority_rank_a": 2,
+        "priority_rank_b": 1,
+        "start_distance_a_m": 5281.0,
+        "end_distance_a_m": 5298.0,
+        "center_distance_a_m": 5289.5,
+        "start_distance_b_m": 932.0,
+        "end_distance_b_m": 950.0,
+        "center_distance_b_m": 941.0,
+        "center_distance_abs_diff_m": 4348.5,
+        "start_distance_abs_diff_m": 4349.0,
+        "end_distance_abs_diff_m": 4348.0,
+        "center_fraction_a": 0.915429181792984,
+        "center_fraction_b": 0.1628380252705626,
+        "center_fraction_abs_diff": 0.7525911565224215,
+        "start_fraction_abs_diff": 0.7526775316614763,
+        "end_fraction_abs_diff": 0.7525047813833667,
+        "action_time_loss_a_s": 0.03900581617092769,
+        "action_time_loss_b_s": 0.06423746855736745,
+        "action_time_loss_similarity": 0.6072128470643801,
+        "evidence_strength_a": "moderate",
+        "evidence_strength_b": "moderate",
+        "speed_propagation_a": false,
+        "speed_propagation_b": true,
+        "channels_a": [
+          "throttle"
+        ],
+        "channels_b": [
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "channel_jaccard": 1.0,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.848918436999499,
+            "peak_difference_similarity": 0.33474432014247313,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 4366.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.9444444444444444,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "93ac94ded90205652542"
+      },
+      "queue_position": 13
+    },
+    {
+      "pair_id": "f14068ab203a4fc85bf1",
+      "selected_by": [
+        {
+          "lens": "impact_divergence",
+          "rank": 3
+        }
+      ],
+      "features": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "IDEC Sport #18:ELMS25",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "6d0bbccbe585fd4c748841906fd50fc75f3222a1322f25be3c25534e2d6e5d6f",
+        "setup_sha256_b": "d420aa3128f9ea939806a5e27115bea6032dcfd1dcd86e0d156b09f06f42e551",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Light Clouds",
+        "weather_conditions_b": "Light Clouds",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 18,
+        "session_b": 15,
+        "timestamp_a": "2026-08-09T17:11:58Z",
+        "timestamp_b": "2026-08-12T04:29:40Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 581,
+        "episode_pk_b": 531,
+        "episode_id_a": 1,
+        "episode_id_b": 10,
+        "python_rank_a": 1,
+        "python_rank_b": 10,
+        "priority_rank_a": 2,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 0.0,
+        "end_distance_a_m": 339.0,
+        "center_distance_a_m": 169.5,
+        "start_distance_b_m": 4140.0,
+        "end_distance_b_m": 4158.0,
+        "center_distance_b_m": 4149.0,
+        "center_distance_abs_diff_m": 3979.5,
+        "start_distance_abs_diff_m": 4140.0,
+        "end_distance_abs_diff_m": 3819.0,
+        "center_fraction_a": 0.02933457724055408,
+        "center_fraction_b": 0.7182288322173247,
+        "center_fraction_abs_diff": 0.6888942549767706,
+        "start_fraction_abs_diff": 0.716670852104055,
+        "end_fraction_abs_diff": 0.6611176578494862,
+        "action_time_loss_a_s": 58.890376759110154,
+        "action_time_loss_b_s": 0.026549127549287732,
+        "action_time_loss_similarity": 0.0004508228510387424,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "weak",
+        "speed_propagation_a": true,
+        "speed_propagation_b": true,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [
+          "steering_magnitude"
+        ],
+        "channels_only_b": [],
+        "channel_jaccard": 0.5,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.5056115709629527,
+            "peak_difference_similarity": 0.9410324745845954,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 4158.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.05309734513274336,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "f14068ab203a4fc85bf1"
+      },
+      "queue_position": 14
+    },
+    {
+      "pair_id": "12102fce74cacb4bbfac",
+      "selected_by": [
+        {
+          "lens": "deterministic_baseline",
+          "rank": 3
+        }
+      ],
+      "features": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "IDEC Sport #18:ELMS25",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "6d0bbccbe585fd4c748841906fd50fc75f3222a1322f25be3c25534e2d6e5d6f",
+        "setup_sha256_b": "d420aa3128f9ea939806a5e27115bea6032dcfd1dcd86e0d156b09f06f42e551",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Light Clouds",
+        "weather_conditions_b": "Light Clouds",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 18,
+        "session_b": 15,
+        "timestamp_a": "2026-08-09T17:11:58Z",
+        "timestamp_b": "2026-08-12T04:29:40Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 584,
+        "episode_pk_b": 522,
+        "episode_id_a": 4,
+        "episode_id_b": 1,
+        "python_rank_a": 4,
+        "python_rank_b": 1,
+        "priority_rank_a": 2,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 944.0,
+        "end_distance_a_m": 1010.0,
+        "center_distance_a_m": 977.0,
+        "start_distance_b_m": 878.0,
+        "end_distance_b_m": 927.0,
+        "center_distance_b_m": 902.5,
+        "center_distance_abs_diff_m": 74.5,
+        "start_distance_abs_diff_m": 66.0,
+        "end_distance_abs_diff_m": 83.0,
+        "center_fraction_a": 0.1690848493452586,
+        "center_fraction_b": 0.1562307835806545,
+        "center_fraction_abs_diff": 0.0128540657646041,
+        "start_fraction_abs_diff": 0.011384077219822819,
+        "end_fraction_abs_diff": 0.014324054309385437,
+        "action_time_loss_a_s": 0.3274990149836299,
+        "action_time_loss_b_s": 0.25505753194969927,
+        "action_time_loss_similarity": 0.7788039666697879,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": false,
+        "speed_propagation_b": false,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [
+          "brake"
+        ],
+        "channel_jaccard": 0.6666666666666666,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.6734693877551021,
+            "onset_offset_abs_diff_m": 19.0,
+            "end_offset_abs_diff_m": 14.0,
+            "mean_difference_similarity": 0.8921811763837211,
+            "peak_difference_similarity": 0.34075995711904944,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.20377241805813234,
+            "onset_offset_abs_diff_m": 11.0,
+            "end_offset_abs_diff_m": 3.0,
+            "mean_difference_similarity": 0.9003519644286224,
+            "peak_difference_similarity": 0.8100644456263016,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 132.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.7424242424242424,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "12102fce74cacb4bbfac"
+      },
+      "queue_position": 15
+    },
+    {
+      "pair_id": "33b14ea4bde18193ed4e",
+      "selected_by": [
+        {
+          "lens": "closest_centers",
+          "rank": 4
+        },
+        {
+          "lens": "nearby_channel_disagreement",
+          "rank": 4
+        }
+      ],
+      "features": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "IDEC Sport #18:ELMS25",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "6d0bbccbe585fd4c748841906fd50fc75f3222a1322f25be3c25534e2d6e5d6f",
+        "setup_sha256_b": "d420aa3128f9ea939806a5e27115bea6032dcfd1dcd86e0d156b09f06f42e551",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Light Clouds",
+        "weather_conditions_b": "Light Clouds",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 18,
+        "session_b": 15,
+        "timestamp_a": "2026-08-09T17:11:58Z",
+        "timestamp_b": "2026-08-12T04:29:40Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 576,
+        "episode_pk_b": 532,
+        "episode_id_a": 1,
+        "episode_id_b": 11,
+        "python_rank_a": 1,
+        "python_rank_b": 11,
+        "priority_rank_a": 1,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 2043.0,
+        "end_distance_a_m": 2160.0,
+        "center_distance_a_m": 2101.5,
+        "start_distance_b_m": 2099.0,
+        "end_distance_b_m": 2124.0,
+        "center_distance_b_m": 2111.5,
+        "center_distance_abs_diff_m": 10.0,
+        "start_distance_abs_diff_m": 56.0,
+        "end_distance_abs_diff_m": 36.0,
+        "center_fraction_a": 0.3636968381771351,
+        "center_fraction_b": 0.3655194454632155,
+        "center_fraction_abs_diff": 0.0018226072860804132,
+        "start_fraction_abs_diff": 0.009783069136071576,
+        "end_fraction_abs_diff": 0.006137854563910805,
+        "action_time_loss_a_s": 0.4130173444930705,
+        "action_time_loss_b_s": 0.025907332964784757,
+        "action_time_loss_similarity": 0.06272698546493953,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "weak",
+        "speed_propagation_a": false,
+        "speed_propagation_b": true,
+        "channels_a": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "brake"
+        ],
+        "shared_channels": [
+          "brake"
+        ],
+        "channels_only_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_b": [],
+        "channel_jaccard": 0.3333333333333333,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.4786324786324786,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 39.0,
+            "mean_difference_similarity": 0.46917098682885516,
+            "peak_difference_similarity": 0.388043298865892,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 25.0,
+        "union_m": 117.0,
+        "overlap_over_union": 0.21367521367521367,
+        "overlap_over_shorter": 1.0,
+        "overlap_over_longer": 0.21367521367521367,
+        "length_similarity": 0.21367521367521367,
+        "fraction_overlap": 0.004327722536860257,
+        "fraction_overlap_over_union": 0.21372898149536126,
+        "fraction_overlap_over_shorter": 1.0,
+        "pair_id": "33b14ea4bde18193ed4e"
+      },
+      "queue_position": 16
+    },
+    {
+      "pair_id": "56e1439ba95b572d6a25",
+      "selected_by": [
+        {
+          "lens": "highest_spatial_overlap",
+          "rank": 4
+        }
+      ],
+      "features": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "IDEC Sport #18:ELMS25",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "d420aa3128f9ea939806a5e27115bea6032dcfd1dcd86e0d156b09f06f42e551",
+        "setup_sha256_b": "96ed563c0cd622ae26069fea310390855e01efc6db531016fcf05dbe3528fb92",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Light Clouds",
+        "weather_conditions_b": "Light Clouds",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 15,
+        "session_b": 19,
+        "timestamp_a": "2026-08-12T04:29:40Z",
+        "timestamp_b": "2026-08-15T20:03:24Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 526,
+        "episode_pk_b": 598,
+        "episode_id_a": 5,
+        "episode_id_b": 4,
+        "python_rank_a": 5,
+        "python_rank_b": 4,
+        "priority_rank_a": 2,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 5083.0,
+        "end_distance_a_m": 5165.0,
+        "center_distance_a_m": 5124.0,
+        "start_distance_b_m": 5079.0,
+        "end_distance_b_m": 5128.0,
+        "center_distance_b_m": 5103.5,
+        "center_distance_abs_diff_m": 20.5,
+        "start_distance_abs_diff_m": 4.0,
+        "end_distance_abs_diff_m": 37.0,
+        "center_fraction_a": 0.8870100111548739,
+        "center_fraction_b": 0.8831496939089439,
+        "center_fraction_abs_diff": 0.003860317245929945,
+        "start_fraction_abs_diff": 0.0010025245693566776,
+        "end_fraction_abs_diff": 0.006718109922503324,
+        "action_time_loss_a_s": 0.07825965986548056,
+        "action_time_loss_b_s": 0.030832365234033432,
+        "action_time_loss_similarity": 0.39397520110655676,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "moderate",
+        "speed_propagation_a": false,
+        "speed_propagation_b": false,
+        "channels_a": [
+          "brake",
+          "throttle"
+        ],
+        "channels_b": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "brake",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [
+          "steering_magnitude"
+        ],
+        "channel_jaccard": 0.6666666666666666,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.06719761075161773,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 21.0,
+            "mean_difference_similarity": 0.5569733463578522,
+            "peak_difference_similarity": 0.597289086395314,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.12817322050771524,
+            "onset_offset_abs_diff_m": 7.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.5840626857488335,
+            "peak_difference_similarity": 0.7485306633271207,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 45.0,
+        "union_m": 86.0,
+        "overlap_over_union": 0.5232558139534884,
+        "overlap_over_shorter": 0.9183673469387755,
+        "overlap_over_longer": 0.5487804878048781,
+        "length_similarity": 0.5975609756097561,
+        "fraction_overlap": 0.007476819998398332,
+        "fraction_overlap_over_union": 0.4919784430472236,
+        "fraction_overlap_over_shorter": 0.8817686247626914,
+        "pair_id": "56e1439ba95b572d6a25"
+      },
+      "queue_position": 17
+    },
+    {
+      "pair_id": "e350278cb99f21d8ce9f",
+      "selected_by": [
+        {
+          "lens": "highest_channel_similarity",
+          "rank": 4
+        }
+      ],
+      "features": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "IDEC Sport #18:ELMS25",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "6d0bbccbe585fd4c748841906fd50fc75f3222a1322f25be3c25534e2d6e5d6f",
+        "setup_sha256_b": "d420aa3128f9ea939806a5e27115bea6032dcfd1dcd86e0d156b09f06f42e551",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Light Clouds",
+        "weather_conditions_b": "Light Clouds",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 18,
+        "session_b": 15,
+        "timestamp_a": "2026-08-09T17:11:58Z",
+        "timestamp_b": "2026-08-12T04:29:40Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 591,
+        "episode_pk_b": 524,
+        "episode_id_a": 11,
+        "episode_id_b": 3,
+        "python_rank_a": 11,
+        "python_rank_b": 3,
+        "priority_rank_a": 2,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 5281.0,
+        "end_distance_a_m": 5298.0,
+        "center_distance_a_m": 5289.5,
+        "start_distance_b_m": 5233.0,
+        "end_distance_b_m": 5295.0,
+        "center_distance_b_m": 5264.0,
+        "center_distance_abs_diff_m": 25.5,
+        "start_distance_abs_diff_m": 48.0,
+        "end_distance_abs_diff_m": 3.0,
+        "center_fraction_a": 0.915429181792984,
+        "center_fraction_b": 0.9112452573612912,
+        "center_fraction_abs_diff": 0.004183924431692798,
+        "start_fraction_abs_diff": 0.008079244881560643,
+        "end_fraction_abs_diff": 0.0002886039818251751,
+        "action_time_loss_a_s": 0.03900581617092769,
+        "action_time_loss_b_s": 0.11679330641685226,
+        "action_time_loss_similarity": 0.3339730449252825,
+        "evidence_strength_a": "moderate",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": false,
+        "speed_propagation_b": true,
+        "channels_a": [
+          "throttle"
+        ],
+        "channels_b": [
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "channel_jaccard": 1.0,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.3441306596094251,
+            "peak_difference_similarity": 0.13781140168949593,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 14.0,
+        "union_m": 65.0,
+        "overlap_over_union": 0.2153846153846154,
+        "overlap_over_shorter": 0.8235294117647058,
+        "overlap_over_longer": 0.22580645161290322,
+        "length_similarity": 0.27419354838709675,
+        "fraction_overlap": 0.0026535070098527846,
+        "fraction_overlap_over_union": 0.24076048721880686,
+        "fraction_overlap_over_shorter": 0.9019058143484325,
+        "pair_id": "e350278cb99f21d8ce9f"
+      },
+      "queue_position": 18
+    },
+    {
+      "pair_id": "01f69d0ff91c9e502fb9",
+      "selected_by": [
+        {
+          "lens": "similar_channels_farther_apart",
+          "rank": 4
+        }
+      ],
+      "features": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "IDEC Sport #18:ELMS25",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "d420aa3128f9ea939806a5e27115bea6032dcfd1dcd86e0d156b09f06f42e551",
+        "setup_sha256_b": "96ed563c0cd622ae26069fea310390855e01efc6db531016fcf05dbe3528fb92",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Light Clouds",
+        "weather_conditions_b": "Light Clouds",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 15,
+        "session_b": 19,
+        "timestamp_a": "2026-08-12T04:29:40Z",
+        "timestamp_b": "2026-08-15T20:03:24Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 524,
+        "episode_pk_b": 594,
+        "episode_id_a": 3,
+        "episode_id_b": 2,
+        "python_rank_a": 3,
+        "python_rank_b": 2,
+        "priority_rank_a": 2,
+        "priority_rank_b": 1,
+        "start_distance_a_m": 5233.0,
+        "end_distance_a_m": 5295.0,
+        "center_distance_a_m": 5264.0,
+        "start_distance_b_m": 932.0,
+        "end_distance_b_m": 950.0,
+        "center_distance_b_m": 941.0,
+        "center_distance_abs_diff_m": 4323.0,
+        "start_distance_abs_diff_m": 4301.0,
+        "end_distance_abs_diff_m": 4345.0,
+        "center_fraction_a": 0.9112452573612912,
+        "center_fraction_b": 0.1628380252705626,
+        "center_fraction_abs_diff": 0.7484072320907287,
+        "start_fraction_abs_diff": 0.7445982867799157,
+        "end_fraction_abs_diff": 0.7522161774015415,
+        "action_time_loss_a_s": 0.11679330641685226,
+        "action_time_loss_b_s": 0.06423746855736745,
+        "action_time_loss_similarity": 0.5500098466952772,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "moderate",
+        "speed_propagation_a": true,
+        "speed_propagation_b": true,
+        "channels_a": [
+          "throttle"
+        ],
+        "channels_b": [
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "channel_jaccard": 1.0,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.4053754101816359,
+            "peak_difference_similarity": 0.4116915311089997,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 4363.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.2903225806451613,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "01f69d0ff91c9e502fb9"
+      },
+      "queue_position": 19
+    },
+    {
+      "pair_id": "96ad8198e607bf30e598",
+      "selected_by": [
+        {
+          "lens": "impact_divergence",
+          "rank": 4
+        }
+      ],
+      "features": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "IDEC Sport #18:ELMS25",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "6d0bbccbe585fd4c748841906fd50fc75f3222a1322f25be3c25534e2d6e5d6f",
+        "setup_sha256_b": "d420aa3128f9ea939806a5e27115bea6032dcfd1dcd86e0d156b09f06f42e551",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Light Clouds",
+        "weather_conditions_b": "Light Clouds",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 18,
+        "session_b": 15,
+        "timestamp_a": "2026-08-09T17:11:58Z",
+        "timestamp_b": "2026-08-12T04:29:40Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 581,
+        "episode_pk_b": 530,
+        "episode_id_a": 1,
+        "episode_id_b": 9,
+        "python_rank_a": 1,
+        "python_rank_b": 9,
+        "priority_rank_a": 2,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 0.0,
+        "end_distance_a_m": 339.0,
+        "center_distance_a_m": 169.5,
+        "start_distance_b_m": 4992.0,
+        "end_distance_b_m": 5035.0,
+        "center_distance_b_m": 5013.5,
+        "center_distance_abs_diff_m": 4844.0,
+        "start_distance_abs_diff_m": 4992.0,
+        "end_distance_abs_diff_m": 4696.0,
+        "center_fraction_a": 0.02933457724055408,
+        "center_fraction_b": 0.8678814775419517,
+        "center_fraction_abs_diff": 0.8385469003013976,
+        "start_fraction_abs_diff": 0.8641596361602518,
+        "end_fraction_abs_diff": 0.8129341644425433,
+        "action_time_loss_a_s": 58.890376759110154,
+        "action_time_loss_b_s": 0.02679425632781829,
+        "action_time_loss_similarity": 0.0004549853100349422,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "weak",
+        "speed_propagation_a": true,
+        "speed_propagation_b": true,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "brake",
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [
+          "steering_magnitude"
+        ],
+        "channels_only_b": [
+          "brake"
+        ],
+        "channel_jaccard": 0.3333333333333333,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.5532138391446614,
+            "peak_difference_similarity": 0.9447707836683945,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 5035.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.12684365781710916,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "96ad8198e607bf30e598"
+      },
+      "queue_position": 20
+    },
+    {
+      "pair_id": "1d0d54823d1377df2f80",
+      "selected_by": [
+        {
+          "lens": "deterministic_baseline",
+          "rank": 4
+        }
+      ],
+      "features": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "IDEC Sport #18:ELMS25",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "6d0bbccbe585fd4c748841906fd50fc75f3222a1322f25be3c25534e2d6e5d6f",
+        "setup_sha256_b": "d420aa3128f9ea939806a5e27115bea6032dcfd1dcd86e0d156b09f06f42e551",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Light Clouds",
+        "weather_conditions_b": "Light Clouds",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 18,
+        "session_b": 15,
+        "timestamp_a": "2026-08-09T17:11:58Z",
+        "timestamp_b": "2026-08-12T04:29:40Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 584,
+        "episode_pk_b": 520,
+        "episode_id_a": 4,
+        "episode_id_b": 2,
+        "python_rank_a": 4,
+        "python_rank_b": 2,
+        "priority_rank_a": 2,
+        "priority_rank_b": 1,
+        "start_distance_a_m": 944.0,
+        "end_distance_a_m": 1010.0,
+        "center_distance_a_m": 977.0,
+        "start_distance_b_m": 5046.0,
+        "end_distance_b_m": 5139.0,
+        "center_distance_b_m": 5092.5,
+        "center_distance_abs_diff_m": 4115.5,
+        "start_distance_abs_diff_m": 4102.0,
+        "end_distance_abs_diff_m": 4129.0,
+        "center_fraction_a": 0.1690848493452586,
+        "center_fraction_b": 0.88155708075843,
+        "center_fraction_abs_diff": 0.7124722314131714,
+        "start_fraction_abs_diff": 0.7101338241255156,
+        "end_fraction_abs_diff": 0.7148106387008271,
+        "action_time_loss_a_s": 0.3274990149836299,
+        "action_time_loss_b_s": 0.09119263102070363,
+        "action_time_loss_similarity": 0.27845161923696754,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": false,
+        "speed_propagation_b": false,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "brake",
+          "steering_magnitude"
+        ],
+        "shared_channels": [
+          "steering_magnitude"
+        ],
+        "channels_only_a": [
+          "throttle"
+        ],
+        "channels_only_b": [
+          "brake"
+        ],
+        "channel_jaccard": 0.3333333333333333,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.7419354838709677,
+            "onset_offset_abs_diff_m": 69.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.6817387624737009,
+            "peak_difference_similarity": 0.24339480936125377,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 4195.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.7096774193548387,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "1d0d54823d1377df2f80"
+      },
+      "queue_position": 21
+    },
+    {
+      "pair_id": "71eca4344c9a4ad75225",
+      "selected_by": [
+        {
+          "lens": "highest_spatial_overlap",
+          "rank": 5
+        }
+      ],
+      "features": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "IDEC Sport #18:ELMS25",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "6d0bbccbe585fd4c748841906fd50fc75f3222a1322f25be3c25534e2d6e5d6f",
+        "setup_sha256_b": "d420aa3128f9ea939806a5e27115bea6032dcfd1dcd86e0d156b09f06f42e551",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Light Clouds",
+        "weather_conditions_b": "Light Clouds",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 18,
+        "session_b": 15,
+        "timestamp_a": "2026-08-09T17:11:58Z",
+        "timestamp_b": "2026-08-12T04:29:40Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 583,
+        "episode_pk_b": 529,
+        "episode_id_a": 3,
+        "episode_id_b": 8,
+        "python_rank_a": 3,
+        "python_rank_b": 8,
+        "priority_rank_a": 2,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 2110.0,
+        "end_distance_a_m": 2171.0,
+        "center_distance_a_m": 2140.5,
+        "start_distance_b_m": 2141.0,
+        "end_distance_b_m": 2167.0,
+        "center_distance_b_m": 2154.0,
+        "center_distance_abs_diff_m": 13.5,
+        "start_distance_abs_diff_m": 31.0,
+        "end_distance_abs_diff_m": 4.0,
+        "center_fraction_a": 0.3704463869227493,
+        "center_fraction_b": 0.3728765737758779,
+        "center_fraction_abs_diff": 0.002430186853128624,
+        "start_fraction_abs_diff": 0.0054582643837364775,
+        "end_fraction_abs_diff": 0.0005978906774792847,
+        "action_time_loss_a_s": 0.35010847861225614,
+        "action_time_loss_b_s": 0.04617093310686471,
+        "action_time_loss_similarity": 0.13187607820831682,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "moderate",
+        "speed_propagation_a": false,
+        "speed_propagation_b": false,
+        "channels_a": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [
+          "brake"
+        ],
+        "channels_only_b": [],
+        "channel_jaccard": 0.6666666666666666,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.17717528373266078,
+            "onset_offset_abs_diff_m": 8.0,
+            "end_offset_abs_diff_m": 4.0,
+            "mean_difference_similarity": 0.34783066928198286,
+            "peak_difference_similarity": 0.20630025140608405,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.5081967213114754,
+            "onset_offset_abs_diff_m": 31.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.566633874684511,
+            "peak_difference_similarity": 0.6684397475582072,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 26.0,
+        "union_m": 61.0,
+        "overlap_over_union": 0.4262295081967213,
+        "overlap_over_shorter": 1.0,
+        "overlap_over_longer": 0.4262295081967213,
+        "length_similarity": 0.4262295081967213,
+        "fraction_overlap": 0.004500831438334685,
+        "fraction_overlap_over_union": 0.42633676177632185,
+        "fraction_overlap_over_shorter": 1.0,
+        "pair_id": "71eca4344c9a4ad75225"
+      },
+      "queue_position": 22
+    },
+    {
+      "pair_id": "5dc9682b0135b55b1072",
+      "selected_by": [
+        {
+          "lens": "highest_channel_similarity",
+          "rank": 5
+        }
+      ],
+      "features": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "IDEC Sport #18:ELMS25",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "6d0bbccbe585fd4c748841906fd50fc75f3222a1322f25be3c25534e2d6e5d6f",
+        "setup_sha256_b": "d420aa3128f9ea939806a5e27115bea6032dcfd1dcd86e0d156b09f06f42e551",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Light Clouds",
+        "weather_conditions_b": "Light Clouds",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 18,
+        "session_b": 15,
+        "timestamp_a": "2026-08-09T17:11:58Z",
+        "timestamp_b": "2026-08-12T04:29:40Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 586,
+        "episode_pk_b": 525,
+        "episode_id_a": 6,
+        "episode_id_b": 4,
+        "python_rank_a": 6,
+        "python_rank_b": 4,
+        "priority_rank_a": 2,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 797.0,
+        "end_distance_a_m": 849.0,
+        "center_distance_a_m": 823.0,
+        "start_distance_b_m": 834.0,
+        "end_distance_b_m": 865.0,
+        "center_distance_b_m": 849.5,
+        "center_distance_abs_diff_m": 26.5,
+        "start_distance_abs_diff_m": 37.0,
+        "end_distance_abs_diff_m": 16.0,
+        "center_fraction_a": 0.14243278506770507,
+        "center_fraction_b": 0.1470560118025108,
+        "center_fraction_abs_diff": 0.004623226734805724,
+        "start_fraction_abs_diff": 0.006439737925695216,
+        "end_fraction_abs_diff": 0.0028067155439162883,
+        "action_time_loss_a_s": 0.22955155616451606,
+        "action_time_loss_b_s": 0.08211863446814327,
+        "action_time_loss_similarity": 0.35773503713165905,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": false,
+        "speed_propagation_b": false,
+        "channels_a": [
+          "brake"
+        ],
+        "channels_b": [
+          "brake"
+        ],
+        "shared_channels": [
+          "brake"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "channel_jaccard": 1.0,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.6552120436638886,
+            "peak_difference_similarity": 0.5727343116842194,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 15.0,
+        "union_m": 68.0,
+        "overlap_over_union": 0.22058823529411764,
+        "overlap_over_shorter": 0.4838709677419355,
+        "overlap_over_longer": 0.28846153846153844,
+        "length_similarity": 0.5961538461538461,
+        "fraction_overlap": 0.002559660401790398,
+        "fraction_overlap_over_union": 0.21680803943376284,
+        "fraction_overlap_over_shorter": 0.476981193208841,
+        "pair_id": "5dc9682b0135b55b1072"
+      },
+      "queue_position": 23
+    },
+    {
+      "pair_id": "e106264da0c6930ae9e7",
+      "selected_by": [
+        {
+          "lens": "similar_channels_farther_apart",
+          "rank": 5
+        }
+      ],
+      "features": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "IDEC Sport #18:ELMS25",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "6d0bbccbe585fd4c748841906fd50fc75f3222a1322f25be3c25534e2d6e5d6f",
+        "setup_sha256_b": "d420aa3128f9ea939806a5e27115bea6032dcfd1dcd86e0d156b09f06f42e551",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Light Clouds",
+        "weather_conditions_b": "Light Clouds",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 18,
+        "session_b": 15,
+        "timestamp_a": "2026-08-09T17:11:58Z",
+        "timestamp_b": "2026-08-12T04:29:40Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 577,
+        "episode_pk_b": 521,
+        "episode_id_a": 2,
+        "episode_id_b": 3,
+        "python_rank_a": 2,
+        "python_rank_b": 3,
+        "priority_rank_a": 1,
+        "priority_rank_b": 1,
+        "start_distance_a_m": 5210.0,
+        "end_distance_a_m": 5302.0,
+        "center_distance_a_m": 5256.0,
+        "start_distance_b_m": 978.0,
+        "end_distance_b_m": 997.0,
+        "center_distance_b_m": 987.5,
+        "center_distance_abs_diff_m": 4268.5,
+        "start_distance_abs_diff_m": 4232.0,
+        "end_distance_abs_diff_m": 4305.0,
+        "center_fraction_a": 0.909631492485854,
+        "center_fraction_b": 0.1709450402059793,
+        "center_fraction_abs_diff": 0.7386864522798746,
+        "start_fraction_abs_diff": 0.7323699806311058,
+        "end_fraction_abs_diff": 0.7450029239286435,
+        "action_time_loss_a_s": 0.18984293860418688,
+        "action_time_loss_b_s": 0.031591322478002226,
+        "action_time_loss_similarity": 0.16640767736886208,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "moderate",
+        "speed_propagation_a": true,
+        "speed_propagation_b": false,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "channel_jaccard": 1.0,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.2133867276887872,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 35.0,
+            "mean_difference_similarity": 0.7688091956968026,
+            "peak_difference_similarity": 0.8084435399092649,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.21739130434782605,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.47875896133580464,
+            "peak_difference_similarity": 0.9047648399616248,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 4324.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.20652173913043478,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "e106264da0c6930ae9e7"
+      },
+      "queue_position": 24
+    }
+  ]
+}

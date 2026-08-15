@@ -1,0 +1,41 @@
+$ 'C:\Users\thres\AppData\Local\Python\pythoncore-3.14-64\python.exe' 'C:\Users\thres\Documents\GitHub\raithreshzz\validate_pair_labels.py' 'C:\Users\thres\Documents\GitHub\raithreshzz\calibration_batches\autodromo-nazionale-monza--lmp2-elms-d4379744c6\pair_review_queue.json' 'C:\Users\thres\Documents\GitHub\raithreshzz\calibration_batches\autodromo-nazionale-monza--lmp2-elms-d4379744c6\pair_labels.json'
+
+--- STDOUT ---
+
+======================================================================
+RACE ENGINEER - PAIR LABEL VALIDATOR v1.1
+======================================================================
+
+{
+  "queue_pairs": 24,
+  "label_records": 24,
+  "counts": {
+    "SAME": 11,
+    "DIFFERENT": 12,
+    "AMBIGUOUS": 1
+  },
+  "unreviewed": 0,
+  "sessions_by_label": {
+    "SAME": [
+      15,
+      18,
+      19
+    ],
+    "DIFFERENT": [
+      15,
+      18,
+      19
+    ],
+    "AMBIGUOUS": [
+      15,
+      18
+    ]
+  }
+}
+
+PAIR LABEL VALIDATION: PASS
+
+--- STDERR ---
+
+--- RETURN CODE ---
+0

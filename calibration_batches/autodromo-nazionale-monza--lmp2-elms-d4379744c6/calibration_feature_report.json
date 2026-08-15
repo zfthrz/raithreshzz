@@ -1,0 +1,4083 @@
+{
+  "metadata": {
+    "report_schema_version": "1.0",
+    "created_at_utc": "2026-08-15T20:44:33.203837+00:00",
+    "source_dataset_schema_version": "1.0",
+    "purpose": "Describe feature distributions by human label without selecting matcher thresholds or weights.",
+    "evaluation_policy": "Evaluation statistics are reported separately and must not be used to tune matcher decisions.",
+    "impact_policy": "secondary_impact features are descriptive only and must not dominate future matching.",
+    "matcher_status": "NO_THRESHOLDS_NO_MATCH_SCORE_NO_AUTOMATIC_MATCHING"
+  },
+  "feature_roles": {
+    "center_distance_abs_diff_m": "spatial_absolute",
+    "start_distance_abs_diff_m": "spatial_absolute",
+    "end_distance_abs_diff_m": "spatial_absolute",
+    "overlap_m": "spatial_absolute",
+    "union_m": "spatial_absolute",
+    "center_fraction_abs_diff": "spatial_normalized",
+    "start_fraction_abs_diff": "spatial_normalized",
+    "end_fraction_abs_diff": "spatial_normalized",
+    "overlap_over_union": "spatial_normalized",
+    "overlap_over_shorter": "spatial_normalized",
+    "overlap_over_longer": "spatial_normalized",
+    "length_similarity": "spatial_normalized",
+    "fraction_overlap": "spatial_normalized",
+    "fraction_overlap_over_union": "spatial_normalized",
+    "fraction_overlap_over_shorter": "spatial_normalized",
+    "channel_jaccard": "channel_identity",
+    "shared_channel_count": "channel_identity",
+    "channel_symmetric_difference_count": "channel_identity",
+    "channel_coverage_abs_diff_mean": "channel_shape",
+    "channel_coverage_abs_diff_max": "channel_shape",
+    "channel_onset_offset_abs_diff_m_mean": "channel_shape",
+    "channel_onset_offset_abs_diff_m_max": "channel_shape",
+    "channel_end_offset_abs_diff_m_mean": "channel_shape",
+    "channel_end_offset_abs_diff_m_max": "channel_shape",
+    "channel_mean_difference_similarity_mean": "channel_shape",
+    "channel_mean_difference_similarity_min": "channel_shape",
+    "channel_peak_difference_similarity_mean": "channel_shape",
+    "channel_peak_difference_similarity_min": "channel_shape",
+    "channel_direction_agreement_ratio": "channel_shape",
+    "action_time_loss_similarity": "secondary_impact"
+  },
+  "calibration": {
+    "pair_count": 5,
+    "label_counts": {
+      "SAME": 1,
+      "DIFFERENT": 4,
+      "AMBIGUOUS": 0
+    },
+    "features": {
+      "center_distance_abs_diff_m": {
+        "role": "spatial_absolute",
+        "by_label": {
+          "SAME": {
+            "total_rows": 1,
+            "valid_n": 1,
+            "missing_n": 0,
+            "min": 2.0,
+            "p10": 2.0,
+            "p25": 2.0,
+            "median": 2.0,
+            "mean": 2.0,
+            "p75": 2.0,
+            "p90": 2.0,
+            "max": 2.0,
+            "iqr": 0.0
+          },
+          "DIFFERENT": {
+            "total_rows": 4,
+            "valid_n": 4,
+            "missing_n": 0,
+            "min": 1694.0,
+            "p10": 2319.3500000000004,
+            "p25": 3257.375,
+            "median": 4063.5,
+            "mean": 3714.125,
+            "p75": 4520.25,
+            "p90": 4829.4,
+            "max": 5035.5,
+            "iqr": 1262.875
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": -4061.5,
+            "pooled_iqr": 631.4375,
+            "median_gap_over_pooled_iqr": -6.432148866673265,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "start_distance_abs_diff_m": {
+        "role": "spatial_absolute",
+        "by_label": {
+          "SAME": {
+            "total_rows": 1,
+            "valid_n": 1,
+            "missing_n": 0,
+            "min": 1.0,
+            "p10": 1.0,
+            "p25": 1.0,
+            "median": 1.0,
+            "mean": 1.0,
+            "p75": 1.0,
+            "p90": 1.0,
+            "max": 1.0,
+            "iqr": 0.0
+          },
+          "DIFFERENT": {
+            "total_rows": 4,
+            "valid_n": 4,
+            "missing_n": 0,
+            "min": 1682.0,
+            "p10": 2359.4,
+            "p25": 3375.5,
+            "median": 4144.5,
+            "mean": 3781.25,
+            "p75": 4550.25,
+            "p90": 4912.5,
+            "max": 5154.0,
+            "iqr": 1174.75
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": -4143.5,
+            "pooled_iqr": 587.375,
+            "median_gap_over_pooled_iqr": -7.054266865290487,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "end_distance_abs_diff_m": {
+        "role": "spatial_absolute",
+        "by_label": {
+          "SAME": {
+            "total_rows": 1,
+            "valid_n": 1,
+            "missing_n": 0,
+            "min": 3.0,
+            "p10": 3.0,
+            "p25": 3.0,
+            "median": 3.0,
+            "mean": 3.0,
+            "p75": 3.0,
+            "p90": 3.0,
+            "max": 3.0,
+            "iqr": 0.0
+          },
+          "DIFFERENT": {
+            "total_rows": 4,
+            "valid_n": 4,
+            "missing_n": 0,
+            "min": 1706.0,
+            "p10": 2279.3,
+            "p25": 3139.25,
+            "median": 3982.5,
+            "mean": 3647.0,
+            "p75": 4490.25,
+            "p90": 4746.3,
+            "max": 4917.0,
+            "iqr": 1351.0
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": -3979.5,
+            "pooled_iqr": 675.5,
+            "median_gap_over_pooled_iqr": -5.891191709844559,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "overlap_m": {
+        "role": "spatial_absolute",
+        "by_label": {
+          "SAME": {
+            "total_rows": 1,
+            "valid_n": 1,
+            "missing_n": 0,
+            "min": 101.0,
+            "p10": 101.0,
+            "p25": 101.0,
+            "median": 101.0,
+            "mean": 101.0,
+            "p75": 101.0,
+            "p90": 101.0,
+            "max": 101.0,
+            "iqr": 0.0
+          },
+          "DIFFERENT": {
+            "total_rows": 4,
+            "valid_n": 4,
+            "missing_n": 0,
+            "min": 0.0,
+            "p10": 0.0,
+            "p25": 0.0,
+            "median": 0.0,
+            "mean": 0.0,
+            "p75": 0.0,
+            "p90": 0.0,
+            "max": 0.0,
+            "iqr": 0.0
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": 101.0,
+            "pooled_iqr": 0.0,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "union_m": {
+        "role": "spatial_absolute",
+        "by_label": {
+          "SAME": {
+            "total_rows": 1,
+            "valid_n": 1,
+            "missing_n": 0,
+            "min": 105.0,
+            "p10": 105.0,
+            "p25": 105.0,
+            "median": 105.0,
+            "mean": 105.0,
+            "p75": 105.0,
+            "p90": 105.0,
+            "max": 105.0,
+            "iqr": 0.0
+          },
+          "DIFFERENT": {
+            "total_rows": 4,
+            "valid_n": 4,
+            "missing_n": 0,
+            "min": 1724.0,
+            "p10": 2393.6000000000004,
+            "p25": 3398.0,
+            "median": 4161.0,
+            "mean": 3825.5,
+            "p75": 4588.5,
+            "p90": 4989.0,
+            "max": 5256.0,
+            "iqr": 1190.5
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": -4056.0,
+            "pooled_iqr": 595.25,
+            "median_gap_over_pooled_iqr": -6.813943721125577,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "center_fraction_abs_diff": {
+        "role": "spatial_normalized",
+        "by_label": {
+          "SAME": {
+            "total_rows": 1,
+            "valid_n": 1,
+            "missing_n": 0,
+            "min": 0.00043723970214382124,
+            "p10": 0.00043723970214382124,
+            "p25": 0.00043723970214382124,
+            "median": 0.00043723970214382124,
+            "mean": 0.00043723970214382124,
+            "p75": 0.00043723970214382124,
+            "p90": 0.00043723970214382124,
+            "max": 0.00043723970214382124,
+            "iqr": 0.0
+          },
+          "DIFFERENT": {
+            "total_rows": 4,
+            "valid_n": 4,
+            "missing_n": 0,
+            "min": 0.29318917843952585,
+            "p10": 0.40138992328752565,
+            "p25": 0.5636910405595252,
+            "median": 0.7032247422276399,
+            "mean": 0.6427545340419578,
+            "p75": 0.7822882357100724,
+            "p90": 0.8357429782478443,
+            "max": 0.8713794732730253,
+            "iqr": 0.2185971951505472
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": -0.702787502525496,
+            "pooled_iqr": 0.1092985975752736,
+            "median_gap_over_pooled_iqr": -6.429977310930165,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "start_fraction_abs_diff": {
+        "role": "spatial_normalized",
+        "by_label": {
+          "SAME": {
+            "total_rows": 1,
+            "valid_n": 1,
+            "missing_n": 0,
+            "min": 0.00026328163905631197,
+            "p10": 0.00026328163905631197,
+            "p25": 0.00026328163905631197,
+            "median": 0.00026328163905631197,
+            "mean": 0.00026328163905631197,
+            "p75": 0.00026328163905631197,
+            "p90": 0.00026328163905631197,
+            "max": 0.00026328163905631197,
+            "iqr": 0.0
+          },
+          "DIFFERENT": {
+            "total_rows": 4,
+            "valid_n": 4,
+            "missing_n": 0,
+            "min": 0.2911122366729351,
+            "p10": 0.40832112238710666,
+            "p25": 0.5841344509583639,
+            "median": 0.7172430270241583,
+            "mean": 0.6543717252426082,
+            "p75": 0.7874803013084025,
+            "p90": 0.8501252866728699,
+            "max": 0.8918886102491813,
+            "iqr": 0.2033458503500386
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": -0.716979745385102,
+            "pooled_iqr": 0.1016729251750193,
+            "median_gap_over_pooled_iqr": -7.051825686640729,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "end_fraction_abs_diff": {
+        "role": "spatial_normalized",
+        "by_label": {
+          "SAME": {
+            "total_rows": 1,
+            "valid_n": 1,
+            "missing_n": 0,
+            "min": 0.0006111977652312195,
+            "p10": 0.0006111977652312195,
+            "p25": 0.0006111977652312195,
+            "median": 0.0006111977652312195,
+            "mean": 0.0006111977652312195,
+            "p75": 0.0006111977652312195,
+            "p90": 0.0006111977652312195,
+            "max": 0.0006111977652312195,
+            "iqr": 0.0
+          },
+          "DIFFERENT": {
+            "total_rows": 4,
+            "valid_n": 4,
+            "missing_n": 0,
+            "min": 0.29526612020611664,
+            "p10": 0.3944587241879446,
+            "p25": 0.5432476301606866,
+            "median": 0.6892064574311216,
+            "mean": 0.6311373428413074,
+            "p75": 0.7770961701117424,
+            "p90": 0.8213606698228186,
+            "max": 0.8508703362968695,
+            "iqr": 0.2338485399510558
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": -0.6885952596658904,
+            "pooled_iqr": 0.1169242699755279,
+            "median_gap_over_pooled_iqr": -5.889241470654574,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "overlap_over_union": {
+        "role": "spatial_normalized",
+        "by_label": {
+          "SAME": {
+            "total_rows": 1,
+            "valid_n": 1,
+            "missing_n": 0,
+            "min": 0.9619047619047619,
+            "p10": 0.9619047619047619,
+            "p25": 0.9619047619047619,
+            "median": 0.9619047619047619,
+            "mean": 0.9619047619047619,
+            "p75": 0.9619047619047619,
+            "p90": 0.9619047619047619,
+            "max": 0.9619047619047619,
+            "iqr": 0.0
+          },
+          "DIFFERENT": {
+            "total_rows": 4,
+            "valid_n": 4,
+            "missing_n": 0,
+            "min": 0.0,
+            "p10": 0.0,
+            "p25": 0.0,
+            "median": 0.0,
+            "mean": 0.0,
+            "p75": 0.0,
+            "p90": 0.0,
+            "max": 0.0,
+            "iqr": 0.0
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": 0.9619047619047619,
+            "pooled_iqr": 0.0,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "overlap_over_shorter": {
+        "role": "spatial_normalized",
+        "by_label": {
+          "SAME": {
+            "total_rows": 1,
+            "valid_n": 1,
+            "missing_n": 0,
+            "min": 0.9901960784313726,
+            "p10": 0.9901960784313726,
+            "p25": 0.9901960784313726,
+            "median": 0.9901960784313726,
+            "mean": 0.9901960784313726,
+            "p75": 0.9901960784313726,
+            "p90": 0.9901960784313726,
+            "max": 0.9901960784313726,
+            "iqr": 0.0
+          },
+          "DIFFERENT": {
+            "total_rows": 4,
+            "valid_n": 4,
+            "missing_n": 0,
+            "min": 0.0,
+            "p10": 0.0,
+            "p25": 0.0,
+            "median": 0.0,
+            "mean": 0.0,
+            "p75": 0.0,
+            "p90": 0.0,
+            "max": 0.0,
+            "iqr": 0.0
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": 0.9901960784313726,
+            "pooled_iqr": 0.0,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "overlap_over_longer": {
+        "role": "spatial_normalized",
+        "by_label": {
+          "SAME": {
+            "total_rows": 1,
+            "valid_n": 1,
+            "missing_n": 0,
+            "min": 0.9711538461538461,
+            "p10": 0.9711538461538461,
+            "p25": 0.9711538461538461,
+            "median": 0.9711538461538461,
+            "mean": 0.9711538461538461,
+            "p75": 0.9711538461538461,
+            "p90": 0.9711538461538461,
+            "max": 0.9711538461538461,
+            "iqr": 0.0
+          },
+          "DIFFERENT": {
+            "total_rows": 4,
+            "valid_n": 4,
+            "missing_n": 0,
+            "min": 0.0,
+            "p10": 0.0,
+            "p25": 0.0,
+            "median": 0.0,
+            "mean": 0.0,
+            "p75": 0.0,
+            "p90": 0.0,
+            "max": 0.0,
+            "iqr": 0.0
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": 0.9711538461538461,
+            "pooled_iqr": 0.0,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "length_similarity": {
+        "role": "spatial_normalized",
+        "by_label": {
+          "SAME": {
+            "total_rows": 1,
+            "valid_n": 1,
+            "missing_n": 0,
+            "min": 0.9807692307692307,
+            "p10": 0.9807692307692307,
+            "p25": 0.9807692307692307,
+            "median": 0.9807692307692307,
+            "mean": 0.9807692307692307,
+            "p75": 0.9807692307692307,
+            "p90": 0.9807692307692307,
+            "max": 0.9807692307692307,
+            "iqr": 0.0
+          },
+          "DIFFERENT": {
+            "total_rows": 4,
+            "valid_n": 4,
+            "missing_n": 0,
+            "min": 0.0471976401179941,
+            "p10": 0.12330383480825961,
+            "p25": 0.23746312684365783,
+            "median": 0.3647281921618205,
+            "mean": 0.4302746172215199,
+            "p75": 0.5575396825396826,
+            "p90": 0.7896825396825398,
+            "max": 0.9444444444444444,
+            "iqr": 0.3200765556960247
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": 0.6160410386074102,
+            "pooled_iqr": 0.16003827784801236,
+            "median_gap_over_pooled_iqr": 3.849335589529785,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "fraction_overlap": {
+        "role": "spatial_normalized",
+        "by_label": {
+          "SAME": {
+            "total_rows": 1,
+            "valid_n": 1,
+            "missing_n": 0,
+            "min": 0.017387598889740064,
+            "p10": 0.017387598889740064,
+            "p25": 0.017387598889740064,
+            "median": 0.017387598889740064,
+            "mean": 0.017387598889740064,
+            "p75": 0.017387598889740064,
+            "p90": 0.017387598889740064,
+            "max": 0.017387598889740064,
+            "iqr": 0.0
+          },
+          "DIFFERENT": {
+            "total_rows": 4,
+            "valid_n": 4,
+            "missing_n": 0,
+            "min": 0.0,
+            "p10": 0.0,
+            "p25": 0.0,
+            "median": 0.0,
+            "mean": 0.0,
+            "p75": 0.0,
+            "p90": 0.0,
+            "max": 0.0,
+            "iqr": 0.0
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": 0.017387598889740064,
+            "pooled_iqr": 0.0,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "fraction_overlap_over_union": {
+        "role": "spatial_normalized",
+        "by_label": {
+          "SAME": {
+            "total_rows": 1,
+            "valid_n": 1,
+            "missing_n": 0,
+            "min": 0.9521150117632822,
+            "p10": 0.9521150117632822,
+            "p25": 0.9521150117632822,
+            "median": 0.9521150117632822,
+            "mean": 0.9521150117632822,
+            "p75": 0.9521150117632822,
+            "p90": 0.9521150117632822,
+            "max": 0.9521150117632822,
+            "iqr": 0.0
+          },
+          "DIFFERENT": {
+            "total_rows": 4,
+            "valid_n": 4,
+            "missing_n": 0,
+            "min": 0.0,
+            "p10": 0.0,
+            "p25": 0.0,
+            "median": 0.0,
+            "mean": 0.0,
+            "p75": 0.0,
+            "p90": 0.0,
+            "max": 0.0,
+            "iqr": 0.0
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": 0.9521150117632822,
+            "pooled_iqr": 0.0,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "fraction_overlap_over_shorter": {
+        "role": "spatial_normalized",
+        "by_label": {
+          "SAME": {
+            "total_rows": 1,
+            "valid_n": 1,
+            "missing_n": 0,
+            "min": 0.9850839373918608,
+            "p10": 0.9850839373918608,
+            "p25": 0.9850839373918608,
+            "median": 0.9850839373918608,
+            "mean": 0.9850839373918608,
+            "p75": 0.9850839373918608,
+            "p90": 0.9850839373918608,
+            "max": 0.9850839373918608,
+            "iqr": 0.0
+          },
+          "DIFFERENT": {
+            "total_rows": 4,
+            "valid_n": 4,
+            "missing_n": 0,
+            "min": 0.0,
+            "p10": 0.0,
+            "p25": 0.0,
+            "median": 0.0,
+            "mean": 0.0,
+            "p75": 0.0,
+            "p90": 0.0,
+            "max": 0.0,
+            "iqr": 0.0
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": 0.9850839373918608,
+            "pooled_iqr": 0.0,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "channel_jaccard": {
+        "role": "channel_identity",
+        "by_label": {
+          "SAME": {
+            "total_rows": 1,
+            "valid_n": 1,
+            "missing_n": 0,
+            "min": 1.0,
+            "p10": 1.0,
+            "p25": 1.0,
+            "median": 1.0,
+            "mean": 1.0,
+            "p75": 1.0,
+            "p90": 1.0,
+            "max": 1.0,
+            "iqr": 0.0
+          },
+          "DIFFERENT": {
+            "total_rows": 4,
+            "valid_n": 4,
+            "missing_n": 0,
+            "min": 0.5,
+            "p10": 0.5,
+            "p25": 0.5,
+            "median": 0.75,
+            "mean": 0.75,
+            "p75": 1.0,
+            "p90": 1.0,
+            "max": 1.0,
+            "iqr": 0.5
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": 0.25,
+            "pooled_iqr": 0.25,
+            "median_gap_over_pooled_iqr": 1.0,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "shared_channel_count": {
+        "role": "channel_identity",
+        "by_label": {
+          "SAME": {
+            "total_rows": 1,
+            "valid_n": 1,
+            "missing_n": 0,
+            "min": 2.0,
+            "p10": 2.0,
+            "p25": 2.0,
+            "median": 2.0,
+            "mean": 2.0,
+            "p75": 2.0,
+            "p90": 2.0,
+            "max": 2.0,
+            "iqr": 0.0
+          },
+          "DIFFERENT": {
+            "total_rows": 4,
+            "valid_n": 4,
+            "missing_n": 0,
+            "min": 1.0,
+            "p10": 1.0,
+            "p25": 1.0,
+            "median": 1.0,
+            "mean": 1.25,
+            "p75": 1.25,
+            "p90": 1.7000000000000002,
+            "max": 2.0,
+            "iqr": 0.25
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": 1.0,
+            "pooled_iqr": 0.125,
+            "median_gap_over_pooled_iqr": 8.0,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "channel_symmetric_difference_count": {
+        "role": "channel_identity",
+        "by_label": {
+          "SAME": {
+            "total_rows": 1,
+            "valid_n": 1,
+            "missing_n": 0,
+            "min": 0.0,
+            "p10": 0.0,
+            "p25": 0.0,
+            "median": 0.0,
+            "mean": 0.0,
+            "p75": 0.0,
+            "p90": 0.0,
+            "max": 0.0,
+            "iqr": 0.0
+          },
+          "DIFFERENT": {
+            "total_rows": 4,
+            "valid_n": 4,
+            "missing_n": 0,
+            "min": 0.0,
+            "p10": 0.0,
+            "p25": 0.0,
+            "median": 0.5,
+            "mean": 0.5,
+            "p75": 1.0,
+            "p90": 1.0,
+            "max": 1.0,
+            "iqr": 1.0
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": -0.5,
+            "pooled_iqr": 0.5,
+            "median_gap_over_pooled_iqr": -1.0,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "channel_coverage_abs_diff_mean": {
+        "role": "channel_shape",
+        "by_label": {
+          "SAME": {
+            "total_rows": 1,
+            "valid_n": 1,
+            "missing_n": 0,
+            "min": 0.13914027149321267,
+            "p10": 0.13914027149321267,
+            "p25": 0.13914027149321267,
+            "median": 0.13914027149321267,
+            "mean": 0.13914027149321267,
+            "p75": 0.13914027149321267,
+            "p90": 0.13914027149321267,
+            "max": 0.13914027149321267,
+            "iqr": 0.0
+          },
+          "DIFFERENT": {
+            "total_rows": 4,
+            "valid_n": 4,
+            "missing_n": 0,
+            "min": 0.0,
+            "p10": 0.0,
+            "p25": 0.0,
+            "median": 0.10714285714285715,
+            "mean": 0.21047755385339975,
+            "p75": 0.31762041099625693,
+            "p90": 0.5036228650752337,
+            "max": 0.6276245011278847,
+            "iqr": 0.31762041099625693
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": 0.031997414350355524,
+            "pooled_iqr": 0.15881020549812846,
+            "median_gap_over_pooled_iqr": 0.20148210406246597,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "channel_coverage_abs_diff_max": {
+        "role": "channel_shape",
+        "by_label": {
+          "SAME": {
+            "total_rows": 1,
+            "valid_n": 1,
+            "missing_n": 0,
+            "min": 0.16572398190045257,
+            "p10": 0.16572398190045257,
+            "p25": 0.16572398190045257,
+            "median": 0.16572398190045257,
+            "mean": 0.16572398190045257,
+            "p75": 0.16572398190045257,
+            "p90": 0.16572398190045257,
+            "max": 0.16572398190045257,
+            "iqr": 0.0
+          },
+          "DIFFERENT": {
+            "total_rows": 4,
+            "valid_n": 4,
+            "missing_n": 0,
+            "min": 0.0,
+            "p10": 0.0,
+            "p25": 0.0,
+            "median": 0.10714285714285715,
+            "mean": 0.2129719144294886,
+            "p75": 0.32011477157234575,
+            "p90": 0.5106070746882824,
+            "max": 0.6376019434322401,
+            "iqr": 0.32011477157234575
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": 0.058581124757595415,
+            "pooled_iqr": 0.16005738578617287,
+            "median_gap_over_pooled_iqr": 0.3660007594767061,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "channel_onset_offset_abs_diff_m_mean": {
+        "role": "channel_shape",
+        "by_label": {
+          "SAME": {
+            "total_rows": 1,
+            "valid_n": 1,
+            "missing_n": 0,
+            "min": 45.0,
+            "p10": 45.0,
+            "p25": 45.0,
+            "median": 45.0,
+            "mean": 45.0,
+            "p75": 45.0,
+            "p90": 45.0,
+            "max": 45.0,
+            "iqr": 0.0
+          },
+          "DIFFERENT": {
+            "total_rows": 4,
+            "valid_n": 4,
+            "missing_n": 0,
+            "min": 0.0,
+            "p10": 0.0,
+            "p25": 0.0,
+            "median": 1.5,
+            "mean": 30.25,
+            "p75": 31.75,
+            "p90": 83.50000000000003,
+            "max": 118.0,
+            "iqr": 31.75
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": 43.5,
+            "pooled_iqr": 15.875,
+            "median_gap_over_pooled_iqr": 2.7401574803149606,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "channel_onset_offset_abs_diff_m_max": {
+        "role": "channel_shape",
+        "by_label": {
+          "SAME": {
+            "total_rows": 1,
+            "valid_n": 1,
+            "missing_n": 0,
+            "min": 63.0,
+            "p10": 63.0,
+            "p25": 63.0,
+            "median": 63.0,
+            "mean": 63.0,
+            "p75": 63.0,
+            "p90": 63.0,
+            "max": 63.0,
+            "iqr": 0.0
+          },
+          "DIFFERENT": {
+            "total_rows": 4,
+            "valid_n": 4,
+            "missing_n": 0,
+            "min": 0.0,
+            "p10": 0.0,
+            "p25": 0.0,
+            "median": 1.5,
+            "mean": 44.0,
+            "p75": 45.5,
+            "p90": 122.00000000000004,
+            "max": 173.0,
+            "iqr": 45.5
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": 61.5,
+            "pooled_iqr": 22.75,
+            "median_gap_over_pooled_iqr": 2.7032967032967035,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "channel_end_offset_abs_diff_m_mean": {
+        "role": "channel_shape",
+        "by_label": {
+          "SAME": {
+            "total_rows": 1,
+            "valid_n": 1,
+            "missing_n": 0,
+            "min": 27.5,
+            "p10": 27.5,
+            "p25": 27.5,
+            "median": 27.5,
+            "mean": 27.5,
+            "p75": 27.5,
+            "p90": 27.5,
+            "max": 27.5,
+            "iqr": 0.0
+          },
+          "DIFFERENT": {
+            "total_rows": 4,
+            "valid_n": 4,
+            "missing_n": 0,
+            "min": 0.0,
+            "p10": 0.0,
+            "p25": 0.0,
+            "median": 3.0,
+            "mean": 11.5,
+            "p75": 14.5,
+            "p90": 29.800000000000004,
+            "max": 40.0,
+            "iqr": 14.5
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": 24.5,
+            "pooled_iqr": 7.25,
+            "median_gap_over_pooled_iqr": 3.3793103448275863,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "channel_end_offset_abs_diff_m_max": {
+        "role": "channel_shape",
+        "by_label": {
+          "SAME": {
+            "total_rows": 1,
+            "valid_n": 1,
+            "missing_n": 0,
+            "min": 47.0,
+            "p10": 47.0,
+            "p25": 47.0,
+            "median": 47.0,
+            "mean": 47.0,
+            "p75": 47.0,
+            "p90": 47.0,
+            "max": 47.0,
+            "iqr": 0.0
+          },
+          "DIFFERENT": {
+            "total_rows": 4,
+            "valid_n": 4,
+            "missing_n": 0,
+            "min": 0.0,
+            "p10": 0.0,
+            "p25": 0.0,
+            "median": 3.0,
+            "mean": 21.5,
+            "p75": 24.5,
+            "p90": 57.80000000000001,
+            "max": 80.0,
+            "iqr": 24.5
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": 44.0,
+            "pooled_iqr": 12.25,
+            "median_gap_over_pooled_iqr": 3.5918367346938775,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "channel_mean_difference_similarity_mean": {
+        "role": "channel_shape",
+        "by_label": {
+          "SAME": {
+            "total_rows": 1,
+            "valid_n": 1,
+            "missing_n": 0,
+            "min": 0.4303458976138199,
+            "p10": 0.4303458976138199,
+            "p25": 0.4303458976138199,
+            "median": 0.4303458976138199,
+            "mean": 0.4303458976138199,
+            "p75": 0.4303458976138199,
+            "p90": 0.4303458976138199,
+            "max": 0.4303458976138199,
+            "iqr": 0.0
+          },
+          "DIFFERENT": {
+            "total_rows": 4,
+            "valid_n": 4,
+            "missing_n": 0,
+            "min": 0.20401507893878096,
+            "p10": 0.22158537774986076,
+            "p25": 0.24794082596648043,
+            "median": 0.4931721306783397,
+            "mean": 0.5098194443237398,
+            "p75": 0.7550507490355991,
+            "p90": 0.8113713618139391,
+            "max": 0.848918436999499,
+            "iqr": 0.5071099230691187
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": -0.06282623306451979,
+            "pooled_iqr": 0.25355496153455936,
+            "median_gap_over_pooled_iqr": -0.24778151720748962,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "channel_mean_difference_similarity_min": {
+        "role": "channel_shape",
+        "by_label": {
+          "SAME": {
+            "total_rows": 1,
+            "valid_n": 1,
+            "missing_n": 0,
+            "min": 0.3719493024128543,
+            "p10": 0.3719493024128543,
+            "p25": 0.3719493024128543,
+            "median": 0.3719493024128543,
+            "mean": 0.3719493024128543,
+            "p75": 0.3719493024128543,
+            "p90": 0.3719493024128543,
+            "max": 0.3719493024128543,
+            "iqr": 0.0
+          },
+          "DIFFERENT": {
+            "total_rows": 4,
+            "valid_n": 4,
+            "missing_n": 0,
+            "min": 0.20197658559933038,
+            "p10": 0.22015843241224534,
+            "p25": 0.2474312026316178,
+            "median": 0.4931721306783397,
+            "mean": 0.5093098209888772,
+            "p75": 0.7550507490355991,
+            "p90": 0.8113713618139391,
+            "max": 0.848918436999499,
+            "iqr": 0.5076195464039813
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": -0.12122282826548542,
+            "pooled_iqr": 0.25380977320199066,
+            "median_gap_over_pooled_iqr": -0.4776129253660065,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "channel_peak_difference_similarity_mean": {
+        "role": "channel_shape",
+        "by_label": {
+          "SAME": {
+            "total_rows": 1,
+            "valid_n": 1,
+            "missing_n": 0,
+            "min": 0.46135829810709517,
+            "p10": 0.46135829810709517,
+            "p25": 0.46135829810709517,
+            "median": 0.46135829810709517,
+            "mean": 0.46135829810709517,
+            "p75": 0.46135829810709517,
+            "p90": 0.46135829810709517,
+            "max": 0.46135829810709517,
+            "iqr": 0.0
+          },
+          "DIFFERENT": {
+            "total_rows": 4,
+            "valid_n": 4,
+            "missing_n": 0,
+            "min": 0.2895607488018508,
+            "p10": 0.3031158202040375,
+            "p25": 0.32344842730731754,
+            "median": 0.34090265304402745,
+            "mean": 0.4861724362037326,
+            "p75": 0.5036266619404425,
+            "p90": 0.785444878731192,
+            "max": 0.9733236899250247,
+            "iqr": 0.18017823463312493
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": 0.12045564506306772,
+            "pooled_iqr": 0.09008911731656247,
+            "median_gap_over_pooled_iqr": 1.3370720976186377,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "channel_peak_difference_similarity_min": {
+        "role": "channel_shape",
+        "by_label": {
+          "SAME": {
+            "total_rows": 1,
+            "valid_n": 1,
+            "missing_n": 0,
+            "min": 0.37039052747474027,
+            "p10": 0.37039052747474027,
+            "p25": 0.37039052747474027,
+            "median": 0.37039052747474027,
+            "mean": 0.37039052747474027,
+            "p75": 0.37039052747474027,
+            "p90": 0.37039052747474027,
+            "max": 0.37039052747474027,
+            "iqr": 0.0
+          },
+          "DIFFERENT": {
+            "total_rows": 4,
+            "valid_n": 4,
+            "missing_n": 0,
+            "min": 0.21410116926920394,
+            "p10": 0.23673904312899802,
+            "p25": 0.27069585391868906,
+            "median": 0.31215253447216196,
+            "mean": 0.45293248203463815,
+            "p75": 0.49438916258811105,
+            "p90": 0.7817498789902594,
+            "max": 0.9733236899250247,
+            "iqr": 0.223693308669422
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": 0.058237993002578314,
+            "pooled_iqr": 0.111846654334711,
+            "median_gap_over_pooled_iqr": 0.5206949939539182,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "channel_direction_agreement_ratio": {
+        "role": "channel_shape",
+        "by_label": {
+          "SAME": {
+            "total_rows": 1,
+            "valid_n": 1,
+            "missing_n": 0,
+            "min": 0.5,
+            "p10": 0.5,
+            "p25": 0.5,
+            "median": 0.5,
+            "mean": 0.5,
+            "p75": 0.5,
+            "p90": 0.5,
+            "max": 0.5,
+            "iqr": 0.0
+          },
+          "DIFFERENT": {
+            "total_rows": 4,
+            "valid_n": 4,
+            "missing_n": 0,
+            "min": 0.5,
+            "p10": 0.65,
+            "p25": 0.875,
+            "median": 1.0,
+            "mean": 0.875,
+            "p75": 1.0,
+            "p90": 1.0,
+            "max": 1.0,
+            "iqr": 0.125
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": -0.5,
+            "pooled_iqr": 0.0625,
+            "median_gap_over_pooled_iqr": -8.0,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "action_time_loss_similarity": {
+        "role": "secondary_impact",
+        "by_label": {
+          "SAME": {
+            "total_rows": 1,
+            "valid_n": 1,
+            "missing_n": 0,
+            "min": 0.9078081954646754,
+            "p10": 0.9078081954646754,
+            "p25": 0.9078081954646754,
+            "median": 0.9078081954646754,
+            "mean": 0.9078081954646754,
+            "p75": 0.9078081954646754,
+            "p90": 0.9078081954646754,
+            "max": 0.9078081954646754,
+            "iqr": 0.0
+          },
+          "DIFFERENT": {
+            "total_rows": 4,
+            "valid_n": 4,
+            "missing_n": 0,
+            "min": 0.0003980655694704697,
+            "p10": 0.0010334937662810572,
+            "p25": 0.001986636061496938,
+            "median": 0.3014880165640558,
+            "mean": 0.30264673644049056,
+            "p75": 0.6021481169430494,
+            "p90": 0.6051869550158478,
+            "max": 0.6072128470643801,
+            "iqr": 0.6001614808815524
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": 0.6063201789006196,
+            "pooled_iqr": 0.3000807404407762,
+            "median_gap_over_pooled_iqr": 2.0205234698168932,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      }
+    }
+  },
+  "evaluation": {
+    "pair_count": 0,
+    "label_counts": {
+      "SAME": 0,
+      "DIFFERENT": 0,
+      "AMBIGUOUS": 0
+    },
+    "features": {
+      "center_distance_abs_diff_m": {
+        "role": "spatial_absolute",
+        "by_label": {
+          "SAME": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "DIFFERENT": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "start_distance_abs_diff_m": {
+        "role": "spatial_absolute",
+        "by_label": {
+          "SAME": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "DIFFERENT": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "end_distance_abs_diff_m": {
+        "role": "spatial_absolute",
+        "by_label": {
+          "SAME": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "DIFFERENT": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "overlap_m": {
+        "role": "spatial_absolute",
+        "by_label": {
+          "SAME": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "DIFFERENT": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "union_m": {
+        "role": "spatial_absolute",
+        "by_label": {
+          "SAME": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "DIFFERENT": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "center_fraction_abs_diff": {
+        "role": "spatial_normalized",
+        "by_label": {
+          "SAME": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "DIFFERENT": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "start_fraction_abs_diff": {
+        "role": "spatial_normalized",
+        "by_label": {
+          "SAME": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "DIFFERENT": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "end_fraction_abs_diff": {
+        "role": "spatial_normalized",
+        "by_label": {
+          "SAME": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "DIFFERENT": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "overlap_over_union": {
+        "role": "spatial_normalized",
+        "by_label": {
+          "SAME": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "DIFFERENT": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "overlap_over_shorter": {
+        "role": "spatial_normalized",
+        "by_label": {
+          "SAME": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "DIFFERENT": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "overlap_over_longer": {
+        "role": "spatial_normalized",
+        "by_label": {
+          "SAME": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "DIFFERENT": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "length_similarity": {
+        "role": "spatial_normalized",
+        "by_label": {
+          "SAME": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "DIFFERENT": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "fraction_overlap": {
+        "role": "spatial_normalized",
+        "by_label": {
+          "SAME": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "DIFFERENT": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "fraction_overlap_over_union": {
+        "role": "spatial_normalized",
+        "by_label": {
+          "SAME": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "DIFFERENT": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "fraction_overlap_over_shorter": {
+        "role": "spatial_normalized",
+        "by_label": {
+          "SAME": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "DIFFERENT": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "channel_jaccard": {
+        "role": "channel_identity",
+        "by_label": {
+          "SAME": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "DIFFERENT": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "shared_channel_count": {
+        "role": "channel_identity",
+        "by_label": {
+          "SAME": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "DIFFERENT": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "channel_symmetric_difference_count": {
+        "role": "channel_identity",
+        "by_label": {
+          "SAME": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "DIFFERENT": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "channel_coverage_abs_diff_mean": {
+        "role": "channel_shape",
+        "by_label": {
+          "SAME": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "DIFFERENT": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "channel_coverage_abs_diff_max": {
+        "role": "channel_shape",
+        "by_label": {
+          "SAME": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "DIFFERENT": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "channel_onset_offset_abs_diff_m_mean": {
+        "role": "channel_shape",
+        "by_label": {
+          "SAME": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "DIFFERENT": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "channel_onset_offset_abs_diff_m_max": {
+        "role": "channel_shape",
+        "by_label": {
+          "SAME": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "DIFFERENT": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "channel_end_offset_abs_diff_m_mean": {
+        "role": "channel_shape",
+        "by_label": {
+          "SAME": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "DIFFERENT": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "channel_end_offset_abs_diff_m_max": {
+        "role": "channel_shape",
+        "by_label": {
+          "SAME": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "DIFFERENT": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "channel_mean_difference_similarity_mean": {
+        "role": "channel_shape",
+        "by_label": {
+          "SAME": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "DIFFERENT": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "channel_mean_difference_similarity_min": {
+        "role": "channel_shape",
+        "by_label": {
+          "SAME": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "DIFFERENT": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "channel_peak_difference_similarity_mean": {
+        "role": "channel_shape",
+        "by_label": {
+          "SAME": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "DIFFERENT": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "channel_peak_difference_similarity_min": {
+        "role": "channel_shape",
+        "by_label": {
+          "SAME": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "DIFFERENT": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "channel_direction_agreement_ratio": {
+        "role": "channel_shape",
+        "by_label": {
+          "SAME": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "DIFFERENT": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      },
+      "action_time_loss_similarity": {
+        "role": "secondary_impact",
+        "by_label": {
+          "SAME": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "DIFFERENT": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          },
+          "AMBIGUOUS": {
+            "total_rows": 0,
+            "valid_n": 0,
+            "missing_n": 0,
+            "min": null,
+            "p10": null,
+            "p25": null,
+            "median": null,
+            "mean": null,
+            "p75": null,
+            "p90": null,
+            "max": null,
+            "iqr": null
+          }
+        },
+        "contrasts": {
+          "SAME_vs_DIFFERENT": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "SAME_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          },
+          "DIFFERENT_vs_AMBIGUOUS": {
+            "median_a_minus_b": null,
+            "pooled_iqr": null,
+            "median_gap_over_pooled_iqr": null,
+            "interpretation_policy": "Descriptive contrast only. Not a matcher weight, threshold, probability, or decision rule."
+          }
+        }
+      }
+    }
+  }
+}

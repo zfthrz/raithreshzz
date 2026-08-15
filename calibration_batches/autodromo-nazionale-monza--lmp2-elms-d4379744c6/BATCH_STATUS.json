@@ -1,0 +1,123 @@
+{
+  "orchestrator_version": "1.5",
+  "updated_at_utc": "2026-08-15T20:44:33.220816+00:00",
+  "project_root": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz",
+  "input_dir": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\data\\generated\\analysis",
+  "history_db": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\data\\local\\race_engineer_history.duckdb",
+  "overall_status": "READY_FOR_MORE_REAL_DATA",
+  "track": "Autodromo Nazionale Monza",
+  "track_layout": "Autodromo Nazionale Monza",
+  "vehicle_family": "LMP2",
+  "vehicle_variant": "LMP2_ELMS",
+  "batch_id": "d4379744c6",
+  "batch_dir": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\autodromo-nazionale-monza--lmp2-elms-d4379744c6",
+  "steps": {
+    "project_contract": {
+      "status": "PASS",
+      "required_scripts": [
+        "session_history.py",
+        "validate_history_db.py",
+        "episode_pair_features.py",
+        "pair_review_queue.py",
+        "label_episode_pairs.py",
+        "validate_pair_labels.py",
+        "build_calibration_dataset.py",
+        "calibration_feature_report.py"
+      ],
+      "dependency_contract": {
+        "session_history_schema": 4,
+        "pair_review_queue_schema": "1.1",
+        "max_review_pairs_default": 24
+      }
+    },
+    "input_directory": {
+      "status": "PASS",
+      "path": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\data\\generated\\analysis",
+      "json_files_seen": 13
+    },
+    "history_init": {
+      "status": "PASS",
+      "command": "'C:\\Users\\thres\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe' 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\session_history.py' --db 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\data\\local\\race_engineer_history.duckdb' init"
+    },
+    "history_import": {
+      "status": "SKIPPED",
+      "reason": "--skip-import",
+      "sessions_before": 19
+    },
+    "history_validation": {
+      "status": "PASS",
+      "command": "'C:\\Users\\thres\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe' 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\validate_history_db.py' --db 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\data\\local\\race_engineer_history.duckdb'"
+    },
+    "vehicle_context_selection": {
+      "status": "PASS",
+      "selected_track": "Autodromo Nazionale Monza",
+      "selected_track_layout": "Autodromo Nazionale Monza",
+      "selected_vehicle_variant": "LMP2_ELMS",
+      "vehicle_family": "LMP2",
+      "session_count": 3,
+      "session_ids": [
+        15,
+        18,
+        19
+      ],
+      "session_signature": "d4379744c6c6b6fce0a2707de3146316af67a3314685b23144ef85c1cb9033f0",
+      "sessions_by_vehicle_context": {
+        "Autodromo Enzo e Dino Ferrari | Autodromo Enzo e Dino Ferrari | LMP2_ELMS": 2,
+        "Autodromo Nazionale Monza | Autodromo Nazionale Monza | HYPER": 4,
+        "Autodromo Nazionale Monza | Autodromo Nazionale Monza | LMP2_ELMS": 3,
+        "Autódromo José Carlos Pace | Autódromo José Carlos Pace | LMP2_ELMS": 2,
+        "Circuit de Spa-Francorchamps | Circuit de Spa-Francorchamps | LMP2_ELMS": 6,
+        "Fuji Speedway | Fuji Speedway | LMP2_ELMS": 2
+      }
+    },
+    "pair_features": {
+      "status": "REUSED",
+      "path": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\autodromo-nazionale-monza--lmp2-elms-d4379744c6\\episode_pair_features.json",
+      "pair_count": 455
+    },
+    "review_queue": {
+      "status": "REUSED",
+      "path": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\autodromo-nazionale-monza--lmp2-elms-d4379744c6\\pair_review_queue.json",
+      "queue_pairs": 24,
+      "reuse_reason": "compatible"
+    },
+    "label_validation": {
+      "status": "PASS",
+      "command": "'C:\\Users\\thres\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe' 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\validate_pair_labels.py' 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\autodromo-nazionale-monza--lmp2-elms-d4379744c6\\pair_review_queue.json' 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\autodromo-nazionale-monza--lmp2-elms-d4379744c6\\pair_labels.json'"
+    },
+    "human_labels": {
+      "status": "PASS",
+      "labels_path": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\autodromo-nazionale-monza--lmp2-elms-d4379744c6\\pair_labels.json",
+      "exists": true,
+      "queue_pairs": 24,
+      "labeled_pairs": 24,
+      "unreviewed_pairs": 0,
+      "complete": true
+    },
+    "calibration_dataset": {
+      "status": "PASS",
+      "command": "'C:\\Users\\thres\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe' 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\build_calibration_dataset.py' 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\autodromo-nazionale-monza--lmp2-elms-d4379744c6\\pair_review_queue.json' 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\autodromo-nazionale-monza--lmp2-elms-d4379744c6\\pair_labels.json' --evaluation-fraction 0.25 --seed 20260810 --output 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\autodromo-nazionale-monza--lmp2-elms-d4379744c6\\calibration_dataset.json'",
+      "path": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\autodromo-nazionale-monza--lmp2-elms-d4379744c6\\calibration_dataset.json",
+      "calibration_pairs": 5,
+      "evaluation_pairs": 0,
+      "cross_split_pairs_excluded": 19,
+      "calibration_ready": true,
+      "evaluation_ready": false
+    },
+    "feature_report": {
+      "status": "PASS",
+      "command": "'C:\\Users\\thres\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe' 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_feature_report.py' 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\autodromo-nazionale-monza--lmp2-elms-d4379744c6\\calibration_dataset.json' --output 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\autodromo-nazionale-monza--lmp2-elms-d4379744c6\\calibration_feature_report.json'",
+      "path": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\autodromo-nazionale-monza--lmp2-elms-d4379744c6\\calibration_feature_report.json"
+    },
+    "evaluation_readiness": {
+      "status": "WARNING_EMPTY",
+      "evaluation_pairs": 0,
+      "reason": "No internal evaluation pairs survived the session split."
+    }
+  },
+  "next_action": "Collect more independent same-track sessions before using this batch for matcher evaluation.",
+  "matcher": {
+    "status": "BLOCKED_BY_REAL_DATA",
+    "reason": "No thresholds, weights, automatic matching, clustering, or persistent_pattern are implemented."
+  }
+}

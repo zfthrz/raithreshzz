@@ -79,6 +79,24 @@ Validation:
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP`
 - Objective recovery check: `READY`
 
+H2 Monza Hypercar calibration checkpoint:
+- exact context: `Autodromo Nazionale Monza` / `HYPER`;
+- 4 independent sessions, 587 candidate pairs and a 24-pair human queue;
+- human labels: 9 `SAME`, 13 `DIFFERENT`, 2 `AMBIGUOUS`, 0 `SKIP`;
+- leakage-safe split: 13 calibration pairs, 0 evaluation pairs and 11 cross-split exclusions;
+- status: `READY_FOR_MORE_REAL_DATA`; no Monza matcher or H3 patterns are authorized.
+
+See `docs/H2_MONZA_HYPER_CALIBRATION_V0_1.md`.
+
+H2 Monza `LMP2_ELMS` calibration checkpoint:
+- exact context: `Autodromo Nazionale Monza` / `LMP2_ELMS` / `IDEC Sport #18:ELMS25`;
+- 3 independent sessions, 455 candidate pairs and a 24-pair human queue;
+- human labels: 11 `SAME`, 12 `DIFFERENT`, 1 `AMBIGUOUS`, 0 `SKIP`;
+- leakage-safe split: 5 calibration pairs, 0 evaluation pairs and 19 cross-split exclusions;
+- status: `READY_FOR_MORE_REAL_DATA`; no Monza matcher or H3 patterns are authorized.
+
+See `docs/H2_MONZA_LMP2_ELMS_CALIBRATION_V0_1.md`.
+
 LLM output validator `1.2` recognizes the exact deterministic fallback for a
 comparison excluded by the global quality gate before the LLM call. It requires
 all exclusion markers and exact fallback content, while preserving the original

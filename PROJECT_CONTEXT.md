@@ -163,7 +163,7 @@ Checkpoint: **2026-08-14 integration v0.1**.
 | Throttle coaching evidence gate | 1.0 / SHADOW |
 | `llm_analysis.py` | 3.10.8.5.4 / Ollama `ingenierov3` |
 | `llm_analysis_deepseek.py` | 3.10.8.5.4 / DeepSeek provisional v2 |
-| LLM output validator | v1.0 |
+| LLM output validator | v1.2 |
 | `session_history.py` | v1.4 / History schema 4 |
 | H2 matcher | v0.3 / provisional calibrated single context |
 | H3 persistent patterns | v0.1 / derived |
@@ -174,7 +174,7 @@ Checkpoint: **2026-08-14 integration v0.1**.
 Current validated checkpoint:
 
 ```text
-pytest:                         73 PASS / 0 FAIL / 0 SKIP
+pytest:                         74 PASS / 0 FAIL / 0 SKIP
 Objective Python regressions:  55 PASS / 0 FAIL / 0 SKIP
 ```
 
@@ -804,6 +804,12 @@ When excluded before the LLM call:
 - the lap is not erased;
 - it does not participate in recurrence/coaching A/B/C;
 - unnecessary LLM work is avoided.
+
+The output validator recognizes this path only when the deterministic quality
+status, `session_plan_eligible=false`, zero-attempt audit fallback, exact structured
+fallback and exact excluded-comparison render all agree. Eligible episode IDs keep
+their original identity and may therefore contain a gap where an anomalous episode
+was separated for audit; they must remain positive, unique and ordered.
 
 Do not confuse “excluded from coaching aggregation” with “deleted/invalid telemetry”.
 

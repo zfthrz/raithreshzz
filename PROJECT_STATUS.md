@@ -75,9 +75,14 @@ Debrief actionability:
   points, and preserves a descriptive fallback for unknown shapes.
 
 Validation:
-- pytest: `73 PASS / 0 FAIL / 0 SKIP`
+- pytest: `74 PASS / 0 FAIL / 0 SKIP`
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP`
 - Objective recovery check: `READY`
+
+LLM output validator `1.2` recognizes the exact deterministic fallback for a
+comparison excluded by the global quality gate before the LLM call. It requires
+all exclusion markers and exact fallback content, while preserving the original
+non-contiguous episode IDs left after an anomalous episode is separated for audit.
 
 ## Mandatory gates
 

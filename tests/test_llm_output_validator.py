@@ -86,3 +86,44 @@ def test_validator_replays_python_owned_render_and_session_fields(monkeypatch):
     assert any("comparisons[0].analysis no coincide" in error for error in errors)
     assert any("next_session_priorities" in error for error in errors)
     assert any("global_analysis no coincide" in error for error in errors)
+
+
+def test_validator_accepts_exact_quality_gate_fallback_with_preserved_episode_ids():
+    comparison = {
+        "status": "VALID",
+        "validation_attempts": 0,
+        "session_plan_eligible": False,
+        "session_comparison_quality": {
+            "quality_status": validator.QUALITY_EXCLUDED_STATUS,
+        },
+        "llm_validation_audit": {
+            "summary": {
+                "fallback": validator.QUALITY_EXCLUDED_FALLBACK,
+            },
+        },
+        "driver_action_episode_count": 2,
+        "episode_ground_truth": [
+            {"episode_id": 2, "action_channels": ["brake"]},
+            {"episode_id": 3, "action_channels": ["throttle"]},
+        ],
+        "llm_structured": dict(validator.QUALITY_EXCLUDED_STRUCTURED),
+        "analysis": validator.QUALITY_EXCLUDED_ANALYSIS,
+    }
+
+    errors = []
+    warnings = []
+    validator.validate_episode_contract(comparison, 0, errors)
+    validator.validate_rendered_comparison(comparison, 0, errors, warnings)
+    assert errors == []
+
+    comparison["llm_structured"] = {
+        **validator.QUALITY_EXCLUDED_STRUCTURED,
+        "episode_assessments": [{"episode_id": 2}],
+    }
+    comparison["analysis"] = "fallback alterado"
+
+    errors = []
+    validator.validate_episode_contract(comparison, 0, errors)
+    validator.validate_rendered_comparison(comparison, 0, errors, warnings)
+    assert any("fallback determinista" in error for error in errors)
+    assert any("render determinista" in error for error in errors)

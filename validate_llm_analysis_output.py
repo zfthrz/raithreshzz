@@ -7,7 +7,7 @@ import llm_analysis as llm_renderer
 
 
 # ============================================================
-# RACE ENGINEER - LLM OUTPUT VALIDATOR v1.1
+# RACE ENGINEER - LLM OUTPUT VALIDATOR v1.2
 # ============================================================
 #
 # Valida el archivo *_llm_analysis.json generado por
@@ -45,6 +45,27 @@ ALLOWED_CLASSIFICATIONS = {
     "NO_ACCIONABLE",
 }
 
+QUALITY_EXCLUDED_STATUS = (
+    "COACHING_EXCLUDED_NON_REPRESENTATIVE_LAP"
+)
+QUALITY_EXCLUDED_FALLBACK = (
+    "COMPARISON_QUALITY_GATE_EXCLUDED_BEFORE_LLM"
+)
+QUALITY_EXCLUDED_ANALYSIS = (
+    "Comparación preservada para auditoría. "
+    "Fue excluida del coaching de sesión por el gate global de calidad y no se envió al LLM."
+)
+QUALITY_EXCLUDED_STRUCTURED = {
+    "episode_assessments": [],
+    "comparison_observations": [],
+    "limitations": [
+        "Comparación globalmente no representativa; no se usa para coaching de sesión"
+    ],
+    "conclusion": (
+        "Comparación preservada para auditoría; excluida del coaching de sesión"
+    ),
+}
+
 
 def safe_float(value):
     try:
@@ -69,6 +90,53 @@ def safe_int(value):
         return int(value)
     except (TypeError, ValueError):
         return None
+
+
+def is_quality_excluded_before_llm(comparison):
+    if not isinstance(comparison, dict):
+        return False
+
+    quality = comparison.get("session_comparison_quality")
+    quality_status = (
+        quality.get("quality_status")
+        if isinstance(quality, dict)
+        else None
+    )
+    audit = comparison.get("llm_validation_audit")
+    summary = (
+        audit.get("summary")
+        if isinstance(audit, dict)
+        else None
+    )
+    fallback = (
+        summary.get("fallback")
+        if isinstance(summary, dict)
+        else None
+    )
+
+    return (
+        comparison.get("session_plan_eligible") is False
+        or quality_status == QUALITY_EXCLUDED_STATUS
+        or fallback == QUALITY_EXCLUDED_FALLBACK
+    )
+
+
+def validate_quality_excluded_contract(comparison, index, errors):
+    base = f"comparisons[{index}]"
+    quality = comparison.get("session_comparison_quality")
+    audit = comparison.get("llm_validation_audit")
+    summary = audit.get("summary") if isinstance(audit, dict) else None
+
+    if comparison.get("session_plan_eligible") is not False:
+        errors.append(f"{base}: exclusión de calidad requiere session_plan_eligible=false.")
+    if not isinstance(quality, dict) or quality.get("quality_status") != QUALITY_EXCLUDED_STATUS:
+        errors.append(f"{base}: quality_status de exclusión ausente o inválido.")
+    if not isinstance(summary, dict) or summary.get("fallback") != QUALITY_EXCLUDED_FALLBACK:
+        errors.append(f"{base}: fallback de exclusión anterior al LLM ausente o inválido.")
+    if safe_int(comparison.get("validation_attempts")) != 0:
+        errors.append(f"{base}: una comparación no enviada al LLM debe tener validation_attempts=0.")
+    if comparison.get("llm_structured") != QUALITY_EXCLUDED_STRUCTURED:
+        errors.append(f"{base}.llm_structured no coincide con el fallback determinista de exclusión.")
 
 
 def approx_equal(
@@ -394,10 +462,10 @@ def validate_episode_contract(
             episode_id
         )
 
-        if episode_id != pos:
+        if episode_id is None or episode_id < 1:
             errors.append(
-                f"{base}: episode_id esperado={pos}, "
-                f"recibido={episode_id}."
+                f"{base}: episode_id inválido en posición {pos}: "
+                f"{episode_id}."
             )
 
         action_channels = episode.get(
@@ -418,6 +486,12 @@ def validate_episode_contract(
                 "contiene speed como action_channel."
             )
 
+    valid_gt_ids = [item for item in gt_ids if item is not None]
+    if len(valid_gt_ids) != len(set(valid_gt_ids)):
+        errors.append(f"{base}: episode_id duplicados en episode_ground_truth.")
+    if valid_gt_ids != sorted(valid_gt_ids):
+        errors.append(f"{base}: episode_ground_truth no conserva el orden de episode_id.")
+
     if not isinstance(
         structured,
         dict,
@@ -425,6 +499,10 @@ def validate_episode_contract(
         errors.append(
             f"{base}.llm_structured ausente."
         )
+        return
+
+    if is_quality_excluded_before_llm(comparison):
+        validate_quality_excluded_contract(comparison, index, errors)
         return
 
     assessments = structured.get(
@@ -634,6 +712,14 @@ def validate_rendered_comparison(
             f"{base}.analysis contiene "
             "'No disponible en datos'."
         )
+
+    if is_quality_excluded_before_llm(comparison):
+        if analysis != QUALITY_EXCLUDED_ANALYSIS:
+            errors.append(
+                f"{base}.analysis no coincide con el render determinista "
+                "de exclusión anterior al LLM."
+            )
+        return
 
     try:
         expected_analysis = (
@@ -910,7 +996,7 @@ def validate_file(
 def main():
     print()
     print("=" * 60)
-    print("RACE ENGINEER - LLM OUTPUT VALIDATOR v1.1")
+    print("RACE ENGINEER - LLM OUTPUT VALIDATOR v1.2")
     print("=" * 60)
     print()
 

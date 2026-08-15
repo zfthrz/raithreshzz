@@ -174,7 +174,7 @@ Checkpoint: **2026-08-14 integration v0.1**.
 Current validated checkpoint:
 
 ```text
-pytest:                         72 PASS / 0 FAIL / 0 SKIP
+pytest:                         73 PASS / 0 FAIL / 0 SKIP
 Objective Python regressions:  55 PASS / 0 FAIL / 0 SKIP
 ```
 
@@ -507,9 +507,10 @@ Therefore:
 - prefer strong, simple braking-point guidance when its evidence/actionability dominates;
 - do not regress deterministic throttle evidence, but continue improving how it is prioritized and narrated.
 
-Actionability policy `1.5` renders the closed vocabulary of known throttle reference
-profiles as direct ordered actions (apply, release, reapply/sustain). Unknown future
-shape labels retain the conservative descriptive fallback instead of being guessed.
+Actionability policy `1.6` renders the closed vocabulary of known throttle reference
+profiles as direct ordered actions (apply, release, reapply/sustain), both alone and
+when anchored to authorized physical onset/release points. Unknown future shape labels
+retain the conservative descriptive fallback instead of being guessed.
 
 This is an active product-quality topic, not a settled algorithmic rule.
 

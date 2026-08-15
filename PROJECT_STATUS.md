@@ -70,11 +70,12 @@ Debrief actionability:
 - the rule is channel-neutral and does not hard-code brake over throttle;
 - on the real Imola audit, the brake point supported in 3 comparisons ranks ahead
   of the throttle point supported in 2, despite the throttle region appearing in 5.
-- actionability policy `1.5` converts only known throttle profile shapes into clear,
-  ordered driver actions and preserves a descriptive fallback for unknown shapes.
+- actionability policy `1.6` converts only known throttle profile shapes into clear,
+  ordered driver actions both alone and when anchored to physical onset/release
+  points, and preserves a descriptive fallback for unknown shapes.
 
 Validation:
-- pytest: `72 PASS / 0 FAIL / 0 SKIP`
+- pytest: `73 PASS / 0 FAIL / 0 SKIP`
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP`
 - Objective recovery check: `READY`
 

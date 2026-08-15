@@ -14340,7 +14340,7 @@ No texto fuera del JSON.
 # ACTIONABILITY GATE v3.10.8
 # ============================================================
 
-SESSION_ACTIONABILITY_POLICY_VERSION = "1.5"
+SESSION_ACTIONABILITY_POLICY_VERSION = "1.6"
 
 
 def _region_has_actionable_coaching(region):
@@ -14562,31 +14562,32 @@ def build_driver_cues_for_plan_item(item, max_cues=2):
             if profile is not None
             else ""
         )
+        profile_text = (
+            _driver_facing_throttle_profile_text(
+                profile.get("shape_summary")
+            )
+            if profile is not None
+            else ""
+        )
 
         if throttle_onset and throttle_release:
             text = f"{throttle_onset} y {throttle_release}"
-            if summary:
-                text += (
-                    f"; entre ambos puntos, replicá la forma de acelerador "
-                    f"de la referencia ({summary})"
-                )
+            if profile_text:
+                text += f"; entre ambos puntos, {profile_text}"
         elif throttle_onset:
             text = throttle_onset
             if summary == "reaplicación sostenida":
                 text += (
                     " y, desde ahí, sostené la reaplicación como en la referencia"
                 )
-            elif summary:
-                text += (
-                    f" y, desde ahí, replicá la forma de acelerador "
-                    f"de la referencia ({summary})"
-                )
+            elif profile_text:
+                text += f"; desde ahí, {profile_text}"
         else:
             text = throttle_release
-            if summary:
+            if profile_text:
                 text = (
-                    f"mantené la forma de acelerador de la referencia "
-                    f"({summary}) hasta {throttle_release}"
+                    f"{profile_text}; terminá esa secuencia en el punto "
+                    f"indicado: {throttle_release}"
                 )
 
         throttle_patterns = [

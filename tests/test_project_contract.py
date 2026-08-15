@@ -3,6 +3,8 @@ import json
 import hashlib
 from pathlib import Path
 
+import prepare_calibration_batch
+
 ROOT = Path(__file__).resolve().parents[1]
 
 def test_monza_example_is_analyze_v38():
@@ -29,10 +31,16 @@ def test_active_python_files_compile():
         "validate_historical_llm_analysis.py",
         "race_engineer.py",
         "runtime_paths.py",
+        "prepare_calibration_batch.py",
     ]
     for name in names:
         path = ROOT / name
         compile(path.read_text(encoding="utf-8"), str(path), "exec")
+
+
+def test_calibration_orchestrator_accepts_current_history_schema_contract():
+    assert prepare_calibration_batch.EXPECTED_HISTORY_SCHEMA_VERSION == 4
+    assert prepare_calibration_batch.validate_dependency_contract(ROOT) == []
 
 
 def test_analyzer_uses_centralized_runtime_output_path():

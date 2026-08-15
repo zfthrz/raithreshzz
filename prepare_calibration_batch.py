@@ -13,7 +13,8 @@ from pathlib import Path
 from typing import Any, Callable
 
 
-ORCHESTRATOR_VERSION = "1.4"
+ORCHESTRATOR_VERSION = "1.5"
+EXPECTED_HISTORY_SCHEMA_VERSION = 4
 
 REQUIRED_SCRIPTS = (
     "session_history.py",
@@ -213,8 +214,11 @@ def validate_dependency_contract(
     checks = (
         (
             "session_history.py",
-            re.compile(r"^\s*SCHEMA_VERSION\s*=\s*3\s*$", re.MULTILINE),
-            "history_schema_3",
+            re.compile(
+                rf"^\s*SCHEMA_VERSION\s*=\s*{EXPECTED_HISTORY_SCHEMA_VERSION}\s*$",
+                re.MULTILINE,
+            ),
+            f"history_schema_{EXPECTED_HISTORY_SCHEMA_VERSION}",
         ),
         (
             "pair_review_queue.py",
@@ -1052,7 +1056,7 @@ def run_pipeline(
             REQUIRED_SCRIPTS
         ),
         dependency_contract={
-            "session_history_schema": 3,
+            "session_history_schema": EXPECTED_HISTORY_SCHEMA_VERSION,
             "pair_review_queue_schema": "1.1",
             "max_review_pairs_default": 24,
         },
@@ -2290,7 +2294,7 @@ def print_summary(
         "=" * 76
     )
     print(
-        "RACE ENGINEER - CALIBRATION BATCH ORCHESTRATOR v1.3"
+        f"RACE ENGINEER - CALIBRATION BATCH ORCHESTRATOR v{ORCHESTRATOR_VERSION}"
     )
     print(
         "=" * 76

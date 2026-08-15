@@ -174,7 +174,7 @@ Checkpoint: **2026-08-14 integration v0.1**.
 Current validated checkpoint:
 
 ```text
-pytest:                         74 PASS / 0 FAIL / 0 SKIP
+pytest:                         75 PASS / 0 FAIL / 0 SKIP
 Objective Python regressions:  55 PASS / 0 FAIL / 0 SKIP
 ```
 
@@ -567,7 +567,7 @@ History is a structured evidence store, not a license to use prior sessions as c
 
 Cross-session historical evidence remains constrained by context and eligibility gates.
 
-History schema assumptions in calibration/orchestration code must remain aligned with schema 4. A previous integration bug occurred because `prepare_calibration_batch.py` still required schema 3 after History had moved to schema 4; this was fixed and should not recur.
+History schema assumptions in calibration/orchestration code must remain aligned with schema 4. Calibration batch orchestrator 1.5 declares this dependency explicitly and the project-contract suite verifies it, preventing the stale schema-3 gate from returning silently.
 
 ---
 

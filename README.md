@@ -16,8 +16,8 @@ Componentes principales:
 |---|---|
 | `analyze_telemetry.py` | v3.8 — análisis determinista intra-session |
 | `llm_analysis.py` / `llm_analysis_deepseek.py` | baseline operativa 3.10.8.5.4 |
-| `session_history.py` | v1.3 — History schema 3 |
-| `validate_history_db.py` | v1.2 |
+| `session_history.py` | v1.4 — History schema 4 |
+| `validate_history_db.py` | v1.3 |
 | `episode_pair_features.py` | v1.2 — hard context gate con layout |
 | `pair_review_queue.py` | schema 1.1 — cola humana estratificada |
 | `prepare_calibration_batch.py` | orchestrator 1.4 |
@@ -328,11 +328,11 @@ race_engineer_history.duckdb
 Estado actual:
 
 ```text
-session_history v1.3
-schema version 3
+session_history v1.4
+schema version 4
 ```
 
-Schema 3 agrega contexto explícito de:
+Schema 3 agregó contexto explícito de:
 
 ```text
 lmu_track_layout
@@ -344,7 +344,9 @@ lmu_track_layout
 python session_history.py init
 ```
 
-Si la DB estaba en schema 2, `init` realiza la migración a schema 3 sin borrar los datos históricos.
+Schema 4 agrega la persistencia derivada y versionada de H3 sin modificar los
+episodios fuente. `init` migra de schema 2 o 3 a schema 4 sin borrar los datos
+históricos.
 
 ### Importar un JSON
 

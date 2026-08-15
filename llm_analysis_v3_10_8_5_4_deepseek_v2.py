@@ -14538,7 +14538,7 @@ No texto fuera del JSON.
 # ACTIONABILITY GATE v3.10.8
 # ============================================================
 
-SESSION_ACTIONABILITY_POLICY_VERSION = "1.4"
+SESSION_ACTIONABILITY_POLICY_VERSION = "1.5"
 
 
 def _region_has_actionable_coaching(region):
@@ -14627,6 +14627,41 @@ def _driver_facing_throttle_shape_summary(summary):
         "reaplicación sostenida",
     )
     return value
+
+
+def _driver_facing_throttle_profile_text(summary):
+    """Convierte únicamente formas conocidas en una secuencia driver-facing."""
+    value = str(summary or "").strip()
+    if not value:
+        return ""
+
+    fallback = (
+        "replicá la secuencia de acelerador de la referencia: "
+        + value
+    )
+    actions = {
+        "aplicación": "replicá la aplicación de acelerador",
+        "aplicación parcial": "usá una aplicación parcial de acelerador",
+        "aplicación media": "usá una aplicación media de acelerador",
+        "aplicación alta": "usá una aplicación alta de acelerador",
+        "aplicación parcial breve": "hacé una aplicación parcial y breve de acelerador",
+        "aplicación media breve": "hacé una aplicación media y breve de acelerador",
+        "aplicación alta breve": "hacé una aplicación alta y breve de acelerador",
+        "liberación breve": "hacé una liberación breve del acelerador",
+        "acelerador liberado": "soltá el acelerador",
+        "reaplicación sostenida": "reaplicá y sostené el acelerador",
+        "reaplicación sostenida sin volver a soltar dentro de la zona": (
+            "reaplicá y sostené el acelerador"
+        ),
+    }
+
+    tokens = [part.strip() for part in value.split("→") if part.strip()]
+    if not tokens or any(token not in actions for token in tokens):
+        return fallback
+
+    return "; después, ".join(actions[token] for token in tokens) + (
+        " como en la referencia"
+    )
 
 
 
@@ -14786,10 +14821,15 @@ def build_driver_cues_for_plan_item(item, max_cues=2):
         if not summary:
             continue
         prefix = "freno" if channel == "brake" else "acelerador"
+        text = (
+            _driver_facing_throttle_profile_text(summary)
+            if channel == "throttle"
+            else f"replicá la secuencia de {prefix} de la referencia: {summary}"
+        )
         cues.append({
             "channel": channel,
             "kind": "reference_action_profile",
-            "text": f"replicá la secuencia de {prefix} de la referencia: {summary}",
+            "text": text,
             "source": "reference_action_profile",
             "reference_action_profile": profile,
         })

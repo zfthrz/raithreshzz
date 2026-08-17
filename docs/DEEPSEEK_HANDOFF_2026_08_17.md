@@ -45,6 +45,10 @@ C:\Program Files (x86)\Steam\steamapps\common\Le Mans Ultimate\UserData\Telemetr
 5. processes at most one eligible backlog file per cooldown;
 6. never treats the 5 MiB threshold as proof that recording finished.
 
+The Windows task invokes `hidden_history_ingest.py` with `pythonw.exe`. It creates no
+console and redirects stdout/stderr to the rotating ignored log
+`data/local/telemetry_auto_ingest_task.log`.
+
 The Windows Explorer action `Analizar con Race Engineer (DeepSeek)` is the explicit
 LLM path. It checks authorized path, LMU shutdown, age, size and at least two valid
 laps before running the full DeepSeek pipeline. It does not use `--force`, so valid
@@ -100,20 +104,14 @@ weaken the analyzer validator. A later minor change may rename these outcomes to
 Most recent recorded checkpoints:
 
 ```text
-full pytest before Explorer launcher: 100 passed
+full pytest after hidden task runner: 119 passed
 focused automation/launcher tests:    22 passed
 Objective Python regressions:         55 passed
+git diff --check:                      PASS
 ```
 
-Run a fresh full suite before committing the pending milestone:
-
-```powershell
-python -m pytest -q
-git diff --check
-```
-
-The deterministic analyzer itself was not changed by the Explorer launcher, but the
-full suite is still the required closeout check.
+The hidden task also completed a real manual run: 68 files scanned, zero scan errors,
+the backfill cooldown preserved and `exit_code=0` recorded in the local log.
 
 ## Scheduled task
 
@@ -136,25 +134,43 @@ Get-ScheduledTaskInfo -TaskName "RaceEngineer-History-Ingest" |
 ```
 
 Expected state: `Ready`. The action must still point to the LMU `UserData\Telemetry`
-directory and the repository working directory.
+workflow through `pythonw.exe` plus `hidden_history_ingest.py`, with the repository as
+working directory. Install or update it with:
 
-## Current uncommitted milestone
+```powershell
+powershell -ExecutionPolicy Bypass -File .\install_history_ingest_task.ps1
+```
 
-The working tree contains one coherent automation/menu/documentation milestone:
+Known non-blocking state entries:
 
 ```text
-auto_ingest_telemetry.py
-analyze_telemetry_file.py
-race_engineer_context_menu.cmd
-install_race_engineer_context_menu.ps1
-tests/test_auto_ingest_telemetry.py
-tests/test_analyze_telemetry_file.py
+BACKFILL_FAILED: Monza 2026-08-15T05_01_19Z
+BACKFILL_FAILED: Spa   2026-08-12T07_32_09Z
+```
+
+Both contain one usable lap, so strict comparison validation correctly exits
+non-zero. Do not weaken the validator. A later cosmetic change may classify them as
+`BACKFILL_SKIPPED_INSUFFICIENT_VALID_LAPS`.
+
+## Current repository checkpoint
+
+The primary automation/menu/handoff milestone is committed as:
+
+```text
+7287931 complete telemetry automation and project handoff
+```
+
+The remaining coherent closeout change adds the hidden task runner:
+
+```text
+hidden_history_ingest.py
+install_history_ingest_task.ps1
+tests/test_hidden_history_ingest.py
 README.md
 PROJECT_CONTEXT.md
 PROJECT_STATUS.md
 docs/AUTOMATIC_TELEMETRY_INGEST_V0_1.md
 docs/RACE_ENGINEER_COMMAND_GUIDE.md
-docs/RACE_ENGINEER_CONTEXT_MENU.md
 docs/DEEPSEEK_HANDOFF_2026_08_17.md
 ```
 
@@ -170,12 +186,10 @@ blanket `git add .` while the local Modelfiles remain untracked.
 
 ## Immediate next actions
 
-1. Re-enable and verify the scheduled task.
-2. Complete one full DeepSeek run from the Explorer menu and record `RESULT: PASS`.
-3. Run full pytest and `git diff --check`.
-4. Update this handoff if the real result differs from the expected flow.
-5. Commit the coherent milestone once, rather than making per-file commits.
-6. Resume product development only after the automation baseline is reproducible.
+1. Commit the hidden-task closeout change after reviewing the explicit staged paths.
+2. Optionally push the resulting commits when remote publication is desired.
+3. Continue only minor isolated maintenance while the development backend changes.
+4. Treat H5.3 as the next larger objective after the automation baseline.
 
 ## Future objective after automation closeout
 

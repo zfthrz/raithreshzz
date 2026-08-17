@@ -118,6 +118,27 @@ La tarea instalada se llama:
 RaceEngineer-History-Ingest
 ```
 
+Instalar o actualizar la acción oculta:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\install_history_ingest_task.ps1
+```
+
+El instalador resuelve el Python real, usa su `pythonw.exe` y conserva una tarea
+existente actualizando únicamente su acción. Si la tarea no existe, la crea con
+repetición cada minuto y evita instancias simultáneas.
+
+La acción ejecuta `hidden_history_ingest.py`. No aparece ninguna consola. Toda la
+salida normal y los errores quedan en:
+
+```text
+data\local\telemetry_auto_ingest_task.log
+data\local\telemetry_auto_ingest_task.log.1
+```
+
+El log rota al alcanzar 2 MiB y conserva una copia anterior. Ambos archivos están
+dentro de `data/local/` y no se versionan.
+
 Reactivar después de una prueba manual:
 
 ```powershell
@@ -136,8 +157,32 @@ Get-ScheduledTaskInfo -TaskName "RaceEngineer-History-Ingest" |
 
 El estado esperado después de reactivarla es `Ready`; `LastTaskResult = 0` confirma
 la última ejecución terminada correctamente. La acción debe conservar como fuente
-la carpeta `UserData\Telemetry` de LMU. Desactivar temporalmente durante una prueba
-manual evita que dos procesos intenten escribir History al mismo tiempo.
+`pythonw.exe`, con `hidden_history_ingest.py` como argumento. Desactivar temporalmente
+durante una prueba manual evita que dos procesos intenten escribir History al mismo
+tiempo.
+
+Para inspeccionar un error sin depender de una consola fugaz:
+
+```powershell
+Get-Content .\data\local\telemetry_auto_ingest_task.log -Tail 100
+```
+
+## `BACKFILL_FAILED` con una sola vuelta válida
+
+Un DuckDB puede superar 5 MiB y abrir correctamente, pero no contener dos vueltas
+utilizables. Si sólo queda una vuelta, el análisis no puede formar una comparación
+validable y v0.1 lo registra genéricamente como `BACKFILL_FAILED`.
+
+Casos reales conocidos:
+
+```text
+Monza 2026-08-15T05_01_19Z: lap 1 válida; lap 2 incompleta
+Spa   2026-08-12T07_32_09Z: lap 1 válida; lap 2 incompleta
+```
+
+Es un resultado no aplicable, no evidencia de corrupción. No relajar
+`validate_global_output` para hacerlo pasar. Una mejora futura puede asignar el estado
+`BACKFILL_SKIPPED_INSUFFICIENT_VALID_LAPS`.
 
 ## `BACKFILL_FAILED` con una sola vuelta válida
 

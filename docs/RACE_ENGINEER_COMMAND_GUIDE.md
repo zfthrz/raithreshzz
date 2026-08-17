@@ -287,6 +287,18 @@ después de verlo cerrado. Las sesiones nuevas se analizan e importan a History 
 LLM antes de cualquier backfill. Ver
 [`AUTOMATIC_TELEMETRY_INGEST_V0_1.md`](AUTOMATIC_TELEMETRY_INGEST_V0_1.md).
 
+Instalar o actualizar la tarea sin consola visible:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\install_history_ingest_task.ps1
+```
+
+La salida se consulta en lugar de una ventana interactiva:
+
+```powershell
+Get-Content .\data\local\telemetry_auto_ingest_task.log -Tail 100
+```
+
 Reactivar y comprobar la tarea después de una prueba manual:
 
 ```powershell
@@ -299,7 +311,9 @@ Get-ScheduledTaskInfo -TaskName "RaceEngineer-History-Ingest" |
   Select-Object LastRunTime, LastTaskResult, NextRunTime
 ```
 
-`Ready` significa que está habilitada y esperando su siguiente ejecución.
+`Ready` significa que está habilitada y esperando su siguiente ejecución. En
+`Actions`, `Execute` debe terminar en `pythonw.exe` y los argumentos deben mencionar
+`hidden_history_ingest.py`.
 
 ## 8. Analizar desde Windows Explorer
 

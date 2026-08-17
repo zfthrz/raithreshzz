@@ -32,6 +32,7 @@ Componentes principales:
 | DeepSeek assisted pair review | H2.2 v1.0 — benchmark en curso |
 | `auto_ingest_telemetry.py` | v0.1 — ingest directo desde LMU, History prioritario y backfill gradual |
 | `analyze_telemetry_file.py` | v0.1 — launcher seguro para menú contextual con DeepSeek |
+| `hidden_history_ingest.py` | runner sin consola con log local rotativo para la tarea programada |
 
 Checkpoint de calibración H2 actual sobre **Spa + layout Spa + `LMP2_ELMS`**:
 

@@ -175,13 +175,14 @@ Checkpoint: **2026-08-17 automation and historical-reference integration**.
 Validated checkpoints relevant to the current working tree:
 
 ```text
-full pytest before Explorer launcher: 100 PASS / 0 FAIL / 0 SKIP
+full pytest after hidden task runner: 119 PASS / 0 FAIL / 0 SKIP
 focused automation/launcher tests:     22 PASS / 0 FAIL / 0 SKIP
 Objective Python regressions:          55 PASS / 0 FAIL / 0 SKIP
 ```
 
-A new full-suite run is still required before committing the pending Explorer-launcher
-milestone; focused tests are not a substitute for that final check.
+The hidden scheduled-task action also completed a real manual execution with
+`exit_code=0`, 68 source files scanned, no imports/errors and the backfill cooldown
+preserved.
 
 ---
 
@@ -1042,6 +1043,12 @@ Do not skip directly to “learning from all history” before context isolation
 source is LMU's `UserData/Telemetry` directory; raw DuckDBs are opened read-only and
 do not need to be copied into the repository.
 
+The scheduled task must execute `hidden_history_ingest.py` through `pythonw.exe`.
+That wrapper preserves the same maintenance arguments, creates no console window and
+redirects stdout/stderr to the ignored rotating local log
+`data/local/telemetry_auto_ingest_task.log`. `install_history_ingest_task.ps1`
+installs or updates that task action without changing the Python-owned ingest logic.
+
 The scheduled `maintenance` contract is History-first:
 
 - if `Le Mans Ultimate.exe` is running, return `SKIPPED_GAME_RUNNING` before scan;
@@ -1075,6 +1082,11 @@ Real historical-reference confirmation for the latest unattended Monza session:
 
 This confirms that automatic History ingestion feeds the existing H4/H5 path. H5.1
 continues to keep the current-session reference as coaching authority.
+
+Two legacy backfill candidates currently remain `BACKFILL_FAILED` because each has
+only one usable lap after incomplete laps are discarded. This is non-applicable data,
+not corruption. Do not weaken `validate_global_output`; a future cosmetic status may
+name the condition `BACKFILL_SKIPPED_INSUFFICIENT_VALID_LAPS`.
 
 # 30. Recommended workflow for an agent making a change
 

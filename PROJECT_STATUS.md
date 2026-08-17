@@ -44,6 +44,8 @@ Implemented and validated on Windows:
 - serializes backlog processing and gives new telemetry priority;
 - keeps files below 5 MiB out of automatic backfill;
 - scopes maintenance and debrief selection to the active telemetry source.
+- runs scheduled maintenance through `pythonw.exe` with no visible console;
+- redirects scheduled stdout/stderr to a 2 MiB rotating local log with one backup.
 
 Real unattended validation:
 - source: `Autodromo Nazionale Monza_P_2026-08-17T18_55_39Z.duckdb`;
@@ -74,16 +76,27 @@ Known non-blocking backfill outcome:
 - Monza `2026-08-15T05_01_19Z` and Spa `2026-08-12T07_32_09Z` are recorded as
   `BACKFILL_FAILED` because each contains only one usable lap after the initial and
   incomplete laps are excluded;
+- neither case called an LLM, corrupted History or affects ready sessions;
+- a future cosmetic improvement may use
+  `BACKFILL_SKIPPED_INSUFFICIENT_VALID_LAPS`, but validators must not be weakened.
+
+Known non-blocking backfill outcome:
+- Monza `2026-08-15T05_01_19Z` and Spa `2026-08-12T07_32_09Z` are recorded as
+  `BACKFILL_FAILED` because each contains only one usable lap after the initial and
+  incomplete laps are excluded;
 - the analyzer correctly produces no comparisons and `--validate` returns failure;
 - neither case called an LLM, corrupted History or affects ready sessions;
 - a future cosmetic improvement may classify this as
   `BACKFILL_SKIPPED_INSUFFICIENT_VALID_LAPS`, but validators must not be weakened.
 
-Pending milestone closeout:
-- re-enable and verify `RaceEngineer-History-Ingest` after manual menu testing;
-- run the full pytest suite;
-- inspect `git diff --check` and commit the coherent automation/menu/docs milestone;
-- never stage local `Modelfile` or `Modelfile-qwen38` accidentally.
+Hidden-task closeout evidence:
+- `RaceEngineer-History-Ingest` was updated to `pythonw.exe` plus
+  `hidden_history_ingest.py`;
+- real manual task execution scanned 68 source files, preserved the backfill cooldown
+  and ended with `exit_code=0`;
+- full pytest: `119 PASS / 0 FAIL / 0 SKIP`;
+- `git diff --check`: `PASS`;
+- final source commit remains the only closeout action.
 
 ### historical layers
 

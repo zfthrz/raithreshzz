@@ -104,9 +104,9 @@ weaken the analyzer validator. A later minor change may rename these outcomes to
 Most recent recorded checkpoints:
 
 ```text
-full pytest after hidden task runner: 119 passed
-focused automation/launcher tests:    22 passed
-Objective Python regressions:         55 passed
+full pytest after La Sarthe profile: 123 passed
+focused La Sarthe/profile contracts:  15 passed
+Objective Python regressions:         55 passed (last analyzer-affecting checkpoint)
 git diff --check:                      PASS
 ```
 
@@ -121,11 +121,11 @@ Task name:
 RaceEngineer-History-Ingest
 ```
 
-It was temporarily disabled for the first context-menu test. Reactivate and verify:
+The task was re-enabled after the first context-menu test and its hidden action was
+verified with `exit_code=0`. It should normally remain in state `Ready`. Inspect it
+with:
 
 ```powershell
-Enable-ScheduledTask -TaskName "RaceEngineer-History-Ingest"
-
 Get-ScheduledTask -TaskName "RaceEngineer-History-Ingest" |
   Select-Object TaskName, State, Actions
 
@@ -133,7 +133,7 @@ Get-ScheduledTaskInfo -TaskName "RaceEngineer-History-Ingest" |
   Select-Object LastRunTime, LastTaskResult, NextRunTime
 ```
 
-Expected state: `Ready`. The action must still point to the LMU `UserData\Telemetry`
+The action must still point to the LMU `UserData\Telemetry`
 workflow through `pythonw.exe` plus `hidden_history_ingest.py`, with the repository as
 working directory. Install or update it with:
 
@@ -152,44 +152,46 @@ Both contain one usable lap, so strict comparison validation correctly exits
 non-zero. Do not weaken the validator. A later cosmetic change may classify them as
 `BACKFILL_SKIPPED_INSUFFICIENT_VALID_LAPS`.
 
+## Circuit de la Sarthe profile checkpoint
+
+`track_profiles/la_sarthe_profile_v0_1.json` is now
+`VALIDATED_MULTI_SESSION` for the exact identity
+`Circuit de la Sarthe` / `Circuit de la Sarthe`.
+
+Evidence consists of five complete GPS laps across three independent LMU Practice
+sessions. The two independent sessions produced median representative-point offsets
+of 4 m and 8 m and maxima of 22 m and 24 m. ACO 2026 names are authoritative. The 19
+profile segment numbers are project-local localization identifiers and must not be
+presented as the official FIA WEC 33-turn numbering.
+
+Read `docs/LA_SARTHE_TRACK_PROFILE_V0_1.md` before changing its boundaries or names.
+The profile activates deterministic H5.2 localization only; it does not authorize
+historical coaching or change H5.1 authority.
+
 ## Current repository checkpoint
 
-The primary automation/menu/handoff milestone is committed as:
+Published milestones on `main`:
 
 ```text
 7287931 complete telemetry automation and project handoff
+41315ff run History ingest task without console
+9353c41 add validated Circuit de la Sarthe track profile
 ```
 
-The remaining coherent closeout change adds the hidden task runner:
-
-```text
-hidden_history_ingest.py
-install_history_ingest_task.ps1
-tests/test_hidden_history_ingest.py
-README.md
-PROJECT_CONTEXT.md
-PROJECT_STATUS.md
-docs/AUTOMATIC_TELEMETRY_INGEST_V0_1.md
-docs/RACE_ENGINEER_COMMAND_GUIDE.md
-docs/DEEPSEEK_HANDOFF_2026_08_17.md
-```
-
-Local untracked files that must not be included accidentally:
-
-```text
-Modelfile
-Modelfile-qwen38
-```
-
-After the full tests pass, stage only the explicit milestone paths. Do not use a
-blanket `git add .` while the local Modelfiles remain untracked.
+At handoff preparation, `main` matched `origin/main`. Local untracked
+`track_exports/` files are calibration evidence and must not be included in source
+commits. Continue staging explicit paths rather than using a blanket `git add .`.
 
 ## Immediate next actions
 
-1. Commit the hidden-task closeout change after reviewing the explicit staged paths.
-2. Optionally push the resulting commits when remote publication is desired.
-3. Continue only minor isolated maintenance while the development backend changes.
-4. Treat H5.3 as the next larger objective after the automation baseline.
+There is no pending automation or La Sarthe closeout change.
+
+1. Start every new task by checking `git status --short --branch` and reading the
+   exact current code/tests involved.
+2. Prefer minor isolated maintenance while the temporary backend handoff is active.
+3. The cosmetic one-valid-lap backfill classification remains optional and must not
+   weaken strict analyzer validation.
+4. Treat H5.3a as the next larger objective only when explicitly chosen.
 
 ## Future objective after automation closeout
 

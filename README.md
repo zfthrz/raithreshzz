@@ -230,6 +230,13 @@ El debrief intenta mostrar como máximo:
 1. `Qué cambiar`;
 2. `Segundo cue` si hay otro input suficientemente autorizado.
 
+Desde la política de actionability `1.7`, un punto físico de acelerador no se mezcla
+con toda la secuencia de referencia en una sola frase. El punto queda como
+`Qué cambiar` y la secuencia pasa a `Segundo cue` cuando hay espacio. En zonas mixtas,
+el límite de dos cues sigue respetándose y la forma completa permanece visible en la
+sección descriptiva de referencia. Esto mejora la lectura sin cambiar el ranking ni
+favorecer freno o acelerador por nombre de canal.
+
 La prioridad conceptual actual es:
 
 ```text
@@ -269,6 +276,17 @@ Las versiones actuales pueden:
 - caer a un global determinista construido desde `next_stint_plan` si la narrativa sigue inválida.
 
 No se relajan los validators para lograrlo.
+
+Un resultado ya existente puede rerenderizarse sin repetir la llamada LLM:
+
+```powershell
+python rerender_llm_analysis_output.py "data\generated\llm_results\SESSION\RESULTADO.json" --output "data\generated\rerender_tests\preview.json"
+```
+
+La utilidad recalcula solamente `driver_cues`, los campos globales deterministas y el
+render final; después ejecuta el validator completo. Nunca sobrescribe el archivo
+fuente por defecto y registra `llm_called=false`. Es una herramienta de migración y
+validación de presentación, no una forma de alterar evidencia objetiva.
 
 ---
 

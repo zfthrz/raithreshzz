@@ -84,9 +84,17 @@ Debrief actionability:
 - the rule is channel-neutral and does not hard-code brake over throttle;
 - on the real Imola audit, the brake point supported in 3 comparisons ranks ahead
   of the throttle point supported in 2, despite the throttle region appearing in 5.
-- actionability policy `1.6` converts only known throttle profile shapes into clear,
-  ordered driver actions both alone and when anchored to physical onset/release
-  points, and preserves a descriptive fallback for unknown shapes.
+- actionability policy `1.7` keeps an authorized throttle onset/release point as the
+  concise primary cue and moves its known reference sequence to a separate secondary
+  cue when capacity allows; profile-only zones still render ordered driver actions,
+  and unknown shapes retain a descriptive fallback.
+- actionability shadow audit `0.1` inspected 4 validated/stale-render-only Pro
+  artifacts and 12 priority zones: 7 brake primary cues and 5 throttle primary cues;
+  brake cues were structurally simpler in this sample, but no channel preference or
+  complexity score was promoted;
+- deterministic rerender `0.1` rebuilds cues, deterministic priority text and the
+  final render from an existing result without calling an LLM; the real Monza v1.7
+  preview passed the complete output validator and preserved A/B/C ordering.
 - mixed lower/higher speed directions across comparisons render as variable speed
   context instead of two apparently contradictory conclusions; speed remains
   observational and never becomes a driving target.

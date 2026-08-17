@@ -512,10 +512,22 @@ Therefore:
 - prefer strong, simple braking-point guidance when its evidence/actionability dominates;
 - do not regress deterministic throttle evidence, but continue improving how it is prioritized and narrated.
 
-Actionability policy `1.6` renders the closed vocabulary of known throttle reference
-profiles as direct ordered actions (apply, release, reapply/sustain), both alone and
-when anchored to authorized physical onset/release points. Unknown future shape labels
+Actionability policy `1.7` renders the closed vocabulary of known throttle reference
+profiles as direct ordered actions (apply, release, reapply/sustain). When an authorized
+physical onset/release point is also present, the point remains the concise primary cue
+and the reference sequence becomes a separate secondary cue when the two-cue limit
+allows it. Unknown future shape labels
 retain the conservative descriptive fallback instead of being guessed.
+
+The session-plan actionability shadow audit `0.1` validated four real DeepSeek Pro
+artifacts and 12 priority zones. Seven primary cues were brake and five throttle.
+Brake primary cues were five single-point and two multi-point instructions; throttle
+primary cues were three point-plus-sequence, one qualitative alignment and one
+sequence-only instruction in the pre-1.7 artifacts. This establishes structural
+complexity asymmetry without showing systematic brake displacement. It does not
+authorize a channel preference or complexity score. The v1.7 Monza deterministic
+rerender preserved A/B/C order and moved the supported throttle sequence in zone B
+from the physical-point sentence into `Segundo cue`.
 
 This is an active product-quality topic, not a settled algorithmic rule.
 

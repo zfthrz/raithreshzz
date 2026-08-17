@@ -139,6 +139,17 @@ python race_engineer.py analyze "telemetria\ARCHIVO.duckdb" --force-llm
 
 Puede generar una nueva llamada a la API y, por lo tanto, costo.
 
+### Rerenderizar un resultado existente sin llamar al LLM
+
+```powershell
+python rerender_llm_analysis_output.py "data\generated\llm_results\SESSION\RESULTADO.json" --output "data\generated\rerender_tests\preview.json"
+```
+
+Reconstruye cues, prioridades deterministas y el render final con el código actual,
+luego ejecuta el validator completo. El source no se modifica y el output debe ser una
+ruta diferente. Si el destino ya existe, solo puede reemplazarse explícitamente con
+`--overwrite`.
+
 ### Regenerar el análisis determinista sin usar LLM
 
 ```powershell
@@ -195,6 +206,17 @@ Este comando reutiliza resultados existentes, valida sus SHA-256 y compara ranki
 de impacto, intensidad y curvas. No hace llamadas API, no carga Ollama y no altera el
 pipeline. Su resultado es exclusivamente shadow y no autoriza una fórmula de ranking
 ni recomendaciones históricas.
+
+### Auditar estructura de cues del plan sin cambiar prioridades
+
+```powershell
+python audit_session_plan_actionability.py "RESULTADO_A.json" "RESULTADO_B.json" --output "data\generated\actionability_audits\audit.json"
+```
+
+Valida cada resultado y cuenta canal, tipo, puntos físicos y pasos de perfil de los
+cues primarios/secundarios. `--allow-stale-render-only` permite auditar artifacts
+históricos únicamente cuando su único error es la deriva exacta del render global.
+El auditor no crea puntajes ni autoriza preferencia entre freno y acelerador.
 
 ---
 

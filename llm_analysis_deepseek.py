@@ -14552,7 +14552,7 @@ No texto fuera del JSON.
 # ACTIONABILITY GATE v3.10.8
 # ============================================================
 
-SESSION_ACTIONABILITY_POLICY_VERSION = "1.6"
+SESSION_ACTIONABILITY_POLICY_VERSION = "1.7"
 
 
 def _region_has_actionable_coaching(region):
@@ -14767,13 +14767,6 @@ def build_driver_cues_for_plan_item(item, max_cues=2):
     )
     if throttle_onset or throttle_release:
         profile = profiles_by_channel.get("throttle")
-        summary = (
-            _driver_facing_throttle_shape_summary(
-                profile.get("shape_summary")
-            )
-            if profile is not None
-            else ""
-        )
         profile_text = (
             _driver_facing_throttle_profile_text(
                 profile.get("shape_summary")
@@ -14784,23 +14777,10 @@ def build_driver_cues_for_plan_item(item, max_cues=2):
 
         if throttle_onset and throttle_release:
             text = f"{throttle_onset} y {throttle_release}"
-            if profile_text:
-                text += f"; entre ambos puntos, {profile_text}"
         elif throttle_onset:
             text = throttle_onset
-            if summary == "reaplicación sostenida":
-                text += (
-                    " y, desde ahí, sostené la reaplicación como en la referencia"
-                )
-            elif profile_text:
-                text += f"; desde ahí, {profile_text}"
         else:
             text = throttle_release
-            if profile_text:
-                text = (
-                    f"{profile_text}; terminá esa secuencia en el punto "
-                    f"indicado: {throttle_release}"
-                )
 
         throttle_patterns = [
             pattern
@@ -14821,9 +14801,15 @@ def build_driver_cues_for_plan_item(item, max_cues=2):
             "point_comparison_count": point_count,
             "region_comparison_count": safe_int(item.get("comparison_count")) or 0,
         }
-        if profile is not None:
-            cue["reference_action_profile"] = profile
         cues.append(cue)
+        if profile is not None and profile_text:
+            cues.append({
+                "channel": "throttle",
+                "kind": "reference_action_profile",
+                "text": profile_text,
+                "source": "reference_action_profile",
+                "reference_action_profile": profile,
+            })
 
     existing_channels = {cue.get("channel") for cue in cues}
     for channel in ("brake", "throttle"):

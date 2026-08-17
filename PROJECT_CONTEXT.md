@@ -174,7 +174,7 @@ Checkpoint: **2026-08-14 integration v0.1**.
 Current validated checkpoint:
 
 ```text
-pytest:                         75 PASS / 0 FAIL / 0 SKIP
+pytest:                         77 PASS / 0 FAIL / 0 SKIP
 Objective Python regressions:  55 PASS / 0 FAIL / 0 SKIP
 ```
 
@@ -487,6 +487,11 @@ brake happened first and throttle later, approximately 11 m apart
 ```
 
 must remain an **observation** unless a deterministic detector explicitly authorizes a corresponding target.
+
+Speed also remains observational context. When a repeated region contains both
+lower and higher speed directions across different comparisons, the session render
+must describe speed as variable between comparisons instead of presenting the two
+directions as a single contradictory conclusion.
 
 ---
 

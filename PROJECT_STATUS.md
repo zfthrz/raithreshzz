@@ -73,9 +73,12 @@ Debrief actionability:
 - actionability policy `1.6` converts only known throttle profile shapes into clear,
   ordered driver actions both alone and when anchored to physical onset/release
   points, and preserves a descriptive fallback for unknown shapes.
+- mixed lower/higher speed directions across comparisons render as variable speed
+  context instead of two apparently contradictory conclusions; speed remains
+  observational and never becomes a driving target.
 
 Validation:
-- pytest: `75 PASS / 0 FAIL / 0 SKIP`
+- pytest: `77 PASS / 0 FAIL / 0 SKIP`
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP`
 - Objective recovery check: `READY`
 

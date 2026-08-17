@@ -13846,18 +13846,25 @@ def _finding_text_for_llm(
         or []
     )
 
-    if (
+    lower_speed_seen = (
         "lower_in_comparison_lap"
         in speed_directions
-    ):
+    )
+    higher_speed_seen = (
+        "higher_in_comparison_lap"
+        in speed_directions
+    )
+
+    if lower_speed_seen and higher_speed_seen:
+        speed_context.append(
+            "velocidad variable respecto de la referencia "
+            "entre comparaciones"
+        )
+    elif lower_speed_seen:
         speed_context.append(
             "velocidad inferior a la referencia"
         )
-
-    if (
-        "higher_in_comparison_lap"
-        in speed_directions
-    ):
+    elif higher_speed_seen:
         speed_context.append(
             "velocidad superior a la referencia"
         )
@@ -14082,18 +14089,25 @@ def _render_speed_context_fact(
         or []
     )
 
-    if (
+    lower_speed_seen = (
         "lower_in_comparison_lap"
         in speed_directions
-    ):
+    )
+    higher_speed_seen = (
+        "higher_in_comparison_lap"
+        in speed_directions
+    )
+
+    if lower_speed_seen and higher_speed_seen:
+        parts.append(
+            "velocidad variable respecto de la referencia "
+            "entre comparaciones"
+        )
+    elif lower_speed_seen:
         parts.append(
             "velocidad inferior a la referencia"
         )
-
-    if (
-        "higher_in_comparison_lap"
-        in speed_directions
-    ):
+    elif higher_speed_seen:
         parts.append(
             "velocidad superior a la referencia"
         )

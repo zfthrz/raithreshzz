@@ -348,6 +348,16 @@ Sólo perfiles `VALIDATED` o `VALIDATED_MULTI_SESSION` deben activarse automáti
 
 Para el procedimiento detallado de construcción de perfiles, consultar `README_GUIA_USUARIO.md`.
 
+### Circuit de la Sarthe
+
+`track_profiles/la_sarthe_profile_v0_1.json` está validado sobre cinco vueltas
+completas de tres sesiones LMU independientes del layout exacto
+`Circuit de la Sarthe`. Usa una secuencia local de 19 segmentos: los nombres ACO
+son autoritativos y sus números no deben presentarse como la numeración FIA oficial
+de 33 curvas. Los complejos largos se localizan por intervalos, no por un único
+máximo de curvatura. Evidencia y fuentes:
+`docs/LA_SARTHE_TRACK_PROFILE_V0_1.md`.
+
 ---
 
 # PARTE C — H1: HISTORIAL PERSISTENTE

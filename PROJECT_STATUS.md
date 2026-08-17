@@ -126,6 +126,17 @@ H5.2 v0.2 preserves broad delta trends for audit and, when an exact validated
 track/layout profile exists, splits them deterministically at profile boundaries
 before LLM selection. Missing profiles use an explicit unlocalized fallback.
 
+Circuit de la Sarthe track-profile checkpoint:
+- exact identity: `Circuit de la Sarthe` / `Circuit de la Sarthe`;
+- five complete GPS laps across three independent LMU Practice sessions;
+- independent-session median reference-point offsets: 4 m and 8 m;
+- independent-session maximum offsets: 22 m and 24 m;
+- status: `VALIDATED_MULTI_SESSION`;
+- ACO names are authoritative; the 19 profile segment numbers are not represented as
+  the official FIA WEC 33-turn numbering.
+
+See `docs/LA_SARTHE_TRACK_PROFILE_V0_1.md`.
+
 Real multitrack checkpoint:
 
 | Track | Historical reference | Current reference | Current - historical | Raw zones | LLM-selected zones | Validators |

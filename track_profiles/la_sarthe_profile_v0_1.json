@@ -1,0 +1,308 @@
+{
+  "schema_version": 1,
+  "profile_id": "circuit-de-la-sarthe-lmu-aco2026-v0.1",
+  "status": "VALIDATED_MULTI_SESSION",
+  "track": "Circuit de la Sarthe",
+  "layout": "Circuit de la Sarthe",
+  "distance_coordinate": "LMU Lap Dist",
+  "calibration": {
+    "source_session": "Circuit de la Sarthe_P_2026-08-17T20_14_09Z",
+    "source_lap_internal_index": 1,
+    "source_lap_time_s_approx": 222.0,
+    "source_lap_dist_max_m": 13617.5,
+    "source_gps_path_m_approx": 13560.1,
+    "geometry_method": "GPS trajectory + signed curvature + named-complex consolidation",
+    "numbering_scheme": "Project-local ACO 2026 named-segment sequence",
+    "numbering_warning": "FIA WEC describes the circuit as 33 turns, but the geometric detector produces multiple maxima inside long complexes. Segment numbers in this profile are project-local and are not official FIA turn numbers; downstream output must prefer ACO corner names.",
+    "requires_cross_session_validation": false,
+    "validation_status": "PASS",
+    "official_nomenclature_sources": [
+      {
+        "authority": "Automobile Club de l'Ouest / 24 Hours of Le Mans",
+        "title": "Explore the 24 Hours of Le Mans circuit, turn by turn",
+        "date": "2026-06-07",
+        "url": "https://www.24h-lemans.com/en/news/explore-the-24-hours-of-le-mans-circuit-turn-by-turn-60679"
+      },
+      {
+        "authority": "FIA World Endurance Championship",
+        "title": "2026 Media Guide",
+        "url": "https://press.fiawec.com/assets/fileuploads/69/d4/69d4b6ffa267a.pdf"
+      }
+    ],
+    "validation_summary": {
+      "calibration_session": {
+        "session": "Circuit de la Sarthe_P_2026-08-17T20_14_09Z",
+        "complete_laps": [
+          {
+            "lap_internal_index": 1,
+            "lap_time_s_approx": 222.0,
+            "lap_dist_max_m": 13617.5,
+            "gps_path_m_approx": 13560.1
+          },
+          {
+            "lap_internal_index": 2,
+            "lap_time_s_approx": 222.0,
+            "lap_dist_max_m": 13617.9,
+            "gps_path_m_approx": 13547.0,
+            "median_reference_point_offset_m": 8.0,
+            "max_reference_point_offset_m": 28.0
+          },
+          {
+            "lap_internal_index": 3,
+            "lap_time_s_approx": 220.0,
+            "lap_dist_max_m": 13621.8,
+            "gps_path_m_approx": 13563.1,
+            "median_reference_point_offset_m": 4.0,
+            "max_reference_point_offset_m": 36.0
+          }
+        ]
+      },
+      "independent_sessions": [
+        {
+          "session": "Circuit de la Sarthe_P_2026-08-17T21_15_39Z",
+          "lap_internal_index": 1,
+          "lap_time_s_approx": 220.6,
+          "lap_dist_max_m": 13616.7,
+          "gps_path_m_approx": 13547.7,
+          "median_reference_point_offset_m": 4.0,
+          "max_reference_point_offset_m": 22.0,
+          "overall_status": "PASS"
+        },
+        {
+          "session": "Circuit de la Sarthe_P_2026-08-17T21_28_06Z",
+          "lap_internal_index": 1,
+          "lap_time_s_approx": 221.0,
+          "lap_dist_max_m": 13618.5,
+          "gps_path_m_approx": 13550.8,
+          "median_reference_point_offset_m": 8.0,
+          "max_reference_point_offset_m": 24.0,
+          "overall_status": "PASS"
+        }
+      ],
+      "interpretation": "Five complete laps across three independent LMU sessions reproduce the named complexes on the same distance coordinate. Independent-session median reference-point offsets are 4-8 m and maxima are 22-24 m. Long chicanes and the Porsche complex are represented by interval boundaries because individual curvature maxima vary with driving line."
+    }
+  },
+  "ignored_geometric_features_m": [
+    {
+      "start_m": 2230.0,
+      "end_m": 3970.0,
+      "reason": "Low-curvature Hunaudieres approach features between Tertre Rouge and Daytona; not separately named by the ACO 2026 guide."
+    },
+    {
+      "start_m": 6300.0,
+      "end_m": 7460.0,
+      "reason": "Low-curvature Hunaudieres features between Michelin and Mulsanne Corner."
+    },
+    {
+      "start_m": 7820.0,
+      "end_m": 9540.0,
+      "reason": "Minor road bends between Mulsanne Corner and Indianapolis; retained as distance context but not promoted to named segments."
+    },
+    {
+      "start_m": 10280.0,
+      "end_m": 11320.0,
+      "reason": "Approach curvature between Arnage and the Porsche Curves; not promoted without a verified ACO corner name."
+    }
+  ],
+  "turns": [
+    {
+      "turn": 1,
+      "name": "Dunlop Curve",
+      "aliases": ["Courbe Dunlop"],
+      "group": "Dunlop",
+      "direction": "right",
+      "start_m": 470.0,
+      "apex_m": 646.0,
+      "end_m": 740.0
+    },
+    {
+      "turn": 2,
+      "name": "Dunlop Chicane",
+      "aliases": ["Chicane Dunlop"],
+      "group": "Dunlop",
+      "direction": "mixed",
+      "direction_sequence": ["left", "right"],
+      "start_m": 780.0,
+      "apex_m": 920.0,
+      "end_m": 990.0
+    },
+    {
+      "turn": 3,
+      "name": "Forest Esses",
+      "aliases": ["Esses de la Foret", "S de la Foret"],
+      "group": "Forest Esses",
+      "direction": "mixed",
+      "start_m": 1030.0,
+      "apex_m": 1500.0,
+      "end_m": 1790.0
+    },
+    {
+      "turn": 4,
+      "name": "Tertre Rouge Corner",
+      "aliases": ["Tertre Rouge", "Virage du Tertre Rouge"],
+      "group": "Tertre Rouge",
+      "direction": "right",
+      "start_m": 1840.0,
+      "apex_m": 1920.0,
+      "end_m": 2230.0
+    },
+    {
+      "turn": 5,
+      "name": "Daytona Chicane",
+      "aliases": ["First Hunaudieres Chicane", "Premiere chicane des Hunaudieres"],
+      "group": "Daytona Chicane",
+      "direction": "mixed",
+      "direction_sequence": ["right", "left", "right"],
+      "start_m": 3970.0,
+      "apex_m": 4136.0,
+      "end_m": 4340.0
+    },
+    {
+      "turn": 6,
+      "name": "Michelin Chicane",
+      "aliases": ["Second Hunaudieres Chicane", "Seconde chicane des Hunaudieres"],
+      "group": "Michelin Chicane",
+      "direction": "mixed",
+      "direction_sequence": ["left", "right", "left"],
+      "start_m": 5940.0,
+      "apex_m": 6110.0,
+      "end_m": 6300.0
+    },
+    {
+      "turn": 7,
+      "name": "Mulsanne Corner",
+      "aliases": ["Virage de Mulsanne"],
+      "group": "Mulsanne",
+      "direction": "right",
+      "start_m": 7460.0,
+      "apex_m": 7750.0,
+      "end_m": 7820.0
+    },
+    {
+      "turn": 8,
+      "name": "Indianapolis Entry",
+      "aliases": ["Indianapolis right-hand kink"],
+      "group": "Indianapolis",
+      "direction": "right",
+      "start_m": 9540.0,
+      "apex_m": 9642.0,
+      "end_m": 9750.0
+    },
+    {
+      "turn": 9,
+      "name": "Indianapolis Corner",
+      "aliases": ["Virage d'Indianapolis"],
+      "group": "Indianapolis",
+      "direction": "left",
+      "start_m": 9760.0,
+      "apex_m": 9840.0,
+      "end_m": 9970.0
+    },
+    {
+      "turn": 10,
+      "name": "Arnage Corner",
+      "aliases": ["Virage d'Arnage"],
+      "group": "Arnage",
+      "direction": "right",
+      "start_m": 10080.0,
+      "apex_m": 10160.0,
+      "end_m": 10280.0
+    },
+    {
+      "turn": 11,
+      "name": "Porsche Curves 1",
+      "aliases": ["Virages Porsche"],
+      "group": "Porsche Curves",
+      "direction": "right",
+      "start_m": 11320.0,
+      "apex_m": 11550.0,
+      "end_m": 11660.0
+    },
+    {
+      "turn": 12,
+      "name": "Porsche Curves 2",
+      "aliases": ["Virages Porsche"],
+      "group": "Porsche Curves",
+      "direction": "left",
+      "start_m": 11660.0,
+      "apex_m": 11960.0,
+      "end_m": 12070.0
+    },
+    {
+      "turn": 13,
+      "name": "Porsche Curves 3",
+      "aliases": ["Virages Porsche"],
+      "group": "Porsche Curves",
+      "direction": "right",
+      "start_m": 12070.0,
+      "apex_m": 12250.0,
+      "end_m": 12560.0
+    },
+    {
+      "turn": 14,
+      "name": "Karting Esses 1",
+      "aliases": ["Esses du Karting"],
+      "group": "Karting Esses",
+      "direction": "right",
+      "start_m": 12590.0,
+      "apex_m": 12650.0,
+      "end_m": 12720.0
+    },
+    {
+      "turn": 15,
+      "name": "Karting Esses 2",
+      "aliases": ["Esses du Karting"],
+      "group": "Karting Esses",
+      "direction": "left",
+      "start_m": 12720.0,
+      "apex_m": 12790.0,
+      "end_m": 12910.0
+    },
+    {
+      "turn": 16,
+      "name": "Ford Chicanes 1",
+      "aliases": ["Chicanes Ford"],
+      "group": "Ford Chicanes and Motul Turn",
+      "direction": "left",
+      "start_m": 13170.0,
+      "apex_m": 13240.0,
+      "end_m": 13290.0
+    },
+    {
+      "turn": 17,
+      "name": "Ford Chicanes 2",
+      "aliases": ["Chicanes Ford"],
+      "group": "Ford Chicanes and Motul Turn",
+      "direction": "right",
+      "start_m": 13290.0,
+      "apex_m": 13320.0,
+      "end_m": 13360.0
+    },
+    {
+      "turn": 18,
+      "name": "Motul Chicane Entry",
+      "aliases": ["Raccordement Motul"],
+      "group": "Ford Chicanes and Motul Turn",
+      "direction": "left",
+      "start_m": 13360.0,
+      "apex_m": 13400.0,
+      "end_m": 13420.0
+    },
+    {
+      "turn": 19,
+      "name": "Motul Turn",
+      "aliases": ["Virage du Raccordement Motul", "Raccordement"],
+      "group": "Ford Chicanes and Motul Turn",
+      "direction": "right",
+      "start_m": 13420.0,
+      "apex_m": 13445.0,
+      "end_m": 13520.0
+    }
+  ],
+  "display_policy": {
+    "prefer_corner_name": true,
+    "turn_number_is_secondary": true,
+    "turn_number_suffix": "profile segment",
+    "always_preserve_lmu_distance_m": true
+  }
+}

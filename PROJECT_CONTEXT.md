@@ -857,7 +857,7 @@ validation and a dedicated validator.
 
 # 21. Track profiles and nomenclature
 
-The project has tools and data for track geometry/location and human-readable turn naming, including examples for Fuji, Imola, Interlagos and other circuits.
+The project has tools and data for track geometry/location and human-readable turn naming, including validated profiles for Fuji, Imola, Interlagos, Monza, Spa and Circuit de la Sarthe.
 
 Typical tooling includes:
 
@@ -873,6 +873,14 @@ track_exports/
 Track naming should be grounded in validated profile/nomenclature data rather than guessed from approximate telemetry position.
 
 Be careful with circuit variants/layouts.
+
+The Circuit de la Sarthe v0.1 profile is validated on five complete GPS laps from
+three independent LMU sessions. It uses the exact track/layout identity
+`Circuit de la Sarthe` and ACO 2026 corner names. Its 19 segment numbers are
+project-local localization identifiers, not the FIA WEC 33-turn numbering. This is
+intentional: long complexes generate multiple line-dependent curvature maxima, so
+the named interval is authoritative. See
+`docs/LA_SARTHE_TRACK_PROFILE_V0_1.md`.
 
 ---
 

@@ -121,6 +121,16 @@ El análisis ya válido normalmente se reutilizará y se ejecutarán las etapas 
 python race_engineer.py analyze "telemetria\ARCHIVO.duckdb" --backend ollama
 ```
 
+El backend local normal usa el alias `ingenierov3`. El entry point experimental
+del Qwen3.8 27B ejecuta solamente la etapa LLM sobre un análisis determinista ya
+generado y conserva un output separado:
+
+```powershell
+python llm_analysis_qwen3_8_27b_iq3m.py "data\generated\analysis\SESSION.json"
+```
+
+Ver [`LLM_BACKEND_BENCHMARK_MONZA_V0_1.md`](LLM_BACKEND_BENCHMARK_MONZA_V0_1.md).
+
 ### Regenerar solamente el debrief LLM
 
 ```powershell

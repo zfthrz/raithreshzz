@@ -38,12 +38,16 @@ Implemented:
 - H3 persistent pattern builder `0.1`, calibration-derived
 - H4 historical reference selector `0.2`
 - H5.1 dual reference context `0.2`
-- H5.2 raw cross-session comparison `0.1`
+- H5.2 profile-localized raw cross-session comparison `0.2` / schema `1.1`
 - H5.2 validated observational LLM narrative `0.1`
 
 H5.2 resolves both raw DuckDBs through History, applies exact context gates, compares
 independent historical/current `LapAnalyzer` sources, validates the temporal delta and
 emits observational spatial zone summaries.
+
+H5.2 v0.2 preserves broad delta trends for audit and, when an exact validated
+track/layout profile exists, splits them deterministically at profile boundaries
+before LLM selection. Missing profiles use an explicit unlocalized fallback.
 
 Real multitrack checkpoint:
 
@@ -77,8 +81,21 @@ Debrief actionability:
   context instead of two apparently contradictory conclusions; speed remains
   observational and never becomes a driving target.
 
+LLM backend benchmark on the real 10-comparison Monza `LMP2_ELMS` session:
+- DeepSeek `deepseek-v4-pro`: approximately 4 minutes, 3 deterministic summary
+  fallbacks, 7 episode repairs and final validator `PASS`;
+- local Qwen 14B `ingenierov3`: 8.0 minutes, 6 fallbacks, 17 repairs and
+  final validator `PASS`;
+- local Qwen3.8 27B IQ3_M: 33.7 minutes, 3 fallbacks, 7 repairs and final
+  validator `PASS`; observed as 13 GB / 100% GPU;
+- all three produced the same final authorized A/B/C plan;
+- operational recommendation: Pro remains the general default, 14B is the
+  recommended local/offline backend and 27B remains experimental.
+
+See `docs/LLM_BACKEND_BENCHMARK_MONZA_V0_1.md`.
+
 Validation:
-- pytest: `77 PASS / 0 FAIL / 0 SKIP`
+- pytest: `83 PASS / 0 FAIL / 0 SKIP`
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP`
 - Objective recovery check: `READY`
 

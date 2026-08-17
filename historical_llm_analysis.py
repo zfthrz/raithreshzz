@@ -20,6 +20,7 @@ ALLOWED_LIMITATIONS = {
     "external_conditions_not_observed",
     "no_causal_inference",
     "no_historical_coaching_authority",
+    "track_profile_localization_unavailable",
 }
 
 OBSERVATION_TEXT = {
@@ -43,6 +44,10 @@ LIMITATION_TEXT = {
     "external_conditions_not_observed": "Las condiciones externas no forman parte de esta evidencia.",
     "no_causal_inference": "Las coincidencias observadas no demuestran relaciones causales.",
     "no_historical_coaching_authority": "La vuelta histórica no tiene autoridad de coaching.",
+    "track_profile_localization_unavailable": (
+        "No existe un track profile validado exacto; las zonas conservan "
+        "el alcance amplio de la tendencia de delta."
+    ),
 }
 
 
@@ -106,6 +111,11 @@ def build_authorized_evidence(source: dict[str, Any]) -> dict[str, Any]:
         authorized_zones.append(
             {
                 "zone_id": f"zone_{index:03d}",
+                "source_trend_zone_id": zone["source_trend_zone_id"],
+                "scope": zone["scope"],
+                "location_label": (
+                    (zone.get("location") or {}).get("label")
+                ),
                 "type": zone["type"],
                 "start_distance_m": zone["start_distance"],
                 "end_distance_m": zone["end_distance"],
@@ -117,6 +127,10 @@ def build_authorized_evidence(source: dict[str, Any]) -> dict[str, Any]:
             }
         )
 
+    required_limitations = []
+    if source["spatial_comparison"]["localization"]["mode"] == "unavailable":
+        required_limitations.append("track_profile_localization_unavailable")
+
     return {
         "contract": {
             "delta_sign": "current_minus_historical",
@@ -125,6 +139,7 @@ def build_authorized_evidence(source: dict[str, Any]) -> dict[str, Any]:
             "free_text_authorized": False,
         },
         "context": source["context"],
+        "localization": source["spatial_comparison"]["localization"],
         "lap_comparison": {
             "historical_session_id": source["historical_reference"]["session_id"],
             "historical_lap": source["historical_reference"]["lap"],
@@ -134,6 +149,7 @@ def build_authorized_evidence(source: dict[str, Any]) -> dict[str, Any]:
         },
         "authorized_overview_code": overview,
         "authorized_limitation_codes": sorted(ALLOWED_LIMITATIONS),
+        "required_limitation_codes": required_limitations,
         "zones": authorized_zones,
     }
 
@@ -279,6 +295,10 @@ def validate_response(
         errors.append("limitation_codes contiene duplicados")
     elif not set(limitations).issubset(ALLOWED_LIMITATIONS):
         errors.append("limitation_codes contiene códigos no autorizados")
+    elif not set(evidence.get("required_limitation_codes", [])).issubset(
+        set(limitations)
+    ):
+        errors.append("limitation_codes omite una limitación requerida por Python")
     return errors
 
 
@@ -299,11 +319,13 @@ def render_analysis(response: dict[str, Any], evidence: dict[str, Any]) -> str:
     zones = {zone["zone_id"]: zone for zone in evidence["zones"]}
     for item in response["selected_zones"]:
         zone = zones[item["zone_id"]]
+        zone_label = zone.get("location_label") or item["zone_id"]
         observations = "; ".join(
             OBSERVATION_TEXT[code] for code in item["observation_codes"]
         )
         lines.append(
-            f"{item['zone_id']} ({zone['start_distance_m']:.0f}-"
+            f"{zone_label} [{item['zone_id']}] "
+            f"({zone['start_distance_m']:.0f}-"
             f"{zone['end_distance_m']:.0f} m, cambio {zone['delta_change_s']:+.3f} s): "
             f"{observations}."
         )
@@ -337,6 +359,7 @@ def build_output(
         },
         "status": "VALIDATED_HISTORICAL_OBSERVATION",
         "context": evidence["context"],
+        "localization": evidence["localization"],
         "lap_comparison": evidence["lap_comparison"],
         "llm_selection": response,
         "selected_evidence": selected_evidence(response, evidence),

@@ -169,12 +169,12 @@ Checkpoint: **2026-08-14 integration v0.1**.
 | H3 persistent patterns | v0.1 / derived |
 | H4 historical reference | v0.2 |
 | H5.1 dual reference | v0.2 |
-| H5.2 | v0.1 raw comparison + v0.1 validated observational LLM narrative |
+| H5.2 | v0.2 profile-localized raw comparison + v0.1 validated observational LLM narrative |
 
 Current validated checkpoint:
 
 ```text
-pytest:                         77 PASS / 0 FAIL / 0 SKIP
+pytest:                         81 PASS / 0 FAIL / 0 SKIP
 Objective Python regressions:  55 PASS / 0 FAIL / 0 SKIP
 ```
 
@@ -747,8 +747,8 @@ Current implementation:
 
 ```text
 build_cross_session_comparison.py
-version = 0.1
-schema = 1.0
+version = 0.2
+schema = 1.1
 validator = validate_cross_session_comparison.py
 ```
 
@@ -760,8 +760,14 @@ requires exact track/layout/vehicle/car context, opens two independent
 `DeltaComparison` remains backward compatible with its one-session constructor and
 accepts an optional second `LapAnalyzer` for the current/comparison lap.
 
-The output contains deterministic temporal validation and observational spatial zone
-summaries. At v0.1 it deliberately keeps:
+The output contains deterministic temporal validation and preserves the original
+delta-trend zones for audit. When an exact track/layout profile with validated status
+exists, H5.2 splits those trends at profile turn boundaries and exposes only the
+localized summaries to the historical LLM. The profile identity, status, source hash
+and localization mode are validated. Without an exact profile, H5.2 keeps an explicit
+unlocalized fallback rather than guessing circuit boundaries.
+
+At v0.2 it deliberately keeps:
 
 ```text
 session_reference_remains_authority = true
@@ -779,7 +785,7 @@ H5.2 = SKIPPED_NOT_APPLICABLE
 ```
 
 The dedicated H5.2 LLM v0.1 contract consumes only the compact evidence subset built
-by Python and selects at most three existing zone IDs plus observation/limitation
+by Python and selects at most three localized zone IDs plus observation/limitation
 codes already authorized for each zone. LLM free text is disabled.
 `validate_historical_llm_analysis.py` rejects unknown zones, extra keys, unauthorized
 codes, tampered deterministic evidence or any change in coaching authority. Python

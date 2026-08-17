@@ -189,6 +189,14 @@ python llm_analysis.py "ARCHIVO.json"
 
 La configuración local habitual usa Ollama y `ingenierov3`.
 
+Para evaluar el Qwen3.8 27B local sin reemplazar `ingenierov3`:
+
+```powershell
+python llm_analysis_qwen3_8_27b_iq3m.py "ARCHIVO.json"
+```
+
+Resultados y recomendación: [`docs/LLM_BACKEND_BENCHMARK_MONZA_V0_1.md`](docs/LLM_BACKEND_BENCHMARK_MONZA_V0_1.md).
+
 ### 5.5 Validar salida LLM
 
 ```powershell
@@ -1162,7 +1170,7 @@ matcher ni H3. Detalles: `docs/H2_MONZA_LMP2_ELMS_CALIBRATION_V0_1.md`.
 
 H4 selecciona una `historical_reference` compatible y H5.1 conserva separadas la referencia de la sesión y la histórica.
 
-H5.2 v0.1 compara ambas vueltas desde sus DuckDB raw cuando están disponibles. La comparación es determinista, valida el delta temporal y produce zonas espaciales observacionales. Si falta cualquiera de los dos DuckDB, la etapa queda `SKIPPED_NOT_APPLICABLE`.
+H5.2 v0.2 compara ambas vueltas desde sus DuckDB raw cuando están disponibles. La comparación es determinista, valida el delta temporal y conserva las tendencias amplias para auditoría. Con un track profile validado exacto, divide esas tendencias en zonas localizadas por límites del perfil antes de exponerlas al LLM. Si no existe un perfil exacto, declara un fallback no localizado; si falta cualquiera de los dos DuckDB, la etapa queda `SKIPPED_NOT_APPLICABLE`.
 
 El contrato LLM histórico v0.1 puede seleccionar hasta tres zonas H5.2 y únicamente códigos observacionales autorizados por Python para cada una. El LLM no escribe texto libre: Python arma todo el render final con hechos y cifras exactos. Un validator separado rechaza zonas inventadas, claves adicionales, códigos no autorizados o evidencia alterada.
 

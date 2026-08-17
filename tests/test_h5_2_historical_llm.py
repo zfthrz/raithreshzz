@@ -19,8 +19,11 @@ def write_source(tmp_path: Path) -> tuple[Path, dict]:
     current = tmp_path / "current.duckdb"
     historical.write_bytes(b"historical")
     current.write_bytes(b"current")
+    profile = tmp_path / "fuji_profile.json"
+    profile.write_text("{}", encoding="utf-8")
+    profile_sha256 = hashlib.sha256(profile.read_bytes()).hexdigest()
     document = {
-        "metadata": {"schema_version": "1.0", "cross_session_version": "0.1"},
+        "metadata": {"schema_version": "1.1", "cross_session_version": "0.2"},
         "status": "RAW_CROSS_SESSION_COMPARISON_AVAILABLE",
         "context": {
             "track": "Fuji Speedway",
@@ -45,9 +48,37 @@ def write_source(tmp_path: Path) -> tuple[Path, dict]:
             "tolerance_s": 1e-6,
         },
         "spatial_comparison": {
+            "trend_zone_summary_count": 2,
+            "trend_zone_summaries": [
+                {
+                    "trend_zone_id": "trend_001",
+                    "scope": "delta_trend",
+                },
+                {
+                    "trend_zone_id": "trend_002",
+                    "scope": "delta_trend",
+                },
+            ],
+            "localization": {
+                "version": "0.1",
+                "mode": "validated_track_profile",
+                "profile_id": "fuji-test-profile",
+                "profile_status": "VALIDATED_MULTI_SESSION",
+                "profile_track": "Fuji Speedway",
+                "profile_layout": "Fuji Speedway",
+                "profile_source_path": str(profile),
+                "profile_source_sha256": profile_sha256,
+                "boundary_count": 4,
+            },
             "zone_summary_count": 2,
             "zone_summaries": [
                 {
+                    "source_trend_zone_id": "trend_001",
+                    "scope": "track_profile_segment",
+                    "location": {
+                        "label": "T1 — Test corner",
+                        "profile_id": "fuji-test-profile",
+                    },
                     "type": "loss",
                     "start_distance": 100.0,
                     "end_distance": 200.0,
@@ -58,6 +89,12 @@ def write_source(tmp_path: Path) -> tuple[Path, dict]:
                     "steering_delta_avg": 0.4,
                 },
                 {
+                    "source_trend_zone_id": "trend_002",
+                    "scope": "track_profile_segment",
+                    "location": {
+                        "label": "T2 — Test corner",
+                        "profile_id": "fuji-test-profile",
+                    },
                     "type": "gain",
                     "start_distance": 200.0,
                     "end_distance": 260.0,
@@ -107,8 +144,10 @@ def test_builds_and_validates_observational_output(tmp_path: Path):
 
     assert validate(output) == []
     assert output["coaching_authority"]["historical_actions_authorized"] is False
+    assert output["localization"] == evidence["localization"]
     assert output["selected_evidence"] == [evidence["zones"][0]]
     assert "+1.280 s" in output["rendered_analysis"]
+    assert "T1 — Test corner [zone_001]" in output["rendered_analysis"]
 
 
 def test_rejects_unknown_zones_and_free_text_keys(tmp_path: Path):
@@ -142,6 +181,23 @@ def test_rejects_unauthorized_overview_and_observation_codes(tmp_path: Path):
         "observation_codes no autorizados" in error
         for error in validate_response(invented_claim, evidence)
     )
+
+
+def test_unlocalized_source_requires_explicit_limitation(tmp_path: Path):
+    _, source = write_source(tmp_path)
+    source["spatial_comparison"]["localization"]["mode"] = "unavailable"
+    evidence = build_authorized_evidence(source)
+
+    response = valid_response()
+    assert any(
+        "limitación requerida" in error
+        for error in validate_response(response, evidence)
+    )
+
+    response["limitation_codes"].append(
+        "track_profile_localization_unavailable"
+    )
+    assert validate_response(response, evidence) == []
 
 
 def test_python_authorizes_only_deterministic_direction_codes(tmp_path: Path):

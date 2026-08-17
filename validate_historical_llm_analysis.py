@@ -44,6 +44,8 @@ def validate(document: dict[str, Any]) -> list[str]:
 
     if document.get("context") != evidence["context"]:
         errors.append("context no coincide con H5.2")
+    if document.get("localization") != evidence["localization"]:
+        errors.append("localization no coincide con H5.2")
     if document.get("lap_comparison") != evidence["lap_comparison"]:
         errors.append("lap_comparison no coincide con H5.2")
 

@@ -25,6 +25,7 @@ def test_active_python_files_compile():
         "compare_llm_analysis_outputs.py",
         "vehicle_context.py",
         "cross_session_context.py",
+        "cross_session_zone_localization.py",
         "build_cross_session_comparison.py",
         "validate_cross_session_comparison.py",
         "historical_llm_analysis.py",
@@ -60,6 +61,19 @@ def test_llm_aliases_match_their_versioned_sources():
         alias_digest = hashlib.sha256((ROOT / alias_name).read_bytes()).digest()
         source_digest = hashlib.sha256((ROOT / source_name).read_bytes()).digest()
         assert alias_digest == source_digest
+
+
+def test_h5_2_raw_aliases_match_v0_2_sources():
+    alias_contracts = {
+        "build_cross_session_comparison.py": (
+            "build_cross_session_comparison_v0_2.py"
+        ),
+        "validate_cross_session_comparison.py": (
+            "validate_cross_session_comparison_v0_2.py"
+        ),
+    }
+    for alias_name, source_name in alias_contracts.items():
+        assert (ROOT / alias_name).read_bytes() == (ROOT / source_name).read_bytes()
 
 
 def test_llm_scripts_use_centralized_runtime_paths_and_current_version():

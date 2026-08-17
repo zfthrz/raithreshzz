@@ -117,7 +117,7 @@ def test_validator_preserves_session_reference_authority(tmp_path: Path):
     historical.write_bytes(b"historical")
     current.write_bytes(b"current")
     document = {
-        "metadata": {"schema_version": "1.0", "cross_session_version": "0.1"},
+        "metadata": {"schema_version": "1.1", "cross_session_version": "0.2"},
         "status": "RAW_CROSS_SESSION_COMPARISON_AVAILABLE",
         "historical_reference": {
             "session_id": 1,
@@ -134,7 +134,19 @@ def test_validator_preserves_session_reference_authority(tmp_path: Path):
             "error_s": 0.0,
             "tolerance_s": 1e-6,
         },
-        "spatial_comparison": {"zone_summary_count": 0, "zone_summaries": []},
+        "spatial_comparison": {
+            "trend_zone_summary_count": 0,
+            "trend_zone_summaries": [],
+            "localization": {
+                "version": "0.1",
+                "mode": "unavailable",
+                "reason": "no_exact_validated_track_profile",
+                "profile_id": None,
+                "boundary_count": 0,
+            },
+            "zone_summary_count": 0,
+            "zone_summaries": [],
+        },
         "coaching_authority": {
             "session_reference_remains_authority": True,
             "historical_actions_authorized": False,
@@ -143,7 +155,7 @@ def test_validator_preserves_session_reference_authority(tmp_path: Path):
 
     assert validate(document) == []
     document["coaching_authority"]["historical_actions_authorized"] = True
-    assert "historical_actions_authorized debe ser false en v0.1" in validate(document)
+    assert "historical_actions_authorized debe ser false en v0.2" in validate(document)
 
 
 def test_runtime_path_places_h5_2_under_generated_root():

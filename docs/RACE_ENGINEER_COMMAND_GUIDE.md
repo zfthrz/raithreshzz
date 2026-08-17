@@ -265,3 +265,63 @@ python race_engineer.py analyze "telemetria\ARCHIVO.duckdb" --no-llm
 ### Una referencia histórica puede no existir
 
 H4 exige compatibilidad de circuito, layout, variante de vehículo y automóvil. Si no hay una sesión compatible, el resultado esperado es:
+
+```text
+NO_COMPATIBLE_HISTORICAL_REFERENCE
+```
+
+---
+
+## 7. Automatización local de History
+
+La tarea programada recomendada usa directamente la carpeta de LMU:
+
+```powershell
+python auto_ingest_telemetry.py `
+  --telemetry-dir "C:\Program Files (x86)\Steam\steamapps\common\Le Mans Ultimate\UserData\Telemetry" `
+  maintenance --min-size-mb 5 --backfill-minutes 30
+```
+
+`maintenance` no hace nada mientras LMU está abierto y espera otros 10 minutos
+después de verlo cerrado. Las sesiones nuevas se analizan e importan a History sin
+LLM antes de cualquier backfill. Ver
+[`AUTOMATIC_TELEMETRY_INGEST_V0_1.md`](AUTOMATIC_TELEMETRY_INGEST_V0_1.md).
+
+Reactivar y comprobar la tarea después de una prueba manual:
+
+```powershell
+Enable-ScheduledTask -TaskName "RaceEngineer-History-Ingest"
+
+Get-ScheduledTask -TaskName "RaceEngineer-History-Ingest" |
+  Select-Object TaskName, State, Actions
+
+Get-ScheduledTaskInfo -TaskName "RaceEngineer-History-Ingest" |
+  Select-Object LastRunTime, LastTaskResult, NextRunTime
+```
+
+`Ready` significa que está habilitada y esperando su siguiente ejecución.
+
+## 8. Analizar desde Windows Explorer
+
+Instalar para el usuario actual:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\install_race_engineer_context_menu.ps1
+```
+
+Después, sobre un `.duckdb` autorizado:
+
+```text
+Clic derecho -> Analizar con Race Engineer (DeepSeek)
+```
+
+Desinstalar:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\install_race_engineer_context_menu.ps1 -Uninstall
+```
+
+El launcher bloquea LMU abierto, History, rutas externas, archivos menores de
+5 MiB o recientes. Ejecuta primero Python + History sin LLM y exige dos vueltas
+válidas antes de autorizar DeepSeek. Ver
+[`RACE_ENGINEER_CONTEXT_MENU.md`](RACE_ENGINEER_CONTEXT_MENU.md).

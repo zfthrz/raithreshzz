@@ -8,6 +8,10 @@ Este README documenta el flujo operativo actual del proyecto: análisis de una s
 
 > Guía práctica del orquestador: [`docs/RACE_ENGINEER_COMMAND_GUIDE.md`](docs/RACE_ENGINEER_COMMAND_GUIDE.md).
 
+> Automatización de History: [`docs/AUTOMATIC_TELEMETRY_INGEST_V0_1.md`](docs/AUTOMATIC_TELEMETRY_INGEST_V0_1.md). Menú contextual seguro: [`docs/RACE_ENGINEER_CONTEXT_MENU.md`](docs/RACE_ENGINEER_CONTEXT_MENU.md).
+
+> Traspaso operativo actualizado al 17/08/2026: [`docs/DEEPSEEK_HANDOFF_2026_08_17.md`](docs/DEEPSEEK_HANDOFF_2026_08_17.md).
+
 ---
 
 ## 1. Estado actual del proyecto
@@ -26,6 +30,8 @@ Componentes principales:
 | `episode_pair_matcher.py` | H2 v0.2 — `CALIBRATED_PROVISIONAL_SINGLE_CONTEXT` |
 | `audit_episode_pair_matches.py` | v0.2 |
 | DeepSeek assisted pair review | H2.2 v1.0 — benchmark en curso |
+| `auto_ingest_telemetry.py` | v0.1 — ingest directo desde LMU, History prioritario y backfill gradual |
+| `analyze_telemetry_file.py` | v0.1 — launcher seguro para menú contextual con DeepSeek |
 
 Checkpoint de calibración H2 actual sobre **Spa + layout Spa + `LMP2_ELMS`**:
 
@@ -76,7 +82,7 @@ LMP2
 
 ```text
 raithreshzz/
-├─ telemetria/                      # DuckDB crudos de LMU
+├─ telemetria/                      # copia local opcional; automatización lee UserData/Telemetry
 ├─ track_exports/                   # GPS / GeoJSON / candidatos geométricos
 ├─ track_profiles/                  # perfiles validados de circuitos
 ├─ calibration_batches/             # batches H2 reproducibles
@@ -1170,6 +1176,7 @@ H4 historical benchmark selector
 H5.1 dual reference
 H5.2 raw cross-session comparison     <- disponible en modo observacional
 H5.2 LLM historical narrative         <- observacional y validada
+H5.3 historical coaching debrief       <- objetivo futuro; todavía no implementado
 ```
 
 Todavía no crear `persistent_pattern` automáticamente sólo porque dos episodios fueron `MATCH`.
@@ -1207,6 +1214,13 @@ fórmula determinista de relevancia promovida.
 El checkpoint multitrack real cubre Fuji, Imola, Interlagos y Monza. En los cuatro casos pasaron tanto el validator raw como el validator de narrativa histórica. El conjunto incluye vueltas actuales más lentas (`+1.280 s`, `+0.600 s`) y más rápidas (`-0.180 s`, `-1.120 s`) que la referencia histórica, sin cambiar la autoridad de coaching. Monza también confirmó que H4 rechaza mezclar Hypercar con LMP2_ELMS. Los detalles están en `docs/H5_2_MULTITRACK_VALIDATION_V0_1.md`.
 
 Las zonas históricas siguen sin autorizar instrucciones de coaching: `session_reference` continúa como autoridad y `historical_actions_authorized=false`.
+
+El próximo objetivo histórico está definido como H5.3: un debrief separado contra la
+mejor vuelta histórica compatible. Se desarrollará por etapas, comenzando con
+candidatos deterministas en shadow y sin acciones para el piloto. No modificará el
+debrief normal ni habilitará coaching histórico hasta superar validator, auditoría
+humana y validación multitrack. Contrato:
+[`docs/H5_3_HISTORICAL_COACHING_ROADMAP_V0_1.md`](docs/H5_3_HISTORICAL_COACHING_ROADMAP_V0_1.md).
 
 ---
 
@@ -1272,4 +1286,3 @@ Las zonas históricas siguen sin autorizar instrucciones de coaching: `session_r
 - `H2_MATCHER_V0_2_NOTES.md` — matcher provisional v0.2.
 - `H2_2_DEEPSEEK_ASSISTED_REVIEW_v1_0.md` — revisión asistida por DeepSeek.
 - `HISTORICAL_REFERENCE_ROADMAP_v1_0.md` — roadmap de historial/referencia futura.
-

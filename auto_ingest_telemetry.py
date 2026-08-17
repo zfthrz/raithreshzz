@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import argparse
+import csv
+import io
 import json
 import os
 import subprocess
@@ -14,6 +16,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent
 DEFAULT_TELEMETRY_DIR = PROJECT_ROOT / "telemetria"
 DEFAULT_STATE_PATH = PROJECT_ROOT / "data" / "local" / "telemetry_auto_ingest.json"
 STATE_VERSION = "0.1"
+LMU_PROCESS_IMAGE = "Le Mans Ultimate.exe"
 
 STATUS_BASELINED = "BASELINED"
 STATUS_BASELINE_SKIPPED_SMALL = "BASELINE_SKIPPED_SMALL"
@@ -149,6 +152,93 @@ def discover(telemetry_dir: Path) -> list[Path]:
     )
 
 
+def path_is_within(path: Path, directory: Path) -> bool:
+    try:
+        path.resolve().relative_to(directory.resolve())
+    except ValueError:
+        return False
+    return True
+
+
+def migrate_source(
+    telemetry_dir: Path,
+    state_path: Path,
+    *,
+    now: datetime,
+) -> int:
+    state = load_state(state_path)
+    stamp = isoformat(now)
+    migrated = 0
+    registered_new = 0
+    collisions: list[str] = []
+
+    identity_index: dict[tuple[str, int, int], list[str]] = {}
+    for old_path, entry in state["files"].items():
+        if path_is_within(Path(old_path), telemetry_dir):
+            continue
+        old_signature = entry.get("signature") or {}
+        identity = (
+            Path(old_path).name.casefold(),
+            int(old_signature.get("size", -1)),
+            int(old_signature.get("mtime_ns", -1)),
+        )
+        identity_index.setdefault(identity, []).append(old_path)
+
+    for path in discover(telemetry_dir):
+        key = str(path)
+        if key in state["files"]:
+            continue
+        current_signature = signature(path)
+        identity = (
+            path.name.casefold(),
+            current_signature["size"],
+            current_signature["mtime_ns"],
+        )
+        matches = identity_index.get(identity, [])
+        if len(matches) > 1:
+            collisions.append(path.name)
+            continue
+        if len(matches) == 1:
+            previous_path = matches[0]
+            entry = state["files"].pop(previous_path)
+            entry["signature"] = current_signature
+            entry["migrated_from"] = previous_path
+            entry["migrated_at"] = stamp
+            state["files"][key] = entry
+            migrated += 1
+            continue
+        state["files"][key] = {
+            "status": STATUS_PENDING_STABILITY,
+            "signature": current_signature,
+            "first_seen_at": stamp,
+            "stable_since": stamp,
+            "updated_at": stamp,
+            "registered_by": "migrate_source",
+        }
+        registered_new += 1
+
+    if collisions:
+        raise RuntimeError(
+            "Migración bloqueada por identidades duplicadas: "
+            + ", ".join(sorted(collisions))
+        )
+    state["telemetry_source"] = str(telemetry_dir)
+    state["last_source_migration"] = {
+        "at": stamp,
+        "source": str(telemetry_dir),
+        "migrated": migrated,
+        "registered_new": registered_new,
+    }
+    save_state(state_path, state)
+    print(
+        f"SOURCE MIGRATION: {migrated} estados preservados | "
+        f"{registered_new} archivo(s) nuevo(s)"
+    )
+    print(f"Fuente activa: {telemetry_dir}")
+    print("0 archivos analizados; 0 llamadas LLM.")
+    return 0
+
+
 def probe_duckdb(path: Path) -> None:
     import duckdb
 
@@ -169,6 +259,32 @@ def run_race_engineer(path: Path, extra_args: list[str]) -> None:
     ]
     print("+ " + subprocess.list2cmdline(command))
     subprocess.run(command, cwd=PROJECT_ROOT, check=True)
+
+
+def le_mans_ultimate_is_running() -> bool:
+    if os.name != "nt":
+        return False
+    creation_flags = getattr(subprocess, "CREATE_NO_WINDOW", 0)
+    completed = subprocess.run(
+        [
+            "tasklist.exe",
+            "/FI",
+            f"IMAGENAME eq {LMU_PROCESS_IMAGE}",
+            "/FO",
+            "CSV",
+            "/NH",
+        ],
+        capture_output=True,
+        text=True,
+        errors="replace",
+        check=True,
+        creationflags=creation_flags,
+    )
+    rows = csv.reader(io.StringIO(completed.stdout))
+    return any(
+        row and row[0].strip().casefold() == LMU_PROCESS_IMAGE.casefold()
+        for row in rows
+    )
 
 
 def baseline(telemetry_dir: Path, state_path: Path, *, now: datetime) -> int:
@@ -305,6 +421,7 @@ def backfill_next(
     *,
     min_size_mb: float,
     now: datetime,
+    telemetry_dir: Path | None = None,
     runner: Callable[[Path, list[str]], None] = run_race_engineer,
     probe: Callable[[Path], None] = probe_duckdb,
     pipeline_status_reader: Callable[
@@ -318,6 +435,10 @@ def backfill_next(
     reconciled = 0
 
     for path_text, entry in state["files"].items():
+        if telemetry_dir is not None and not path_is_within(
+            Path(path_text), telemetry_dir
+        ):
+            continue
         current_status = entry.get("status")
         if current_status in {STATUS_BASELINED, STATUS_HISTORY_READY}:
             existing = pipeline_status_reader(Path(path_text))
@@ -413,7 +534,45 @@ def maintenance(
     pipeline_status_reader: Callable[
         [Path], tuple[str, int] | None
     ] = existing_pipeline_status,
+    game_running: Callable[[], bool] = le_mans_ultimate_is_running,
 ) -> int:
+    if game_running():
+        state = load_state(state_path)
+        state["last_game_seen_at"] = isoformat(now)
+        state["last_maintenance"] = {
+            "at": isoformat(now),
+            "status": "SKIPPED_GAME_RUNNING",
+            "process_image": LMU_PROCESS_IMAGE,
+        }
+        save_state(state_path, state)
+        print(
+            "MAINTENANCE: SKIPPED_GAME_RUNNING — "
+            "Le Mans Ultimate está en ejecución."
+        )
+        return 0
+
+    state = load_state(state_path)
+    last_game_seen = state.get("last_game_seen_at")
+    if isinstance(last_game_seen, str):
+        elapsed_seconds = max(
+            0.0,
+            (now - parse_time(last_game_seen)).total_seconds(),
+        )
+        if elapsed_seconds < settle_seconds:
+            remaining = settle_seconds - elapsed_seconds
+            state["last_maintenance"] = {
+                "at": isoformat(now),
+                "status": "POST_GAME_SETTLE",
+                "game_last_seen_at": last_game_seen,
+                "remaining_seconds": round(remaining, 1),
+            }
+            save_state(state_path, state)
+            print(
+                "MAINTENANCE: POST_GAME_SETTLE — "
+                f"esperando aproximadamente {remaining:.0f} s."
+            )
+            return 0
+
     scan_result = scan(
         telemetry_dir,
         state_path,
@@ -447,6 +606,7 @@ def maintenance(
         state_path,
         min_size_mb=min_size_mb,
         now=now,
+        telemetry_dir=telemetry_dir,
         runner=runner,
         probe=probe,
         pipeline_status_reader=pipeline_status_reader,
@@ -459,12 +619,17 @@ def debrief_next(
     backend: str,
     now: datetime,
     runner: Callable[[Path, list[str]], None] = run_race_engineer,
+    telemetry_dir: Path | None = None,
 ) -> int:
     state = load_state(state_path)
     candidates = [
         (path, entry)
         for path, entry in state["files"].items()
         if entry.get("status") == STATUS_HISTORY_READY
+        and (
+            telemetry_dir is None
+            or path_is_within(Path(path), telemetry_dir)
+        )
     ]
     candidates.sort(key=lambda item: item[1].get("history_ready_at", ""))
     if not candidates:
@@ -504,6 +669,7 @@ def debrief_latest(
     now: datetime,
     runner: Callable[[Path, list[str]], None] = run_race_engineer,
     lap_counter: Callable[[Path], int] = valid_lap_count,
+    telemetry_dir: Path | None = None,
 ) -> int:
     state = load_state(state_path)
     minimum_bytes = int(min_size_mb * 1024 * 1024)
@@ -511,6 +677,10 @@ def debrief_latest(
 
     for path_text, entry in state["files"].items():
         if entry.get("status") != STATUS_HISTORY_READY:
+            continue
+        if telemetry_dir is not None and not path_is_within(
+            Path(path_text), telemetry_dir
+        ):
             continue
         path = Path(path_text)
         size = int((entry.get("signature") or {}).get("size", 0))
@@ -612,6 +782,10 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--state", default=None)
     subparsers = parser.add_subparsers(dest="command", required=True)
     subparsers.add_parser("baseline", help="Registrar archivos actuales sin analizarlos.")
+    subparsers.add_parser(
+        "migrate-source",
+        help="Migrar estados a otra carpeta sin reprocesar archivos idénticos.",
+    )
     backfill = subparsers.add_parser(
         "backfill-next",
         help="Importar a History un archivo BASELINED elegible.",
@@ -646,6 +820,8 @@ def main() -> int:
     now = utc_now()
     if args.command == "baseline":
         return baseline(telemetry_dir, state_path, now=now)
+    if args.command == "migrate-source":
+        return migrate_source(telemetry_dir, state_path, now=now)
     if args.command == "backfill-next":
         if args.min_size_mb < 0:
             raise ValueError("--min-size-mb no puede ser negativo.")
@@ -653,6 +829,7 @@ def main() -> int:
             state_path,
             min_size_mb=args.min_size_mb,
             now=now,
+            telemetry_dir=telemetry_dir,
         )
     if args.command == "scan":
         if args.settle_seconds < 0:
@@ -679,7 +856,12 @@ def main() -> int:
             now=now,
         )
     if args.command == "debrief-next":
-        return debrief_next(state_path, backend=args.backend, now=now)
+        return debrief_next(
+            state_path,
+            backend=args.backend,
+            now=now,
+            telemetry_dir=telemetry_dir,
+        )
     if args.command == "debrief-latest":
         if args.min_size_mb < 0 or args.min_valid_laps < 1:
             raise ValueError("Los mínimos de elegibilidad son inválidos.")
@@ -689,6 +871,7 @@ def main() -> int:
             min_size_mb=args.min_size_mb,
             min_valid_laps=args.min_valid_laps,
             now=now,
+            telemetry_dir=telemetry_dir,
         )
     if args.command == "status":
         return show_status(state_path)

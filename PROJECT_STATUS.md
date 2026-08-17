@@ -31,6 +31,60 @@ Implemented:
 - batch import
 - stats
 
+### automatic telemetry ingest
+
+Current: `auto_ingest_telemetry v0.1`
+
+Implemented and validated on Windows:
+- reads LMU DuckDBs directly from `UserData/Telemetry` in read-only mode;
+- preserves source state by exact name/size/mtime migration;
+- skips every operation while `Le Mans Ultimate.exe` is running;
+- waits 10 minutes after the game was last observed before opening telemetry;
+- imports deterministic analysis into History before any LLM work;
+- serializes backlog processing and gives new telemetry priority;
+- keeps files below 5 MiB out of automatic backfill;
+- scopes maintenance and debrief selection to the active telemetry source.
+
+Real unattended validation:
+- source: `Autodromo Nazionale Monza_P_2026-08-17T18_55_39Z.duckdb`;
+- deterministic analyzer: `RUN`;
+- History: `IMPORTED`, `session_id=23`;
+- LLM: `SKIPPED_NOT_APPLICABLE` as required by the History-first stage;
+- state transition: `PENDING_STABILITY -> HISTORY_READY` without manual analysis.
+
+The optional Windows Explorer launcher validates source, LMU shutdown, file age,
+size and deterministic valid-lap count before authorizing DeepSeek. Its context-menu
+registration is per-user and reversible.
+
+Explorer registration validation:
+- `Analizar con Race Engineer (DeepSeek)` appears in the `.duckdb` context menu;
+- the launcher and registration tests passed in the focused 22-test checkpoint;
+- an end-to-end Explorer-triggered DeepSeek run should be recorded before calling
+  this milestone fully closed.
+
+Latest real H4 validation:
+- target: History `session_id=23`, Monza `LMP2_ELMS`, IDEC Sport #18;
+- current session reference: lap 3, `99.280 s`;
+- selected history: `session_id=19`, lap 10, `97.500 s` (`1:37.500`);
+- selected delta: historical lap `1.780 s` faster;
+- status: `HISTORICAL_REFERENCE_SELECTED`;
+- H5 remains observational and the current-session reference retains coaching authority.
+
+Known non-blocking backfill outcome:
+- Monza `2026-08-15T05_01_19Z` and Spa `2026-08-12T07_32_09Z` are recorded as
+  `BACKFILL_FAILED` because each contains only one usable lap after the initial and
+  incomplete laps are excluded;
+- the analyzer correctly produces no comparisons and `--validate` returns failure;
+- neither case called an LLM, corrupted History or affects ready sessions;
+- a future cosmetic improvement may classify this as
+  `BACKFILL_SKIPPED_INSUFFICIENT_VALID_LAPS`, but validators must not be weakened.
+
+Pending milestone closeout:
+- re-enable and verify `RaceEngineer-History-Ingest` after manual menu testing;
+- run the full pytest suite;
+- inspect `git diff --check` and commit the coherent automation/menu/docs milestone;
+- never stage local `Modelfile` or `Modelfile-qwen38` accidentally.
+
 ### historical layers
 
 Implemented:
@@ -40,6 +94,16 @@ Implemented:
 - H5.1 dual reference context `0.2`
 - H5.2 profile-localized raw cross-session comparison `0.2` / schema `1.1`
 - H5.2 validated observational LLM narrative `0.1`
+
+Planned, not implemented:
+- H5.3 separate historical coaching debrief;
+- current state: `ROADMAP_ONLY`, `historical_actions_authorized=false`;
+- first future slice: H5.3a Python-owned shadow candidate builder;
+- promotion requires dedicated gates, validator, human audit and multitrack evidence.
+
+See `docs/H5_3_HISTORICAL_COACHING_ROADMAP_V0_1.md`. H5.3 must remain additive:
+the current-session debrief and H5.1 coaching authority cannot change merely because
+the roadmap exists.
 
 H5.2 resolves both raw DuckDBs through History, applies exact context gates, compares
 independent historical/current `LapAnalyzer` sources, validates the temporal delta and

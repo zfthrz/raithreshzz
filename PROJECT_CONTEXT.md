@@ -1,7 +1,7 @@
 # Race Engineer — PROJECT_CONTEXT v1.0
 
 > Canonical end-to-end onboarding context for coding agents and LLMs working on the Race Engineer repository.
-> Baseline represented here: integration checkpoint 2026-08-14.
+> Baseline represented here: integration and local automation checkpoint 2026-08-17.
 >
 > This is the detailed mental model of the project. `AGENTS.md` should instruct coding agents to read this file before non-trivial work.
 
@@ -147,7 +147,7 @@ DeepSeek pseudo-labels/reviews are assistance and must never be silently mixed w
 
 # 4. Current operational baseline
 
-Checkpoint: **2026-08-14 integration v0.1**.
+Checkpoint: **2026-08-17 automation and historical-reference integration**.
 
 | Component | Current operational baseline |
 |---|---|
@@ -170,15 +170,18 @@ Checkpoint: **2026-08-14 integration v0.1**.
 | H4 historical reference | v0.2 |
 | H5.1 dual reference | v0.2 |
 | H5.2 | v0.2 profile-localized raw comparison + v0.1 validated observational LLM narrative |
+| H5.3 historical coaching debrief | roadmap only / not implemented / actions disabled |
 
-Current validated checkpoint:
+Validated checkpoints relevant to the current working tree:
 
 ```text
-pytest:                         81 PASS / 0 FAIL / 0 SKIP
-Objective Python regressions:  55 PASS / 0 FAIL / 0 SKIP
+full pytest before Explorer launcher: 100 PASS / 0 FAIL / 0 SKIP
+focused automation/launcher tests:     22 PASS / 0 FAIL / 0 SKIP
+Objective Python regressions:          55 PASS / 0 FAIL / 0 SKIP
 ```
 
-The H5.2 integration environment included DuckDB and completed the full current suite without skips.
+A new full-suite run is still required before committing the pending Explorer-launcher
+milestone; focused tests are not a substitute for that final check.
 
 ---
 
@@ -822,6 +825,35 @@ Do not fake H5.2 by comparing only derived History rows or LLM prose and calling
 
 ---
 
+## 20.1 H5.3 — future historical coaching debrief
+
+H5.3 is an explicit future objective, not a current production capability. Its goal
+is to add a separate debrief comparing the current session reference against the
+fastest compatible historical reference, while preserving the normal session debrief
+unchanged.
+
+Current authority remains:
+
+```text
+H5.3 status = ROADMAP_ONLY
+session_reference_remains_authority = true
+historical_actions_authorized = false
+```
+
+The implementation must be additive and consume validated H4/H5.1/H5.2 artifacts.
+It must not reinterpret raw telemetry inside the LLM, change H4 selection, replace
+the current-session A/B/C plan, or weaken any existing validator. The detailed staged
+contract and acceptance criteria are in
+`docs/H5_3_HISTORICAL_COACHING_ROADMAP_V0_1.md`.
+
+The first authorized development slice is H5.3a only: Python may build shadow
+historical action candidates from already validated physical points, action profiles,
+localized H5.2 zones and comparability gates. It must not render those candidates as
+driver instructions. Later promotion requires offline audit, human review, multitrack
+validation and a dedicated validator.
+
+---
+
 # 21. Track profiles and nomenclature
 
 The project has tools and data for track geometry/location and human-readable turn naming, including examples for Fuji, Imola, Interlagos and other circuits.
@@ -1004,6 +1036,46 @@ Do not skip directly to “learning from all history” before context isolation
 
 ---
 
+# 29. Automatic telemetry ingestion and Explorer launcher
+
+`auto_ingest_telemetry.py` owns local Windows automation. The preferred telemetry
+source is LMU's `UserData/Telemetry` directory; raw DuckDBs are opened read-only and
+do not need to be copied into the repository.
+
+The scheduled `maintenance` contract is History-first:
+
+- if `Le Mans Ultimate.exe` is running, return `SKIPPED_GAME_RUNNING` before scan;
+- wait 10 minutes after the last game observation (`POST_GAME_SETTLE`);
+- give new stable telemetry priority over backlog;
+- run deterministic analysis and History import with `--no-llm --no-historical-context`;
+- process at most one backfill candidate per cooldown;
+- never use the 5 MiB threshold as proof that a recording is complete;
+- scope scan/backfill/debrief selection to the configured source directory.
+
+The real Monza file `Autodromo Nazionale Monza_P_2026-08-17T18_55_39Z.duckdb`
+completed the unattended transition `PENDING_STABILITY -> HISTORY_READY`, passed
+deterministic analysis and was imported as History `session_id=23`; LLM remained
+disabled for that automatic stage.
+
+`analyze_telemetry_file.py` is the explicit user-authorized LLM path used by the
+Windows Explorer context menu. It accepts only DuckDBs inside authorized telemetry
+roots, blocks History databases, LMU-running state, files below 5 MiB and files
+younger than 10 minutes. It first runs deterministic analysis + History without an
+LLM, requires at least two Python-confirmed valid laps, and only then runs the full
+selected backend. `race_engineer.py` reuse remains responsible for preventing
+duplicate valid model calls.
+
+Real historical-reference confirmation for the latest unattended Monza session:
+
+- target History session: `session_id=23`, current reference lap 3, `99.280 s`;
+- selected historical session: `session_id=19`, lap 10, `97.500 s` (`1:37.500`);
+- context: Monza / exact Monza layout / `LMP2_ELMS` / IDEC Sport #18 / dry-compatible;
+- historical advantage: `1.780 s`;
+- H4 status: `HISTORICAL_REFERENCE_SELECTED`.
+
+This confirms that automatic History ingestion feeds the existing H4/H5 path. H5.1
+continues to keep the current-session reference as coaching authority.
+
 # 30. Recommended workflow for an agent making a change
 
 For any non-trivial task:
@@ -1109,4 +1181,3 @@ Historical details belong in versioned notes or `legacy/`.
 # 36. One-paragraph mental model
 
 Race Engineer takes an LMU DuckDB, extracts and validates deterministic lap/zone/action evidence in Python, asks an LLM only to prioritize and explain authorized evidence, validates that narrative, stores the deterministic session in a schema-4 History DB, optionally selects a context-compatible historical benchmark through H4, preserves current-session coaching authority through H5.1 dual reference, and compares both compatible raw reference laps deterministically through H5.2. A separate validated H5.2 LLM contract may select only Python-authorized zone and observation codes; Python renders every historical statement and number, while causal claims and driving recommendations remain impossible. H2/H3 are the calibrated cross-session pattern-learning path and remain context-limited rather than universal. The repo must stay clean: source/provenance is tracked, runtime telemetry/debug/results stay under ignored `telemetria/`, `data/generated/` and `data/local/` paths.
-

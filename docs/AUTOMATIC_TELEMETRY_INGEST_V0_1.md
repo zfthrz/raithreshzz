@@ -23,6 +23,32 @@ python auto_ingest_telemetry.py baseline
 
 Este paso evita interpretar todo el archivo histórico como telemetría nueva.
 
+## Usar directamente la carpeta de LMU
+
+La fuente recomendada en Windows es:
+
+```text
+C:\Program Files (x86)\Steam\steamapps\common\Le Mans Ultimate\UserData\Telemetry
+```
+
+Race Engineer abre esos DuckDB en modo `read_only=True`. Para cambiar desde una
+copia dentro del repo sin que todos los archivos parezcan nuevos:
+
+```powershell
+python auto_ingest_telemetry.py `
+  --telemetry-dir "C:\Program Files (x86)\Steam\steamapps\common\Le Mans Ultimate\UserData\Telemetry" `
+  migrate-source
+```
+
+La migración exige coincidencia exacta de nombre, tamaño y fecha de modificación.
+Preserva los estados coincidentes y registra como `PENDING_STABILITY` únicamente
+los archivos exclusivos de la fuente nueva. No abre DuckDB, no analiza y no llama
+al LLM. Si encuentra una identidad ambigua se bloquea sin adivinar.
+
+Los comandos `backfill-next`, `maintenance`, `debrief-next` y `debrief-latest`
+respetan `--telemetry-dir`; no recorren entradas pertenecientes a una fuente
+anterior.
+
 ## Detectar e importar sesiones nuevas
 
 ```powershell
@@ -71,6 +97,67 @@ Cada ejecución escanea primero las sesiones nuevas. Si encuentra una esperando
 estabilidad, recién importada o fallida, omite el backfill. Sólo cuando el escaneo
 está inactivo incorpora como máximo un histórico, respetando 30 minutos entre
 intentos. Esto evita dos procesos simultáneos sobre History.
+
+Antes de cualquier operación, `maintenance` comprueba el proceso de Windows
+`Le Mans Ultimate.exe`. Mientras el juego está abierto termina con
+`SKIPPED_GAME_RUNNING`: no escanea, no analiza, no abre DuckDB, no ejecuta LLM y
+no lanza procesos secundarios. La comprobación usa `CREATE_NO_WINDOW` para no
+mostrar una consola. El archivo nuevo se detecta después de cerrar el juego y a
+partir de entonces cumple la espera normal de estabilidad.
+
+Además se registra `last_game_seen_at`. Tras cerrar LMU, el mantenimiento entra
+en `POST_GAME_SETTLE` durante 10 minutos antes de abrir o analizar cualquier
+DuckDB, incluso si un estado anterior consideraba estable al archivo. El umbral
+de 5 MiB nunca sustituye esta barrera: sólo filtra candidatos de backfill o LLM.
+
+## Administrar la tarea programada
+
+La tarea instalada se llama:
+
+```text
+RaceEngineer-History-Ingest
+```
+
+Reactivar después de una prueba manual:
+
+```powershell
+Enable-ScheduledTask -TaskName "RaceEngineer-History-Ingest"
+```
+
+Verificar estado, acción y próxima ejecución:
+
+```powershell
+Get-ScheduledTask -TaskName "RaceEngineer-History-Ingest" |
+  Select-Object TaskName, State, Actions
+
+Get-ScheduledTaskInfo -TaskName "RaceEngineer-History-Ingest" |
+  Select-Object LastRunTime, LastTaskResult, NextRunTime
+```
+
+El estado esperado después de reactivarla es `Ready`; `LastTaskResult = 0` confirma
+la última ejecución terminada correctamente. La acción debe conservar como fuente
+la carpeta `UserData\Telemetry` de LMU. Desactivar temporalmente durante una prueba
+manual evita que dos procesos intenten escribir History al mismo tiempo.
+
+## `BACKFILL_FAILED` con una sola vuelta válida
+
+Un DuckDB puede superar 5 MiB y abrir correctamente, pero no contener dos vueltas
+utilizables. El analizador necesita al menos una referencia y otra vuelta para formar
+una comparación validable. Si sólo queda una vuelta, escribe el JSON determinista con
+`comparisons=[]`, `--validate` termina con código 1 y v0.1 lo registra genéricamente
+como `BACKFILL_FAILED`.
+
+Casos reales conocidos:
+
+```text
+Monza 2026-08-15T05_01_19Z: lap 1 válida; lap 2 incompleta
+Spa   2026-08-12T07_32_09Z: lap 1 válida; lap 2 incompleta
+```
+
+Es un resultado no aplicable, no evidencia de corrupción. No llama al LLM y no se
+importa como una comparación válida en History. Una versión futura puede usar un
+estado más descriptivo como `BACKFILL_SKIPPED_INSUFFICIENT_VALID_LAPS`; no relajar
+`validate_global_output` para hacer pasar estos archivos.
 
 ## Generar debriefs de a uno
 

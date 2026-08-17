@@ -181,6 +181,23 @@ Conviene usar esta opción solamente si se quiere aislar una prueba o mantener h
 
 ---
 
+### Auditar selecciones históricas H5.2 sin usar un modelo
+
+```powershell
+python audit_h5_2_zone_selection.py `
+  "data\generated\h5_2\SESSION\cross_session_comparison.json" `
+  "data\generated\h5_2_llm\SESSION\MODELO_A.json" `
+  "data\generated\h5_2_llm\SESSION\MODELO_B.json" `
+  --output "data\generated\h5_2_audits\selection_audit.json"
+```
+
+Este comando reutiliza resultados existentes, valida sus SHA-256 y compara rankings
+de impacto, intensidad y curvas. No hace llamadas API, no carga Ollama y no altera el
+pipeline. Su resultado es exclusivamente shadow y no autoriza una fórmula de ranking
+ni recomendaciones históricas.
+
+---
+
 ## 5. Flujo seguro para una telemetría nueva
 
 Para una sesión recién grabada, el orden recomendado es:

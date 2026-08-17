@@ -68,6 +68,16 @@ Python owns the complete rendering. The validator rejects invented zones, extra
 fields, unauthorized codes and evidence tampering.
 Historical actions remain disabled and `session_reference` remains coaching authority.
 
+H5.2 zone-selection shadow audit `0.1`:
+- compares validated model outputs offline against absolute-impact, intensity-per-100-m
+  and corner-only ranks;
+- Monza: Pro and Qwen 27B matched impact top 3, Qwen 14B overlapped 2/3 and Flash 1/3;
+- Imola: Pro matched impact and intensity top 3, while Flash overlapped 2/3;
+- intensity alone overweights short Monza segments and impact alone can favor a broad
+  cumulative interval;
+- no production ranking or coaching authority was changed. See
+  `docs/H5_2_ZONE_SELECTION_SHADOW_AUDIT_V0_1.md`.
+
 Debrief actionability:
 - session priority policy `1.9` ranks repeated physical points by their own
   cross-comparison support before the broader recurrence of the enclosing region;

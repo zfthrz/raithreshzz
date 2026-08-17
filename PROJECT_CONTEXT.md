@@ -795,6 +795,17 @@ This authorization is for observational narrative only. It does not authorize
 historical coaching actions and does not let `historical_reference` replace
 `session_reference`.
 
+`audit_h5_2_zone_selection.py` provides an offline shadow comparison of validated
+H5.2 model selections. It ranks the same Python-owned zones independently by absolute
+delta impact, absolute delta per 100 m and corner-only impact, then reports overlap
+without changing the prompt, production selection or coaching authority. On Monza,
+Pro and Qwen 27B matched the absolute-impact top three, while no tested model matched
+the intensity top three; short segments dominated that intensity ranking. On Imola,
+Pro matched both rankings 3/3. This confirms that neither raw impact nor raw intensity
+is sufficiently general to become a deterministic relevance formula from the current
+two-track audit. The audit must remain `SHADOW_OBSERVATIONAL_ONLY` until broader real
+data supports a production rule.
+
 Do not fake H5.2 by comparing only derived History rows or LLM prose and calling it raw telemetry comparison.
 
 ---

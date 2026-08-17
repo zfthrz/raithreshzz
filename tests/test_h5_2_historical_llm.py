@@ -5,6 +5,10 @@ import hashlib
 import json
 from pathlib import Path
 
+import pytest
+
+from audit_h5_2_zone_selection import audit_paths, build_zone_metrics
+
 from historical_llm_analysis import (
     build_authorized_evidence,
     build_output,
@@ -275,3 +279,99 @@ def test_orchestrator_reuse_requires_historical_output_hash():
     assert '"backend_script": script_signature(' in source
     assert "previous_h5_2_llm_sha" in source
     assert "== sha256_file(h5_2_llm_output)" in source
+
+
+def test_shadow_metrics_keep_impact_and_intensity_as_separate_rankings(
+    tmp_path: Path,
+):
+    _, source = write_source(tmp_path)
+    source["spatial_comparison"]["zone_summaries"][0].update(
+        start_distance=0.0,
+        end_distance=1000.0,
+        delta_change=0.4,
+    )
+    source["spatial_comparison"]["zone_summaries"][1].update(
+        start_distance=1000.0,
+        end_distance=1050.0,
+        delta_change=0.1,
+    )
+
+    metrics = build_zone_metrics(source)
+
+    assert metrics[0]["impact_rank"] == 1
+    assert metrics[0]["intensity_rank"] == 2
+    assert metrics[1]["impact_rank"] == 2
+    assert metrics[1]["intensity_rank"] == 1
+
+
+def test_shadow_audit_compares_valid_model_selections(tmp_path: Path):
+    source_path, source = write_source(tmp_path)
+    for zone in source["spatial_comparison"]["zone_summaries"]:
+        zone["location"]["location_type"] = "corner"
+    source_path.write_text(json.dumps(source), encoding="utf-8")
+
+    evidence = build_authorized_evidence(source)
+    first = build_output(
+        source_path,
+        source,
+        evidence,
+        valid_response(),
+        backend="deepseek",
+        model="pro",
+    )
+    second_response = valid_response()
+    second_response["selected_zones"] = [
+        {
+            "zone_id": "zone_002",
+            "significance": "primary",
+            "observation_codes": [
+                "time_gain",
+                "current_speed_higher",
+                "current_throttle_higher",
+                "current_brake_lower",
+            ],
+        }
+    ]
+    second = build_output(
+        source_path,
+        source,
+        evidence,
+        second_response,
+        backend="ollama",
+        model="local",
+    )
+    first_path = tmp_path / "first.json"
+    second_path = tmp_path / "second.json"
+    first_path.write_text(json.dumps(first), encoding="utf-8")
+    second_path.write_text(json.dumps(second), encoding="utf-8")
+
+    audit = audit_paths(source_path, [first_path, second_path])
+
+    assert audit["metadata"]["status"] == "SHADOW_OBSERVATIONAL_ONLY"
+    assert audit["contract"]["ranking_formula_authorized"] is False
+    assert [item["model"] for item in audit["model_selections"]] == [
+        "pro",
+        "local",
+    ]
+    assert audit["model_selections"][0]["selected_zone_ids"] == ["zone_001"]
+    assert audit["model_selections"][1]["selected_zone_ids"] == ["zone_002"]
+    assert audit["model_selections"][0]["selected_corner_count"] == 1
+
+
+def test_shadow_audit_rejects_selection_from_another_source(tmp_path: Path):
+    source_path, source = write_source(tmp_path)
+    evidence = build_authorized_evidence(source)
+    output = build_output(
+        source_path,
+        source,
+        evidence,
+        valid_response(),
+        backend="deepseek",
+        model="pro",
+    )
+    output["metadata"]["source_h5_2_sha256"] = "0" * 64
+    output_path = tmp_path / "wrong_source.json"
+    output_path.write_text(json.dumps(output), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="source_h5_2_sha256"):
+        audit_paths(source_path, [output_path])

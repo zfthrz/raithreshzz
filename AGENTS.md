@@ -41,6 +41,8 @@ python race_engineer.py analyze "telemetria\ARCHIVO.duckdb" --backend ollama
 - Human labels are stronger ground truth than DeepSeek pseudo-labels.
 - H5.1 `session_reference` remains coaching authority; `historical_reference` is observational.
 - H5.2 LLM output is a controlled-code selection only: Python authorizes and renders every observation; free text, historical actions, causal claims and replacement of `session_reference` are forbidden.
+- H5.2 zone-selection audit metrics are shadow evidence only. Impact, intensity or
+  corner specificity cannot become a production ranking formula without broader validation.
 - H2 matcher v0.3 is provisional/context-limited, not a universal multi-track matcher.
 - H3 is calibration-derived and is not forced on every per-session run.
 

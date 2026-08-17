@@ -29,6 +29,7 @@ def test_active_python_files_compile():
         "build_cross_session_comparison.py",
         "validate_cross_session_comparison.py",
         "historical_llm_analysis.py",
+        "audit_h5_2_zone_selection.py",
         "validate_historical_llm_analysis.py",
         "race_engineer.py",
         "runtime_paths.py",

@@ -131,6 +131,15 @@ Implemented H5.3 slice:
   deterministic section + validator) and returns `SKIPPED_NOT_APPLICABLE` when
   H4/H5.1/H5.2 prerequisites are absent; H5.3c LLM selection remains a separate
   manual tool.
+- H5.3 Nivel 2 action policy (`historical_action_policy.py`,
+  `validate_historical_actions.py`) authorizes closed throttle/brake actions for
+  ACTIONABLE, LLM-selected, current-slower candidates; speed/time never become
+  actions and faster-lap candidates are withheld; real artifact: 2 actions
+  authorized, 1 withheld, validator PASS.
+- Debrief refinement shadow audit
+  (`audit_historical_actions_actionability.py`) classifies authorized historical
+  actions as brake/throttle/mixed; the real artifact showed 2 mixed-cue candidates
+  and promotes no channel preference or ranking formula.
 
 Promotion status: all H5.3 slices are implemented in shadow; production promotion
 gate verdict is `PROMOTION_READY`, but production historical coaching remains

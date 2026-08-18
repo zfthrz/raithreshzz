@@ -1241,6 +1241,11 @@ El gate real devuelve `PROMOTION_READY` con los 4 circuitos y ambos signos de de
 la producción histórica sigue sin autorizar (`historical_actions_authorized=false`).
 El orquestador integra una etapa `h5_3` observacional (candidatos + sección
 determinista + validator) que queda `SKIPPED_NOT_APPLICABLE` si faltan prerequisitos.
+Nivel 2: `historical_action_policy.py` autoriza acciones cerradas de freno/acelerador
+solo para candidatos ACTIONABLE seleccionados en vueltas más lentas; la velocidad y
+el tiempo nunca se convierten en acciones y las vueltas más rápidas quedan retenidas.
+Una auditoría shadow (`audit_historical_actions_actionability.py`) clasifica las
+acciones en freno/acelerador/mixtas sin promover ninguna preferencia de canal.
 Contrato:
 [`docs/H5_3_HISTORICAL_COACHING_ROADMAP_V0_1.md`](docs/H5_3_HISTORICAL_COACHING_ROADMAP_V0_1.md).
 

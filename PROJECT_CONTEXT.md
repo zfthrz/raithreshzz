@@ -877,7 +877,11 @@ selection and the documented human review
 (`docs/H5_3_AUDIT_REVIEW_2026_08_17.md`). The roadmap is fully implemented in shadow;
 the orchestrator now runs an observational `h5_3` stage (candidates + deterministic
 section + validator) that returns `SKIPPED_NOT_APPLICABLE` when prerequisites are
-absent. Production historical coaching remains `historical_actions_authorized=false`.
+absent. Nivel 2 (`historical_action_policy.py` + `validate_historical_actions.py`)
+authorizes deterministic actions for ACTIONABLE, LLM-selected, current-slower
+candidates only, with a closed vocabulary; speed and time codes never become
+actions, faster-lap candidates are withheld, and `session_reference` remains the
+coaching authority.
 
 ---
 

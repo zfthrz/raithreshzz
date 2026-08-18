@@ -5,7 +5,7 @@
 ```text
 Objective: H5.3 historical coaching debrief
 Status: ROADMAP_ONLY
-Implementation: H5_3F_PROMOTION_GATE / EVIDENCE_READY
+Implementation: H5_3F_PROMOTION_GATE / EVIDENCE_READY / ACTIONS_POLICY_V0_1
 Production authority: NONE
 historical_actions_authorized: false
 session_reference_remains_authority: true
@@ -163,6 +163,13 @@ DeepSeek `deepseek-v4-pro` selection (3 of 16) and documented human review, the 
 returned `PROMOTION_READY` with zero unmet requirements. Production authority
 remains `NONE` and `historical_actions_authorized=false`; enabling production
 historical coaching still requires an explicit decision and orchestrator integration.
+
+Nivel 2 (2026-08-17): `historical_action_policy.py` authorizes deterministic actions
+for ACTIONABLE, LLM-selected candidates whose lap is slower than the historical
+reference, using a closed vocabulary (throttle/brake adjustments). Speed and time
+codes never become actions, and faster-lap candidates are withheld (anti-regression).
+Real artifact: 2 actions authorized (T6 Villeneuve, pre-T1 Fuji) and 1 withheld
+(T1 do Senna), validator PASS.
 
 ## Initial hard prerequisites
 

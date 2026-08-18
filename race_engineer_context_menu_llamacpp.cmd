@@ -9,7 +9,7 @@ if "%~1"=="" (
   exit /b 2
 )
 
-"%~dp0.venv\Scripts\python.exe" "%~dp0analyze_telemetry_file.py" "%~1" --backend ollama
+"%~dp0.venv\Scripts\python.exe" "%~dp0analyze_telemetry_file.py" "%~1" --backend llamacpp
 set "RACE_ENGINEER_EXIT=%ERRORLEVEL%"
 
 echo.

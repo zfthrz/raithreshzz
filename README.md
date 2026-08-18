@@ -205,6 +205,23 @@ python llm_analysis_qwen3_8_27b_iq3m.py "ARCHIVO.json"
 
 Resultados y recomendación: [`docs/LLM_BACKEND_BENCHMARK_MONZA_V0_1.md`](docs/LLM_BACKEND_BENCHMARK_MONZA_V0_1.md).
 
+### Backend local vía llama.cpp
+
+Si querés usar otro LLM local servido por llama.cpp (API compatible con OpenAI),
+por ejemplo Qwen 3.6 35B A3B, configurá el endpoint y el nombre del modelo:
+
+```powershell
+$env:LLAMACPP_API_URL = "http://localhost:8080/v1/chat/completions"
+$env:LLAMACPP_MODEL = "qwen3.6-35b-a3b"
+
+python race_engineer.py analyze "telemetria\ARCHIVO.duckdb" --backend llamacpp
+```
+
+Los valores por defecto ya apuntan a `http://localhost:8080/v1/chat/completions`
+con el modelo `qwen3.6-35b-a3b`; solo hace falta tener el server de llama.cpp
+levantado. El mismo backend se puede usar para la narrativa histórica H5.2 y la
+selección de candidatos H5.3c pasando `--backend llamacpp`.
+
 ### 5.5 Validar salida LLM
 
 ```powershell

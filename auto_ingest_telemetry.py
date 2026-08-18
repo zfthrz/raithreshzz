@@ -298,22 +298,26 @@ def le_mans_ultimate_is_running() -> bool:
     if os.name != "nt":
         return False
     creation_flags = getattr(subprocess, "CREATE_NO_WINDOW", 0)
-    completed = subprocess.run(
-        [
-            "tasklist.exe",
-            "/FI",
-            f"IMAGENAME eq {LMU_PROCESS_IMAGE}",
-            "/FO",
-            "CSV",
-            "/NH",
-        ],
-        capture_output=True,
-        text=True,
-        errors="replace",
-        check=True,
-        creationflags=creation_flags,
-    )
-    rows = csv.reader(io.StringIO(completed.stdout))
+    try:
+        completed = subprocess.run(
+            [
+                "tasklist.exe",
+                "/FI",
+                f"IMAGENAME eq {LMU_PROCESS_IMAGE}",
+                "/FO",
+                "CSV",
+                "/NH",
+            ],
+            capture_output=True,
+            text=True,
+            errors="replace",
+            check=False,
+            creationflags=creation_flags,
+        )
+    except (OSError, subprocess.SubprocessError):
+        # Sin poder verificar, asumir que el juego puede estar abierto (más seguro).
+        return True
+    rows = csv.reader(io.StringIO(completed.stdout or ""))
     return any(
         row and row[0].strip().casefold() == LMU_PROCESS_IMAGE.casefold()
         for row in rows

@@ -374,6 +374,16 @@ def build_output(
 
 
 def call_backend(backend: str, system: str, user: str) -> tuple[str, str]:
+    if backend == "llamacpp":
+        import llm_analysis_llamacpp as implementation
+
+        raw = implementation.llamacpp_chat(
+            system,
+            user,
+            temperature=0.0,
+            format_schema=response_schema(),
+        )
+        return raw, str(implementation.MODEL_NAME)
     if backend == "ollama":
         import llm_analysis as implementation
 

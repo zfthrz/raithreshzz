@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import subprocess
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -393,6 +394,43 @@ def test_maintenance_waits_full_settle_window_after_game_closes(tmp_path: Path):
     assert updated["files"] == {}
     assert updated["last_maintenance"]["status"] == "POST_GAME_SETTLE"
     assert updated["last_maintenance"]["remaining_seconds"] == 300.0
+
+
+def test_game_running_detection_handles_tasklist_no_match(monkeypatch):
+    def fake_run(*args, **kwargs):
+        return subprocess.CompletedProcess(
+            args,
+            returncode=1,
+            stdout="INFO: No tasks are running which match the specified criteria.\n",
+            stderr="",
+        )
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+
+    assert ingest.le_mans_ultimate_is_running() is False
+
+
+def test_game_running_detection_handles_tasklist_match(monkeypatch):
+    def fake_run(*args, **kwargs):
+        return subprocess.CompletedProcess(
+            args,
+            returncode=0,
+            stdout='"Le Mans Ultimate.exe","1234","Console","1","10,000 K"\n',
+            stderr="",
+        )
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+
+    assert ingest.le_mans_ultimate_is_running() is True
+
+
+def test_game_running_detection_blocks_on_unverifiable_state(monkeypatch):
+    def fake_run(*args, **kwargs):
+        raise OSError("tasklist unavailable")
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+
+    assert ingest.le_mans_ultimate_is_running() is True
 
 
 def test_changed_imported_database_requires_review_instead_of_reprocessing(tmp_path: Path):

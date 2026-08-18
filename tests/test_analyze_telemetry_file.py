@@ -151,6 +151,8 @@ def test_context_menu_installer_is_per_user_and_reversible():
     assert "HKLM:" not in source
     assert "RaceEngineerAnalyzeOllama" in source
     assert "ingenierov3" in source
+    assert "RaceEngineerAnalyzeLlamacpp" in source
+    assert "llama.cpp" in source
 
 
 def test_ollama_context_menu_cmd_uses_ollama_backend():
@@ -159,3 +161,13 @@ def test_ollama_context_menu_cmd_uses_ollama_backend():
     ).read_text(encoding="utf-8")
     assert "analyze_telemetry_file.py" in source
     assert "--backend ollama" in source
+    assert ".venv\\Scripts\\python.exe" in source
+
+
+def test_llamacpp_context_menu_cmd_uses_llamacpp_backend():
+    source = (
+        launcher.PROJECT_ROOT / "race_engineer_context_menu_llamacpp.cmd"
+    ).read_text(encoding="utf-8")
+    assert "analyze_telemetry_file.py" in source
+    assert "--backend llamacpp" in source
+    assert ".venv\\Scripts\\python.exe" in source

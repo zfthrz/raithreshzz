@@ -8,10 +8,13 @@ analysis of one telemetry DuckDB with either backend:
 ```text
 Analizar con Race Engineer (DeepSeek)
 Analizar con Race Engineer (ingenierov3)
+Analizar con Race Engineer (llama.cpp)
 ```
 
 The DeepSeek action runs the default remote backend; the `ingenierov3` action runs
-the local Ollama backend. Neither replaces the global `.duckdb` default application.
+the local Ollama backend; the `llama.cpp` action runs the OpenAI-compatible local
+server (default `http://localhost:8080/v1/chat/completions`, model
+`qwen3.6-35b-a3b`). Neither replaces the global `.duckdb` default application.
 
 Before using the `ingenierov3` action, Ollama must be running locally with the
 `ingenierov3` model available:
@@ -35,6 +38,7 @@ The installer writes only below:
 ```text
 HKCU\Software\Classes\SystemFileAssociations\.duckdb\shell\RaceEngineerAnalyze
 HKCU\Software\Classes\SystemFileAssociations\.duckdb\shell\RaceEngineerAnalyzeOllama
+HKCU\Software\Classes\SystemFileAssociations\.duckdb\shell\RaceEngineerAnalyzeLlamacpp
 ```
 
 Administrator privileges are not required.
@@ -47,8 +51,9 @@ Administrator privileges are not required.
 4. Select `Analizar con Race Engineer (DeepSeek)`.
 5. Keep the console open until it displays `RESULT: PASS` or a blocking reason.
 
-For the local backend, select `Analizar con Race Engineer (ingenierov3)` instead.
-Both verbs run the same safety gates; only the LLM backend differs.
+For the local backends, select `Analizar con Race Engineer (ingenierov3)` or
+`Analizar con Race Engineer (llama.cpp)` instead. All verbs run the same safety
+gates; only the LLM backend differs.
 
 The launcher accepts only files under:
 
@@ -69,7 +74,8 @@ The launcher performs these gates in order:
 6. run deterministic analysis and History import without LLM;
 7. read Python's `metadata.valid_laps` result;
 8. require at least two valid laps;
-9. run the full selected backend pipeline (DeepSeek or Ollama/`ingenierov3`).
+9. run the full selected backend pipeline (DeepSeek, Ollama/`ingenierov3` or
+   llama.cpp).
 
 The first stage can safely remain in History if the LLM gate is withheld. Existing
 valid stage outputs are reused by `race_engineer.py`; the launcher does not use

@@ -138,7 +138,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("database")
     parser.add_argument(
         "--backend",
-        choices=("deepseek", "ollama"),
+        choices=("deepseek", "ollama", "llamacpp"),
         default="deepseek",
     )
     return parser

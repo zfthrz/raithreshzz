@@ -166,12 +166,16 @@ def llm_script(backend: str) -> Path:
         return PROJECT_ROOT / "llm_analysis_deepseek.py"
     if backend == "ollama":
         return PROJECT_ROOT / "llm_analysis.py"
+    if backend == "llamacpp":
+        return PROJECT_ROOT / "llm_analysis_llamacpp.py"
     raise ValueError(f"Backend no soportado: {backend}")
 
 
 def llm_model_name(backend: str) -> str:
     if backend == "deepseek":
         return os.environ.get("DEEPSEEK_MODEL", "deepseek-v4-pro")
+    if backend == "llamacpp":
+        return os.environ.get("LLAMACPP_MODEL", "qwen3.6-35b-a3b")
     return "ingenierov3"
 
 
@@ -878,7 +882,7 @@ def build_parser() -> argparse.ArgumentParser:
     analyze.add_argument("database", help="DuckDB de telemetría, normalmente telemetria\\archivo.duckdb")
     analyze.add_argument(
         "--backend",
-        choices=("deepseek", "ollama"),
+        choices=("deepseek", "ollama", "llamacpp"),
         default="deepseek",
         help="Backend LLM. Default: deepseek.",
     )

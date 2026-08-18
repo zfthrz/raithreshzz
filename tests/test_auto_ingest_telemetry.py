@@ -172,6 +172,7 @@ def test_failed_backfill_is_terminal_for_automatic_scan(tmp_path: Path):
         runner=fail,
         probe=lambda path: None,
         pipeline_status_reader=lambda path: None,
+        analysis_reader=lambda path: None,
     ) == 1
     assert read_state(state_path)["files"][str(database)]["status"] == (
         ingest.STATUS_BACKFILL_FAILED
@@ -573,3 +574,59 @@ def test_debrief_latest_requires_size_and_deterministic_valid_laps(tmp_path: Pat
     assert updated[str(small)]["status"] == ingest.STATUS_HISTORY_ONLY_INELIGIBLE
     assert updated[str(one_lap)]["status"] == ingest.STATUS_HISTORY_ONLY_INELIGIBLE
     assert updated[str(valid)]["status"] == ingest.STATUS_DEBRIEF_READY
+
+
+def test_backfill_insufficient_valid_laps_is_skipped_not_failed(tmp_path: Path):
+    telemetry = tmp_path / "telemetria"
+    database = make_db(telemetry)
+    state_path = tmp_path / "state.json"
+    state = ingest.empty_state()
+    state["files"][str(database)] = {
+        "status": ingest.STATUS_BASELINED,
+        "signature": ingest.signature(database),
+    }
+    ingest.save_state(state_path, state)
+
+    def fail(path: Path, args: list[str]) -> None:
+        raise RuntimeError("VALIDATION_FAILED")
+
+    assert ingest.backfill_next(
+        state_path,
+        min_size_mb=0,
+        now=NOW,
+        runner=fail,
+        probe=lambda path: None,
+        pipeline_status_reader=lambda path: None,
+        analysis_reader=lambda path: {
+            "comparisons": [],
+            "metadata": {"valid_laps": [1]},
+        },
+    ) == 0
+    entry = read_state(state_path)["files"][str(database)]
+    assert entry["status"] == (
+        ingest.STATUS_BACKFILL_SKIPPED_INSUFFICIENT_VALID_LAPS
+    )
+    assert "insuficientes" in entry["last_error"]
+
+
+def test_scan_skips_backfill_skipped_insufficient_valid_laps(tmp_path: Path):
+    telemetry = tmp_path / "telemetria"
+    database = make_db(telemetry)
+    state_path = tmp_path / "state.json"
+    state = ingest.empty_state()
+    state["files"][str(database)] = {
+        "status": ingest.STATUS_BACKFILL_SKIPPED_INSUFFICIENT_VALID_LAPS,
+        "signature": ingest.signature(database),
+    }
+    ingest.save_state(state_path, state)
+    calls: list[Path] = []
+
+    assert ingest.scan(
+        telemetry,
+        state_path,
+        settle_seconds=0,
+        now=NOW,
+        runner=lambda path, args: calls.append(path),
+        probe=lambda path: None,
+    ) == 0
+    assert calls == []

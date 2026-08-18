@@ -3487,9 +3487,7 @@ def main():
                 print("PASS")
             else:
                 print("FAIL")
-                raise RuntimeError(
-                    "VALIDATION_FAILED"
-                )
+                sys.exit(1)
 
         print_header("ANALYSIS COMPLETE")
 

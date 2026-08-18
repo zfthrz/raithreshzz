@@ -149,3 +149,13 @@ def test_context_menu_installer_is_per_user_and_reversible():
     assert "[switch]$Uninstall" in source
     assert "Remove-Item" in source
     assert "HKLM:" not in source
+    assert "RaceEngineerAnalyzeOllama" in source
+    assert "ingenierov3" in source
+
+
+def test_ollama_context_menu_cmd_uses_ollama_backend():
+    source = (
+        launcher.PROJECT_ROOT / "race_engineer_context_menu_ollama.cmd"
+    ).read_text(encoding="utf-8")
+    assert "analyze_telemetry_file.py" in source
+    assert "--backend ollama" in source

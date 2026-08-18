@@ -2,14 +2,25 @@
 
 ## Purpose
 
-Add a reversible per-user Windows Explorer action for explicitly requesting a full
-DeepSeek analysis of one telemetry DuckDB:
+Add reversible per-user Windows Explorer actions for explicitly requesting a full
+analysis of one telemetry DuckDB with either backend:
 
 ```text
 Analizar con Race Engineer (DeepSeek)
+Analizar con Race Engineer (ingenierov3)
 ```
 
-This does not replace the global `.duckdb` default application.
+The DeepSeek action runs the default remote backend; the `ingenierov3` action runs
+the local Ollama backend. Neither replaces the global `.duckdb` default application.
+
+Before using the `ingenierov3` action, Ollama must be running locally with the
+`ingenierov3` model available:
+
+```powershell
+ollama pull ingenierov3
+```
+
+The local backend defaults to `http://localhost:11434/api/chat`.
 
 ## Install
 
@@ -23,6 +34,7 @@ The installer writes only below:
 
 ```text
 HKCU\Software\Classes\SystemFileAssociations\.duckdb\shell\RaceEngineerAnalyze
+HKCU\Software\Classes\SystemFileAssociations\.duckdb\shell\RaceEngineerAnalyzeOllama
 ```
 
 Administrator privileges are not required.
@@ -34,6 +46,9 @@ Administrator privileges are not required.
 3. Right-click the telemetry `.duckdb`.
 4. Select `Analizar con Race Engineer (DeepSeek)`.
 5. Keep the console open until it displays `RESULT: PASS` or a blocking reason.
+
+For the local backend, select `Analizar con Race Engineer (ingenierov3)` instead.
+Both verbs run the same safety gates; only the LLM backend differs.
 
 The launcher accepts only files under:
 
@@ -54,7 +69,7 @@ The launcher performs these gates in order:
 6. run deterministic analysis and History import without LLM;
 7. read Python's `metadata.valid_laps` result;
 8. require at least two valid laps;
-9. run the full DeepSeek pipeline.
+9. run the full selected backend pipeline (DeepSeek or Ollama/`ingenierov3`).
 
 The first stage can safely remain in History if the LLM gate is withheld. Existing
 valid stage outputs are reused by `race_engineer.py`; the launcher does not use

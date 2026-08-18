@@ -14,6 +14,8 @@ from runtime_paths import (
     analysis_output_path,
     cross_session_output_path,
     dual_reference_output_path,
+    h5_3_candidates_path,
+    h5_3_section_path,
     historical_llm_debug_dir,
     historical_llm_output_path,
     historical_reference_output_path,
@@ -27,7 +29,7 @@ from cross_session_context import (
 )
 
 
-ORCHESTRATOR_VERSION = "0.2"
+ORCHESTRATOR_VERSION = "0.3"
 LLM_ANALYSIS_VERSION_FILE = "3_10_8_5_4"
 
 STATUS_RUN = "RUN"
@@ -245,6 +247,9 @@ def analyze_command(args: argparse.Namespace) -> int:
     h5_2_validator = PROJECT_ROOT / "validate_cross_session_comparison.py"
     h5_2_llm_script = PROJECT_ROOT / "historical_llm_analysis.py"
     h5_2_llm_validator = PROJECT_ROOT / "validate_historical_llm_analysis.py"
+    h5_3_candidate_script = PROJECT_ROOT / "build_historical_coaching_candidates.py"
+    h5_3_render_script = PROJECT_ROOT / "render_historical_debrief.py"
+    h5_3_validator_script = PROJECT_ROOT / "validate_historical_debrief.py"
     analysis_json = analysis_output_path(database)
 
     stage_results: dict[str, str] = {}
@@ -420,6 +425,7 @@ def analyze_command(args: argparse.Namespace) -> int:
         stage_results["h5_1"] = STATUS_SKIPPED
         stage_results["h5_2"] = STATUS_SKIPPED
         stage_results["h5_2_llm"] = STATUS_SKIPPED
+        stage_results["h5_3"] = STATUS_SKIPPED
         print_stage("history", STATUS_SKIPPED, "--no-history")
     else:
         db_before = stat_signature(db_path) if db_path.exists() else None
@@ -492,6 +498,7 @@ def analyze_command(args: argparse.Namespace) -> int:
             stage_results["h5_1"] = STATUS_SKIPPED
             stage_results["h5_2"] = STATUS_SKIPPED
             stage_results["h5_2_llm"] = STATUS_SKIPPED
+            stage_results["h5_3"] = STATUS_SKIPPED
             print_stage("h4", STATUS_SKIPPED, "--no-historical-context")
         else:
             applicable, reasons = h4_applicability(db_path, current_session_id)
@@ -501,6 +508,7 @@ def analyze_command(args: argparse.Namespace) -> int:
                 stage_results["h5_1"] = STATUS_SKIPPED
                 stage_results["h5_2"] = STATUS_SKIPPED
                 stage_results["h5_2_llm"] = STATUS_SKIPPED
+                stage_results["h5_3"] = STATUS_SKIPPED
                 print_stage("h4", STATUS_SKIPPED, ", ".join(reasons))
             else:
                 h4_signature = {
@@ -605,6 +613,7 @@ def analyze_command(args: argparse.Namespace) -> int:
                 except CrossSessionNotApplicableError as exc:
                     stage_results["h5_2"] = STATUS_SKIPPED
                     stage_results["h5_2_llm"] = STATUS_SKIPPED
+                    stage_results["h5_3"] = STATUS_SKIPPED
                     print_stage("h5_2", STATUS_SKIPPED, str(exc))
                 else:
                     h5_2_output = cross_session_output_path(database)
@@ -762,6 +771,76 @@ def analyze_command(args: argparse.Namespace) -> int:
                                 str(h5_2_llm_output),
                             )
 
+                    # ------------------------------------------
+                    # H5.3 historical section (observational, deterministic)
+                    # ------------------------------------------
+                    h5_3_candidates = h5_3_candidates_path(database)
+                    h5_3_section = h5_3_section_path(database)
+                    h5_3_signature = {
+                        "h5_1_sha256": sha256_file(h5_output),
+                        "h5_2_sha256": sha256_file(h5_2_output),
+                        "candidate_builder": script_signature(
+                            h5_3_candidate_script
+                        ),
+                        "renderer": script_signature(h5_3_render_script),
+                        "validator": script_signature(h5_3_validator_script),
+                    }
+                    reuse_h5_3 = (
+                        not args.force
+                        and stage_is_reusable(
+                            state,
+                            "h5_3",
+                            h5_3_signature,
+                            required_paths=(h5_3_candidates, h5_3_section),
+                        )
+                    )
+                    if reuse_h5_3:
+                        stage_results["h5_3"] = STATUS_REUSED
+                        print_stage("h5_3", STATUS_REUSED, str(h5_3_section))
+                    else:
+                        try:
+                            run_checked([
+                                sys.executable,
+                                str(h5_3_candidate_script),
+                                str(h5_output),
+                                str(h5_2_output),
+                                "--output",
+                                str(h5_3_candidates),
+                            ])
+                            run_checked([
+                                sys.executable,
+                                str(h5_3_render_script),
+                                str(h5_output),
+                                str(h5_2_output),
+                                "--output",
+                                str(h5_3_section),
+                            ])
+                            run_checked([
+                                sys.executable,
+                                str(h5_3_validator_script),
+                                str(h5_3_section),
+                            ])
+                        except subprocess.CalledProcessError:
+                            stage_results["h5_3"] = STATUS_FAILED
+                            print_stage("h5_3", STATUS_FAILED)
+                            return 1
+                        record_stage(
+                            state,
+                            "h5_3",
+                            signature=h5_3_signature,
+                            status=STATUS_RUN,
+                            output=str(h5_3_section),
+                            details={
+                                "candidates_sha256": sha256_file(
+                                    h5_3_candidates
+                                ),
+                                "section_sha256": sha256_file(h5_3_section),
+                            },
+                        )
+                        save_state(state_path, state)
+                        stage_results["h5_3"] = STATUS_RUN
+                        print_stage("h5_3", STATUS_RUN, str(h5_3_section))
+
     state["last_summary"] = stage_results
     save_state(state_path, state)
 
@@ -771,6 +850,16 @@ def analyze_command(args: argparse.Namespace) -> int:
     print("=" * 72)
     for name, status in stage_results.items():
         print(f"{name:16s} {status}")
+    if stage_results.get("h5_3") in {STATUS_RUN, STATUS_REUSED}:
+        section_path = h5_3_section_path(database)
+        if section_path.is_file():
+            section = json.loads(section_path.read_text(encoding="utf-8"))
+            print()
+            try:
+                sys.stdout.reconfigure(encoding="utf-8")
+            except (AttributeError, OSError):
+                pass
+            print(section.get("rendered_section", ""))
     print(f"state: {state_path}")
     print("RESULT: PASS")
     return 0
@@ -784,7 +873,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     analyze = subparsers.add_parser(
         "analyze",
-        help="DuckDB -> análisis -> LLM -> History -> H4 -> H5.1 -> H5.2 -> narrativa histórica",
+        help="DuckDB -> análisis -> LLM -> History -> H4 -> H5.1 -> H5.2 -> narrativa -> sección histórica H5.3",
     )
     analyze.add_argument("database", help="DuckDB de telemetría, normalmente telemetria\\archivo.duckdb")
     analyze.add_argument(

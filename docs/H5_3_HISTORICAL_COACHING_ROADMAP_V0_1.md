@@ -5,7 +5,7 @@
 ```text
 Objective: H5.3 historical coaching debrief
 Status: ROADMAP_ONLY
-Implementation: NOT_STARTED
+Implementation: H5_3F_PROMOTION_GATE / EVIDENCE_READY
 Production authority: NONE
 historical_actions_authorized: false
 session_reference_remains_authority: true
@@ -106,6 +106,15 @@ candidate IDs and closed observation/action codes. Initially keep free text disa
 The model may prioritize authorized candidates but may not create measurements,
 causes, targets or new actions.
 
+Real H5.3c checkpoint (2026-08-17): on the real Imola/Monza audit dataset (26
+candidates, 6 ACTIONABLE), DeepSeek `deepseek-v4-pro` selected three candidates
+(T6 Villeneuve primary, T15 Gresini secondary, T2 Tamburello context). The dedicated
+validator passed with zero errors; the render is Python-owned and no historical
+action was authorized.
+A later full-dataset run (55 candidates, 16 ACTIONABLE across the four tracks)
+selected T6 Villeneuve, the pre-T1 segment at Fuji and T1 do Senna at Interlagos,
+and also passed the dedicated validator with zero errors.
+
 ### H5.3d — deterministic separate renderer
 
 Python renders a distinct historical section. It must clearly label:
@@ -147,6 +156,13 @@ least the existing Fuji, Imola, Interlagos and Monza contexts, including:
 - different setups recorded as observations rather than assumed causes.
 
 Promotion requires documented human review and zero unsafe authority changes.
+
+Real H5.3f checkpoint (2026-08-17): with regenerated H5.2 v0.2 for Fuji and
+Interlagos, a 55-candidate audit across the four tracks (16 ACTIONABLE), a validated
+DeepSeek `deepseek-v4-pro` selection (3 of 16) and documented human review, the gate
+returned `PROMOTION_READY` with zero unmet requirements. Production authority
+remains `NONE` and `historical_actions_authorized=false`; enabling production
+historical coaching still requires an explicit decision and orchestrator integration.
 
 ## Initial hard prerequisites
 

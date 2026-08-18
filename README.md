@@ -26,13 +26,14 @@ Componentes principales:
 | `validate_history_db.py` | v1.3 |
 | `episode_pair_features.py` | v1.2 — hard context gate con layout |
 | `pair_review_queue.py` | schema 1.1 — cola humana estratificada |
-| `prepare_calibration_batch.py` | orchestrator 1.4 |
-| `episode_pair_matcher.py` | H2 v0.2 — `CALIBRATED_PROVISIONAL_SINGLE_CONTEXT` |
+| `prepare_calibration_batch.py` | orchestrator 1.5 |
+| `episode_pair_matcher.py` | H2 v0.3 — `CALIBRATED_PROVISIONAL_SINGLE_CONTEXT` |
 | `audit_episode_pair_matches.py` | v0.2 |
 | DeepSeek assisted pair review | H2.2 v1.0 — benchmark en curso |
 | `auto_ingest_telemetry.py` | v0.1 — ingest directo desde LMU, History prioritario y backfill gradual |
-| `analyze_telemetry_file.py` | v0.1 — launcher seguro para menú contextual con DeepSeek |
+| `analyze_telemetry_file.py` | v0.1 — launcher seguro para menú contextual con DeepSeek u Ollama |
 | `hidden_history_ingest.py` | runner sin consola con log local rotativo para la tarea programada |
+| H5.3a/b/c | shadow: candidatos deterministas + auditoría humana + selección LLM controlada |
 
 Checkpoint de calibración H2 actual sobre **Spa + layout Spa + `LMP2_ELMS`**:
 
@@ -685,7 +686,7 @@ Estas herramientas **seleccionan casos para revisión**. Sus bandas/distancias n
 
 ---
 
-# PARTE E — MATCHER H2 v0.2
+# PARTE E — MATCHER H2 v0.3
 
 ## 16. Estado y filosofía
 
@@ -702,6 +703,10 @@ Status:
 ```text
 CALIBRATED_PROVISIONAL_SINGLE_CONTEXT
 ```
+
+Los umbrales exactos se leen de `episode_pair_matcher.py` v0.3 y siguen siendo
+provisionales para el contexto Spa calibrado; no copiarlos a otros circuitos o
+vehículos sin evidencia nueva.
 
 Contexto calibrado actualmente:
 
@@ -1187,7 +1192,7 @@ H4 historical benchmark selector
 H5.1 dual reference
 H5.2 raw cross-session comparison     <- disponible en modo observacional
 H5.2 LLM historical narrative         <- observacional y validada
-H5.3 historical coaching debrief       <- objetivo futuro; todavía no implementado
+H5.3 historical coaching debrief       <- roadmap; H5.3a/b/c shadow implementadas; d/e/f pendientes
 ```
 
 Todavía no crear `persistent_pattern` automáticamente sólo porque dos episodios fueron `MATCH`.
@@ -1226,11 +1231,17 @@ El checkpoint multitrack real cubre Fuji, Imola, Interlagos y Monza. En los cuat
 
 Las zonas históricas siguen sin autorizar instrucciones de coaching: `session_reference` continúa como autoridad y `historical_actions_authorized=false`.
 
-El próximo objetivo histórico está definido como H5.3: un debrief separado contra la
-mejor vuelta histórica compatible. Se desarrollará por etapas, comenzando con
-candidatos deterministas en shadow y sin acciones para el piloto. No modificará el
-debrief normal ni habilitará coaching histórico hasta superar validator, auditoría
-humana y validación multitrack. Contrato:
+El objetivo histórico H5.3 (debrief separado contra la mejor vuelta histórica
+compatible) se está desarrollando por etapas. H5.3a (candidatos deterministas en
+shadow), H5.3b (dataset de auditoría + revisión humana) y H5.3c (selección LLM
+controlada) están implementadas con evidencia real Imola/Monza y siguen sin
+autorizar acciones. H5.3d (render determinista separado), H5.3e (validator +
+fallback seguro) y H5.3f (gate multitrack de promoción) también están implementadas.
+El gate real devuelve `PROMOTION_READY` con los 4 circuitos y ambos signos de delta;
+la producción histórica sigue sin autorizar (`historical_actions_authorized=false`).
+El orquestador integra una etapa `h5_3` observacional (candidatos + sección
+determinista + validator) que queda `SKIPPED_NOT_APPLICABLE` si faltan prerequisitos.
+Contrato:
 [`docs/H5_3_HISTORICAL_COACHING_ROADMAP_V0_1.md`](docs/H5_3_HISTORICAL_COACHING_ROADMAP_V0_1.md).
 
 ---

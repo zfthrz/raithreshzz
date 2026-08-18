@@ -167,30 +167,15 @@ Para inspeccionar un error sin depender de una consola fugaz:
 Get-Content .\data\local\telemetry_auto_ingest_task.log -Tail 100
 ```
 
-## `BACKFILL_FAILED` con una sola vuelta válida
-
-Un DuckDB puede superar 5 MiB y abrir correctamente, pero no contener dos vueltas
-utilizables. Si sólo queda una vuelta, el análisis no puede formar una comparación
-validable y v0.1 lo registra genéricamente como `BACKFILL_FAILED`.
-
-Casos reales conocidos:
-
-```text
-Monza 2026-08-15T05_01_19Z: lap 1 válida; lap 2 incompleta
-Spa   2026-08-12T07_32_09Z: lap 1 válida; lap 2 incompleta
-```
-
-Es un resultado no aplicable, no evidencia de corrupción. No relajar
-`validate_global_output` para hacerlo pasar. Una mejora futura puede asignar el estado
-`BACKFILL_SKIPPED_INSUFFICIENT_VALID_LAPS`.
-
-## `BACKFILL_FAILED` con una sola vuelta válida
+## Backfill con una sola vuelta válida
 
 Un DuckDB puede superar 5 MiB y abrir correctamente, pero no contener dos vueltas
 utilizables. El analizador necesita al menos una referencia y otra vuelta para formar
 una comparación validable. Si sólo queda una vuelta, escribe el JSON determinista con
-`comparisons=[]`, `--validate` termina con código 1 y v0.1 lo registra genéricamente
-como `BACKFILL_FAILED`.
+`comparisons=[]` y `--validate` termina con código 1.
+
+`auto_ingest_telemetry.py` reconoce ese caso y lo registra como
+`BACKFILL_SKIPPED_INSUFFICIENT_VALID_LAPS`, no como `BACKFILL_FAILED`.
 
 Casos reales conocidos:
 
@@ -199,10 +184,9 @@ Monza 2026-08-15T05_01_19Z: lap 1 válida; lap 2 incompleta
 Spa   2026-08-12T07_32_09Z: lap 1 válida; lap 2 incompleta
 ```
 
-Es un resultado no aplicable, no evidencia de corrupción. No llama al LLM y no se
-importa como una comparación válida en History. Una versión futura puede usar un
-estado más descriptivo como `BACKFILL_SKIPPED_INSUFFICIENT_VALID_LAPS`; no relajar
-`validate_global_output` para hacer pasar estos archivos.
+Es un resultado no aplicable, no evidencia de corrupción. No llama al LLM, no se
+importa como una comparación válida en History y no debilita
+`validate_global_output`.
 
 ## Generar debriefs de a uno
 
@@ -255,6 +239,8 @@ Estados principales:
 - `BASELINED`: existía al activar la herramienta y no se tocó.
 - `BASELINE_SKIPPED_SMALL`: histórico excluido por el filtro de tamaño.
 - `BACKFILL_FAILED`: falló su incorporación histórica y requiere revisión.
+- `BACKFILL_SKIPPED_INSUFFICIENT_VALID_LAPS`: histórico sin una comparación
+  validable por vueltas válidas insuficientes.
 - `PENDING_STABILITY`: nuevo, todavía puede estar siendo escrito.
 - `HISTORY_READY`: ya está en History; falta el debrief.
 - `DEBRIEF_READY`: flujo completo terminado.

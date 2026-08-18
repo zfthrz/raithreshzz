@@ -151,7 +151,7 @@ Checkpoint: **2026-08-17 automation and historical-reference integration**.
 
 | Component | Current operational baseline |
 |---|---|
-| `race_engineer.py` | orchestrator v0.2 |
+| `race_engineer.py` | orchestrator v0.3 |
 | `analyze_telemetry.py` | v3.8 + Objective Python v6 |
 | Brake point | 2.1 / schema 2.1 |
 | Throttle point | 1.2.1 / schema 1.2 |
@@ -170,14 +170,14 @@ Checkpoint: **2026-08-17 automation and historical-reference integration**.
 | H4 historical reference | v0.2 |
 | H5.1 dual reference | v0.2 |
 | H5.2 | v0.2 profile-localized raw comparison + v0.1 validated observational LLM narrative |
-| H5.3 historical coaching debrief | roadmap only / not implemented / actions disabled |
+| H5.3 historical coaching debrief | roadmap only / H5.3a-c shadow implemented / actions disabled |
 
 Validated checkpoints relevant to the current working tree:
 
 ```text
-full pytest after hidden task runner: 119 PASS / 0 FAIL / 0 SKIP
-focused automation/launcher tests:     22 PASS / 0 FAIL / 0 SKIP
-Objective Python regressions:          55 PASS / 0 FAIL / 0 SKIP
+full pytest (current working tree):   167 PASS / 0 FAIL / 0 SKIP
+Objective Python regressions:         55 PASS / 0 FAIL / 0 SKIP
+Objective recovery check:             READY
 ```
 
 The hidden scheduled-task action also completed a real manual execution with
@@ -374,6 +374,8 @@ H5.1 dual-reference context
 H5.2 raw cross-session comparison when both DuckDBs resolve; otherwise SKIPPED_NOT_APPLICABLE
    ↓
 H5.2 LLM observational narrative when LLM is enabled; historical actions remain disabled
+   
+H5.3 deterministic historical section (observational) when H4/H5.1/H5.2 are valid
 ```
 
 The orchestration entry point is:
@@ -847,11 +849,35 @@ the current-session A/B/C plan, or weaken any existing validator. The detailed s
 contract and acceptance criteria are in
 `docs/H5_3_HISTORICAL_COACHING_ROADMAP_V0_1.md`.
 
-The first authorized development slice is H5.3a only: Python may build shadow
-historical action candidates from already validated physical points, action profiles,
-localized H5.2 zones and comparability gates. It must not render those candidates as
-driver instructions. Later promotion requires offline audit, human review, multitrack
-validation and a dedicated validator.
+The first authorized development slice H5.3a is implemented as the standalone shadow
+builder `build_historical_coaching_candidates.py`. It consumes validated H5.1/H5.2
+JSON, emits deterministic `SHADOW_OBSERVATIONAL_ONLY` candidate records from
+localized H5.2 zones, and calls no LLM and renders no driver instructions. It is not
+integrated into the normal orchestrator. H5.3b adds the reproducible audit dataset
+and human-review tooling (`prepare_h5_3_audit_dataset.py`,
+`label_h5_3_audit_candidates.py`, `validate_h5_3_audit_labels.py`) with the closed
+vocabulary `ACTIONABLE / OBSERVATIONAL_ONLY / NOT_COMPARABLE / AMBIGUOUS`. H5.3c
+adds controlled LLM selection over the Python-authorized ACTIONABLE candidates
+(`historical_candidate_selection.py`, `validate_historical_candidate_selection.py`)
+with a closed response schema, no free text and no historical actions. Later
+promotion still requires multitrack validation and a dedicated validator.
+On the real Imola/Monza dataset, DeepSeek `deepseek-v4-pro` selected three of the
+six ACTIONABLE candidates and the dedicated H5.3c validator passed.
+H5.3d adds the deterministic separate renderer (`render_historical_debrief.py`):
+Python labels the current/historical lap times, total delta, comparable zones,
+limitations and authority without calling an LLM; the real Imola section rendered
+`+0.600 s` with 11 localized zones. H5.3e adds the dedicated validator and safe
+fallback (`validate_historical_debrief.py`): it rejects tampered sections, missing
+or invented zones, source-hash mismatches and authority changes, and regenerates the
+deterministic section from validated sources when the artifact is invalid. The real
+Imola section passed validation with zero errors. H5.3f adds the multitrack promotion
+gate (`assess_h5_3_promotion.py`); the real manifest verdict is
+`PROMOTION_READY` with all four tracks, both delta signs, a validated H5.3c
+selection and the documented human review
+(`docs/H5_3_AUDIT_REVIEW_2026_08_17.md`). The roadmap is fully implemented in shadow;
+the orchestrator now runs an observational `h5_3` stage (candidates + deterministic
+section + validator) that returns `SKIPPED_NOT_APPLICABLE` when prerequisites are
+absent. Production historical coaching remains `historical_actions_authorized=false`.
 
 ---
 
@@ -972,7 +998,7 @@ DeepSeek credentials/configuration must remain local/environment-based; do not c
 
 # 26. `race_engineer.py` orchestration behavior
 
-Current orchestrator version: `0.1`.
+Current orchestrator version: `0.3`.
 
 It validates that the input is a `.duckdb` file, resolves it relative to the repo when necessary, and executes reusable stages.
 
@@ -1091,10 +1117,11 @@ Real historical-reference confirmation for the latest unattended Monza session:
 This confirms that automatic History ingestion feeds the existing H4/H5 path. H5.1
 continues to keep the current-session reference as coaching authority.
 
-Two legacy backfill candidates currently remain `BACKFILL_FAILED` because each has
-only one usable lap after incomplete laps are discarded. This is non-applicable data,
-not corruption. Do not weaken `validate_global_output`; a future cosmetic status may
-name the condition `BACKFILL_SKIPPED_INSUFFICIENT_VALID_LAPS`.
+Two legacy backfill candidates are recorded as
+`BACKFILL_SKIPPED_INSUFFICIENT_VALID_LAPS` because each has only one usable lap after
+incomplete laps are discarded. This is non-applicable data, not corruption.
+`validate_global_output` remains unchanged; the ingest layer classifies the expected
+single-valid-lap outcome without weakening the analyzer validator.
 
 # 30. Recommended workflow for an agent making a change
 

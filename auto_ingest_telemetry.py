@@ -21,6 +21,9 @@ LMU_PROCESS_IMAGE = "Le Mans Ultimate.exe"
 STATUS_BASELINED = "BASELINED"
 STATUS_BASELINE_SKIPPED_SMALL = "BASELINE_SKIPPED_SMALL"
 STATUS_BACKFILL_FAILED = "BACKFILL_FAILED"
+STATUS_BACKFILL_SKIPPED_INSUFFICIENT_VALID_LAPS = (
+    "BACKFILL_SKIPPED_INSUFFICIENT_VALID_LAPS"
+)
 STATUS_PENDING_STABILITY = "PENDING_STABILITY"
 STATUS_HISTORY_READY = "HISTORY_READY"
 STATUS_DEBRIEF_READY = "DEBRIEF_READY"
@@ -116,6 +119,36 @@ def valid_lap_count(path: Path) -> int:
     if not isinstance(valid_laps, list):
         raise ValueError(f"Falta metadata.valid_laps en {analysis_path}")
     return len(valid_laps)
+
+
+def load_analysis_output(path: Path) -> dict[str, Any] | None:
+    try:
+        payload = json.loads(
+            analysis_path_for_database(path).read_text(encoding="utf-8")
+        )
+    except Exception:
+        return None
+    return payload if isinstance(payload, dict) else None
+
+
+def insufficient_valid_laps(
+    path: Path,
+    *,
+    analysis_reader: Callable[[Path], dict[str, Any] | None] = load_analysis_output,
+    min_valid_laps: int = 2,
+) -> bool:
+    payload = analysis_reader(path)
+    if not isinstance(payload, dict):
+        return False
+    comparisons = payload.get("comparisons")
+    metadata = payload.get("metadata")
+    valid_laps = metadata.get("valid_laps") if isinstance(metadata, dict) else None
+    return (
+        isinstance(comparisons, list)
+        and not comparisons
+        and isinstance(valid_laps, list)
+        and len(valid_laps) < min_valid_laps
+    )
 
 
 def empty_state() -> dict[str, Any]:
@@ -365,6 +398,7 @@ def scan(
             STATUS_BASELINED,
             STATUS_BASELINE_SKIPPED_SMALL,
             STATUS_BACKFILL_FAILED,
+            STATUS_BACKFILL_SKIPPED_INSUFFICIENT_VALID_LAPS,
             STATUS_HISTORY_READY,
             STATUS_DEBRIEF_READY,
             STATUS_CHANGED_REVIEW_REQUIRED,
@@ -427,6 +461,7 @@ def backfill_next(
     pipeline_status_reader: Callable[
         [Path], tuple[str, int] | None
     ] = existing_pipeline_status,
+    analysis_reader: Callable[[Path], dict[str, Any] | None] = load_analysis_output,
 ) -> int:
     state = load_state(state_path)
     minimum_bytes = int(min_size_mb * 1024 * 1024)
@@ -494,6 +529,27 @@ def backfill_next(
         probe(selected_path)
         runner(selected_path, ["--no-llm", "--no-historical-context"])
     except Exception as exc:
+        if insufficient_valid_laps(
+            selected_path,
+            analysis_reader=analysis_reader,
+        ):
+            selected_entry["status"] = (
+                STATUS_BACKFILL_SKIPPED_INSUFFICIENT_VALID_LAPS
+            )
+            selected_entry["last_error"] = (
+                "Vueltas válidas insuficientes: el análisis determinista no "
+                "formó una comparación validable."
+            )
+            selected_entry["backfill_attempts"] = int(
+                selected_entry.get("backfill_attempts", 0)
+            ) + 1
+            selected_entry["updated_at"] = stamp
+            save_state(state_path, state)
+            print(
+                f"BACKFILL: SKIPPED - {selected_path.name} "
+                "(vueltas válidas insuficientes)"
+            )
+            return 0
         selected_entry["status"] = STATUS_BACKFILL_FAILED
         selected_entry["last_error"] = f"{type(exc).__name__}: {exc}"
         selected_entry["backfill_attempts"] = int(

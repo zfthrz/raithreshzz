@@ -52,7 +52,8 @@ console and redirects stdout/stderr to the rotating ignored log
 The Windows Explorer action `Analizar con Race Engineer (DeepSeek)` is the explicit
 LLM path. It checks authorized path, LMU shutdown, age, size and at least two valid
 laps before running the full DeepSeek pipeline. It does not use `--force`, so valid
-stages can be reused.
+stages can be reused. A second verb, `Analizar con Race Engineer (ingenierov3)`,
+runs the same launcher with `--backend ollama` and the local `ingenierov3` model.
 
 ## Real validation checkpoint
 
@@ -104,6 +105,7 @@ weaken the analyzer validator. A later minor change may rename these outcomes to
 Most recent recorded checkpoints:
 
 ```text
+full pytest (current H5.3 milestone): 146 passed
 full pytest after La Sarthe profile: 123 passed
 focused La Sarthe/profile contracts:  15 passed
 Objective Python regressions:         55 passed (last analyzer-affecting checkpoint)
@@ -189,20 +191,22 @@ There is no pending automation or La Sarthe closeout change.
 1. Start every new task by checking `git status --short --branch` and reading the
    exact current code/tests involved.
 2. Prefer minor isolated maintenance while the temporary backend handoff is active.
-3. The cosmetic one-valid-lap backfill classification remains optional and must not
-   weaken strict analyzer validation.
-4. Treat H5.3a as the next larger objective only when explicitly chosen.
+3. The one-valid-lap backfill outcome is now
+   `BACKFILL_SKIPPED_INSUFFICIENT_VALID_LAPS`; keep the strict analyzer validator
+   unchanged.
+4. H5.3a/b/c are implemented shadow-only; continue with H5.3d/e/f only when
+   explicitly chosen.
 
 ## Future objective after automation closeout
 
-H5.3 is the next historical-product objective: a separate full-style debrief comparing
-the current reference lap against the fastest compatible historical lap. It is
-`ROADMAP_ONLY`; do not enable historical coaching as part of automation closeout.
-
-Read `docs/H5_3_HISTORICAL_COACHING_ROADMAP_V0_1.md` before proposing or implementing
-H5.3. Begin only with H5.3a, a Python-owned shadow candidate artifact. Preserve the
-existing H4/H5.1/H5.2 schemas and the current-session A/B/C output. Do not add LLM
-free text, actions or production ranking in the first slice.
+H5.3 is the historical-product objective: a separate full-style debrief comparing
+the current reference lap against the fastest compatible historical lap. It remains
+`ROADMAP_ONLY`; H5.3a (shadow candidates), H5.3b (audit dataset + human review) and
+H5.3c (controlled LLM selection) are implemented in shadow with real Imola/Monza
+evidence, and historical coaching stays disabled. Remaining slices: H5.3d
+deterministic separate renderer, H5.3e safe fallback, H5.3f multitrack promotion
+gate. Read `docs/H5_3_HISTORICAL_COACHING_ROADMAP_V0_1.md` before extending. Preserve
+the existing H4/H5.1/H5.2 schemas and the current-session A/B/C output.
 
 ## Safe continuation rule
 

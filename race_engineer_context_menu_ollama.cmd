@@ -1,0 +1,23 @@
+@echo off
+setlocal
+cd /d "%~dp0"
+
+if "%~1"=="" (
+  echo BLOCKED: no se recibio ningun archivo DuckDB.
+  echo.
+  pause
+  exit /b 2
+)
+
+python "%~dp0analyze_telemetry_file.py" "%~1" --backend ollama
+set "RACE_ENGINEER_EXIT=%ERRORLEVEL%"
+
+echo.
+if "%RACE_ENGINEER_EXIT%"=="0" (
+  echo Race Engineer (ingenierov3) termino correctamente.
+) else (
+  echo Race Engineer no completo el analisis. Codigo: %RACE_ENGINEER_EXIT%
+)
+echo.
+pause
+exit /b %RACE_ENGINEER_EXIT%

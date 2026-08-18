@@ -48,13 +48,17 @@ python race_engineer.py analyze "telemetria\ARCHIVO.duckdb" --backend ollama
   cannot authorize a brake/throttle channel preference or complexity score.
 - H2 matcher v0.3 is provisional/context-limited, not a universal multi-track matcher.
 - H3 is calibration-derived and is not forced on every per-session run.
+- H5.3 remains ROADMAP_ONLY; H5.3a/b/c are implemented shadow-only and never
+  enable historical coaching. The orchestrator `h5_3` stage is observational-only
+  and must return `SKIPPED_NOT_APPLICABLE` when H4/H5.1/H5.2 prerequisites are
+  absent.
 
 ## Current baseline
 
-Checkpoint: 2026-08-14 integration v0.2.
+Checkpoint: 2026-08-17 automation + H5.3 shadow slices.
 
 ```text
-race_engineer.py             orchestrator 0.2
+race_engineer.py             orchestrator 0.3
 analyze_telemetry.py         3.8 + Objective Python v6
 llm_analysis*.py             3.10.8.5.4
 session_history.py           1.4 / schema 4
@@ -64,12 +68,15 @@ select_historical_reference.py H4 0.2
 build_dual_reference_context.py H5.1 0.2
 build_cross_session_comparison.py H5.2 0.2 / profile-localized raw comparison
 historical_llm_analysis.py   H5.2 LLM 0.1 / validated observational narrative
+build_historical_coaching_candidates.py H5.3a 0.1 / shadow candidates
+prepare_h5_3_audit_dataset.py + label/validate H5.3b 0.1 / audit + human review
+historical_candidate_selection.py    H5.3c 0.1 / controlled LLM selection
 ```
 
 Validated integration checkpoint:
 
 ```text
-pytest:                         81 PASS / 0 FAIL / 0 SKIP
+pytest:                         167 PASS / 0 FAIL / 0 SKIP
 Objective Python regressions:  55 PASS / 0 FAIL / 0 SKIP
 ```
 

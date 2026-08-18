@@ -91,6 +91,17 @@ def cross_session_output_path(
     return stage_output_dir(database_path, "h5_2") / "cross_session_comparison.json"
 
 
+def h5_3_candidates_path(database_path: str | os.PathLike[str]) -> Path:
+    return (
+        stage_output_dir(database_path, "h5_3")
+        / "historical_coaching_candidates.json"
+    )
+
+
+def h5_3_section_path(database_path: str | os.PathLike[str]) -> Path:
+    return stage_output_dir(database_path, "h5_3") / "historical_section.json"
+
+
 def _safe_runtime_component(value: str) -> str:
     cleaned = re.sub(r"[^A-Za-z0-9._-]+", "_", value).strip("._")
     return cleaned or "unknown"

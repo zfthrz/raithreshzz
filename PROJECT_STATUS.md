@@ -55,11 +55,14 @@ Real unattended validation:
 - state transition: `PENDING_STABILITY -> HISTORY_READY` without manual analysis.
 
 The optional Windows Explorer launcher validates source, LMU shutdown, file age,
-size and deterministic valid-lap count before authorizing DeepSeek. Its context-menu
-registration is per-user and reversible.
+size and deterministic valid-lap count before authorizing an LLM. Its context-menu
+registration is per-user and reversible and exposes two verbs: DeepSeek (remote) and
+`ingenierov3` (local Ollama).
 
 Explorer registration validation:
 - `Analizar con Race Engineer (DeepSeek)` appears in the `.duckdb` context menu;
+- `Analizar con Race Engineer (ingenierov3)` uses the same launcher with
+  `--backend ollama` and the local `ingenierov3` model;
 - the launcher and registration tests passed in the focused 22-test checkpoint;
 - an end-to-end Explorer-triggered DeepSeek run should be recorded before calling
   this milestone fully closed.
@@ -74,20 +77,12 @@ Latest real H4 validation:
 
 Known non-blocking backfill outcome:
 - Monza `2026-08-15T05_01_19Z` and Spa `2026-08-12T07_32_09Z` are recorded as
-  `BACKFILL_FAILED` because each contains only one usable lap after the initial and
-  incomplete laps are excluded;
-- neither case called an LLM, corrupted History or affects ready sessions;
-- a future cosmetic improvement may use
-  `BACKFILL_SKIPPED_INSUFFICIENT_VALID_LAPS`, but validators must not be weakened.
-
-Known non-blocking backfill outcome:
-- Monza `2026-08-15T05_01_19Z` and Spa `2026-08-12T07_32_09Z` are recorded as
-  `BACKFILL_FAILED` because each contains only one usable lap after the initial and
-  incomplete laps are excluded;
+  `BACKFILL_SKIPPED_INSUFFICIENT_VALID_LAPS` because each contains only one usable
+  lap after the initial and incomplete laps are excluded;
 - the analyzer correctly produces no comparisons and `--validate` returns failure;
-- neither case called an LLM, corrupted History or affects ready sessions;
-- a future cosmetic improvement may classify this as
-  `BACKFILL_SKIPPED_INSUFFICIENT_VALID_LAPS`, but validators must not be weakened.
+- `auto_ingest_telemetry.py` classifies that expected outcome as skipped without
+  weakening `validate_global_output`;
+- neither case called an LLM, corrupted History or affects ready sessions.
 
 Hidden-task closeout evidence:
 - `RaceEngineer-History-Ingest` was updated to `pythonw.exe` plus
@@ -108,11 +103,38 @@ Implemented:
 - H5.2 profile-localized raw cross-session comparison `0.2` / schema `1.1`
 - H5.2 validated observational LLM narrative `0.1`
 
-Planned, not implemented:
-- H5.3 separate historical coaching debrief;
-- current state: `ROADMAP_ONLY`, `historical_actions_authorized=false`;
-- first future slice: H5.3a Python-owned shadow candidate builder;
-- promotion requires dedicated gates, validator, human audit and multitrack evidence.
+Implemented H5.3 slice:
+- H5.3a Python-owned shadow candidate builder
+  `build_historical_coaching_candidates.py`;
+- emits `SHADOW_OBSERVATIONAL_ONLY`, calls no LLM and renders no driver actions;
+- H5.3b reproducible audit dataset and human review
+  (`prepare_h5_3_audit_dataset.py`, `label_h5_3_audit_candidates.py`,
+  `validate_h5_3_audit_labels.py`) with the closed review vocabulary
+  `ACTIONABLE / OBSERVATIONAL_ONLY / NOT_COMPARABLE / AMBIGUOUS`;
+- H5.3c controlled LLM selection over Python-authorized ACTIONABLE candidates
+  (`historical_candidate_selection.py`, `validate_historical_candidate_selection.py`)
+  with a closed response schema, no free text and no historical actions;
+- real H5.3c checkpoint: DeepSeek `deepseek-v4-pro` selected three of six ACTIONABLE
+  candidates (T6 Villeneuve primary, T15 Gresini secondary, T2 Tamburello context)
+  and the dedicated validator passed;
+- H5.3d deterministic separate renderer (`render_historical_debrief.py`) that labels
+  current/historical lap times, total delta, comparable zones, limitations and
+  authority without calling an LLM; real Imola section rendered `+0.600 s` / 11 zones;
+- H5.3e dedicated validator and safe fallback
+  (`validate_historical_debrief.py`) that rejects tampered sections and regenerates
+  the deterministic section from validated sources when the artifact is invalid;
+  the real Imola section passed validation with zero errors;
+- H5.3f multitrack promotion gate (`assess_h5_3_promotion.py`); the real manifest
+  verdict is `PROMOTION_READY` with the four tracks, both delta signs, a validated
+  H5.3c selection and documented human review;
+- the orchestrator `h5_3` stage is integrated as observational-only (candidates +
+  deterministic section + validator) and returns `SKIPPED_NOT_APPLICABLE` when
+  H4/H5.1/H5.2 prerequisites are absent; H5.3c LLM selection remains a separate
+  manual tool.
+
+Promotion status: all H5.3 slices are implemented in shadow; production promotion
+gate verdict is `PROMOTION_READY`, but production historical coaching remains
+`historical_actions_authorized=false` and is not integrated into the orchestrator.
 
 See `docs/H5_3_HISTORICAL_COACHING_ROADMAP_V0_1.md`. H5.3 must remain additive:
 the current-session debrief and H5.1 coaching authority cannot change merely because
@@ -201,7 +223,7 @@ LLM backend benchmark on the real 10-comparison Monza `LMP2_ELMS` session:
 See `docs/LLM_BACKEND_BENCHMARK_MONZA_V0_1.md`.
 
 Validation:
-- pytest: `83 PASS / 0 FAIL / 0 SKIP`
+- pytest: `167 PASS / 0 FAIL / 0 SKIP`
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP`
 - Objective recovery check: `READY`
 

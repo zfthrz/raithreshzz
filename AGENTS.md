@@ -57,12 +57,13 @@ python race_engineer.py analyze "telemetria\ARCHIVO.duckdb" --backend ollama
 
 ## Current baseline
 
-Checkpoint: 2026-08-17 automation + H5.3 shadow slices.
+Checkpoint: 2026-08-18 automation + H5.3 shadow + local LLM backends.
 
 ```text
 race_engineer.py             orchestrator 0.3
 analyze_telemetry.py         3.8 + Objective Python v6
 llm_analysis*.py             3.10.8.5.4
+llm_analysis_llamacpp.py     3.10.8.5.4 / llama.cpp local (default qwen3-14b)
 session_history.py           1.4 / schema 4
 episode_pair_matcher.py      H2 0.3
 build_persistent_patterns.py H3 0.1
@@ -78,7 +79,7 @@ historical_candidate_selection.py    H5.3c 0.1 / controlled LLM selection
 Validated integration checkpoint:
 
 ```text
-pytest:                         167 PASS / 0 FAIL / 0 SKIP
+pytest:                         185 PASS / 0 FAIL / 0 SKIP
 Objective Python regressions:  55 PASS / 0 FAIL / 0 SKIP
 ```
 

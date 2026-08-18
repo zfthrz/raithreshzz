@@ -63,7 +63,7 @@ LLAMACPP_URL = os.environ.get(
 #   export DEEPSEEK_MODEL=deepseek-v4-pro
 MODEL_NAME = os.environ.get(
     "LLAMACPP_MODEL",
-    "qwen3.6-35b-a3b",
+    "qwen3-14b",
 )
 
 LLAMACPP_API_KEY_ENV = "LLAMACPP_API_KEY"

@@ -63,6 +63,8 @@ Explorer registration validation:
 - `Analizar con Race Engineer (DeepSeek)` appears in the `.duckdb` context menu;
 - `Analizar con Race Engineer (ingenierov3)` uses the same launcher with
   `--backend ollama` and the local `ingenierov3` model;
+- `Analizar con Race Engineer (llama.cpp)` uses the same launcher with
+  `--backend llamacpp` and the local `qwen3-14b` model (OpenAI-compatible server);
 - the launcher and registration tests passed in the focused 22-test checkpoint;
 - an end-to-end Explorer-triggered DeepSeek run should be recorded before calling
   this milestone fully closed.
@@ -232,7 +234,7 @@ LLM backend benchmark on the real 10-comparison Monza `LMP2_ELMS` session:
 See `docs/LLM_BACKEND_BENCHMARK_MONZA_V0_1.md`.
 
 Validation:
-- pytest: `167 PASS / 0 FAIL / 0 SKIP`
+- pytest: `185 PASS / 0 FAIL / 0 SKIP`
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP`
 - Objective recovery check: `READY`
 

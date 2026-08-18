@@ -163,6 +163,7 @@ Checkpoint: **2026-08-17 automation and historical-reference integration**.
 | Throttle coaching evidence gate | 1.0 / SHADOW |
 | `llm_analysis.py` | 3.10.8.5.4 / Ollama `ingenierov3` |
 | `llm_analysis_deepseek.py` | 3.10.8.5.4 / DeepSeek provisional v2 |
+| `llm_analysis_llamacpp.py` | 3.10.8.5.4 / llama.cpp local (default `qwen3-14b`) |
 | LLM output validator | v1.2 |
 | `session_history.py` | v1.4 / History schema 4 |
 | H2 matcher | v0.3 / provisional calibrated single context |
@@ -170,12 +171,12 @@ Checkpoint: **2026-08-17 automation and historical-reference integration**.
 | H4 historical reference | v0.2 |
 | H5.1 dual reference | v0.2 |
 | H5.2 | v0.2 profile-localized raw comparison + v0.1 validated observational LLM narrative |
-| H5.3 historical coaching debrief | roadmap only / H5.3a-c shadow implemented / actions disabled |
+| H5.3 historical coaching debrief | roadmap only / shadow complete (H5.3a-f) + Nivel 2 action policy / production gated |
 
 Validated checkpoints relevant to the current working tree:
 
 ```text
-full pytest (current working tree):   167 PASS / 0 FAIL / 0 SKIP
+full pytest (current working tree):   185 PASS / 0 FAIL / 0 SKIP
 Objective Python regressions:         55 PASS / 0 FAIL / 0 SKIP
 Objective recovery check:             READY
 ```
@@ -553,6 +554,7 @@ Operational files:
 llm_analysis.py                 # Ollama / ingenierov3
 llm_analysis_ingenierov3.py     # explicit generic local backend alias
 llm_analysis_deepseek.py        # DeepSeek provisional v2
+llm_analysis_llamacpp.py        # llama.cpp local (OpenAI-compatible), default qwen3-14b
 ```
 
 DeepSeek is the primary iteration backend; Ollama/`ingenierov3` is the local parity/checkpoint path.
@@ -1107,7 +1109,9 @@ Windows Explorer context menu. It accepts only DuckDBs inside authorized telemet
 roots, blocks History databases, LMU-running state, files below 5 MiB and files
 younger than 10 minutes. It first runs deterministic analysis + History without an
 LLM, requires at least two Python-confirmed valid laps, and only then runs the full
-selected backend. `race_engineer.py` reuse remains responsible for preventing
+selected backend. The Windows context menu exposes three verbs: DeepSeek,
+`ingenierov3` (Ollama) and `llama.cpp` (default model `qwen3-14b`).
+`race_engineer.py` reuse remains responsible for preventing
 duplicate valid model calls.
 
 Real historical-reference confirmation for the latest unattended Monza session:

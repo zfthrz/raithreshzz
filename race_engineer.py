@@ -175,7 +175,7 @@ def llm_model_name(backend: str) -> str:
     if backend == "deepseek":
         return os.environ.get("DEEPSEEK_MODEL", "deepseek-v4-pro")
     if backend == "llamacpp":
-        return os.environ.get("LLAMACPP_MODEL", "qwen3.6-35b-a3b")
+        return os.environ.get("LLAMACPP_MODEL", "qwen3-14b")
     return "ingenierov3"
 
 

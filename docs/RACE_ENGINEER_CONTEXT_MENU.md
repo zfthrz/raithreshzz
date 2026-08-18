@@ -14,7 +14,7 @@ Analizar con Race Engineer (llama.cpp)
 The DeepSeek action runs the default remote backend; the `ingenierov3` action runs
 the local Ollama backend; the `llama.cpp` action runs the OpenAI-compatible local
 server (default `http://localhost:8080/v1/chat/completions`, model
-`qwen3.6-35b-a3b`). Neither replaces the global `.duckdb` default application.
+`qwen3-14b`). Neither replaces the global `.duckdb` default application.
 
 Before using the `ingenierov3` action, Ollama must be running locally with the
 `ingenierov3` model available:

@@ -22,6 +22,7 @@ Componentes principales:
 |---|---|
 | `analyze_telemetry.py` | v3.8 — análisis determinista intra-session |
 | `llm_analysis.py` / `llm_analysis_deepseek.py` | baseline operativa 3.10.8.5.4 |
+| `llm_analysis_llamacpp.py` | 3.10.8.5.4 — backend local llama.cpp (OpenAI-compatible), default `qwen3-14b` |
 | `session_history.py` | v1.4 — History schema 4 |
 | `validate_history_db.py` | v1.3 |
 | `episode_pair_features.py` | v1.2 — hard context gate con layout |
@@ -208,17 +209,17 @@ Resultados y recomendación: [`docs/LLM_BACKEND_BENCHMARK_MONZA_V0_1.md`](docs/L
 ### Backend local vía llama.cpp
 
 Si querés usar otro LLM local servido por llama.cpp (API compatible con OpenAI),
-por ejemplo Qwen 3.6 35B A3B, configurá el endpoint y el nombre del modelo:
+por ejemplo Qwen 3 14B, configurá el endpoint y el nombre del modelo:
 
 ```powershell
 $env:LLAMACPP_API_URL = "http://localhost:8080/v1/chat/completions"
-$env:LLAMACPP_MODEL = "qwen3.6-35b-a3b"
+$env:LLAMACPP_MODEL = "qwen3-14b"
 
 python race_engineer.py analyze "telemetria\ARCHIVO.duckdb" --backend llamacpp
 ```
 
 Los valores por defecto ya apuntan a `http://localhost:8080/v1/chat/completions`
-con el modelo `qwen3.6-35b-a3b`; solo hace falta tener el server de llama.cpp
+con el modelo `qwen3-14b`; solo hace falta tener el server de llama.cpp
 levantado. El mismo backend se puede usar para la narrativa histórica H5.2 y la
 selección de candidatos H5.3c pasando `--backend llamacpp`.
 

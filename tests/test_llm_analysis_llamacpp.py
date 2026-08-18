@@ -19,7 +19,7 @@ def test_llamacpp_module_defaults(monkeypatch):
 
     module = importlib.reload(llamacpp)
 
-    assert module.MODEL_NAME == "qwen3.6-35b-a3b"
+    assert module.MODEL_NAME == "qwen3-14b"
     assert module.LLAMACPP_URL == "http://localhost:8080/v1/chat/completions"
     assert hasattr(module, "llamacpp_chat")
 
@@ -38,7 +38,7 @@ def test_race_engineer_resolves_llamacpp_backend(monkeypatch):
     monkeypatch.delenv("LLAMACPP_MODEL", raising=False)
 
     assert race_engineer.llm_script("llamacpp").name == "llm_analysis_llamacpp.py"
-    assert race_engineer.llm_model_name("llamacpp") == "qwen3.6-35b-a3b"
+    assert race_engineer.llm_model_name("llamacpp") == "qwen3-14b"
 
 
 def test_llamacpp_backend_is_exposed_in_entry_points():

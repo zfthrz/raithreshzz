@@ -54,6 +54,9 @@ LLM path. It checks authorized path, LMU shutdown, age, size and at least two va
 laps before running the full DeepSeek pipeline. It does not use `--force`, so valid
 stages can be reused. A second verb, `Analizar con Race Engineer (ingenierov3)`,
 runs the same launcher with `--backend ollama` and the local `ingenierov3` model.
+A third verb, `Analizar con Race Engineer (llama.cpp)`, runs the same launcher with
+`--backend llamacpp` and the local `qwen3-14b` model via the OpenAI-compatible
+llama.cpp server.
 
 ## Real validation checkpoint
 
@@ -105,7 +108,7 @@ weaken the analyzer validator. A later minor change may rename these outcomes to
 Most recent recorded checkpoints:
 
 ```text
-full pytest (current H5.3 milestone): 146 passed
+full pytest (current, llama.cpp backend): 185 passed
 full pytest after La Sarthe profile: 123 passed
 focused La Sarthe/profile contracts:  15 passed
 Objective Python regressions:         55 passed (last analyzer-affecting checkpoint)

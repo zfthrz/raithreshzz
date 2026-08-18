@@ -12364,13 +12364,19 @@ def _session_plan_sort_key(
 
     repeated_point_count = sum(
         1 for pattern in point_patterns
-        if pattern.get("status") == "REPEATED"
+        if (
+            pattern.get("status") == "REPEATED"
+            and bool(pattern.get("authorized_numeric_coaching"))
+        )
     )
     repeated_point_support_count = max(
         [
             safe_int(pattern.get("comparison_count")) or 1
             for pattern in point_patterns
-            if pattern.get("status") == "REPEATED"
+            if (
+                pattern.get("status") == "REPEATED"
+                and bool(pattern.get("authorized_numeric_coaching"))
+            )
         ],
         default=0,
     )
@@ -14801,6 +14807,8 @@ def build_driver_cues_for_plan_item(item, max_cues=2):
             "point_comparison_count": point_count,
             "region_comparison_count": safe_int(item.get("comparison_count")) or 0,
         }
+        if profile is not None:
+            cue["reference_action_profile"] = profile
         cues.append(cue)
         if profile is not None and profile_text:
             cues.append({

@@ -96,3 +96,25 @@ def test_known_throttle_profiles_remain_driver_facing_when_anchored_to_points():
         assert release_only[1]["text"] == (
             "hacé una aplicación media y breve de acelerador como en la referencia"
         )
+
+
+def test_compound_throttle_profile_text():
+    """Perfiles compuestos deben construirse correctamente."""
+    for module_name in ("llm_analysis", "llm_analysis_deepseek"):
+        module = importlib.import_module(module_name)
+
+        assert module._driver_facing_throttle_profile_text(
+            "aplicación alta breve"
+        ) == "hacé una aplicación alta y breve de acelerador como en la referencia"
+
+        assert module._driver_facing_throttle_profile_text(
+            "reaplicación sostenida sin volver a soltar dentro de la zona"
+        ) == "reaplicá y sostené el acelerador como en la referencia"
+
+        assert module._driver_facing_throttle_profile_text(
+            "aplicación parcial breve → acelerador liberado → reaplicación sostenida"
+        ) == (
+            "hacé una aplicación parcial y breve de acelerador; después, "
+            "soltá el acelerador; después, reaplicá y sostené el acelerador "
+            "como en la referencia"
+        )

@@ -1,0 +1,61 @@
+{
+  "schema_version": 2,
+  "track": "Spa-Francorchamps",
+  "track_layout": "Circuit de Spa-Francorchamps",
+  "vehicle_variant": "LMP2_ELMS",
+  "lap_length_m": 7000.0,
+  "turns": [
+    {
+      "turn": "T1",
+      "name": "Turn 1 (Eau Rouge / Raidex)",
+      "start_m": 100.0,
+      "apex_m": 300.0,
+      "end_m": 600.0,
+      "type": "right",
+      "direction": "right",
+      "group": "Eau Rouge",
+      "confidence": "high",
+      "provenance": "golden",
+      "evidence": {"method": "geometric", "confidence_score": 0.95}
+    },
+    {
+      "turn": "T2",
+      "name": "Turn 2 (Lesmo 1)",
+      "start_m": 1500.0,
+      "apex_m": 1700.0,
+      "end_m": 2000.0,
+      "type": "right",
+      "direction": "right",
+      "group": "Lesmo",
+      "confidence": "high",
+      "provenance": "golden",
+      "evidence": {"method": "geometric", "confidence_score": 0.9}
+    }
+  ],
+  "segments": [
+    {
+      "segment_id": "seg_straight_1",
+      "type": "straight",
+      "start_distance_m": 600.0,
+      "end_distance_m": 1500.0,
+      "name": "Rieter Straight",
+      "provenance": "geometric_gap",
+      "confidence": "high",
+      "evidence": {"method": "gap_analysis", "confidence_score": 0.85}
+    },
+    {
+      "segment_id": "seg_transition_1",
+      "type": "transition",
+      "start_distance_m": 2000.0,
+      "end_distance_m": 2500.0,
+      "name": "Lesmo Exit Transition",
+      "provenance": "geometric_transition",
+      "confidence": "medium",
+      "evidence": {"method": "curvature_analysis", "confidence_score": 0.7}
+    }
+  ],
+  "validation_summary": {
+    "status": "VALID_WITH_WARNINGS",
+    "schema_version": 2
+  }
+}

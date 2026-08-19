@@ -1,0 +1,21 @@
+{
+  "schema_version": 2,
+  "track": "Spa-Francorchamps",
+  "turns": [
+    {
+      "turn": "T1",
+      "name": "Turn 1",
+      "start_m": 100.0,
+      "apex_m": 300.0,
+      "end_m": 600.0,
+      "type": "right",
+      "confidence": "high",
+      "provenance": "golden"
+    }
+  ],
+  "segments": [],
+  "validation_summary": {
+    "status": "VALID",
+    "schema_version": 2
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "schema_version": 2,
+  "track": "Spa-Francorchamps",
+  "turns": [
+    {
+      "turn": "T1",
+      "name": "Turn 1",
+      "start_m": 100.0,
+      "apex_m": 300.0,
+      "end_m": 600.0,
+      "type": "right",
+      "confidence": "high",
+      "provenance": "golden"
+    }
+  ],
+  "segments": [
+    {
+      "segment_id": "seg_1",
+      "type": "invalid_type",
+      "start_distance_m": 600.0,
+      "end_distance_m": 1000.0,
+      "provenance": "test",
+      "confidence": "high",
+      "evidence": {"method": "test"}
+    }
+  ],
+  "validation_summary": {
+    "status": "INVALID",
+    "schema_version": 2
+  }
+}

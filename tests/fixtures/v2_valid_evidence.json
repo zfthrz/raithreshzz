@@ -1,0 +1,32 @@
+{
+  "schema_version": 2,
+  "track": "Spa-Francorchamps",
+  "turns": [
+    {
+      "turn": "T1",
+      "name": "Turn 1",
+      "start_m": 100.0,
+      "apex_m": 300.0,
+      "end_m": 600.0,
+      "type": "right",
+      "confidence": "high",
+      "provenance": "golden"
+    }
+  ],
+  "segments": [
+    {
+      "segment_id": "seg_1",
+      "type": "straight",
+      "start_distance_m": 600.0,
+      "end_distance_m": 1000.0,
+      "name": "Valid segment",
+      "provenance": "geometric_gap",
+      "confidence": "high",
+      "evidence": {"method": "gap_analysis", "confidence_score": 0.95, "data_sources": ["gps", "curvature"]}
+    }
+  ],
+  "validation_summary": {
+    "status": "VALID",
+    "schema_version": 2
+  }
+}

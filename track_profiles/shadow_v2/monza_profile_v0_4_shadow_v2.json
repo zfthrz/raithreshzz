@@ -1,0 +1,257 @@
+{
+  "schema_version": 2,
+  "profile_id": "monza-lmu-f1-11turn-v0.4-shadow-v2",
+  "status": "VALIDATED_MULTI_SESSION",
+  "track": "Autodromo Nazionale Monza",
+  "layout": "Autodromo Nazionale Monza",
+  "distance_coordinate": "LMU Lap Dist",
+  "turns": [
+    {
+      "turn": 1,
+      "name": "Variante del Rettifilo",
+      "aliases": [
+        "Rettifilo",
+        "Prima Variante"
+      ],
+      "group": "Variante del Rettifilo",
+      "direction": "right",
+      "start_m": 890.0,
+      "apex_m": 930.0,
+      "end_m": 950.0
+    },
+    {
+      "turn": 2,
+      "name": "Variante del Rettifilo",
+      "aliases": [
+        "Rettifilo",
+        "Prima Variante"
+      ],
+      "group": "Variante del Rettifilo",
+      "direction": "left",
+      "start_m": 950.0,
+      "apex_m": 974.0,
+      "end_m": 1020.0
+    },
+    {
+      "turn": 3,
+      "name": "Curva Grande",
+      "aliases": [
+        "Curva Biassono"
+      ],
+      "group": "Curva Grande",
+      "direction": "right",
+      "start_m": 1180.0,
+      "apex_m": 1334.0,
+      "end_m": 1760.0
+    },
+    {
+      "turn": 4,
+      "name": "Variante della Roggia",
+      "aliases": [
+        "Roggia",
+        "Seconda Variante"
+      ],
+      "group": "Variante della Roggia",
+      "direction": "left",
+      "start_m": 2098.0,
+      "apex_m": 2148.0,
+      "end_m": 2170.0
+    },
+    {
+      "turn": 5,
+      "name": "Variante della Roggia",
+      "aliases": [
+        "Roggia",
+        "Seconda Variante"
+      ],
+      "group": "Variante della Roggia",
+      "direction": "right",
+      "start_m": 2170.0,
+      "apex_m": 2192.0,
+      "end_m": 2230.0
+    },
+    {
+      "turn": 6,
+      "name": "Lesmo 1",
+      "aliases": [
+        "Prima Curva di Lesmo"
+      ],
+      "group": "Lesmo",
+      "direction": "right",
+      "start_m": 2460.0,
+      "apex_m": 2536.0,
+      "end_m": 2660.0
+    },
+    {
+      "turn": 7,
+      "name": "Lesmo 2",
+      "aliases": [
+        "Seconda Curva di Lesmo"
+      ],
+      "group": "Lesmo",
+      "direction": "right",
+      "start_m": 2815.0,
+      "apex_m": 2878.0,
+      "end_m": 2945.0
+    },
+    {
+      "turn": 8,
+      "name": "Variante Ascari",
+      "aliases": [
+        "Ascari"
+      ],
+      "group": "Variante Ascari",
+      "direction": "left",
+      "start_m": 3885.0,
+      "apex_m": 3942.0,
+      "end_m": 3990.0
+    },
+    {
+      "turn": 9,
+      "name": "Variante Ascari",
+      "aliases": [
+        "Ascari"
+      ],
+      "group": "Variante Ascari",
+      "direction": "right",
+      "start_m": 3990.0,
+      "apex_m": 4052.0,
+      "end_m": 4105.0
+    },
+    {
+      "turn": 10,
+      "name": "Variante Ascari",
+      "aliases": [
+        "Ascari"
+      ],
+      "group": "Variante Ascari",
+      "direction": "left",
+      "start_m": 4105.0,
+      "apex_m": 4132.0,
+      "end_m": 4225.0
+    },
+    {
+      "turn": 11,
+      "name": "Curva Alboreto",
+      "aliases": [
+        "Parabolica",
+        "Curva Parabolica"
+      ],
+      "group": "Curva Alboreto",
+      "direction": "right",
+      "start_m": 5060.0,
+      "apex_m": 5156.0,
+      "end_m": 5535.0
+    }
+  ],
+  "segments": [
+    {
+      "segment_id": "monza_straight_rettifilo_to_curva_grande",
+      "type": "straight",
+      "start_distance_m": 1020.0,
+      "end_distance_m": 1180.0,
+      "name": "Rettifilo exit to Curva Grande approach",
+      "group": "Variante del Rettifilo",
+      "confidence": "high",
+      "provenance": "approved straight segment from validated v1 calibration",
+      "evidence": {
+        "source": "monza_profile_v0_3.json",
+        "method": "v1 straight gap documentation",
+        "distance": 160.0,
+        "classification": "straight_real_track_feature",
+        "description": "Acceleration corridor from Variante del Rettifilo complex exit toward Curva Grande braking zone"
+      }
+    },
+    {
+      "segment_id": "monza_straight_curva_grande_to_roggia",
+      "type": "straight",
+      "start_distance_m": 1760.0,
+      "end_distance_m": 2098.0,
+      "name": "Curva Grande exit to Variante della Roggia approach",
+      "group": "Variante della Roggia",
+      "confidence": "high",
+      "provenance": "approved straight segment from validated v1 calibration",
+      "evidence": {
+        "source": "monza_profile_v0_3.json",
+        "method": "v1 straight gap documentation",
+        "distance": 338.0,
+        "classification": "straight_real_track_feature",
+        "description": "Full acceleration corridor from Curva Grande exit toward Variante della Roggia braking zone"
+      }
+    },
+    {
+      "segment_id": "monza_straight_roggia_to_lesmo",
+      "type": "straight",
+      "start_distance_m": 2230.0,
+      "end_distance_m": 2460.0,
+      "name": "Variante della Roggia exit to Lesmo 1 approach",
+      "group": "Lesmo",
+      "confidence": "high",
+      "provenance": "approved straight segment from validated v1 calibration",
+      "evidence": {
+        "source": "monza_profile_v0_3.json",
+        "method": "v1 straight gap documentation",
+        "distance": 230.0,
+        "classification": "straight_real_track_feature",
+        "description": "Acceleration corridor from Variante della Roggia complex exit toward Lesmo 1 braking zone"
+      }
+    },
+    {
+      "segment_id": "monza_straight_lesmo_1_to_lesmo_2",
+      "type": "straight",
+      "start_distance_m": 2660.0,
+      "end_distance_m": 2815.0,
+      "name": "Lesmo 1 exit to Lesmo 2 approach",
+      "group": "Lesmo",
+      "confidence": "high",
+      "provenance": "approved straight segment from validated v1 calibration",
+      "evidence": {
+        "source": "monza_profile_v0_3.json",
+        "method": "v1 straight gap documentation",
+        "distance": 155.0,
+        "classification": "straight_real_track_feature",
+        "description": "Short straight between Lesmo 1 and Lesmo 2"
+      }
+    },
+    {
+      "segment_id": "monza_straight_lesmo_2_to_ascari",
+      "type": "straight",
+      "start_distance_m": 2945.0,
+      "end_distance_m": 3885.0,
+      "name": "Lesmo 2 exit to Variante Ascari approach",
+      "group": "Variante Ascari",
+      "confidence": "high",
+      "provenance": "approved straight segment from validated v1 calibration",
+      "evidence": {
+        "source": "monza_profile_v0_3.json",
+        "method": "v1 straight gap documentation",
+        "distance": 940.0,
+        "classification": "straight_real_track_feature",
+        "description": "Main straight from Lesmo 2 exit toward Variante Ascari braking zone; one of the main straights at Monza"
+      }
+    },
+    {
+      "segment_id": "monza_straight_ascari_to_parabolica",
+      "type": "straight",
+      "start_distance_m": 4225.0,
+      "end_distance_m": 5060.0,
+      "name": "Variante Ascari exit to Parabolica approach",
+      "group": "Curva Alboreto",
+      "confidence": "high",
+      "provenance": "approved straight segment from validated v1 calibration",
+      "evidence": {
+        "source": "monza_profile_v0_3.json",
+        "method": "v1 straight gap documentation",
+        "distance": 835.0,
+        "classification": "straight_real_track_feature",
+        "description": "Long braking zone from Ascari complex exit toward Curva Alboreto (Parabolica) approach"
+      }
+    }
+  ],
+  "display_policy": {
+    "prefer_corner_name": true,
+    "turn_number_is_secondary": true,
+    "turn_number_suffix": "F1",
+    "always_preserve_lmu_distance_m": true
+  }
+}

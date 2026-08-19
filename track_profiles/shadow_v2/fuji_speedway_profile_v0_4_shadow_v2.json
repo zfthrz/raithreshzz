@@ -1,0 +1,217 @@
+{
+  "schema_version": 2,
+  "profile_id": "fuji-speedway-lmu-wec16-v0.4-shadow-v2",
+  "status": "VALIDATED_MULTI_SESSION",
+  "track": "Fuji Speedway",
+  "layout": "Fuji Speedway",
+  "distance_coordinate": "LMU Lap Dist",
+  "turns": [
+    {
+      "turn": 1,
+      "name": "TGR Corner",
+      "group": "TGR Corner",
+      "direction": "right",
+      "start_m": 718.0,
+      "apex_m": 770.0,
+      "end_m": 814.0
+    },
+    {
+      "turn": 2,
+      "name": "Turn 2",
+      "group": "Turn 2",
+      "direction": "right",
+      "start_m": 830.0,
+      "apex_m": 910.0,
+      "end_m": 1050.0,
+      "aliases": [
+        "75R"
+      ]
+    },
+    {
+      "turn": 3,
+      "name": "Coca-Cola Corner",
+      "group": "Coca-Cola Corner",
+      "direction": "left",
+      "start_m": 1256.0,
+      "apex_m": 1310.0,
+      "end_m": 1388.0
+    },
+    {
+      "turn": 4,
+      "name": "100R",
+      "group": "100R",
+      "direction": "right",
+      "start_m": 1482.0,
+      "apex_m": 1620.0,
+      "end_m": 1701.0,
+      "aliases": [
+        "Toyopet 100R"
+      ]
+    },
+    {
+      "turn": 5,
+      "name": "100R",
+      "group": "100R",
+      "direction": "right",
+      "start_m": 1701.0,
+      "apex_m": 1772.0,
+      "end_m": 1882.0,
+      "aliases": [
+        "Toyopet 100R"
+      ]
+    },
+    {
+      "turn": 6,
+      "name": "Hairpin",
+      "group": "Hairpin",
+      "direction": "left",
+      "start_m": 1954.0,
+      "apex_m": 2026.0,
+      "end_m": 2100.0,
+      "aliases": [
+        "ADVAN Corner"
+      ]
+    },
+    {
+      "turn": 7,
+      "name": "Turn 7",
+      "group": "Turn 7",
+      "direction": "left",
+      "start_m": 2100.0,
+      "apex_m": 2140.0,
+      "end_m": 2210.0,
+      "aliases": [
+        "120R"
+      ]
+    },
+    {
+      "turn": 8,
+      "name": "Turn 8",
+      "group": "Turn 8",
+      "direction": "right",
+      "start_m": 2220.0,
+      "apex_m": 2340.0,
+      "end_m": 2470.0
+    },
+    {
+      "turn": 9,
+      "name": "300R",
+      "group": "300R",
+      "direction": "right",
+      "start_m": 2470.0,
+      "apex_m": 2644.0,
+      "end_m": 2780.0
+    },
+    {
+      "turn": 10,
+      "name": "Dunlop Corner",
+      "group": "Dunlop",
+      "direction": "right",
+      "start_m": 2800.0,
+      "apex_m": 2838.0,
+      "end_m": 2872.0
+    },
+    {
+      "turn": 11,
+      "name": "Dunlop",
+      "group": "Dunlop",
+      "direction": "left",
+      "start_m": 2872.0,
+      "apex_m": 2916.0,
+      "end_m": 2950.0
+    },
+    {
+      "turn": 12,
+      "name": "Dunlop",
+      "group": "Dunlop",
+      "direction": "right",
+      "start_m": 2950.0,
+      "apex_m": 3000.0,
+      "end_m": 3078.0
+    },
+    {
+      "turn": 13,
+      "name": "13th Corner",
+      "group": "13th Corner",
+      "direction": "right",
+      "start_m": 3078.0,
+      "apex_m": 3174.0,
+      "end_m": 3214.0,
+      "aliases": [
+        "Corner 13"
+      ]
+    },
+    {
+      "turn": 14,
+      "name": "Turn 14",
+      "group": "Turn 14",
+      "direction": "left",
+      "start_m": 3218.0,
+      "apex_m": 3300.0,
+      "end_m": 3352.0
+    },
+    {
+      "turn": 15,
+      "name": "GR Supra Corner",
+      "group": "GR Supra Corner",
+      "direction": "left",
+      "start_m": 3352.0,
+      "apex_m": 3396.0,
+      "end_m": 3458.0,
+      "aliases": [
+        "Netz Corner"
+      ]
+    },
+    {
+      "turn": 16,
+      "name": "Panasonic Corner",
+      "group": "Panasonic Corner",
+      "direction": "right",
+      "start_m": 3542.0,
+      "apex_m": 3676.0,
+      "end_m": 3760.0
+    }
+  ],
+  "segments": [
+    {
+      "segment_id": "fuji_transition_100r_to_hairpin",
+      "type": "transition",
+      "start_distance_m": 1882.0,
+      "end_distance_m": 1954.0,
+      "name": "100R exit to Hairpin approach",
+      "group": "Hairpin",
+      "confidence": "high",
+      "provenance": "approved transition segment from validated v1 calibration",
+      "evidence": {
+        "source": "fuji_speedway_profile_v0_3.json",
+        "method": "v1 transition zone documentation",
+        "distance": 72.0,
+        "classification": "transition_zone",
+        "description": "Transition zone between the 100R complex and the Hairpin; deceleration corridor"
+      }
+    },
+    {
+      "segment_id": "fuji_transition_gr_supra_to_panasonic",
+      "type": "transition",
+      "start_distance_m": 3458.0,
+      "end_distance_m": 3542.0,
+      "name": "GR Supra Corner exit to Panasonic Corner approach",
+      "group": "Panasonic Corner",
+      "confidence": "high",
+      "provenance": "approved transition segment from validated v1 calibration",
+      "evidence": {
+        "source": "fuji_speedway_profile_v0_3.json",
+        "method": "v1 transition zone documentation",
+        "distance": 84.0,
+        "classification": "transition_zone",
+        "description": "Transition zone between GR Supra Corner (Netz Corner) and Panasonic Corner; left-to-right direction change corridor"
+      }
+    }
+  ],
+  "display_policy": {
+    "prefer_corner_name": true,
+    "turn_number_is_secondary": false,
+    "turn_number_suffix": "WEC/LMU",
+    "always_preserve_lmu_distance_m": true
+  }
+}

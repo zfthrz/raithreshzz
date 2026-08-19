@@ -1,0 +1,327 @@
+{
+  "schema_version": 2,
+  "profile_id": "imola-lmu-19turn-v0.4-shadow-v2",
+  "status": "VALIDATED_MULTI_SESSION",
+  "track": "Autodromo Enzo e Dino Ferrari",
+  "layout": "Autodromo Enzo e Dino Ferrari",
+  "distance_coordinate": "LMU Lap Dist",
+  "turns": [
+    {
+      "turn": 1,
+      "name": "Turn 1",
+      "aliases": [
+        "main-straight left kink"
+      ],
+      "group": "Turn 1",
+      "direction": "left",
+      "start_m": 500.0,
+      "apex_m": 600.0,
+      "end_m": 640.0
+    },
+    {
+      "turn": 2,
+      "name": "Variante Tamburello",
+      "aliases": [
+        "Tamburello"
+      ],
+      "group": "Variante Tamburello",
+      "direction": "left",
+      "start_m": 640.0,
+      "apex_m": 694.0,
+      "end_m": 730.0
+    },
+    {
+      "turn": 3,
+      "name": "Variante Tamburello",
+      "aliases": [
+        "Tamburello"
+      ],
+      "group": "Variante Tamburello",
+      "direction": "right",
+      "start_m": 730.0,
+      "apex_m": 756.0,
+      "end_m": 820.0
+    },
+    {
+      "turn": 4,
+      "name": "Variante Tamburello",
+      "aliases": [
+        "Tamburello"
+      ],
+      "group": "Variante Tamburello",
+      "direction": "left",
+      "start_m": 820.0,
+      "apex_m": 892.0,
+      "end_m": 980.0
+    },
+    {
+      "turn": 5,
+      "name": "Variante Villeneuve",
+      "aliases": [
+        "Villeneuve"
+      ],
+      "group": "Variante Villeneuve",
+      "direction": "left",
+      "start_m": 1260.0,
+      "apex_m": 1312.0,
+      "end_m": 1370.0
+    },
+    {
+      "turn": 6,
+      "name": "Variante Villeneuve",
+      "aliases": [
+        "Villeneuve"
+      ],
+      "group": "Variante Villeneuve",
+      "direction": "right",
+      "start_m": 1370.0,
+      "apex_m": 1418.0,
+      "end_m": 1480.0
+    },
+    {
+      "turn": 7,
+      "name": "Tosa",
+      "aliases": [
+        "Curva Tosa"
+      ],
+      "group": "Tosa",
+      "direction": "left",
+      "start_m": 1650.0,
+      "apex_m": 1716.0,
+      "end_m": 1770.0
+    },
+    {
+      "turn": 8,
+      "name": "Turn 8",
+      "aliases": [
+        "Piratella approach kink"
+      ],
+      "group": "Piratella",
+      "direction": "right",
+      "start_m": 2000.0,
+      "apex_m": 2074.0,
+      "end_m": 2200.0
+    },
+    {
+      "turn": 9,
+      "name": "Piratella",
+      "aliases": [
+        "Curva Piratella"
+      ],
+      "group": "Piratella",
+      "direction": "left",
+      "start_m": 2250.0,
+      "apex_m": 2316.0,
+      "end_m": 2400.0
+    },
+    {
+      "turn": 10,
+      "name": "Turn 10",
+      "aliases": [
+        "Piratella exit kink"
+      ],
+      "group": "Piratella",
+      "direction": "left",
+      "start_m": 2400.0,
+      "apex_m": 2508.0,
+      "end_m": 2580.0
+    },
+    {
+      "turn": 11,
+      "name": "Acque Minerali",
+      "aliases": [],
+      "group": "Acque Minerali",
+      "direction": "right",
+      "start_m": 2660.0,
+      "apex_m": 2708.0,
+      "end_m": 2790.0
+    },
+    {
+      "turn": 12,
+      "name": "Acque Minerali",
+      "aliases": [],
+      "group": "Acque Minerali",
+      "direction": "right",
+      "start_m": 2790.0,
+      "apex_m": 2844.0,
+      "end_m": 2885.0
+    },
+    {
+      "turn": 13,
+      "name": "Acque Minerali",
+      "aliases": [],
+      "group": "Acque Minerali",
+      "direction": "left",
+      "start_m": 2885.0,
+      "apex_m": 2908.0,
+      "end_m": 2990.0
+    },
+    {
+      "turn": 14,
+      "name": "Gresini",
+      "aliases": [
+        "Variante Alta",
+        "Curva Gresini"
+      ],
+      "group": "Gresini",
+      "direction": "right",
+      "start_m": 3300.0,
+      "apex_m": 3336.0,
+      "end_m": 3360.0
+    },
+    {
+      "turn": 15,
+      "name": "Gresini",
+      "aliases": [
+        "Variante Alta",
+        "Curva Gresini"
+      ],
+      "group": "Gresini",
+      "direction": "left",
+      "start_m": 3360.0,
+      "apex_m": 3378.0,
+      "end_m": 3430.0
+    },
+    {
+      "turn": 16,
+      "name": "Turn 16",
+      "aliases": [
+        "Rivazza approach kink"
+      ],
+      "group": "Rivazza approach",
+      "direction": "right",
+      "start_m": 3860.0,
+      "apex_m": 3954.0,
+      "end_m": 4010.0
+    },
+    {
+      "turn": 17,
+      "name": "Rivazza 1",
+      "aliases": [
+        "Rivazza"
+      ],
+      "group": "Rivazza",
+      "direction": "left",
+      "start_m": 4080.0,
+      "apex_m": 4124.0,
+      "end_m": 4190.0
+    },
+    {
+      "turn": 18,
+      "name": "Rivazza 2",
+      "aliases": [
+        "Rivazza"
+      ],
+      "group": "Rivazza",
+      "direction": "left",
+      "start_m": 4190.0,
+      "apex_m": 4242.0,
+      "end_m": 4330.0
+    },
+    {
+      "turn": 19,
+      "name": "Turn 19",
+      "aliases": [
+        "main-straight right kink"
+      ],
+      "group": "Final straight",
+      "direction": "right",
+      "start_m": 4430.0,
+      "apex_m": 4598.0,
+      "end_m": 4700.0
+    }
+  ],
+  "segments": [
+    {
+      "segment_id": "imola_straight_tamburello_to_villeneuve",
+      "type": "straight",
+      "start_distance_m": 980.0,
+      "end_distance_m": 1260.0,
+      "name": "Variante Tamburello exit to Variante Villeneuve approach",
+      "group": "Variante Villeneuve",
+      "confidence": "high",
+      "provenance": "approved straight segment from validated v1 calibration",
+      "evidence": {
+        "source": "imola_profile_v0_3.json",
+        "method": "v1 straight gap documentation",
+        "distance": 280.0,
+        "classification": "straight_real_track_feature",
+        "description": "Main straight from Tamburello exit toward Variante Villeneuve braking zone; 280 m acceleration corridor between Tamburello exit and Villeneuve braking zone"
+      }
+    },
+    {
+      "segment_id": "imola_straight_villeneuve_to_tosa",
+      "type": "straight",
+      "start_distance_m": 1480.0,
+      "end_distance_m": 1650.0,
+      "name": "Variante Villeneuve exit to Tosa approach",
+      "group": "Tosa",
+      "confidence": "high",
+      "provenance": "approved straight segment from validated v1 calibration",
+      "evidence": {
+        "source": "imola_profile_v0_3.json",
+        "method": "v1 straight gap documentation",
+        "distance": 170.0,
+        "classification": "straight_real_track_feature",
+        "description": "Short straight from Variante Villeneuve exit to Tosa braking zone; 170 m acceleration corridor from the Variante Villeneuve complex toward Tosa"
+      }
+    },
+    {
+      "segment_id": "imola_straight_tosa_to_piratella",
+      "type": "straight",
+      "start_distance_m": 1770.0,
+      "end_distance_m": 2000.0,
+      "name": "Tosa exit to Piratella complex approach",
+      "group": "Piratella",
+      "confidence": "high",
+      "provenance": "approved straight segment from validated v1 calibration",
+      "evidence": {
+        "source": "imola_profile_v0_3.json",
+        "method": "v1 straight gap documentation",
+        "distance": 230.0,
+        "classification": "straight_real_track_feature",
+        "description": "Straight section from Tosa exit toward Piratella complex approach; 230 m acceleration corridor from Tosa toward the braking zone of the Piratella complex"
+      }
+    },
+    {
+      "segment_id": "imola_straight_acque_minerali_to_gresini",
+      "type": "straight",
+      "start_distance_m": 2990.0,
+      "end_distance_m": 3300.0,
+      "name": "Acque Minerali exit to Gresini approach",
+      "group": "Gresini",
+      "confidence": "high",
+      "provenance": "approved straight segment from validated v1 calibration",
+      "evidence": {
+        "source": "imola_profile_v0_3.json",
+        "method": "v1 straight gap documentation",
+        "distance": 310.0,
+        "classification": "straight_real_track_feature",
+        "description": "Straight section from Acque Minerali exit to Gresini braking zone; 310 m acceleration corridor from Acque Minerali chicane toward the Gresini complex"
+      }
+    },
+    {
+      "segment_id": "imola_straight_gresini_to_rivazza",
+      "type": "straight",
+      "start_distance_m": 3430.0,
+      "end_distance_m": 3860.0,
+      "name": "Gresini exit to Rivazza approach",
+      "group": "Rivazza approach",
+      "confidence": "high",
+      "provenance": "approved straight segment from validated v1 calibration",
+      "evidence": {
+        "source": "imola_profile_v0_3.json",
+        "method": "v1 straight gap documentation",
+        "distance": 430.0,
+        "classification": "straight_real_track_feature",
+        "description": "Longest straight at Imola from Gresini complex exit to Rivazza approach; 430 m full acceleration corridor from Gresini exit toward the braking zone of the Rivazza complex"
+      }
+    }
+  ],
+  "display_policy": {
+    "prefer_corner_name": true,
+    "turn_number_is_secondary": false,
+    "turn_number_suffix": "LMU",
+    "always_preserve_lmu_distance_m": true
+  }
+}

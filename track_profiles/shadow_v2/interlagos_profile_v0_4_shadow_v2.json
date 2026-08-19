@@ -1,0 +1,266 @@
+{
+  "schema_version": 2,
+  "profile_id": "interlagos-lmu-15turn-v0.4-shadow-v2",
+  "status": "VALIDATED_MULTI_SESSION",
+  "track": "Autódromo José Carlos Pace",
+  "layout": "Autódromo José Carlos Pace",
+  "distance_coordinate": "LMU Lap Dist",
+  "turns": [
+    {
+      "turn": 1,
+      "name": "'S' do Senna",
+      "aliases": [
+        "Senna S"
+      ],
+      "group": "'S' do Senna",
+      "direction": "left",
+      "start_m": 306.0,
+      "apex_m": 412.0,
+      "end_m": 440.0
+    },
+    {
+      "turn": 2,
+      "name": "'S' do Senna",
+      "aliases": [
+        "Senna S"
+      ],
+      "group": "'S' do Senna",
+      "direction": "right",
+      "start_m": 440.0,
+      "apex_m": 480.0,
+      "end_m": 526.0
+    },
+    {
+      "turn": 3,
+      "name": "Curva do Sol",
+      "aliases": [],
+      "group": "Curva do Sol",
+      "direction": "left",
+      "start_m": 540.0,
+      "apex_m": 634.0,
+      "end_m": 776.0
+    },
+    {
+      "turn": 4,
+      "name": "Descida do Lago",
+      "aliases": [],
+      "group": "Descida do Lago",
+      "direction": "left",
+      "start_m": 1372.0,
+      "apex_m": 1454.0,
+      "end_m": 1510.0
+    },
+    {
+      "turn": 5,
+      "name": "Descida do Lago",
+      "aliases": [],
+      "group": "Descida do Lago",
+      "direction": "left",
+      "start_m": 1510.0,
+      "apex_m": 1614.0,
+      "end_m": 1710.0
+    },
+    {
+      "turn": 6,
+      "name": "Ferradura",
+      "aliases": [],
+      "group": "Ferradura–Laranjinha",
+      "direction": "right",
+      "start_m": 1992.0,
+      "apex_m": 2074.0,
+      "end_m": 2116.0
+    },
+    {
+      "turn": 7,
+      "name": "Curva do Laranjinha",
+      "aliases": [
+        "Laranjinha"
+      ],
+      "group": "Ferradura–Laranjinha",
+      "direction": "right",
+      "start_m": 2116.0,
+      "apex_m": 2158.0,
+      "end_m": 2244.0
+    },
+    {
+      "turn": 8,
+      "name": "Pinheirinho",
+      "aliases": [],
+      "group": "Pinheirinho",
+      "direction": "right",
+      "start_m": 2316.0,
+      "apex_m": 2358.0,
+      "end_m": 2400.0
+    },
+    {
+      "turn": 9,
+      "name": "Pinheirinho",
+      "aliases": [],
+      "group": "Pinheirinho",
+      "direction": "left",
+      "start_m": 2400.0,
+      "apex_m": 2464.0,
+      "end_m": 2552.0
+    },
+    {
+      "turn": 10,
+      "name": "Bico de Pato",
+      "aliases": [],
+      "group": "Bico de Pato",
+      "direction": "right",
+      "start_m": 2716.0,
+      "apex_m": 2758.0,
+      "end_m": 2824.0
+    },
+    {
+      "turn": 11,
+      "name": "Mergulho",
+      "aliases": [],
+      "group": "Mergulho",
+      "direction": "left",
+      "start_m": 2860.0,
+      "apex_m": 2934.0,
+      "end_m": 3076.0
+    },
+    {
+      "turn": 12,
+      "name": "Junção",
+      "aliases": [
+        "Juncao"
+      ],
+      "group": "Junção",
+      "direction": "left",
+      "start_m": 3212.0,
+      "apex_m": 3264.0,
+      "end_m": 3330.0
+    },
+    {
+      "turn": 13,
+      "name": "Turn 13",
+      "aliases": [
+        "Café",
+        "Cafe"
+      ],
+      "group": "Turn 13",
+      "direction": "left",
+      "start_m": 3330.0,
+      "apex_m": 3380.0,
+      "end_m": 3460.0
+    },
+    {
+      "turn": 14,
+      "name": "Subida dos Boxes",
+      "aliases": [],
+      "group": "Subida dos Boxes",
+      "direction": "left",
+      "start_m": 3460.0,
+      "apex_m": 3648.0,
+      "end_m": 3790.0
+    },
+    {
+      "turn": 15,
+      "name": "Arquibancadas",
+      "aliases": [
+        "Turn 15"
+      ],
+      "group": "Arquibancadas",
+      "direction": "left",
+      "start_m": 3920.0,
+      "apex_m": 3982.0,
+      "end_m": 4160.0
+    }
+  ],
+  "segments": [
+    {
+      "segment_id": "interlagos_straight_senna_to_descida_lago",
+      "type": "straight",
+      "start_distance_m": 776.0,
+      "end_distance_m": 1372.0,
+      "name": "Curva do Sol exit to Descida do Lago approach",
+      "group": "Descida do Lago",
+      "confidence": "high",
+      "provenance": "approved straight segment from validated v1 calibration",
+      "evidence": {
+        "source": "interlagos_profile_v0_3.json",
+        "method": "v1 straight gap documentation",
+        "distance": 596.0,
+        "classification": "straight_real_track_feature",
+        "description": "Main straight from Curva do Sol exit to Descida do Lago braking zone; one of the main straights on the Interlagos circuit, 596 m high-speed acceleration corridor from the T3 exit toward the braking zone of T4"
+      }
+    },
+    {
+      "segment_id": "interlagos_straight_descida_lago_to_ferradura",
+      "type": "straight",
+      "start_distance_m": 1710.0,
+      "end_distance_m": 1992.0,
+      "name": "Descida do Lago exit to Ferradura approach",
+      "group": "Ferradura–Laranjinha",
+      "confidence": "high",
+      "provenance": "approved straight segment from validated v1 calibration",
+      "evidence": {
+        "source": "interlagos_profile_v0_3.json",
+        "method": "v1 straight gap documentation",
+        "distance": 282.0,
+        "classification": "straight_real_track_feature",
+        "description": "Straight from Descida do Lago exit toward Ferradura braking zone; 282 m acceleration corridor from the T5 exit toward the braking zone of the Ferradura complex"
+      }
+    },
+    {
+      "segment_id": "interlagos_straight_pinheirinho_to_bico_de_pato",
+      "type": "straight",
+      "start_distance_m": 2552.0,
+      "end_distance_m": 2716.0,
+      "name": "Pinheirinho exit to Bico de Pato approach",
+      "group": "Bico de Pato",
+      "confidence": "high",
+      "provenance": "approved straight segment from validated v1 calibration",
+      "evidence": {
+        "source": "interlagos_profile_v0_3.json",
+        "method": "v1 straight gap documentation",
+        "distance": 164.0,
+        "classification": "straight_real_track_feature",
+        "description": "Straight section from Pinheirinho exit to Bico de Pato braking zone; 164 m acceleration corridor from the T9 exit toward the braking zone of Bico de Pato corner"
+      }
+    },
+    {
+      "segment_id": "interlagos_straight_mergulho_to_juncao",
+      "type": "straight",
+      "start_distance_m": 3076.0,
+      "end_distance_m": 3212.0,
+      "name": "Mergulho exit to Junção approach",
+      "group": "Junção",
+      "confidence": "high",
+      "provenance": "approved straight segment from validated v1 calibration",
+      "evidence": {
+        "source": "interlagos_profile_v0_3.json",
+        "method": "v1 straight gap documentation",
+        "distance": 136.0,
+        "classification": "straight_real_track_feature",
+        "description": "Straight section from Mergulho exit to Junção braking zone; 136 m acceleration corridor from the T11 exit toward the braking zone of the Junção complex"
+      }
+    },
+    {
+      "segment_id": "interlagos_straight_subida_dos_boxes_to_arquibancadas",
+      "type": "straight",
+      "start_distance_m": 3790.0,
+      "end_distance_m": 3920.0,
+      "name": "Subida dos Boxes exit to Arquibancadas approach",
+      "group": "Arquibancadas",
+      "confidence": "high",
+      "provenance": "approved straight segment from validated v1 calibration",
+      "evidence": {
+        "source": "interlagos_profile_v0_3.json",
+        "method": "v1 straight gap documentation",
+        "distance": 130.0,
+        "classification": "straight_real_track_feature",
+        "description": "Straight section from Subida dos Boxes exit to Arquibancadas braking zone; 130 m acceleration corridor from the T14 exit toward the braking zone of the Arquibancadas corner"
+      }
+    }
+  ],
+  "display_policy": {
+    "prefer_corner_name": true,
+    "turn_number_is_secondary": true,
+    "turn_number_suffix": "LMU",
+    "always_preserve_lmu_distance_m": true
+  }
+}

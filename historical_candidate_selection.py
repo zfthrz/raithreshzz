@@ -207,7 +207,13 @@ candidatos relevantes, ordenalos por importancia y usá solamente candidate_id y
 observation_codes que ya figuren como autorizados.
 
 Reglas obligatorias:
-- Copiá candidate_id y observation_codes únicamente desde la evidencia de ese candidato.
+- Cada candidato tiene una lista `authorized_observations` (array de strings).
+- Tus `observation_codes` para ese candidate_id DEBEN ser un SUBCONJUNTO estricto de
+  `authorized_observations` de ese MISMO candidato.
+- NO copies observation_codes de un candidato a otro.
+- NO inventes códigos. NO uses aliases ni traducciones.
+- Cada observation_code debe existir tal cual aparece en `authorized_observations` del
+  candidato específico que estás seleccionando.
 - Elegí limitation_codes únicamente desde la lista autorizada.
 - No escribas texto libre, cifras, recomendaciones, causas ni claves adicionales.
 - La selección no convierte la vuelta histórica en autoridad de coaching.
@@ -223,10 +229,20 @@ def user_prompt(evidence: dict[str, Any], correction: list[str] | None = None) -
             + "\n- ".join(correction)
             + "\nCorregí solamente esos incumplimientos.\n"
         )
+    # Build a compact candidate->authorized_observations mapping for the LLM.
+    candidate_obs_block = ""
+    for candidate in evidence.get("candidates", []):
+        cid = candidate.get("candidate_id", "UNKNOWN")
+        obs = candidate.get("authorized_observations", [])
+        candidate_obs_block += (
+            f"  candidate_id: {cid} | authorized_observations: {json.dumps(obs, ensure_ascii=False)}\n"
+        )
     return (
         "EVIDENCIA AUTORIZADA H5.3:\n"
         + json.dumps(evidence, ensure_ascii=False, indent=2)
-        + "\n\nSCHEMA DE RESPUESTA:\n"
+        + "\n\nPOR CADA CANDIDATO, ESTAS SON SUS OBSERVATIONS AUTORIZADAS:\n"
+        + candidate_obs_block
+        + "\nSCHEMA DE RESPUESTA:\n"
         + json.dumps(response_schema(), ensure_ascii=False, indent=2)
         + correction_block
         + "\nRespondé únicamente con el objeto JSON solicitado."
@@ -294,7 +310,12 @@ def validate_response(
             elif candidate is not None and not set(codes).issubset(
                 set(candidate["authorized_observations"])
             ):
-                errors.append(f"{field}.observation_codes no autorizados")
+                errors.append(
+                    f"{field}.observation_codes no autorizados: "
+                    f"{codes} no es subconjunto de "
+                    f"{candidate['authorized_observations']} "
+                    f"para candidate_id {candidate_id}"
+                )
 
     limitations = response.get("limitation_codes")
     if not isinstance(limitations, list) or not 1 <= len(limitations) <= 4:

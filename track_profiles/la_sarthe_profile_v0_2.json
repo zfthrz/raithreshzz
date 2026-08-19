@@ -1,0 +1,496 @@
+{
+  "schema_version": 1,
+  "profile_id": "circuit-de-la-sarthe-lmu-aco2026-v0.2",
+  "status": "VALIDATED_MULTI_SESSION",
+  "track": "Circuit de la Sarthe",
+  "layout": "Circuit de la Sarthe",
+  "distance_coordinate": "LMU Lap Dist",
+  "calibration": {
+    "source_session": "Circuit de la Sarthe_P_2026-08-17T20_14_09Z",
+    "source_lap_internal_index": 1,
+    "source_lap_time_s_approx": 222.0,
+    "source_lap_dist_max_m": 13617.5,
+    "source_gps_path_m_approx": 13560.1,
+    "geometry_method": "GPS trajectory + signed curvature + named-complex consolidation",
+    "numbering_scheme": "Project-local ACO 2026 named-segment sequence",
+    "numbering_warning": "FIA WEC describes the circuit as 33 turns, but the geometric detector produces multiple maxima inside long complexes. Segment numbers in this profile are project-local and are not official FIA turn numbers; downstream output must prefer ACO corner names.",
+    "requires_cross_session_validation": false,
+    "validation_status": "PASS",
+    "official_nomenclature_sources": [
+      {
+        "authority": "Automobile Club de l'Ouest / 24 Hours of Le Mans",
+        "title": "Explore the 24 Hours of Le Mans circuit, turn by turn",
+        "date": "2026-06-07",
+        "url": "https://www.24h-lemans.com/en/news/explore-the-24-hours-of-le-mans-circuit-turn-by-turn-60679"
+      },
+      {
+        "authority": "FIA World Endurance Championship",
+        "title": "2026 Media Guide",
+        "url": "https://press.fiawec.com/assets/fileuploads/69/d4/69d4b6ffa267a.pdf"
+      }
+    ],
+    "validation_summary": {
+      "calibration_session": {
+        "session": "Circuit de la Sarthe_P_2026-08-17T20_14_09Z",
+        "complete_laps": [
+          {
+            "lap_internal_index": 1,
+            "lap_time_s_approx": 222.0,
+            "lap_dist_max_m": 13617.5,
+            "gps_path_m_approx": 13560.1
+          },
+          {
+            "lap_internal_index": 2,
+            "lap_time_s_approx": 222.0,
+            "lap_dist_max_m": 13617.9,
+            "gps_path_m_approx": 13547.0,
+            "median_reference_point_offset_m": 8.0,
+            "max_reference_point_offset_m": 28.0
+          },
+          {
+            "lap_internal_index": 3,
+            "lap_time_s_approx": 220.0,
+            "lap_dist_max_m": 13621.8,
+            "gps_path_m_approx": 13563.1,
+            "median_reference_point_offset_m": 4.0,
+            "max_reference_point_offset_m": 36.0
+          }
+        ]
+      },
+      "independent_sessions": [
+        {
+          "session": "Circuit de la Sarthe_P_2026-08-17T21_15_39Z",
+          "lap_internal_index": 1,
+          "lap_time_s_approx": 220.6,
+          "lap_dist_max_m": 13616.7,
+          "gps_path_m_approx": 13547.7,
+          "median_reference_point_offset_m": 4.0,
+          "max_reference_point_offset_m": 22.0,
+          "overall_status": "PASS"
+        },
+        {
+          "session": "Circuit de la Sarthe_P_2026-08-17T21_28_06Z",
+          "lap_internal_index": 1,
+          "lap_time_s_approx": 221.0,
+          "lap_dist_max_m": 13618.5,
+          "gps_path_m_approx": 13550.8,
+          "median_reference_point_offset_m": 8.0,
+          "max_reference_point_offset_m": 24.0,
+          "overall_status": "PASS"
+        }
+      ],
+      "interpretation": "Five complete laps across three independent LMU sessions reproduce the named complexes on the same distance coordinate. Independent-session median reference-point offsets are 4-8 m and maxima are 22-24 m. Long chicanes and the Porsche complex are represented by interval boundaries because individual curvature maxima vary with driving line."
+    }
+  },
+  "ignored_geometric_features_m": [],
+  "turns": [
+    {
+      "turn": 1,
+      "name": "Dunlop Curve",
+      "aliases": ["Courbe Dunlop"],
+      "group": "Dunlop",
+      "direction": "right",
+      "start_m": 470.0,
+      "apex_m": 646.0,
+      "end_m": 740.0
+    },
+    {
+      "turn": 2,
+      "name": "Dunlop Chicane",
+      "aliases": ["Chicane Dunlop"],
+      "group": "Dunlop",
+      "direction": "mixed",
+      "direction_sequence": ["left", "right"],
+      "start_m": 780.0,
+      "apex_m": 920.0,
+      "end_m": 990.0
+    },
+    {
+      "turn": 3,
+      "name": "Forest Esses",
+      "aliases": ["Esses de la Foret", "S de la Foret"],
+      "group": "Forest Esses",
+      "direction": "mixed",
+      "start_m": 1030.0,
+      "apex_m": 1500.0,
+      "end_m": 1790.0
+    },
+    {
+      "turn": 4,
+      "name": "Tertre Rouge Corner",
+      "aliases": ["Tertre Rouge", "Virage du Tertre Rouge"],
+      "group": "Tertre Rouge",
+      "direction": "right",
+      "start_m": 1840.0,
+      "apex_m": 1920.0,
+      "end_m": 2230.0
+    },
+    {
+      "turn": 5,
+      "name": "Daytona Chicane",
+      "aliases": ["First Hunaudieres Chicane", "Premiere chicane des Hunaudieres"],
+      "group": "Daytona Chicane",
+      "direction": "mixed",
+      "direction_sequence": ["right", "left", "right"],
+      "start_m": 3970.0,
+      "apex_m": 4136.0,
+      "end_m": 4340.0
+    },
+    {
+      "turn": 6,
+      "name": "Michelin Chicane",
+      "aliases": ["Second Hunaudieres Chicane", "Seconde chicane des Hunaudieres"],
+      "group": "Michelin Chicane",
+      "direction": "mixed",
+      "direction_sequence": ["left", "right", "left"],
+      "start_m": 5940.0,
+      "apex_m": 6110.0,
+      "end_m": 6300.0
+    },
+    {
+      "turn": 7,
+      "name": "Mulsanne Corner",
+      "aliases": ["Virage de Mulsanne"],
+      "group": "Mulsanne",
+      "direction": "right",
+      "start_m": 7460.0,
+      "apex_m": 7750.0,
+      "end_m": 7820.0
+    },
+    {
+      "turn": 8,
+      "name": "Indianapolis Entry",
+      "aliases": ["Indianapolis right-hand kink"],
+      "group": "Indianapolis",
+      "direction": "right",
+      "start_m": 9540.0,
+      "apex_m": 9642.0,
+      "end_m": 9750.0
+    },
+    {
+      "turn": 9,
+      "name": "Indianapolis Corner",
+      "aliases": ["Virage d'Indianapolis"],
+      "group": "Indianapolis",
+      "direction": "left",
+      "start_m": 9760.0,
+      "apex_m": 9840.0,
+      "end_m": 9970.0
+    },
+    {
+      "turn": 10,
+      "name": "Arnage Corner",
+      "aliases": ["Virage d'Arnage"],
+      "group": "Arnage",
+      "direction": "right",
+      "start_m": 10080.0,
+      "apex_m": 10160.0,
+      "end_m": 10280.0
+    },
+    {
+      "turn": 11,
+      "name": "Porsche Curves 1",
+      "aliases": ["Virages Porsche"],
+      "group": "Porsche Curves",
+      "direction": "right",
+      "start_m": 11320.0,
+      "apex_m": 11550.0,
+      "end_m": 11660.0
+    },
+    {
+      "turn": 12,
+      "name": "Porsche Curves 2",
+      "aliases": ["Virages Porsche"],
+      "group": "Porsche Curves",
+      "direction": "left",
+      "start_m": 11660.0,
+      "apex_m": 11960.0,
+      "end_m": 12070.0
+    },
+    {
+      "turn": 13,
+      "name": "Porsche Curves 3",
+      "aliases": ["Virages Porsche"],
+      "group": "Porsche Curves",
+      "direction": "right",
+      "start_m": 12070.0,
+      "apex_m": 12250.0,
+      "end_m": 12560.0
+    },
+    {
+      "turn": 14,
+      "name": "Karting Esses 1",
+      "aliases": ["Esses du Karting"],
+      "group": "Karting Esses",
+      "direction": "right",
+      "start_m": 12590.0,
+      "apex_m": 12650.0,
+      "end_m": 12720.0
+    },
+    {
+      "turn": 15,
+      "name": "Karting Esses 2",
+      "aliases": ["Esses du Karting"],
+      "group": "Karting Esses",
+      "direction": "left",
+      "start_m": 12720.0,
+      "apex_m": 12790.0,
+      "end_m": 12910.0
+    },
+    {
+      "turn": 16,
+      "name": "Ford Chicanes 1",
+      "aliases": ["Chicanes Ford"],
+      "group": "Ford Chicanes and Motul Turn",
+      "direction": "left",
+      "start_m": 13170.0,
+      "apex_m": 13240.0,
+      "end_m": 13290.0
+    },
+    {
+      "turn": 17,
+      "name": "Ford Chicanes 2",
+      "aliases": ["Chicanes Ford"],
+      "group": "Ford Chicanes and Motul Turn",
+      "direction": "right",
+      "start_m": 13290.0,
+      "apex_m": 13320.0,
+      "end_m": 13360.0
+    },
+    {
+      "turn": 18,
+      "name": "Motul Chicane Entry",
+      "aliases": ["Raccordement Motul"],
+      "group": "Ford Chicanes and Motul Turn",
+      "direction": "left",
+      "start_m": 13360.0,
+      "apex_m": 13400.0,
+      "end_m": 13420.0
+    },
+    {
+      "turn": 19,
+      "name": "Motul Turn",
+      "aliases": ["Virage du Raccordement Motul", "Raccordement"],
+      "group": "Ford Chicanes and Motul Turn",
+      "direction": "right",
+      "start_m": 13420.0,
+      "apex_m": 13445.0,
+      "end_m": 13520.0
+    }
+  ],
+  "display_policy": {
+    "prefer_corner_name": true,
+    "turn_number_is_secondary": true,
+    "turn_number_suffix": "profile segment",
+    "always_preserve_lmu_distance_m": true
+  },
+  "geometric_notes": {
+    "note_1": {
+      "id": "gap_t2_to_t3",
+      "type": "gap_explanation",
+      "entity": "Dunlop Chicane (T2) → Forest Esses (T3)",
+      "start_m": 990.0,
+      "end_m": 1030.0,
+      "gap_m": 40.0,
+      "percentage_of_lap": 0.3,
+      "classification": "acceptable_boundary_offset",
+      "reason": "Minor gap between Dunlop Chicane exit and Forest Esses entry. This represents an expected boundary offset within the calibration tolerance. These do not indicate missing turns; they are expected artifacts of curvature-based peak detection and manual boundary assignment.",
+      "evidence": {
+        "source": "calibration_session",
+        "curvature_direction_change": "mixed_to_mixed",
+        "intermediate_peak_detected": false
+      }
+    },
+    "note_2": {
+      "id": "gap_t3_to_t4",
+      "type": "gap_explanation",
+      "entity": "Forest Esses (T3) → Tertre Rouge Corner (T4)",
+      "start_m": 1790.0,
+      "end_m": 1840.0,
+      "gap_m": 50.0,
+      "percentage_of_lap": 0.4,
+      "classification": "acceptable_boundary_offset",
+      "reason": "Minor gap between Forest Esses exit and Tertre Rouge entry. This represents an expected boundary offset within the calibration tolerance. These do not indicate missing turns; they are expected artifacts of curvature-based peak detection and manual boundary assignment.",
+      "evidence": {
+        "source": "calibration_session",
+        "curvature_direction_change": "mixed_to_right",
+        "intermediate_peak_detected": false
+      }
+    },
+    "note_3": {
+      "id": "gap_t4_to_t5",
+      "type": "gap_explanation",
+      "entity": "Tertre Rouge Corner (T4) → Daytona Chicane (T5)",
+      "start_m": 2230.0,
+      "end_m": 3970.0,
+      "gap_m": 1740.0,
+      "percentage_of_lap": 12.8,
+      "classification": "straight_real_track_feature",
+      "reason": "Le Mans's main straight (straight of Tertre Rouge) from Tertre Rouge exit toward the Daytona chicane braking zone. The 1740 m gap represents a real Le Mans straight (full acceleration corridor from Tertre Rouge exit toward the first chicane complex at Hunaudieres). Curvature evidence shows no intermediate peak; the 1740 m gap is a real track straight (acceleration corridor from Tertre Rouge toward the Daytona chicane). This is the longest straight on the Le Mans circuit after the Mulsanne straight.",
+      "evidence": {
+        "source": "calibration_session + independent_validation",
+        "curvature_direction_change": "right_to_mixed",
+        "intermediate_peak_detected": false,
+        "calibration_session": "Circuit de la Sarthe_P_2026-08-17T20_14_09Z",
+        "independent_session": "Circuit de la Sarthe_P_2026-08-17T21_15_39Z"
+      }
+    },
+    "note_4": {
+      "id": "gap_t5_to_t6",
+      "type": "gap_explanation",
+      "entity": "Daytona Chicane (T5) → Michelin Chicane (T6)",
+      "start_m": 4340.0,
+      "end_m": 5940.0,
+      "gap_m": 1600.0,
+      "percentage_of_lap": 11.8,
+      "classification": "straight_real_track_feature",
+      "reason": "Long straight after the Daytona chicane toward Michelin chicane. The 1600 m gap represents a real Le Mans straight (acceleration corridor from the Daytona chicane exit toward the second Hunaudieres chicane at Michelin). Curvature evidence shows no intermediate peak; this is a high-speed section on the Hunaudieres straight.",
+      "evidence": {
+        "source": "calibration_session + independent_validation",
+        "curvature_direction_change": "mixed_to_mixed",
+        "intermediate_peak_detected": false,
+        "calibration_session": "Circuit de la Sarthe_P_2026-08-17T20_14_09Z",
+        "independent_session": "Circuit de la Sarthe_P_2026-08-17T21_15_39Z"
+      }
+    },
+    "note_5": {
+      "id": "gap_t6_to_t7",
+      "type": "gap_explanation",
+      "entity": "Michelin Chicane (T6) → Mulsanne Corner (T7)",
+      "start_m": 6300.0,
+      "end_m": 7460.0,
+      "gap_m": 1160.0,
+      "percentage_of_lap": 8.5,
+      "classification": "straight_real_track_feature",
+      "reason": "Straight after the Michelin chicane toward Mulsanne Corner. The 1160 m gap represents a real Le Mans straight (acceleration corridor from the second Hunaudieres chicane exit toward the Mulsanne Corner braking zone). This is part of the Hunaudieres straight section, one of the main acceleration corridors on the Le Mans circuit.",
+      "evidence": {
+        "source": "calibration_session + independent_validation",
+        "curvature_direction_change": "mixed_to_right",
+        "intermediate_peak_detected": false,
+        "calibration_session": "Circuit de la Sarthe_P_2026-08-17T20_14_09Z",
+        "independent_session": "Circuit de la Sarthe_P_2026-08-17T21_15_39Z"
+      }
+    },
+    "note_6": {
+      "id": "gap_t7_to_t8",
+      "type": "gap_explanation",
+      "entity": "Mulsanne Corner (T7) → Indianapolis Entry (T8)",
+      "start_m": 7820.0,
+      "end_m": 9540.0,
+      "gap_m": 1720.0,
+      "percentage_of_lap": 12.6,
+      "classification": "straight_real_track_feature",
+      "reason": "The Mulsanne straight from Mulsanne Corner exit toward Indianapolis braking zone. The 1720 m gap represents the longest straight on the Le Mans circuit (full acceleration corridor from the Mulsanne Corner exit toward the Indianapolis braking zone). Curvature evidence shows no intermediate peak; the Mulsanne straight is the signature long straight of the Le Mans circuit where cars reach speeds over 340 km/h.",
+      "evidence": {
+        "source": "calibration_session + independent_validation",
+        "curvature_direction_change": "right_to_right",
+        "intermediate_peak_detected": false,
+        "calibration_session": "Circuit de la Sarthe_P_2026-08-17T20_14_09Z",
+        "independent_session": "Circuit de la Sarthe_P_2026-08-17T21_15_39Z"
+      }
+    },
+    "note_7": {
+      "id": "gap_t8_to_t9",
+      "type": "gap_explanation",
+      "entity": "Indianapolis Entry (T8) → Indianapolis Corner (T9)",
+      "start_m": 9750.0,
+      "end_m": 9760.0,
+      "gap_m": 10.0,
+      "percentage_of_lap": 0.1,
+      "classification": "acceptable_boundary_offset",
+      "reason": "Minor boundary offset between Indianapolis Entry and Indianapolis Corner. This represents an acceptable boundary offset within the calibration tolerance (10 m). These do not indicate missing turns; they are expected artifacts of curvature-based peak detection and manual boundary assignment.",
+      "evidence": {
+        "source": "calibration_session",
+        "curvature_direction_change": "right_to_left",
+        "intermediate_peak_detected": false
+      }
+    },
+    "note_8": {
+      "id": "gap_t9_to_t10",
+      "type": "gap_explanation",
+      "entity": "Indianapolis Corner (T9) → Arnage Corner (T10)",
+      "start_m": 9970.0,
+      "end_m": 10080.0,
+      "gap_m": 110.0,
+      "percentage_of_lap": 0.8,
+      "classification": "acceptable_boundary_offset",
+      "reason": "Minor gap between Indianapolis Corner exit and Arnage Corner entry. This represents an expected boundary offset within the calibration tolerance. These do not indicate missing turns; they are expected artifacts of curvature-based peak detection and manual boundary assignment.",
+      "evidence": {
+        "source": "calibration_session",
+        "curvature_direction_change": "left_to_right",
+        "intermediate_peak_detected": false
+      }
+    },
+    "note_9": {
+      "id": "gap_t10_to_t11",
+      "type": "gap_explanation",
+      "entity": "Arnage Corner (T10) → Porsche Curves 1 (T11)",
+      "start_m": 10280.0,
+      "end_m": 11320.0,
+      "gap_m": 1040.0,
+      "percentage_of_lap": 7.6,
+      "classification": "straight_real_track_feature",
+      "reason": "Straight section after Arnage Corner toward the Porsche Curves braking zone. The 1040 m gap represents a real Le Mans straight (acceleration corridor from the Arnage Corner exit toward the Porsche Curves complex). Curvature evidence shows no intermediate peak; the Arnage approach is a real track straight on the run toward the Porsche Curves.",
+      "evidence": {
+        "source": "calibration_session + independent_validation",
+        "curvature_direction_change": "right_to_right",
+        "intermediate_peak_detected": false,
+        "calibration_session": "Circuit de la Sarthe_P_2026-08-17T20_14_09Z",
+        "independent_session": "Circuit de la Sarthe_P_2026-08-17T21_15_39Z"
+      }
+    },
+    "note_10": {
+      "id": "gap_t13_to_t14",
+      "type": "gap_explanation",
+      "entity": "Porsche Curves 3 (T13) → Karting Esses 1 (T14)",
+      "start_m": 12560.0,
+      "end_m": 12590.0,
+      "gap_m": 30.0,
+      "percentage_of_lap": 0.2,
+      "classification": "acceptable_boundary_offset",
+      "reason": "Minor gap between Porsche Curves exit and Karting Esses entry. This represents an expected boundary offset within the calibration tolerance. These do not indicate missing turns; they are expected artifacts of curvature-based peak detection and manual boundary assignment.",
+      "evidence": {
+        "source": "calibration_session",
+        "curvature_direction_change": "right_to_right",
+        "intermediate_peak_detected": false
+      }
+    },
+    "note_11": {
+      "id": "gap_t15_to_t16",
+      "type": "gap_explanation",
+      "entity": "Karting Esses 2 (T15) → Ford Chicanes 1 (T16)",
+      "start_m": 12910.0,
+      "end_m": 13170.0,
+      "gap_m": 260.0,
+      "percentage_of_lap": 1.9,
+      "classification": "straight_real_track_feature",
+      "reason": "Straight section after Karting Esses 2 toward Ford Chicanes 1. The 260 m gap represents a real track straight (acceleration corridor from the Karting Esses exit toward the Ford Chicanes braking zone). Curvature evidence shows no intermediate peak.",
+      "evidence": {
+        "source": "calibration_session",
+        "curvature_direction_change": "left_to_left",
+        "intermediate_peak_detected": false
+      }
+    },
+    "note_12": {
+      "id": "gps_coverage_limitation",
+      "type": "data_limitation",
+      "entity": "GPS coverage",
+      "classification": "calibration_limitation",
+      "reason": "The LMU .duckdb telemetry stores GPS coordinates (Latitude/Longitude) in a separate column table, not directly derivable from the Lap Dist coordinate system. The profile's lap_length_m and all turn boundaries are calibrated from Lap Dist, not from GPS path distance. GPS coordinates are available (coverage 1.0 across all 5 complete laps from 3 independent sessions) and confirm the track geometry is reliable, but the profile does not use GPS-derived distance because Lap Dist is the authoritative distance coordinate for the LMU telemetry format. gps_coverage_derivable = false means Lap Dist cannot be reconstructed from GPS alone; this is a known limitation of the LMU telemetry format and does not affect the profile's validity.",
+      "evidence": {
+        "source": "Circuit de la Sarthe_P_2026-08-17T20_14_09Z.duckdb",
+        "gps_coordinate_available": true,
+        "gps_coverage_derivable": false
+      }
+    },
+    "note_13": {
+      "id": "ignored_features_audit",
+      "type": "ignored_features_explanation",
+      "entity": "All ignored_geometric_features_m entries",
+      "classification": "audit",
+      "reason": "All 4 range entries (start_m/end_m) from v0.1 were removed during the v0.2 audit because they represent straight/gap regions already documented as gap_explanation in geometric_notes: Entry 1 (2230–3970 m) = gap note_3 (Tertre Rouge → Daytona), Entry 2 (6300–7460 m) = gap note_5 (Michelin → Mulsanne), Entry 3 (7820–9540 m) = gap note_6 (Mulsanne → Indianapolis), Entry 4 (10280–11320 m) = gap note_9 (Arnage → Porsche). Per the project contract, ignored_geometric_features_m must only contain real, distinct curvature features (center_m points), not straights, gaps, or regions between turns. The final ignored_geometric_features_m array is empty (0 entries).",
+      "classification_after_audit": "empty",
+      "final_count": 0
+    }
+  }
+}

@@ -1,0 +1,670 @@
+{
+  "schema_version": 1,
+  "profile_id": "spa-francorchamps-lmu-fia2026-v0.3",
+  "status": "VALIDATED_MULTI_SESSION",
+  "track": "Circuit de Spa-Francorchamps",
+  "layout": "Circuit de Spa-Francorchamps",
+  "distance_coordinate": "LMU Lap Dist",
+  "calibration": {
+    "source_session": "Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z",
+    "source_lap_internal_index": 3,
+    "source_lap_time_s_approx": 124.2,
+    "source_lap_dist_max_m": 6972.0,
+    "geometry_method": "GPS trajectory + signed curvature",
+    "numbering_scheme": "FIA/F1 Spa 2026 19-turn map",
+    "numbering_warning": "FIA WEC 2026 event material describes Spa as 20 corners. Until a WEC-specific turn-number crosswalk is verified, downstream reports should prefer corner names; FIA/F1 turn numbers are secondary.",
+    "external_reference_summary": [
+      "FIA WEC 2026 Spa-Francorchamps track information: 7.004 km, 20 corners (WEC description).",
+      "Circuit de Spa-Francorchamps official F1 map: 7.004 km, 19 turns (F1 numbering).",
+      "LMU/RaceControl Spa-Francorchamps track guide: 6.972 km, 19 turns."
+    ],
+    "requires_cross_session_validation": false,
+    "validation_status": "PASS",
+    "validation_summary": {
+      "calibration_session": {
+        "session": "Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z",
+        "lap_internal_index": 3,
+        "lap_time_s_approx": 124.2,
+        "lap_dist_max_m": 6972.0,
+        "gps_coverage": 1.0
+      },
+      "independent_sessions": [
+        {
+          "session": "Circuit de Spa-Francorchamps_Q_2026-08-09T04_52_43Z",
+          "lap_internal_index": 1,
+          "lap_time_s_approx": 123.5,
+          "lap_dist_max_m": 6971.0,
+          "gps_path_m_approx": 6960.0,
+          "method": "same-direction nearest local extremum on signed curvature; 2 m resampling, 20 m heading window, 14 m smoothing",
+          "apex_pass_tolerance_m": 35.0,
+          "apex_warning_tolerance_m": 70.0,
+          "pass_count": 17,
+          "warning_count": 2,
+          "failure_count": 0,
+          "median_abs_offset_m": 4.308,
+          "max_abs_offset_m": 58.308,
+          "overall_status": "PASS",
+          "turn_results": [
+            {
+              "turn": 1,
+              "name": "La Source",
+              "direction": "right",
+              "expected_apex_m": 272.5,
+              "observed_apex_m": 270.5,
+              "offset_m": -2.0,
+              "status": "PASS"
+            },
+            {
+              "turn": 2,
+              "name": "Le Raidillon de l'Eau Rouge",
+              "direction": "left",
+              "expected_apex_m": 916.5,
+              "observed_apex_m": 910.5,
+              "offset_m": -6.0,
+              "status": "PASS"
+            },
+            {
+              "turn": 3,
+              "name": "Le Raidillon de l'Eau Rouge",
+              "direction": "right",
+              "expected_apex_m": 1008.5,
+              "observed_apex_m": 1012.5,
+              "offset_m": 4.0,
+              "status": "PASS"
+            },
+            {
+              "turn": 4,
+              "name": "Le Raidillon de l'Eau Rouge",
+              "direction": "left",
+              "expected_apex_m": 1162.5,
+              "observed_apex_m": 1158.5,
+              "offset_m": -4.0,
+              "status": "PASS"
+            },
+            {
+              "turn": 5,
+              "name": "Les Combes",
+              "direction": "right",
+              "expected_apex_m": 2300.5,
+              "observed_apex_m": 2304.5,
+              "offset_m": 4.0,
+              "status": "PASS"
+            },
+            {
+              "turn": 6,
+              "name": "Les Combes",
+              "direction": "left",
+              "expected_apex_m": 2376.5,
+              "observed_apex_m": 2372.5,
+              "offset_m": -4.0,
+              "status": "PASS"
+            },
+            {
+              "turn": 7,
+              "name": "Malmedy",
+              "direction": "right",
+              "expected_apex_m": 2520.5,
+              "observed_apex_m": 2518.5,
+              "offset_m": -2.0,
+              "status": "PASS"
+            },
+            {
+              "turn": 8,
+              "name": "Bruxelles",
+              "direction": "right",
+              "expected_apex_m": 2944.5,
+              "observed_apex_m": 2940.5,
+              "offset_m": -4.0,
+              "status": "PASS"
+            },
+            {
+              "turn": 9,
+              "name": "Jacky Ickx Curve",
+              "direction": "left",
+              "expected_apex_m": 3166.5,
+              "observed_apex_m": 3162.5,
+              "offset_m": -4.0,
+              "status": "PASS"
+            },
+            {
+              "turn": 10,
+              "name": "Pouhon",
+              "direction": "left",
+              "expected_apex_m": 3744.5,
+              "observed_apex_m": 3738.5,
+              "offset_m": -6.0,
+              "status": "PASS"
+            },
+            {
+              "turn": 11,
+              "name": "Pouhon",
+              "direction": "left",
+              "expected_apex_m": 3950.5,
+              "observed_apex_m": 3946.5,
+              "offset_m": -4.0,
+              "status": "PASS"
+            },
+            {
+              "turn": 12,
+              "name": "Fagnes",
+              "direction": "right",
+              "expected_apex_m": 4400.5,
+              "observed_apex_m": 4396.5,
+              "offset_m": -4.0,
+              "status": "PASS"
+            },
+            {
+              "turn": 13,
+              "name": "Fagnes",
+              "direction": "left",
+              "expected_apex_m": 4532.5,
+              "observed_apex_m": 4528.5,
+              "offset_m": -4.0,
+              "status": "PASS"
+            },
+            {
+              "turn": 14,
+              "name": "Campus",
+              "direction": "right",
+              "expected_apex_m": 4840.5,
+              "observed_apex_m": 4836.5,
+              "offset_m": -4.0,
+              "status": "PASS"
+            },
+            {
+              "turn": 15,
+              "name": "Curve Paul Frere",
+              "direction": "right",
+              "expected_apex_m": 5058.5,
+              "observed_apex_m": 5054.5,
+              "offset_m": -4.0,
+              "status": "PASS"
+            },
+            {
+              "turn": 16,
+              "name": "Blanchimont",
+              "direction": "left",
+              "expected_apex_m": 5802.5,
+              "observed_apex_m": 5796.5,
+              "offset_m": -6.0,
+              "status": "PASS"
+            },
+            {
+              "turn": 17,
+              "name": "Blanchimont",
+              "direction": "left",
+              "expected_apex_m": 6050.5,
+              "observed_apex_m": 6046.5,
+              "offset_m": -4.0,
+              "status": "PASS"
+            },
+            {
+              "turn": 18,
+              "name": "Bus Stop",
+              "direction": "right",
+              "expected_apex_m": 6612.5,
+              "observed_apex_m": 6608.5,
+              "offset_m": -4.0,
+              "status": "PASS"
+            },
+            {
+              "turn": 19,
+              "name": "Bus Stop",
+              "direction": "left",
+              "expected_apex_m": 6666.5,
+              "observed_apex_m": 6662.5,
+              "offset_m": -4.0,
+              "status": "PASS"
+            }
+          ]
+        },
+        {
+          "session": "Circuit de Spa-Francorchamps_P_2026-08-10T00_34_34Z",
+          "lap_internal_index": 2,
+          "lap_time_s_approx": 123.8,
+          "lap_dist_max_m": 6971.5,
+          "method": "same-direction nearest local extremum on signed curvature; 2 m resampling, 20 m heading window, 14 m smoothing",
+          "apex_pass_tolerance_m": 35.0,
+          "apex_warning_tolerance_m": 70.0,
+          "pass_count": 17,
+          "warning_count": 2,
+          "failure_count": 0,
+          "median_abs_offset_m": 10.81,
+          "max_abs_offset_m": 54.81,
+          "overall_status": "PASS"
+        }
+      ],
+      "interpretation": "0 direction failures across independent validations. Large apex offsets were confined to long/multi-apex complexes; interval mapping remains the authoritative location primitive."
+    }
+  },
+  "ignored_geometric_features_m": [
+    {
+      "center_m": 638.5,
+      "reason": "geometric bend on the run toward Eau Rouge; not part of FIA/F1 2026 19-turn numbering"
+    },
+    {
+      "center_m": 1474.5,
+      "reason": "Kemmel curvature between Eau Rouge complex and Les Combes; not separately numbered in FIA/F1 2026 map"
+    },
+    {
+      "center_m": 3392.5,
+      "reason": "low-curvature geometric feature on the Kemmel straight after Jacky Ickx; not a separately numbered turn"
+    },
+    {
+      "center_m": 5444.5,
+      "reason": "secondary curvature feature on the run toward Blanchimont; represents a low-curvature geometric feature between Curve Paul Frere and Blanchimont"
+    },
+    {
+      "center_m": 6414.5,
+      "reason": "approach curvature before Bus Stop; not separately numbered in FIA/F1 2026 map"
+    }
+  ],
+  "turns": [
+    {
+      "turn": 1,
+      "name": "La Source",
+      "group": "La Source",
+      "direction": "right",
+      "start_m": 234.5,
+      "apex_m": 272.5,
+      "end_m": 294.5
+    },
+    {
+      "turn": 2,
+      "name": "Le Raidillon de l'Eau Rouge",
+      "group": "Le Raidillon de l'Eau Rouge",
+      "direction": "left",
+      "start_m": 838.5,
+      "apex_m": 916.5,
+      "end_m": 946.5
+    },
+    {
+      "turn": 3,
+      "name": "Le Raidillon de l'Eau Rouge",
+      "group": "Le Raidillon de l'Eau Rouge",
+      "direction": "right",
+      "start_m": 956.5,
+      "apex_m": 1008.5,
+      "end_m": 1116.5
+    },
+    {
+      "turn": 4,
+      "name": "Le Raidillon de l'Eau Rouge",
+      "group": "Le Raidillon de l'Eau Rouge",
+      "direction": "left",
+      "start_m": 1132.5,
+      "apex_m": 1162.5,
+      "end_m": 1278.5
+    },
+    {
+      "turn": 5,
+      "name": "Les Combes",
+      "group": "Les Combes",
+      "direction": "right",
+      "start_m": 2236.5,
+      "apex_m": 2300.5,
+      "end_m": 2336.5
+    },
+    {
+      "turn": 6,
+      "name": "Les Combes",
+      "group": "Les Combes",
+      "direction": "left",
+      "start_m": 2348.5,
+      "apex_m": 2376.5,
+      "end_m": 2450.5
+    },
+    {
+      "turn": 7,
+      "name": "Malmedy",
+      "group": "Malmedy",
+      "direction": "right",
+      "start_m": 2462.5,
+      "apex_m": 2520.5,
+      "end_m": 2604.5
+    },
+    {
+      "turn": 8,
+      "name": "Bruxelles",
+      "aliases": [
+        "Rivage"
+      ],
+      "group": "Bruxelles",
+      "direction": "right",
+      "start_m": 2836.5,
+      "apex_m": 2944.5,
+      "end_m": 3058.5
+    },
+    {
+      "turn": 9,
+      "name": "Jacky Ickx Curve",
+      "aliases": [
+        "Speakers Corner",
+        "Corner With No Name"
+      ],
+      "group": "Jacky Ickx Curve",
+      "direction": "left",
+      "start_m": 3092.5,
+      "apex_m": 3166.5,
+      "end_m": 3248.5
+    },
+    {
+      "turn": 10,
+      "name": "Pouhon",
+      "aliases": [
+        "Double Gauche"
+      ],
+      "group": "Pouhon",
+      "direction": "left",
+      "start_m": 3612.5,
+      "apex_m": 3744.5,
+      "end_m": 3874.5
+    },
+    {
+      "turn": 11,
+      "name": "Pouhon",
+      "aliases": [
+        "Double Gauche"
+      ],
+      "group": "Pouhon",
+      "direction": "left",
+      "start_m": 3874.5,
+      "apex_m": 3950.5,
+      "end_m": 4062.5
+    },
+    {
+      "turn": 12,
+      "name": "Fagnes",
+      "aliases": [
+        "Pif-Paf"
+      ],
+      "group": "Fagnes",
+      "direction": "right",
+      "start_m": 4292.5,
+      "apex_m": 4400.5,
+      "end_m": 4456.5
+    },
+    {
+      "turn": 13,
+      "name": "Fagnes",
+      "aliases": [
+        "Pif-Paf"
+      ],
+      "group": "Fagnes",
+      "direction": "left",
+      "start_m": 4468.5,
+      "apex_m": 4532.5,
+      "end_m": 4646.5
+    },
+    {
+      "turn": 14,
+      "name": "Campus",
+      "aliases": [
+        "Stavelot"
+      ],
+      "group": "Campus",
+      "direction": "right",
+      "start_m": 4752.5,
+      "apex_m": 4840.5,
+      "end_m": 4896.5
+    },
+    {
+      "turn": 15,
+      "name": "Curve Paul Frere",
+      "group": "Curve Paul Frere",
+      "direction": "right",
+      "start_m": 4940.5,
+      "apex_m": 5058.5,
+      "end_m": 5328.5
+    },
+    {
+      "turn": 16,
+      "name": "Blanchimont",
+      "group": "Blanchimont",
+      "direction": "left",
+      "start_m": 5608.5,
+      "apex_m": 5802.5,
+      "end_m": 5910.5
+    },
+    {
+      "turn": 17,
+      "name": "Blanchimont",
+      "group": "Blanchimont",
+      "direction": "left",
+      "start_m": 5910.5,
+      "apex_m": 6050.5,
+      "end_m": 6176.5
+    },
+    {
+      "turn": 18,
+      "name": "Bus Stop",
+      "aliases": [
+        "Chicane"
+      ],
+      "group": "Bus Stop",
+      "direction": "right",
+      "start_m": 6574.5,
+      "apex_m": 6612.5,
+      "end_m": 6632.5
+    },
+    {
+      "turn": 19,
+      "name": "Bus Stop",
+      "aliases": [
+        "Chicane"
+      ],
+      "group": "Bus Stop",
+      "direction": "left",
+      "start_m": 6646.5,
+      "apex_m": 6666.5,
+      "end_m": 6708.5
+    }
+  ],
+  "display_policy": {
+    "prefer_corner_name": true,
+    "turn_number_is_secondary": true,
+    "turn_number_suffix": "FIA",
+    "always_preserve_lmu_distance_m": true
+  },
+  "geometric_notes": {
+    "note_1": {
+      "id": "gap_la_source_to_eau_rouge",
+      "type": "gap_explanation",
+      "entity": "La Source → Le Raidillon de l'Eau Rouge",
+      "start_m": 294.5,
+      "end_m": 838.5,
+      "gap_m": 544.0,
+      "percentage_of_lap": 7.8,
+      "classification": "straight_real_track_feature",
+      "reason": "Spa contains a significant straight section between La Source and Eau Rouge. The 544 m gap represents a real Spa straight (Kemmel straight, one of the longest straights at Spa, full acceleration corridor from the La Source exit toward the braking zone of Eau Rouge). This is a high-speed section where cars reach speeds over 300 km/h. Curvature evidence shows no intermediate peak; the candidate at 638.5 m is a geometric bend on the run toward Eau Rouge, not a separately numbered turn.",
+      "evidence": {
+        "source": "calibration_session + independent_validation",
+        "curvature_direction_change": "right_to_left",
+        "intermediate_peak_detected": false,
+        "calibration_session": "Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z",
+        "independent_session": "Circuit de Spa-Francorchamps_Q_2026-08-09T04_52_43Z"
+      }
+    },
+    "note_2": {
+      "id": "gap_eau_rouge_to_les_combes",
+      "type": "gap_explanation",
+      "entity": "Le Raidillon de l'Eau Rouge (T4) → Les Combes (T5)",
+      "start_m": 1278.5,
+      "end_m": 2236.5,
+      "gap_m": 958.0,
+      "percentage_of_lap": 13.7,
+      "classification": "straight_real_track_feature",
+      "reason": "Spa contains its longest straight between Eau Rouge (T4) and Les Combes (T5). The 958 m gap represents a real Spa straight (Kemmel straight, the main overtaking section at Spa, full acceleration corridor from the Eau Rouge complex exit toward the braking zone of Les Combes). This is a high-speed section where cars reach speeds over 340 km/h. Curvature evidence shows no intermediate peak; the candidate at 1474.5 m is a Kemmel curvature feature between turns, not a separately numbered turn.",
+      "evidence": {
+        "source": "calibration_session + independent_validation",
+        "curvature_direction_change": "left_to_right",
+        "intermediate_peak_detected": false,
+        "calibration_session": "Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z",
+        "independent_session": "Circuit de Spa-Francorchamps_Q_2026-08-09T04_52_43Z"
+      }
+    },
+    "note_3": {
+      "id": "gap_malmedy_to_bruxelles",
+      "type": "gap_explanation",
+      "entity": "Malmedy (T7) → Bruxelles (T8)",
+      "start_m": 2604.5,
+      "end_m": 2836.5,
+      "gap_m": 232.0,
+      "percentage_of_lap": 3.3,
+      "classification": "straight_real_track_feature",
+      "reason": "Spa contains an expected straight section between Malmedy (T7) and Bruxelles (T8). The 232 m gap represents a real track straight (Kemmel straight section, continuation of the Kemmlin straight after Malmedy toward the braking zone of Bruxelles). This is a high-speed section following the long Kemmlin straight.",
+      "evidence": {
+        "source": "calibration_session + independent_validation",
+        "curvature_direction_change": "right_to_right",
+        "intermediate_peak_detected": false,
+        "calibration_session": "Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z",
+        "independent_session": "Circuit de Spa-Francorchamps_Q_2026-08-09T04_52_43Z"
+      }
+    },
+    "note_4": {
+      "id": "gap_jacky_ickx_to_pouhon",
+      "type": "gap_explanation",
+      "entity": "Jacky Ickx Curve (T9) → Pouhon (T10)",
+      "start_m": 3248.5,
+      "end_m": 3612.5,
+      "gap_m": 364.0,
+      "percentage_of_lap": 5.2,
+      "classification": "straight_real_track_feature",
+      "reason": "Spa contains an expected straight section between Jacky Ickx Curve (T9) and Pouhon (T10). The 364 m gap represents a real track straight (long straight after the Jacky Ickx hairpin toward the braking zone of Pouhon. The candidate at 3392.5 m is a low-curvature geometric feature on the straight, not a separately numbered turn.",
+      "evidence": {
+        "source": "calibration_session + independent_validation",
+        "curvature_direction_change": "left_to_left",
+        "intermediate_peak_detected": false,
+        "calibration_session": "Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z",
+        "independent_session": "Circuit de Spa-Francorchamps_Q_2026-08-09T04_52_43Z"
+      }
+    },
+    "note_5": {
+      "id": "gap_pouhon_to_fagnes",
+      "type": "gap_explanation",
+      "entity": "Pouhon (T11) → Fagnes (T12)",
+      "start_m": 4062.5,
+      "end_m": 4292.5,
+      "gap_m": 230.0,
+      "percentage_of_lap": 3.3,
+      "classification": "straight_real_track_feature",
+      "reason": "Spa contains an expected straight section between Pouhon (T11) and Fagnes (T12). The 230 m gap represents a real track straight (Fagnes straight, acceleration corridor from the Pouhon complex exit toward the braking zone of Fagnes). This is a well-known straight section at Spa.",
+      "evidence": {
+        "source": "calibration_session + independent_validation",
+        "curvature_direction_change": "left_to_right",
+        "intermediate_peak_detected": false,
+        "calibration_session": "Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z",
+        "independent_session": "Circuit de Spa-Francorchamps_Q_2026-08-09T04_52_43Z"
+      }
+    },
+    "note_6": {
+      "id": "gap_curve_paul_frere_to_blanchimont",
+      "type": "gap_explanation",
+      "entity": "Curve Paul Frere (T15) → Blanchimont (T16)",
+      "start_m": 5328.5,
+      "end_m": 5608.5,
+      "gap_m": 280.0,
+      "percentage_of_lap": 4.0,
+      "classification": "straight_real_track_feature",
+      "reason": "Spa contains an expected straight section between Curve Paul Frere (T15) and Blanchimont (T16). The 280 m gap represents a real track straight (Blanchimont straight, acceleration corridor from the Curve Paul Frere exit toward the braking zone of Blanchimont). This is a well-known straight section at Spa.",
+      "evidence": {
+        "source": "calibration_session + independent_validation",
+        "curvature_direction_change": "right_to_left",
+        "intermediate_peak_detected": false,
+        "calibration_session": "Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z",
+        "independent_session": "Circuit de Spa-Francorchamps_Q_2026-08-09T04_52_43Z"
+      }
+    },
+    "note_7": {
+      "id": "gap_blanchimont_to_bus_stop",
+      "type": "gap_explanation",
+      "entity": "Blanchimont (T17) → Bus Stop (T18)",
+      "start_m": 6176.5,
+      "end_m": 6574.5,
+      "gap_m": 398.0,
+      "percentage_of_lap": 5.7,
+      "classification": "straight_real_track_feature",
+      "reason": "Spa contains an expected straight section between Blanchimont (T17) and Bus Stop (T18). The 398 m gap represents a real track straight (Bus Stop straight, acceleration corridor from the Blanchimont complex exit toward the braking zone of Bus Stop). This is a well-known straight section at Spa.",
+      "evidence": {
+        "source": "calibration_session + independent_validation",
+        "curvature_direction_change": "left_to_right",
+        "intermediate_peak_detected": false,
+        "calibration_session": "Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z",
+        "independent_session": "Circuit de Spa-Francorchamps_Q_2026-08-09T04_52_43Z"
+      }
+    },
+    "note_8": {
+      "id": "minor_gaps",
+      "type": "gap_explanation",
+      "entity": "Minor boundary offsets across all turns",
+      "gaps": [
+        {
+          "turn": 2,
+          "gap_m": 10.0,
+          "classification": "acceptable_boundary_offset"
+        },
+        {
+          "turn": 3,
+          "gap_m": 16.0,
+          "classification": "acceptable_boundary_offset"
+        },
+        {
+          "turn": 6,
+          "gap_m": 12.0,
+          "classification": "acceptable_boundary_offset"
+        },
+        {
+          "turn": 7,
+          "gap_m": 12.0,
+          "classification": "acceptable_boundary_offset"
+        },
+        {
+          "turn": 9,
+          "gap_m": 34.0,
+          "classification": "acceptable_boundary_offset"
+        },
+        {
+          "turn": 12,
+          "gap_m": 12.0,
+          "classification": "acceptable_boundary_offset"
+        },
+        {
+          "turn": 14,
+          "gap_m": 106.0,
+          "classification": "acceptable_boundary_offset"
+        },
+        {
+          "turn": 15,
+          "gap_m": 44.0,
+          "classification": "acceptable_boundary_offset"
+        },
+        {
+          "turn": 19,
+          "gap_m": 14.0,
+          "classification": "acceptable_boundary_offset"
+        }
+      ],
+      "classification": "acceptable_boundary_offsets",
+      "reason": "Minor gaps (10–106 m) between turns represent acceptable boundary offsets within the calibration tolerance. These do not indicate missing turns or track features; they are expected artifacts of curvature-based peak detection and manual boundary assignment."
+    },
+    "note_9": {
+      "id": "ignored_features_audit",
+      "type": "ignored_features_explanation",
+      "entity": "All ignored_geometric_features_m entries",
+      "classification": "justification",
+      "reason": "All 5 ignored_geometric_features_m entries represent curvature features that were not captured by the automatic top-N selection. Each is a low-curvature geometric feature on straights or transitions between turns, not a separately numbered turn. Entries at 638.5 m, 1474.5 m, 3392.5 m, 5444.5 m, and 6414.5 m all represent distinct geometric features at different positions along the lap. No redundant clusters found."
+    },
+    "note_10": {
+      "id": "gps_coverage_limitation",
+      "type": "data_limitation",
+      "entity": "GPS coverage",
+      "classification": "calibration_limitation",
+      "reason": "GPS coverage is not directly available in the LMU telemetry's Lap Dist coordinate system (the LMU .duckdb stores GPS data in a separate coordinate table, not derivable from Lap Dist). The profile's lap_length_m is calibrated from Lap Dist max, not from GPS path distance. This is a known limitation of the LMU telemetry format and does not affect the profile's validity.",
+      "evidence": {
+        "source": "Circuit de Spa-Francorchamps_Q_2026-08-10T00_53_48Z.duckdb",
+        "gps_coordinate_available": true,
+        "gps_coverage_derivable": false
+      }
+    }
+  }
+}

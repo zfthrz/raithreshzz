@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "profile_id": "circuit-de-la-sarthe-lmu-aco2026-v0.1",
-  "status": "VALIDATED_MULTI_SESSION",
+  "status": "SUPERSEDED",
   "track": "Circuit de la Sarthe",
   "layout": "Circuit de la Sarthe",
   "distance_coordinate": "LMU Lap Dist",
@@ -108,7 +108,9 @@
     {
       "turn": 1,
       "name": "Dunlop Curve",
-      "aliases": ["Courbe Dunlop"],
+      "aliases": [
+        "Courbe Dunlop"
+      ],
       "group": "Dunlop",
       "direction": "right",
       "start_m": 470.0,
@@ -118,10 +120,15 @@
     {
       "turn": 2,
       "name": "Dunlop Chicane",
-      "aliases": ["Chicane Dunlop"],
+      "aliases": [
+        "Chicane Dunlop"
+      ],
       "group": "Dunlop",
       "direction": "mixed",
-      "direction_sequence": ["left", "right"],
+      "direction_sequence": [
+        "left",
+        "right"
+      ],
       "start_m": 780.0,
       "apex_m": 920.0,
       "end_m": 990.0
@@ -129,7 +136,10 @@
     {
       "turn": 3,
       "name": "Forest Esses",
-      "aliases": ["Esses de la Foret", "S de la Foret"],
+      "aliases": [
+        "Esses de la Foret",
+        "S de la Foret"
+      ],
       "group": "Forest Esses",
       "direction": "mixed",
       "start_m": 1030.0,
@@ -139,7 +149,10 @@
     {
       "turn": 4,
       "name": "Tertre Rouge Corner",
-      "aliases": ["Tertre Rouge", "Virage du Tertre Rouge"],
+      "aliases": [
+        "Tertre Rouge",
+        "Virage du Tertre Rouge"
+      ],
       "group": "Tertre Rouge",
       "direction": "right",
       "start_m": 1840.0,
@@ -149,10 +162,17 @@
     {
       "turn": 5,
       "name": "Daytona Chicane",
-      "aliases": ["First Hunaudieres Chicane", "Premiere chicane des Hunaudieres"],
+      "aliases": [
+        "First Hunaudieres Chicane",
+        "Premiere chicane des Hunaudieres"
+      ],
       "group": "Daytona Chicane",
       "direction": "mixed",
-      "direction_sequence": ["right", "left", "right"],
+      "direction_sequence": [
+        "right",
+        "left",
+        "right"
+      ],
       "start_m": 3970.0,
       "apex_m": 4136.0,
       "end_m": 4340.0
@@ -160,10 +180,17 @@
     {
       "turn": 6,
       "name": "Michelin Chicane",
-      "aliases": ["Second Hunaudieres Chicane", "Seconde chicane des Hunaudieres"],
+      "aliases": [
+        "Second Hunaudieres Chicane",
+        "Seconde chicane des Hunaudieres"
+      ],
       "group": "Michelin Chicane",
       "direction": "mixed",
-      "direction_sequence": ["left", "right", "left"],
+      "direction_sequence": [
+        "left",
+        "right",
+        "left"
+      ],
       "start_m": 5940.0,
       "apex_m": 6110.0,
       "end_m": 6300.0
@@ -171,7 +198,9 @@
     {
       "turn": 7,
       "name": "Mulsanne Corner",
-      "aliases": ["Virage de Mulsanne"],
+      "aliases": [
+        "Virage de Mulsanne"
+      ],
       "group": "Mulsanne",
       "direction": "right",
       "start_m": 7460.0,
@@ -181,7 +210,9 @@
     {
       "turn": 8,
       "name": "Indianapolis Entry",
-      "aliases": ["Indianapolis right-hand kink"],
+      "aliases": [
+        "Indianapolis right-hand kink"
+      ],
       "group": "Indianapolis",
       "direction": "right",
       "start_m": 9540.0,
@@ -191,7 +222,9 @@
     {
       "turn": 9,
       "name": "Indianapolis Corner",
-      "aliases": ["Virage d'Indianapolis"],
+      "aliases": [
+        "Virage d'Indianapolis"
+      ],
       "group": "Indianapolis",
       "direction": "left",
       "start_m": 9760.0,
@@ -201,7 +234,9 @@
     {
       "turn": 10,
       "name": "Arnage Corner",
-      "aliases": ["Virage d'Arnage"],
+      "aliases": [
+        "Virage d'Arnage"
+      ],
       "group": "Arnage",
       "direction": "right",
       "start_m": 10080.0,
@@ -211,7 +246,9 @@
     {
       "turn": 11,
       "name": "Porsche Curves 1",
-      "aliases": ["Virages Porsche"],
+      "aliases": [
+        "Virages Porsche"
+      ],
       "group": "Porsche Curves",
       "direction": "right",
       "start_m": 11320.0,
@@ -221,7 +258,9 @@
     {
       "turn": 12,
       "name": "Porsche Curves 2",
-      "aliases": ["Virages Porsche"],
+      "aliases": [
+        "Virages Porsche"
+      ],
       "group": "Porsche Curves",
       "direction": "left",
       "start_m": 11660.0,
@@ -231,7 +270,9 @@
     {
       "turn": 13,
       "name": "Porsche Curves 3",
-      "aliases": ["Virages Porsche"],
+      "aliases": [
+        "Virages Porsche"
+      ],
       "group": "Porsche Curves",
       "direction": "right",
       "start_m": 12070.0,
@@ -241,7 +282,9 @@
     {
       "turn": 14,
       "name": "Karting Esses 1",
-      "aliases": ["Esses du Karting"],
+      "aliases": [
+        "Esses du Karting"
+      ],
       "group": "Karting Esses",
       "direction": "right",
       "start_m": 12590.0,
@@ -251,7 +294,9 @@
     {
       "turn": 15,
       "name": "Karting Esses 2",
-      "aliases": ["Esses du Karting"],
+      "aliases": [
+        "Esses du Karting"
+      ],
       "group": "Karting Esses",
       "direction": "left",
       "start_m": 12720.0,
@@ -261,7 +306,9 @@
     {
       "turn": 16,
       "name": "Ford Chicanes 1",
-      "aliases": ["Chicanes Ford"],
+      "aliases": [
+        "Chicanes Ford"
+      ],
       "group": "Ford Chicanes and Motul Turn",
       "direction": "left",
       "start_m": 13170.0,
@@ -271,7 +318,9 @@
     {
       "turn": 17,
       "name": "Ford Chicanes 2",
-      "aliases": ["Chicanes Ford"],
+      "aliases": [
+        "Chicanes Ford"
+      ],
       "group": "Ford Chicanes and Motul Turn",
       "direction": "right",
       "start_m": 13290.0,
@@ -281,7 +330,9 @@
     {
       "turn": 18,
       "name": "Motul Chicane Entry",
-      "aliases": ["Raccordement Motul"],
+      "aliases": [
+        "Raccordement Motul"
+      ],
       "group": "Ford Chicanes and Motul Turn",
       "direction": "left",
       "start_m": 13360.0,
@@ -291,7 +342,10 @@
     {
       "turn": 19,
       "name": "Motul Turn",
-      "aliases": ["Virage du Raccordement Motul", "Raccordement"],
+      "aliases": [
+        "Virage du Raccordement Motul",
+        "Raccordement"
+      ],
       "group": "Ford Chicanes and Motul Turn",
       "direction": "right",
       "start_m": 13420.0,

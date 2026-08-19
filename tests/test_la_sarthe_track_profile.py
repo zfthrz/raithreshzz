@@ -9,7 +9,7 @@ from track_location import resolve_interval
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PROFILE_DIR = REPO_ROOT / "track_profiles"
-PROFILE_PATH = PROFILE_DIR / "la_sarthe_profile_v0_1.json"
+PROFILE_PATH = PROFILE_DIR / "la_sarthe_profile_v0_2.json"
 
 
 def load_profile() -> dict:
@@ -55,7 +55,7 @@ def test_la_sarthe_profile_is_resolved_only_for_exact_track_and_layout():
         track="Circuit de la Sarthe",
         layout="Circuit de la Sarthe",
     )
-    assert selected["profile_id"] == "circuit-de-la-sarthe-lmu-aco2026-v0.1"
+    assert selected["profile_id"] == "circuit-de-la-sarthe-lmu-aco2026-v0.2"
     assert selected_path == PROFILE_PATH.resolve()
 
     missing, missing_path = find_validated_track_profile(

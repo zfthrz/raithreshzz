@@ -1,0 +1,168 @@
+{
+  "validator_version": "0.1",
+  "profiles": {
+    "interlagos_profile_v0_2.json": {
+      "schema_version": 1,
+      "validator_version": "0.1",
+      "profile_id": "interlagos-lmu-15turn-v0.2",
+      "track": "Autódromo José Carlos Pace",
+      "layout": "Autódromo José Carlos Pace",
+      "lap_length_m": 4267.137407574008,
+      "status": "VALID_WITH_WARNINGS",
+      "error_count": 0,
+      "warning_count": 5,
+      "informational_count": 4,
+      "findings": [
+        {
+          "code": "ORDERING_GAP",
+          "severity": "informational",
+          "deterministic_message": "minor gap 14.0 m between 'S' do Senna and Curva do Sol",
+          "entity_id": 3,
+          "entity_name": "Curva do Sol",
+          "distance_start_m": 526.0,
+          "distance_end_m": 540.0,
+          "evidence": {
+            "prev_turn": "'S' do Senna",
+            "next_turn": "Curva do Sol",
+            "gap_m": 14.0
+          }
+        },
+        {
+          "code": "ORDERING_GAP",
+          "severity": "warning",
+          "deterministic_message": "gap 596.0 m between end of Curva do Sol and start of Descida do Lago",
+          "entity_id": 4,
+          "entity_name": "Descida do Lago",
+          "distance_start_m": 776.0,
+          "distance_end_m": 1372.0,
+          "evidence": {
+            "prev_turn": "Curva do Sol",
+            "next_turn": "Descida do Lago",
+            "gap_m": 596.0,
+            "lap_length_m": 4267.137407574008
+          }
+        },
+        {
+          "code": "ORDERING_GAP",
+          "severity": "warning",
+          "deterministic_message": "gap 282.0 m between end of Descida do Lago and start of Ferradura",
+          "entity_id": 6,
+          "entity_name": "Ferradura",
+          "distance_start_m": 1710.0,
+          "distance_end_m": 1992.0,
+          "evidence": {
+            "prev_turn": "Descida do Lago",
+            "next_turn": "Ferradura",
+            "gap_m": 282.0,
+            "lap_length_m": 4267.137407574008
+          }
+        },
+        {
+          "code": "ORDERING_GAP",
+          "severity": "informational",
+          "deterministic_message": "minor gap 72.0 m between Curva do Laranjinha and Pinheirinho",
+          "entity_id": 8,
+          "entity_name": "Pinheirinho",
+          "distance_start_m": 2244.0,
+          "distance_end_m": 2316.0,
+          "evidence": {
+            "prev_turn": "Curva do Laranjinha",
+            "next_turn": "Pinheirinho",
+            "gap_m": 72.0
+          }
+        },
+        {
+          "code": "ORDERING_GAP",
+          "severity": "warning",
+          "deterministic_message": "gap 164.0 m between end of Pinheirinho and start of Bico de Pato",
+          "entity_id": 10,
+          "entity_name": "Bico de Pato",
+          "distance_start_m": 2552.0,
+          "distance_end_m": 2716.0,
+          "evidence": {
+            "prev_turn": "Pinheirinho",
+            "next_turn": "Bico de Pato",
+            "gap_m": 164.0,
+            "lap_length_m": 4267.137407574008
+          }
+        },
+        {
+          "code": "ORDERING_GAP",
+          "severity": "informational",
+          "deterministic_message": "minor gap 36.0 m between Bico de Pato and Mergulho",
+          "entity_id": 11,
+          "entity_name": "Mergulho",
+          "distance_start_m": 2824.0,
+          "distance_end_m": 2860.0,
+          "evidence": {
+            "prev_turn": "Bico de Pato",
+            "next_turn": "Mergulho",
+            "gap_m": 36.0
+          }
+        },
+        {
+          "code": "ORDERING_GAP",
+          "severity": "warning",
+          "deterministic_message": "gap 136.0 m between end of Mergulho and start of Junção",
+          "entity_id": 12,
+          "entity_name": "Junção",
+          "distance_start_m": 3076.0,
+          "distance_end_m": 3212.0,
+          "evidence": {
+            "prev_turn": "Mergulho",
+            "next_turn": "Junção",
+            "gap_m": 136.0,
+            "lap_length_m": 4267.137407574008
+          }
+        },
+        {
+          "code": "ORDERING_GAP",
+          "severity": "warning",
+          "deterministic_message": "gap 130.0 m between end of Subida dos Boxes and start of Arquibancadas",
+          "entity_id": 15,
+          "entity_name": "Arquibancadas",
+          "distance_start_m": 3790.0,
+          "distance_end_m": 3920.0,
+          "evidence": {
+            "prev_turn": "Subida dos Boxes",
+            "next_turn": "Arquibancadas",
+            "gap_m": 130.0,
+            "lap_length_m": 4267.137407574008
+          }
+        },
+        {
+          "code": "GPS_CONSISTENCY",
+          "severity": "informational",
+          "deterministic_message": "gps_coverage not available in calibration sessions",
+          "evidence": {
+            "message": "gps_coverage missing from all sessions"
+          }
+        }
+      ],
+      "summary": {
+        "checks_run": [
+          "ORDERING",
+          "LAP_BOUNDS",
+          "GAPS_OVERLAPS",
+          "DUPLICATE_POINTS",
+          "LAYOUT_CONSISTENCY",
+          "GPS_CONSISTENCY",
+          "SEMANTIC_STRUCTURE",
+          "PROVENANCE"
+        ],
+        "turn_count": 15,
+        "profile_status": "VALIDATED_MULTI_SESSION",
+        "calibration_present": true
+      }
+    }
+  },
+  "summary": {
+    "total_profiles": 1,
+    "valid": 0,
+    "valid_with_warnings": 1,
+    "invalid": 0,
+    "total_errors": 0,
+    "total_warnings": 5,
+    "total_informational": 4
+  }
+}

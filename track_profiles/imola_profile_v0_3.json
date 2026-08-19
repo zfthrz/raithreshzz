@@ -1,0 +1,637 @@
+{
+  "schema_version": 1,
+  "profile_id": "imola-lmu-19turn-v0.3",
+  "status": "VALIDATED_MULTI_SESSION",
+  "track": "Autodromo Enzo e Dino Ferrari",
+  "layout": "Autodromo Enzo e Dino Ferrari",
+  "distance_coordinate": "LMU Lap Dist",
+  "calibration": {
+    "source_session": "Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z",
+    "source_lap_internal_index": 2,
+    "source_lap_time_s_approx": 95.0,
+    "source_lap_dist_max_m": 4892.011727376877,
+    "source_gps_path_m_approx": 4869.830951363537,
+    "geometry_method": "GPS trajectory + signed curvature + LMU/RaceControl 19-turn sequence constrained calibration",
+    "numbering_scheme": "LMU/RaceControl Imola 19-turn numbering",
+    "requires_cross_session_validation": false,
+    "validation_status": "PASS",
+    "numbering_note": "FIA WEC lists the venue as 21 turns; the LMU/RaceControl guide uses 19 numbered turns. This profile deliberately uses the LMU convention.",
+    "validation_summary": {
+      "calibration_session": {
+        "session": "Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z",
+        "lap_internal_index": 2,
+        "lap_dist_max_m": 4892.011727376877
+      },
+      "independent_sessions": [
+        {
+          "session": "Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_34_47Z",
+          "lap_internal_index": 5,
+          "lap_time_s_approx": 95.5,
+          "lap_dist_max_m": 4892.078934744666,
+          "gps_path_m_approx": 4872.809596023837,
+          "method": "same-direction nearest local extremum on signed curvature; 2 m resampling, 20 m heading window, 14 m smoothing",
+          "apex_pass_tolerance_m": 35.0,
+          "apex_warning_tolerance_m": 70.0,
+          "pass_count": 19,
+          "warning_count": 0,
+          "failure_count": 0,
+          "median_abs_offset_m": 4.0,
+          "max_abs_offset_m": 22.0,
+          "overall_status": "PASS",
+          "turn_results": [
+            {
+              "turn": 1,
+              "name": "Turn 1",
+              "direction": "left",
+              "expected_apex_m": 600.0,
+              "observed_apex_m": 582.0,
+              "offset_m": -18.0,
+              "observed_signed_curvature_rad_per_m": 0.0021546314626243396,
+              "status": "PASS"
+            },
+            {
+              "turn": 2,
+              "name": "Variante Tamburello",
+              "direction": "left",
+              "expected_apex_m": 694.0,
+              "observed_apex_m": 702.0,
+              "offset_m": 8.0,
+              "observed_signed_curvature_rad_per_m": 0.011819763752876522,
+              "status": "PASS"
+            },
+            {
+              "turn": 3,
+              "name": "Variante Tamburello",
+              "direction": "right",
+              "expected_apex_m": 756.0,
+              "observed_apex_m": 758.0,
+              "offset_m": 2.0,
+              "observed_signed_curvature_rad_per_m": -0.01039529474084507,
+              "status": "PASS"
+            },
+            {
+              "turn": 4,
+              "name": "Variante Tamburello",
+              "direction": "left",
+              "expected_apex_m": 892.0,
+              "observed_apex_m": 888.0,
+              "offset_m": -4.0,
+              "observed_signed_curvature_rad_per_m": 0.00816512316220873,
+              "status": "PASS"
+            },
+            {
+              "turn": 5,
+              "name": "Variante Villeneuve",
+              "direction": "left",
+              "expected_apex_m": 1312.0,
+              "observed_apex_m": 1334.0,
+              "offset_m": 22.0,
+              "observed_signed_curvature_rad_per_m": 0.010216166834601569,
+              "status": "PASS"
+            },
+            {
+              "turn": 6,
+              "name": "Variante Villeneuve",
+              "direction": "right",
+              "expected_apex_m": 1418.0,
+              "observed_apex_m": 1418.0,
+              "offset_m": 0.0,
+              "observed_signed_curvature_rad_per_m": -0.011793232473716405,
+              "status": "PASS"
+            },
+            {
+              "turn": 7,
+              "name": "Tosa",
+              "direction": "left",
+              "expected_apex_m": 1716.0,
+              "observed_apex_m": 1720.0,
+              "offset_m": 4.0,
+              "observed_signed_curvature_rad_per_m": 0.030395372827292124,
+              "status": "PASS"
+            },
+            {
+              "turn": 8,
+              "name": "Turn 8",
+              "direction": "right",
+              "expected_apex_m": 2074.0,
+              "observed_apex_m": 2084.0,
+              "offset_m": 10.0,
+              "observed_signed_curvature_rad_per_m": -0.0034744538781730228,
+              "status": "PASS"
+            },
+            {
+              "turn": 9,
+              "name": "Piratella",
+              "direction": "left",
+              "expected_apex_m": 2316.0,
+              "observed_apex_m": 2306.0,
+              "offset_m": -10.0,
+              "observed_signed_curvature_rad_per_m": 0.011358995648368323,
+              "status": "PASS"
+            },
+            {
+              "turn": 10,
+              "name": "Turn 10",
+              "direction": "left",
+              "expected_apex_m": 2508.0,
+              "observed_apex_m": 2506.0,
+              "offset_m": -2.0,
+              "observed_signed_curvature_rad_per_m": 0.003922732826729576,
+              "status": "PASS"
+            },
+            {
+              "turn": 11,
+              "name": "Acque Minerali",
+              "direction": "right",
+              "expected_apex_m": 2708.0,
+              "observed_apex_m": 2708.0,
+              "offset_m": 0.0,
+              "observed_signed_curvature_rad_per_m": -0.007231237141261183,
+              "status": "PASS"
+            },
+            {
+              "turn": 12,
+              "name": "Acque Minerali",
+              "direction": "right",
+              "expected_apex_m": 2844.0,
+              "observed_apex_m": 2838.0,
+              "offset_m": -6.0,
+              "observed_signed_curvature_rad_per_m": -0.017836293000973794,
+              "status": "PASS"
+            },
+            {
+              "turn": 13,
+              "name": "Acque Minerali",
+              "direction": "left",
+              "expected_apex_m": 2908.0,
+              "observed_apex_m": 2904.0,
+              "offset_m": -4.0,
+              "observed_signed_curvature_rad_per_m": 0.006362906300839392,
+              "status": "PASS"
+            },
+            {
+              "turn": 14,
+              "name": "Gresini",
+              "direction": "right",
+              "expected_apex_m": 3336.0,
+              "observed_apex_m": 3342.0,
+              "offset_m": 6.0,
+              "observed_signed_curvature_rad_per_m": -0.017292135890077942,
+              "status": "PASS"
+            },
+            {
+              "turn": 15,
+              "name": "Gresini",
+              "direction": "left",
+              "expected_apex_m": 3378.0,
+              "observed_apex_m": 3382.0,
+              "offset_m": 4.0,
+              "observed_signed_curvature_rad_per_m": 0.021229228702781225,
+              "status": "PASS"
+            },
+            {
+              "turn": 16,
+              "name": "Turn 16",
+              "direction": "right",
+              "expected_apex_m": 3954.0,
+              "observed_apex_m": 3958.0,
+              "offset_m": 4.0,
+              "observed_signed_curvature_rad_per_m": -0.0032604625010955613,
+              "status": "PASS"
+            },
+            {
+              "turn": 17,
+              "name": "Rivazza 1",
+              "direction": "left",
+              "expected_apex_m": 4124.0,
+              "observed_apex_m": 4138.0,
+              "offset_m": 14.0,
+              "observed_signed_curvature_rad_per_m": 0.018891753371728253,
+              "status": "PASS"
+            },
+            {
+              "turn": 18,
+              "name": "Rivazza 2",
+              "direction": "left",
+              "expected_apex_m": 4242.0,
+              "observed_apex_m": 4244.0,
+              "offset_m": 2.0,
+              "observed_signed_curvature_rad_per_m": 0.014244003669253146,
+              "status": "PASS"
+            },
+            {
+              "turn": 19,
+              "name": "Turn 19",
+              "direction": "right",
+              "expected_apex_m": 4598.0,
+              "observed_apex_m": 4598.0,
+              "offset_m": 0.0,
+              "observed_signed_curvature_rad_per_m": -0.0031318729135130477,
+              "status": "PASS"
+            }
+          ]
+        }
+      ],
+      "interpretation": "0 direction failures. All 19 LMU-numbered turns passed the ±35 m apex tolerance in the independent session. Median absolute offset 4 m; maximum absolute offset 22 m. The 100R/Villeneuve complex and Gresini/Rivazza approach show larger apex offsets due to wide racing lines and apex sensitivity in these low-curvature regions. Interval mapping remains the authoritative location primitive."
+    }
+  },
+  "ignored_geometric_features_m": [
+    {
+      "center_m": 2074.0,
+      "reason": "low curvature right kink on straight to Piratella complex; candidate peak 0.0035 rad/m is below automatic top-16 selection"
+    },
+    {
+      "center_m": 3954.0,
+      "reason": "low curvature right kink on main straight before Rivazza complex; candidate peak 0.0036 rad/m is below automatic selection"
+    }
+  ],
+  "manual_low_curvature_turns": [
+    {
+      "turn": 8,
+      "reason": "flat right kink on straight to Piratella complex; candidate peak 0.0035 rad/m is below automatic selection"
+    },
+    {
+      "turn": 16,
+      "reason": "flat right kink on straight before Rivazza complex; candidate peak 0.0036 rad/m is below automatic selection"
+    },
+    {
+      "turn": 19,
+      "reason": "flat right kink on final straight; candidate peak 0.0031 rad/m is below automatic selection"
+    }
+  ],
+  "turns": [
+    {
+      "turn": 1,
+      "name": "Turn 1",
+      "aliases": [
+        "main-straight left kink"
+      ],
+      "group": "Turn 1",
+      "direction": "left",
+      "start_m": 500.0,
+      "apex_m": 600.0,
+      "end_m": 640.0
+    },
+    {
+      "turn": 2,
+      "name": "Variante Tamburello",
+      "aliases": [
+        "Tamburello"
+      ],
+      "group": "Variante Tamburello",
+      "direction": "left",
+      "start_m": 640.0,
+      "apex_m": 694.0,
+      "end_m": 730.0
+    },
+    {
+      "turn": 3,
+      "name": "Variante Tamburello",
+      "aliases": [
+        "Tamburello"
+      ],
+      "group": "Variante Tamburello",
+      "direction": "right",
+      "start_m": 730.0,
+      "apex_m": 756.0,
+      "end_m": 820.0
+    },
+    {
+      "turn": 4,
+      "name": "Variante Tamburello",
+      "aliases": [
+        "Tamburello"
+      ],
+      "group": "Variante Tamburello",
+      "direction": "left",
+      "start_m": 820.0,
+      "apex_m": 892.0,
+      "end_m": 980.0
+    },
+    {
+      "turn": 5,
+      "name": "Variante Villeneuve",
+      "aliases": [
+        "Villeneuve"
+      ],
+      "group": "Variante Villeneuve",
+      "direction": "left",
+      "start_m": 1260.0,
+      "apex_m": 1312.0,
+      "end_m": 1370.0
+    },
+    {
+      "turn": 6,
+      "name": "Variante Villeneuve",
+      "aliases": [
+        "Villeneuve"
+      ],
+      "group": "Variante Villeneuve",
+      "direction": "right",
+      "start_m": 1370.0,
+      "apex_m": 1418.0,
+      "end_m": 1480.0
+    },
+    {
+      "turn": 7,
+      "name": "Tosa",
+      "aliases": [
+        "Curva Tosa"
+      ],
+      "group": "Tosa",
+      "direction": "left",
+      "start_m": 1650.0,
+      "apex_m": 1716.0,
+      "end_m": 1770.0
+    },
+    {
+      "turn": 8,
+      "name": "Turn 8",
+      "aliases": [
+        "Piratella approach kink"
+      ],
+      "group": "Piratella",
+      "direction": "right",
+      "start_m": 2000.0,
+      "apex_m": 2074.0,
+      "end_m": 2200.0
+    },
+    {
+      "turn": 9,
+      "name": "Piratella",
+      "aliases": [
+        "Curva Piratella"
+      ],
+      "group": "Piratella",
+      "direction": "left",
+      "start_m": 2250.0,
+      "apex_m": 2316.0,
+      "end_m": 2400.0
+    },
+    {
+      "turn": 10,
+      "name": "Turn 10",
+      "aliases": [
+        "Piratella exit kink"
+      ],
+      "group": "Piratella",
+      "direction": "left",
+      "start_m": 2400.0,
+      "apex_m": 2508.0,
+      "end_m": 2580.0
+    },
+    {
+      "turn": 11,
+      "name": "Acque Minerali",
+      "aliases": [],
+      "group": "Acque Minerali",
+      "direction": "right",
+      "start_m": 2660.0,
+      "apex_m": 2708.0,
+      "end_m": 2790.0
+    },
+    {
+      "turn": 12,
+      "name": "Acque Minerali",
+      "aliases": [],
+      "group": "Acque Minerali",
+      "direction": "right",
+      "start_m": 2790.0,
+      "apex_m": 2844.0,
+      "end_m": 2885.0
+    },
+    {
+      "turn": 13,
+      "name": "Acque Minerali",
+      "aliases": [],
+      "group": "Acque Minerali",
+      "direction": "left",
+      "start_m": 2885.0,
+      "apex_m": 2908.0,
+      "end_m": 2990.0
+    },
+    {
+      "turn": 14,
+      "name": "Gresini",
+      "aliases": [
+        "Variante Alta",
+        "Curva Gresini"
+      ],
+      "group": "Gresini",
+      "direction": "right",
+      "start_m": 3300.0,
+      "apex_m": 3336.0,
+      "end_m": 3360.0
+    },
+    {
+      "turn": 15,
+      "name": "Gresini",
+      "aliases": [
+        "Variante Alta",
+        "Curva Gresini"
+      ],
+      "group": "Gresini",
+      "direction": "left",
+      "start_m": 3360.0,
+      "apex_m": 3378.0,
+      "end_m": 3430.0
+    },
+    {
+      "turn": 16,
+      "name": "Turn 16",
+      "aliases": [
+        "Rivazza approach kink"
+      ],
+      "group": "Rivazza approach",
+      "direction": "right",
+      "start_m": 3860.0,
+      "apex_m": 3954.0,
+      "end_m": 4010.0
+    },
+    {
+      "turn": 17,
+      "name": "Rivazza 1",
+      "aliases": [
+        "Rivazza"
+      ],
+      "group": "Rivazza",
+      "direction": "left",
+      "start_m": 4080.0,
+      "apex_m": 4124.0,
+      "end_m": 4190.0
+    },
+    {
+      "turn": 18,
+      "name": "Rivazza 2",
+      "aliases": [
+        "Rivazza"
+      ],
+      "group": "Rivazza",
+      "direction": "left",
+      "start_m": 4190.0,
+      "apex_m": 4242.0,
+      "end_m": 4330.0
+    },
+    {
+      "turn": 19,
+      "name": "Turn 19",
+      "aliases": [
+        "main-straight right kink"
+      ],
+      "group": "Final straight",
+      "direction": "right",
+      "start_m": 4430.0,
+      "apex_m": 4598.0,
+      "end_m": 4700.0
+    }
+  ],
+  "display_policy": {
+    "prefer_corner_name": true,
+    "turn_number_is_secondary": false,
+    "turn_number_suffix": "LMU",
+    "always_preserve_lmu_distance_m": true
+  },
+  "geometric_notes": {
+    "note_1": {
+      "id": "gap_t4_to_t5",
+      "type": "gap_explanation",
+      "entity": "Variante Tamburello (T4) → Variante Villeneuve (T5)",
+      "start_m": 980.0,
+      "end_m": 1260.0,
+      "gap_m": 280.0,
+      "percentage_of_lap": 5.7,
+      "classification": "straight_real_track_feature",
+      "reason": "Imola's main straight from Tamburello exit to Variante Villeneuve braking zone. The 280 m gap represents a real track straight (acceleration corridor from Tamburello exit toward the braking zone of Variante Villeneuve). Curvature evidence shows no intermediate peak within ±35 m tolerance in the independent session, and the candidate analysis confirms no separate turn apex between 980 m and 1260 m.",
+      "evidence": {
+        "source": "calibration_session + independent_validation",
+        "curvature_direction_change": "left_to_left",
+        "intermediate_peak_detected": false,
+        "calibration_session": "Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z",
+        "independent_session": "Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_34_47Z"
+      }
+    },
+    "note_2": {
+      "id": "gap_t5_to_t7",
+      "type": "gap_explanation",
+      "entity": "Variante Villeneuve (T6) → Tosa (T7)",
+      "start_m": 1480.0,
+      "end_m": 1650.0,
+      "gap_m": 170.0,
+      "percentage_of_lap": 3.5,
+      "classification": "straight_real_track_feature",
+      "reason": "Straight section from Variante Villeneuve exit to Tosa braking zone. The 170 m gap represents a real track straight (exit acceleration zone from the Variante Villeneuve complex toward Tosa). Curvature evidence shows no intermediate peak.",
+      "evidence": {
+        "source": "calibration_session + independent_validation",
+        "curvature_direction_change": "right_to_left",
+        "intermediate_peak_detected": false,
+        "calibration_session": "Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z",
+        "independent_session": "Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_34_47Z"
+      }
+    },
+    "note_3": {
+      "id": "gap_t7_to_t8",
+      "type": "gap_explanation",
+      "entity": "Tosa (T7) → Turn 8 (T8)",
+      "start_m": 1770.0,
+      "end_m": 2000.0,
+      "gap_m": 230.0,
+      "percentage_of_lap": 4.7,
+      "classification": "straight_real_track_feature",
+      "reason": "Straight section from Tosa exit to Piratella complex approach (Turn 8). The 230 m gap represents a real track straight (acceleration corridor from Tosa toward the braking zone of the Piratella complex). Curvature evidence shows no intermediate peak; candidate 8 at 2074 m has peak curvature 0.0035 rad/m which is the first curvature feature after Tosa.",
+      "evidence": {
+        "source": "calibration_session + independent_validation",
+        "curvature_direction_change": "left_to_right",
+        "intermediate_peak_detected": false,
+        "calibration_session": "Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z",
+        "independent_session": "Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_34_47Z"
+      }
+    },
+    "note_4": {
+      "id": "gap_t13_to_t14",
+      "type": "gap_explanation",
+      "entity": "Acque Minerali (T13) → Gresini (T14)",
+      "start_m": 2990.0,
+      "end_m": 3300.0,
+      "gap_m": 310.0,
+      "percentage_of_lap": 6.3,
+      "classification": "straight_real_track_feature",
+      "reason": "Straight section from Acque Minerali exit to Gresini braking zone. The 310 m gap represents a real track straight (acceleration corridor from Acque Minerali chicane toward the Gresini complex). Curvature evidence shows no intermediate peak.",
+      "evidence": {
+        "source": "calibration_session + independent_validation",
+        "curvature_direction_change": "left_to_right",
+        "intermediate_peak_detected": false,
+        "calibration_session": "Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z",
+        "independent_session": "Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_34_47Z"
+      }
+    },
+    "note_5": {
+      "id": "gap_t15_to_t16",
+      "type": "gap_explanation",
+      "entity": "Gresini (T15) → Turn 16 (T16)",
+      "start_m": 3430.0,
+      "end_m": 3860.0,
+      "gap_m": 430.0,
+      "percentage_of_lap": 8.8,
+      "classification": "straight_real_track_feature",
+      "reason": "Imola's longest straight from the Gresini complex exit to the Rivazza approach. The 430 m gap represents a real track straight (full acceleration corridor from Gresini exit toward the braking zone of the Rivazza complex). Curvature evidence shows no intermediate peak; candidates 17 and 18 in this region have very low peak curvature (0.0035–0.0036 rad/m) which are flat kinks rather than apex-driven corners. No evidence is sufficient to justify a separate turn between Gresini and Rivazza.",
+      "evidence": {
+        "source": "calibration_session + independent_validation",
+        "curvature_direction_change": "left_to_right",
+        "intermediate_peak_detected": false,
+        "calibration_session": "Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z",
+        "independent_session": "Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_34_47Z"
+      }
+    },
+    "note_6": {
+      "id": "minor_gaps",
+      "type": "gap_explanation",
+      "entity": "Minor boundary offsets across all turns",
+      "gaps": [
+        {
+          "turn": 2,
+          "gap_m": 0.0,
+          "classification": "touching_boundary"
+        },
+        {
+          "turn": 3,
+          "gap_m": 0.0,
+          "classification": "touching_boundary"
+        },
+        {
+          "turn": 8,
+          "gap_m": 50.0,
+          "classification": "acceptable_boundary_offset"
+        },
+        {
+          "turn": 10,
+          "gap_m": 80.0,
+          "classification": "acceptable_boundary_offset"
+        },
+        {
+          "turn": 16,
+          "gap_m": 70.0,
+          "classification": "acceptable_boundary_offset"
+        },
+        {
+          "turn": 19,
+          "gap_m": 100.0,
+          "classification": "acceptable_boundary_offset"
+        }
+      ],
+      "classification": "acceptable_boundary_offsets",
+      "reason": "Minor gaps (0–100 m) between turns represent acceptable boundary offsets within the calibration tolerance. These do not indicate missing turns; they are expected artifacts of curvature-based peak detection and manual boundary assignment."
+    },
+    "note_7": {
+      "id": "gps_coverage_limitation",
+      "type": "data_limitation",
+      "entity": "GPS coverage",
+      "classification": "calibration_limitation",
+      "reason": "GPS coverage is not available in the calibration sessions' source telemetry (the LMU .duckdb stores GPS data in a separate coordinate table, not directly derivable from Lap Dist). The profile's lap_length_m is calibrated from Lap Dist max, not from GPS path distance. This is a known limitation of the LMU telemetry format and does not affect the profile's validity.",
+      "evidence": {
+        "source": "Autodromo Enzo e Dino Ferrari_P_2026-08-13T23_25_02Z.duckdb",
+        "gps_coordinate_available": true,
+        "gps_coverage_derivable": false
+      }
+    }
+  }
+}

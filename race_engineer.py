@@ -331,92 +331,112 @@ def analyze_command(args: argparse.Namespace) -> int:
         stage_results["llm_validator"] = STATUS_SKIPPED
         print_stage("llm", STATUS_SKIPPED, "--no-llm")
     else:
-        llm = llm_script(args.backend)
-        llm_json = llm_output_path(analysis_json, args.backend)
-        llm_signature = {
-            "analysis_sha256": analysis_sha,
-            "backend": args.backend,
-            "model": llm_model_name(args.backend),
-            "llm_script": script_signature(llm),
-        }
-        reuse_llm = (
-            not args.force
-            and not args.force_llm
-            and stage_is_reusable(
-                state,
-                "llm",
-                llm_signature,
-                required_paths=(llm_json,),
-            )
-        )
-        if reuse_llm:
-            stage_results["llm"] = STATUS_REUSED
-            print_stage("llm", STATUS_REUSED, str(llm_json))
-        else:
-            try:
-                run_checked([
-                    sys.executable,
-                    str(llm),
-                    str(analysis_json),
-                ])
-            except subprocess.CalledProcessError:
-                stage_results["llm"] = STATUS_FAILED
-                print_stage("llm", STATUS_FAILED)
-                return 1
-            if not llm_json.is_file():
-                raise RuntimeError(
-                    "El backend LLM terminó sin generar el JSON esperado: "
-                    f"{llm_json}"
-                )
-            record_stage(
-                state,
-                "llm",
-                signature=llm_signature,
-                status=STATUS_RUN,
-                output=str(llm_json),
-                details={"llm_sha256": sha256_file(llm_json)},
-            )
-            save_state(state_path, state)
-            stage_results["llm"] = STATUS_RUN
-            print_stage("llm", STATUS_RUN, str(llm_json))
+        # Check whether the analyzer excluded comparable laps for this session.
+        # If so, skip LLM entirely to avoid invoking a backend with no
+        # comparisons to analyze.
+        try:
+            with open(analysis_json, "r", encoding="utf-8") as fh:
+                analysis_payload = json.load(fh)
+        except (OSError, json.JSONDecodeError):
+            # JSON is unreadable — proceed to LLM; validator will catch it.
+            analysis_payload = {}
 
-        validator_signature = {
-            "llm_sha256": sha256_file(llm_json),
-            "validator": script_signature(validator),
-        }
-        reuse_validator = (
-            not args.force
-            and stage_is_reusable(
-                state,
-                "llm_validator",
-                validator_signature,
-                required_paths=(llm_json,),
-            )
+        comparative_status = (
+            analysis_payload.get("metadata", {})
+            .get("comparative_status")
         )
-        if reuse_validator:
-            stage_results["llm_validator"] = STATUS_REUSED
-            print_stage("llm_validator", STATUS_REUSED)
+
+        if comparative_status == "SKIPPED_NOT_APPLICABLE":
+            stage_results["llm"] = STATUS_SKIPPED
+            stage_results["llm_validator"] = STATUS_SKIPPED
+            print_stage("llm", STATUS_SKIPPED, "insufficient_comparable_laps")
         else:
-            try:
-                run_checked([
-                    sys.executable,
-                    str(validator),
-                    str(llm_json),
-                ])
-            except subprocess.CalledProcessError:
-                stage_results["llm_validator"] = STATUS_FAILED
-                print_stage("llm_validator", STATUS_FAILED)
-                return 1
-            record_stage(
-                state,
-                "llm_validator",
-                signature=validator_signature,
-                status=STATUS_RUN,
-                output=str(llm_json),
+            llm = llm_script(args.backend)
+            llm_json = llm_output_path(analysis_json, args.backend)
+            llm_signature = {
+                "analysis_sha256": analysis_sha,
+                "backend": args.backend,
+                "model": llm_model_name(args.backend),
+                "llm_script": script_signature(llm),
+            }
+            reuse_llm = (
+                not args.force
+                and not args.force_llm
+                and stage_is_reusable(
+                    state,
+                    "llm",
+                    llm_signature,
+                    required_paths=(llm_json,),
+                )
             )
-            save_state(state_path, state)
-            stage_results["llm_validator"] = STATUS_RUN
-            print_stage("llm_validator", STATUS_RUN)
+            if reuse_llm:
+                stage_results["llm"] = STATUS_REUSED
+                print_stage("llm", STATUS_REUSED, str(llm_json))
+            else:
+                try:
+                    run_checked([
+                        sys.executable,
+                        str(llm),
+                        str(analysis_json),
+                    ])
+                except subprocess.CalledProcessError:
+                    stage_results["llm"] = STATUS_FAILED
+                    print_stage("llm", STATUS_FAILED)
+                    return 1
+                if not llm_json.is_file():
+                    raise RuntimeError(
+                        "El backend LLM terminó sin generar el JSON esperado: "
+                        f"{llm_json}"
+                    )
+                record_stage(
+                    state,
+                    "llm",
+                    signature=llm_signature,
+                    status=STATUS_RUN,
+                    output=str(llm_json),
+                    details={"llm_sha256": sha256_file(llm_json)},
+                )
+                save_state(state_path, state)
+                stage_results["llm"] = STATUS_RUN
+                print_stage("llm", STATUS_RUN, str(llm_json))
+
+            validator_signature = {
+                "llm_sha256": sha256_file(llm_json),
+                "validator": script_signature(validator),
+            }
+            reuse_validator = (
+                not args.force
+                and stage_is_reusable(
+                    state,
+                    "llm_validator",
+                    validator_signature,
+                    required_paths=(llm_json,),
+                )
+            )
+            if reuse_validator:
+                stage_results["llm_validator"] = STATUS_REUSED
+                print_stage("llm_validator", STATUS_REUSED)
+            else:
+                try:
+                    run_checked([
+                        sys.executable,
+                        str(validator),
+                        str(llm_json),
+                    ])
+                except subprocess.CalledProcessError:
+                    stage_results["llm_validator"] = STATUS_FAILED
+                    print_stage("llm_validator", STATUS_FAILED)
+                    return 1
+                record_stage(
+                    state,
+                    "llm_validator",
+                    signature=validator_signature,
+                    status=STATUS_RUN,
+                    output=str(llm_json),
+                )
+                save_state(state_path, state)
+                stage_results["llm_validator"] = STATUS_RUN
+                print_stage("llm_validator", STATUS_RUN)
 
     # --------------------------------------------------------
     # History

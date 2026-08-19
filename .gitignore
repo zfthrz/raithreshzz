@@ -29,3 +29,4 @@ race_engineer_history_backup.duckdb
 .env
 .env.*
 !.env.example
+.aider*

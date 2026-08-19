@@ -1,0 +1,1808 @@
+{
+  "metadata": {
+    "audit_version": "0.1",
+    "generated_at_utc": "2026-08-18T05:41:12.698001+00:00",
+    "dataset_path": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\data\\generated\\h5_3\\audit_dataset_full.json",
+    "labels_path": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\data\\generated\\h5_3\\audit_labels_full.json",
+    "policy": {
+      "production_policy_changed": false,
+      "historical_actions_authorized": false,
+      "thresholds_promoted": false,
+      "human_labels_are_ground_truth": true
+    }
+  },
+  "status": "SHADOW_AUDIT_ONLY",
+  "summary": {
+    "total_labeled_candidates": 55,
+    "total_candidates_in_dataset": 55,
+    "label_records": 55,
+    "count_by_label": {
+      "ACTIONABLE": 16,
+      "AMBIGUOUS": 1,
+      "NOT_COMPARABLE": 1,
+      "OBSERVATIONAL_ONLY": 37
+    }
+  },
+  "distributions": {
+    "count_by_track_and_label": {
+      "Autodromo Enzo e Dino Ferrari": {
+        "ACTIONABLE": 6,
+        "AMBIGUOUS": 1,
+        "OBSERVATIONAL_ONLY": 4
+      },
+      "Autodromo Nazionale Monza": {
+        "NOT_COMPARABLE": 1,
+        "OBSERVATIONAL_ONLY": 14
+      },
+      "Autódromo José Carlos Pace": {
+        "ACTIONABLE": 3,
+        "OBSERVATIONAL_ONLY": 11
+      },
+      "Fuji Speedway": {
+        "ACTIONABLE": 7,
+        "OBSERVATIONAL_ONLY": 8
+      }
+    },
+    "count_by_delta_sign_and_label": {
+      "current_faster": {
+        "ACTIONABLE": 3,
+        "NOT_COMPARABLE": 1,
+        "OBSERVATIONAL_ONLY": 25
+      },
+      "current_slower": {
+        "ACTIONABLE": 13,
+        "AMBIGUOUS": 1,
+        "OBSERVATIONAL_ONLY": 12
+      }
+    },
+    "delta_change_s_by_label": {
+      "ACTIONABLE": {
+        "count": 16,
+        "min": 0.08353006288920994,
+        "max": 0.33745750023710386,
+        "median": 0.13553434969430533,
+        "mean": 0.163237486195971,
+        "p10": 0.08979997814763152,
+        "p25": 0.11072787406963158,
+        "p50": 0.13553434969430533,
+        "p75": 0.20847891459054502,
+        "p90": 0.25860522955679865
+      },
+      "AMBIGUOUS": {
+        "count": 1,
+        "min": -0.05935743705461505,
+        "max": -0.05935743705461505,
+        "median": -0.05935743705461505
+      },
+      "NOT_COMPARABLE": {
+        "count": 1,
+        "min": -0.23482385650101634,
+        "max": -0.23482385650101634,
+        "median": -0.23482385650101634
+      },
+      "OBSERVATIONAL_ONLY": {
+        "count": 37,
+        "min": -0.3815592960461771,
+        "max": 0.07707357139729254,
+        "median": -0.08618536451807302,
+        "mean": -0.07367795553736636,
+        "p10": -0.19822040402448948,
+        "p25": -0.13214648596427025,
+        "p50": -0.08618536451807302,
+        "p75": 0.05543550930244123,
+        "p90": 0.06952961443624872
+      }
+    },
+    "zone_length_m_by_label": {
+      "ACTIONABLE": {
+        "count": 16,
+        "min": 37.0,
+        "max": 220.0,
+        "median": 92.5,
+        "mean": 103.125,
+        "p10": 62.0,
+        "p25": 75.0,
+        "p50": 92.5,
+        "p75": 134.0,
+        "p90": 170.0
+      },
+      "AMBIGUOUS": {
+        "count": 1,
+        "min": 50.0,
+        "max": 50.0,
+        "median": 50.0
+      },
+      "NOT_COMPARABLE": {
+        "count": 1,
+        "min": 940.0,
+        "max": 940.0,
+        "median": 940.0
+      },
+      "OBSERVATIONAL_ONLY": {
+        "count": 37,
+        "min": 16.0,
+        "max": 832.0,
+        "median": 150.0,
+        "mean": 211.61269040365477,
+        "p10": 43.0,
+        "p25": 72.0,
+        "p50": 150.0,
+        "p75": 236.0,
+        "p90": 580.0
+      }
+    },
+    "channel_availability_by_label": {
+      "ACTIONABLE": {
+        "brake_delta_avg": 16,
+        "speed_delta_avg": 16,
+        "steering_delta_avg": 16,
+        "throttle_delta_avg": 16
+      },
+      "AMBIGUOUS": {
+        "brake_delta_avg": 1,
+        "speed_delta_avg": 1,
+        "steering_delta_avg": 1,
+        "throttle_delta_avg": 1
+      },
+      "NOT_COMPARABLE": {
+        "brake_delta_avg": 1,
+        "speed_delta_avg": 1,
+        "steering_delta_avg": 1,
+        "throttle_delta_avg": 1
+      },
+      "OBSERVATIONAL_ONLY": {
+        "brake_delta_avg": 37,
+        "speed_delta_avg": 37,
+        "steering_delta_avg": 37,
+        "throttle_delta_avg": 37
+      }
+    },
+    "channel_sign_distribution_by_label": {
+      "ACTIONABLE": {
+        "brake_delta_avg": {
+          "negative": 7,
+          "positive": 5,
+          "zero_or_none": 4
+        },
+        "speed_delta_avg": {
+          "negative": 16,
+          "positive": 0,
+          "zero_or_none": 0
+        },
+        "steering_delta_avg": {
+          "negative": 0,
+          "positive": 0,
+          "zero_or_none": 16
+        },
+        "throttle_delta_avg": {
+          "negative": 7,
+          "positive": 9,
+          "zero_or_none": 0
+        }
+      },
+      "AMBIGUOUS": {
+        "brake_delta_avg": {
+          "negative": 1,
+          "positive": 0,
+          "zero_or_none": 0
+        },
+        "speed_delta_avg": {
+          "negative": 0,
+          "positive": 1,
+          "zero_or_none": 0
+        },
+        "steering_delta_avg": {
+          "negative": 0,
+          "positive": 0,
+          "zero_or_none": 1
+        },
+        "throttle_delta_avg": {
+          "negative": 0,
+          "positive": 1,
+          "zero_or_none": 0
+        }
+      },
+      "NOT_COMPARABLE": {
+        "brake_delta_avg": {
+          "negative": 1,
+          "positive": 0,
+          "zero_or_none": 0
+        },
+        "speed_delta_avg": {
+          "negative": 0,
+          "positive": 1,
+          "zero_or_none": 0
+        },
+        "steering_delta_avg": {
+          "negative": 0,
+          "positive": 0,
+          "zero_or_none": 1
+        },
+        "throttle_delta_avg": {
+          "negative": 0,
+          "positive": 1,
+          "zero_or_none": 0
+        }
+      },
+      "OBSERVATIONAL_ONLY": {
+        "brake_delta_avg": {
+          "negative": 14,
+          "positive": 9,
+          "zero_or_none": 14
+        },
+        "speed_delta_avg": {
+          "negative": 11,
+          "positive": 26,
+          "zero_or_none": 0
+        },
+        "steering_delta_avg": {
+          "negative": 0,
+          "positive": 0,
+          "zero_or_none": 37
+        },
+        "throttle_delta_avg": {
+          "negative": 19,
+          "positive": 18,
+          "zero_or_none": 0
+        }
+      }
+    },
+    "channel_combinations_by_label": {
+      "ACTIONABLE": {
+        "brake_delta_avg|speed_delta_avg|steering_delta_avg|throttle_delta_avg": 16
+      },
+      "AMBIGUOUS": {
+        "brake_delta_avg|speed_delta_avg|steering_delta_avg|throttle_delta_avg": 1
+      },
+      "NOT_COMPARABLE": {
+        "brake_delta_avg|speed_delta_avg|steering_delta_avg|throttle_delta_avg": 1
+      },
+      "OBSERVATIONAL_ONLY": {
+        "brake_delta_avg|speed_delta_avg|steering_delta_avg|throttle_delta_avg": 37
+      }
+    }
+  },
+  "labeled_items": [
+    {
+      "audit_id": "1b802498c37f:cand_001",
+      "human_label": "ACTIONABLE",
+      "candidate_id": "cand_001",
+      "context": {
+        "track": "Fuji Speedway",
+        "track_layout": "Fuji Speedway",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_slower",
+      "delta_change_s": 0.2082905522054883,
+      "start_distance_m": 653.0,
+      "end_distance_m": 718.0,
+      "zone_length_m": 65.0,
+      "speed_delta_avg": -16.198074085753653,
+      "throttle_delta_avg": 0.1333670841893289,
+      "brake_delta_avg": -2.7107114576581055,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "antes de T1 — TGR Corner",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "1b802498c37f:cand_002",
+      "human_label": "OBSERVATIONAL_ONLY",
+      "candidate_id": "cand_002",
+      "context": {
+        "track": "Fuji Speedway",
+        "track_layout": "Fuji Speedway",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_slower",
+      "delta_change_s": -0.17905310054425527,
+      "start_distance_m": 734.0,
+      "end_distance_m": 777.0,
+      "zone_length_m": 43.0,
+      "speed_delta_avg": 9.14026878892738,
+      "throttle_delta_avg": -15.953850998780888,
+      "brake_delta_avg": -2.6785100671045936,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T1 — TGR Corner",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "1b802498c37f:cand_003",
+      "human_label": "ACTIONABLE",
+      "candidate_id": "cand_003",
+      "context": {
+        "track": "Fuji Speedway",
+        "track_layout": "Fuji Speedway",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_slower",
+      "delta_change_s": 0.20847891459054502,
+      "start_distance_m": 777.0,
+      "end_distance_m": 814.0,
+      "zone_length_m": 37.0,
+      "speed_delta_avg": -14.80530507206357,
+      "throttle_delta_avg": -33.75859962828506,
+      "brake_delta_avg": 0.0,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T1 — TGR Corner",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "1b802498c37f:cand_004",
+      "human_label": "OBSERVATIONAL_ONLY",
+      "candidate_id": "cand_004",
+      "context": {
+        "track": "Fuji Speedway",
+        "track_layout": "Fuji Speedway",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_slower",
+      "delta_change_s": 0.06988558706230563,
+      "start_distance_m": 814.0,
+      "end_distance_m": 830.0,
+      "zone_length_m": 16.0,
+      "speed_delta_avg": -15.697311541209418,
+      "throttle_delta_avg": 17.787233804995385,
+      "brake_delta_avg": 0.0,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T1 — TGR Corner → T2 — Turn 2",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "1b802498c37f:cand_005",
+      "human_label": "ACTIONABLE",
+      "candidate_id": "cand_005",
+      "context": {
+        "track": "Fuji Speedway",
+        "track_layout": "Fuji Speedway",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_slower",
+      "delta_change_s": 0.20761975707111624,
+      "start_distance_m": 830.0,
+      "end_distance_m": 1050.0,
+      "zone_length_m": 220.0,
+      "speed_delta_avg": -6.925026278018781,
+      "throttle_delta_avg": 0.472930474756077,
+      "brake_delta_avg": 0.0,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T2 — Turn 2",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "1b802498c37f:cand_006",
+      "human_label": "OBSERVATIONAL_ONLY",
+      "candidate_id": "cand_006",
+      "context": {
+        "track": "Fuji Speedway",
+        "track_layout": "Fuji Speedway",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_slower",
+      "delta_change_s": 0.05543550930244123,
+      "start_distance_m": 1701.0,
+      "end_distance_m": 1882.0,
+      "zone_length_m": 181.0,
+      "speed_delta_avg": -3.624853295393488,
+      "throttle_delta_avg": -2.8759085624610017,
+      "brake_delta_avg": -0.04658102318112217,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T5 — 100R",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "1b802498c37f:cand_007",
+      "human_label": "OBSERVATIONAL_ONLY",
+      "candidate_id": "cand_007",
+      "context": {
+        "track": "Fuji Speedway",
+        "track_layout": "Fuji Speedway",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_slower",
+      "delta_change_s": -0.13214648596427025,
+      "start_distance_m": 1954.0,
+      "end_distance_m": 2100.0,
+      "zone_length_m": 146.0,
+      "speed_delta_avg": 3.1016208911903163,
+      "throttle_delta_avg": -5.064706350893908,
+      "brake_delta_avg": -0.08454566004000073,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T6 — Hairpin",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "1b802498c37f:cand_008",
+      "human_label": "OBSERVATIONAL_ONLY",
+      "candidate_id": "cand_008",
+      "context": {
+        "track": "Fuji Speedway",
+        "track_layout": "Fuji Speedway",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_slower",
+      "delta_change_s": 0.06838118233527268,
+      "start_distance_m": 2706.0,
+      "end_distance_m": 2780.0,
+      "zone_length_m": 74.0,
+      "speed_delta_avg": -11.86899620611911,
+      "throttle_delta_avg": 19.245716592191833,
+      "brake_delta_avg": -18.673197799213003,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T9 — 300R",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "1b802498c37f:cand_009",
+      "human_label": "OBSERVATIONAL_ONLY",
+      "candidate_id": "cand_009",
+      "context": {
+        "track": "Fuji Speedway",
+        "track_layout": "Fuji Speedway",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_slower",
+      "delta_change_s": 0.07707357139729254,
+      "start_distance_m": 2800.0,
+      "end_distance_m": 2872.0,
+      "zone_length_m": 72.0,
+      "speed_delta_avg": -0.8539339193664203,
+      "throttle_delta_avg": -3.412665265912213,
+      "brake_delta_avg": 3.721128530879914,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T10 — Dunlop Corner",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "1b802498c37f:cand_010",
+      "human_label": "ACTIONABLE",
+      "candidate_id": "cand_010",
+      "context": {
+        "track": "Fuji Speedway",
+        "track_layout": "Fuji Speedway",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_slower",
+      "delta_change_s": 0.24390800490291298,
+      "start_distance_m": 2872.0,
+      "end_distance_m": 2950.0,
+      "zone_length_m": 78.0,
+      "speed_delta_avg": -6.460897972264461,
+      "throttle_delta_avg": -2.8100602648004847,
+      "brake_delta_avg": 0.0,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T11 — Dunlop",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "1b802498c37f:cand_011",
+      "human_label": "ACTIONABLE",
+      "candidate_id": "cand_011",
+      "context": {
+        "track": "Fuji Speedway",
+        "track_layout": "Fuji Speedway",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_slower",
+      "delta_change_s": 0.11619601536930446,
+      "start_distance_m": 3078.0,
+      "end_distance_m": 3214.0,
+      "zone_length_m": 136.0,
+      "speed_delta_avg": -3.679431470494941,
+      "throttle_delta_avg": -3.61876744854223,
+      "brake_delta_avg": -2.9269921531675442,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T13 — 13th Corner",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "1b802498c37f:cand_012",
+      "human_label": "ACTIONABLE",
+      "candidate_id": "cand_012",
+      "context": {
+        "track": "Fuji Speedway",
+        "track_layout": "Fuji Speedway",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_slower",
+      "delta_change_s": 0.08353006288920994,
+      "start_distance_m": 3352.0,
+      "end_distance_m": 3458.0,
+      "zone_length_m": 106.0,
+      "speed_delta_avg": -1.8054559112377937,
+      "throttle_delta_avg": -2.2341854145441253,
+      "brake_delta_avg": 1.7443954918468587,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T15 — GR Supra Corner",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "1b802498c37f:cand_013",
+      "human_label": "OBSERVATIONAL_ONLY",
+      "candidate_id": "cand_013",
+      "context": {
+        "track": "Fuji Speedway",
+        "track_layout": "Fuji Speedway",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_slower",
+      "delta_change_s": -0.10817403660807656,
+      "start_distance_m": 3592.0,
+      "end_distance_m": 3682.0,
+      "zone_length_m": 90.0,
+      "speed_delta_avg": 5.884558102953567,
+      "throttle_delta_avg": -3.342303407102483,
+      "brake_delta_avg": 2.458775480959661,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T16 — Panasonic Corner",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "1b802498c37f:cand_014",
+      "human_label": "ACTIONABLE",
+      "candidate_id": "cand_014",
+      "context": {
+        "track": "Fuji Speedway",
+        "track_layout": "Fuji Speedway",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_slower",
+      "delta_change_s": 0.09945128402154069,
+      "start_distance_m": 3682.0,
+      "end_distance_m": 3760.0,
+      "zone_length_m": 78.0,
+      "speed_delta_avg": -4.136636722262852,
+      "throttle_delta_avg": -0.8417121326449828,
+      "brake_delta_avg": 0.0,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T16 — Panasonic Corner",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "1b802498c37f:cand_015",
+      "human_label": "OBSERVATIONAL_ONLY",
+      "candidate_id": "cand_015",
+      "context": {
+        "track": "Fuji Speedway",
+        "track_layout": "Fuji Speedway",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_slower",
+      "delta_change_s": 0.06952961443624872,
+      "start_distance_m": 3760.0,
+      "end_distance_m": 4528.04541015625,
+      "zone_length_m": 768.04541015625,
+      "speed_delta_avg": -0.8591052803308462,
+      "throttle_delta_avg": -1.2117027158049591,
+      "brake_delta_avg": 0.0,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "después de T16 — Panasonic Corner",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "eaff622bdb6c:cand_001",
+      "human_label": "ACTIONABLE",
+      "candidate_id": "cand_001",
+      "context": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "track_layout": "Autodromo Enzo e Dino Ferrari",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_slower",
+      "delta_change_s": 0.11085447371265111,
+      "start_distance_m": 640.0,
+      "end_distance_m": 730.0,
+      "zone_length_m": 90.0,
+      "speed_delta_avg": -7.225726694024155,
+      "throttle_delta_avg": 3.1538320525204138,
+      "brake_delta_avg": -2.561405749240722,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T2 — Variante Tamburello",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "eaff622bdb6c:cand_002",
+      "human_label": "ACTIONABLE",
+      "candidate_id": "cand_002",
+      "context": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "track_layout": "Autodromo Enzo e Dino Ferrari",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_slower",
+      "delta_change_s": 0.33745750023710386,
+      "start_distance_m": 1370.0,
+      "end_distance_m": 1480.0,
+      "zone_length_m": 110.0,
+      "speed_delta_avg": -15.201430808522046,
+      "throttle_delta_avg": 4.636897321486506,
+      "brake_delta_avg": 1.9113099243716318,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T6 — Variante Villeneuve",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "eaff622bdb6c:cand_003",
+      "human_label": "ACTIONABLE",
+      "candidate_id": "cand_003",
+      "context": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "track_layout": "Autodromo Enzo e Dino Ferrari",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_slower",
+      "delta_change_s": 0.12363314170847772,
+      "start_distance_m": 1480.0,
+      "end_distance_m": 1650.0,
+      "zone_length_m": 170.0,
+      "speed_delta_avg": -5.819941668863929,
+      "throttle_delta_avg": -7.125878029073281,
+      "brake_delta_avg": -0.6486969191899082,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T6 — Variante Villeneuve → T7 — Tosa",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "eaff622bdb6c:cand_004",
+      "human_label": "ACTIONABLE",
+      "candidate_id": "cand_004",
+      "context": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "track_layout": "Autodromo Enzo e Dino Ferrari",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_slower",
+      "delta_change_s": 0.10135722257727409,
+      "start_distance_m": 1650.0,
+      "end_distance_m": 1712.0,
+      "zone_length_m": 62.0,
+      "speed_delta_avg": -4.802479517839989,
+      "throttle_delta_avg": 8.741224914480588,
+      "brake_delta_avg": 0.29002281494943694,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T7 — Tosa",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "eaff622bdb6c:cand_005",
+      "human_label": "OBSERVATIONAL_ONLY",
+      "candidate_id": "cand_005",
+      "context": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "track_layout": "Autodromo Enzo e Dino Ferrari",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_slower",
+      "delta_change_s": -0.10030278296652995,
+      "start_distance_m": 1712.0,
+      "end_distance_m": 1770.0,
+      "zone_length_m": 58.0,
+      "speed_delta_avg": 4.974920131764106,
+      "throttle_delta_avg": 4.871761209343277,
+      "brake_delta_avg": 0.0,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T7 — Tosa",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "eaff622bdb6c:cand_006",
+      "human_label": "OBSERVATIONAL_ONLY",
+      "candidate_id": "cand_006",
+      "context": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "track_layout": "Autodromo Enzo e Dino Ferrari",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_slower",
+      "delta_change_s": -0.05935815484123452,
+      "start_distance_m": 1770.0,
+      "end_distance_m": 2000.0,
+      "zone_length_m": 230.0,
+      "speed_delta_avg": 1.8109421526551204,
+      "throttle_delta_avg": 2.3960435366867294,
+      "brake_delta_avg": 0.0,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T7 — Tosa → T8 — Turn 8",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "eaff622bdb6c:cand_007",
+      "human_label": "AMBIGUOUS",
+      "candidate_id": "cand_007",
+      "context": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "track_layout": "Autodromo Enzo e Dino Ferrari",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_slower",
+      "delta_change_s": -0.05935743705461505,
+      "start_distance_m": 2200.0,
+      "end_distance_m": 2250.0,
+      "zone_length_m": 50.0,
+      "speed_delta_avg": 16.02592756603308,
+      "throttle_delta_avg": 32.48861202566946,
+      "brake_delta_avg": -19.937171372763036,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T8 — Turn 8 → T9 — Piratella",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "eaff622bdb6c:cand_008",
+      "human_label": "OBSERVATIONAL_ONLY",
+      "candidate_id": "cand_008",
+      "context": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "track_layout": "Autodromo Enzo e Dino Ferrari",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_slower",
+      "delta_change_s": -0.2875663408421616,
+      "start_distance_m": 2250.0,
+      "end_distance_m": 2400.0,
+      "zone_length_m": 150.0,
+      "speed_delta_avg": 15.219802983118454,
+      "throttle_delta_avg": -14.320712242078034,
+      "brake_delta_avg": 0.2107722664724215,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T9 — Piratella",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "eaff622bdb6c:cand_009",
+      "human_label": "ACTIONABLE",
+      "candidate_id": "cand_009",
+      "context": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "track_layout": "Autodromo Enzo e Dino Ferrari",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_slower",
+      "delta_change_s": 0.08979997814763152,
+      "start_distance_m": 2790.0,
+      "end_distance_m": 2885.0,
+      "zone_length_m": 95.0,
+      "speed_delta_avg": -3.4487194631136653,
+      "throttle_delta_avg": 8.078539172292503,
+      "brake_delta_avg": 0.8920775091658578,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T12 — Acque Minerali",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "eaff622bdb6c:cand_010",
+      "human_label": "ACTIONABLE",
+      "candidate_id": "cand_010",
+      "context": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "track_layout": "Autodromo Enzo e Dino Ferrari",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_slower",
+      "delta_change_s": 0.14743555768013294,
+      "start_distance_m": 3360.0,
+      "end_distance_m": 3430.0,
+      "zone_length_m": 70.0,
+      "speed_delta_avg": -5.526263549688999,
+      "throttle_delta_avg": -5.075157491015074,
+      "brake_delta_avg": 0.013600529702366965,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T15 — Gresini",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "eaff622bdb6c:cand_011",
+      "human_label": "OBSERVATIONAL_ONLY",
+      "candidate_id": "cand_011",
+      "context": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "track_layout": "Autodromo Enzo e Dino Ferrari",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_slower",
+      "delta_change_s": 0.051993755760719296,
+      "start_distance_m": 3430.0,
+      "end_distance_m": 3860.0,
+      "zone_length_m": 430.0,
+      "speed_delta_avg": -1.0574262611661776,
+      "throttle_delta_avg": 3.414082364904236,
+      "brake_delta_avg": 0.0,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T15 — Gresini → T16 — Turn 16",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "f1b222c8718a:cand_001",
+      "human_label": "ACTIONABLE",
+      "candidate_id": "cand_001",
+      "context": {
+        "track": "Autódromo José Carlos Pace",
+        "track_layout": "Autódromo José Carlos Pace",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_faster",
+      "delta_change_s": 0.16445421039571695,
+      "start_distance_m": 231.0,
+      "end_distance_m": 306.0,
+      "zone_length_m": 75.0,
+      "speed_delta_avg": -19.610112603434207,
+      "throttle_delta_avg": 1.362077781228144,
+      "brake_delta_avg": -4.328623319985102,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "antes de T1 — 'S' do Senna",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "f1b222c8718a:cand_002",
+      "human_label": "ACTIONABLE",
+      "candidate_id": "cand_002",
+      "context": {
+        "track": "Autódromo José Carlos Pace",
+        "track_layout": "Autódromo José Carlos Pace",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_faster",
+      "delta_change_s": 0.25860522955679865,
+      "start_distance_m": 306.0,
+      "end_distance_m": 440.0,
+      "zone_length_m": 134.0,
+      "speed_delta_avg": -7.604456415344116,
+      "throttle_delta_avg": 5.0860555035395345,
+      "brake_delta_avg": -2.9990932782243642,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T1 — 'S' do Senna",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "f1b222c8718a:cand_003",
+      "human_label": "OBSERVATIONAL_ONLY",
+      "candidate_id": "cand_003",
+      "context": {
+        "track": "Autódromo José Carlos Pace",
+        "track_layout": "Autódromo José Carlos Pace",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_faster",
+      "delta_change_s": -0.0863199600572866,
+      "start_distance_m": 540.0,
+      "end_distance_m": 776.0,
+      "zone_length_m": 236.0,
+      "speed_delta_avg": 2.548828839073013,
+      "throttle_delta_avg": -0.2633867720370172,
+      "brake_delta_avg": 0.0,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T3 — Curva do Sol",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "f1b222c8718a:cand_004",
+      "human_label": "OBSERVATIONAL_ONLY",
+      "candidate_id": "cand_004",
+      "context": {
+        "track": "Autódromo José Carlos Pace",
+        "track_layout": "Autódromo José Carlos Pace",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_faster",
+      "delta_change_s": -0.1246111366821161,
+      "start_distance_m": 776.0,
+      "end_distance_m": 1372.0,
+      "zone_length_m": 596.0,
+      "speed_delta_avg": 2.305196407129834,
+      "throttle_delta_avg": -0.65385355531752,
+      "brake_delta_avg": 0.37335170323531863,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T3 — Curva do Sol → T4 — Descida do Lago",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "f1b222c8718a:cand_005",
+      "human_label": "OBSERVATIONAL_ONLY",
+      "candidate_id": "cand_005",
+      "context": {
+        "track": "Autódromo José Carlos Pace",
+        "track_layout": "Autódromo José Carlos Pace",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_faster",
+      "delta_change_s": 0.06710175478615099,
+      "start_distance_m": 1410.0,
+      "end_distance_m": 1510.0,
+      "zone_length_m": 100.0,
+      "speed_delta_avg": -3.6344017925873935,
+      "throttle_delta_avg": 14.522026365557187,
+      "brake_delta_avg": 0.35312965454241996,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T4 — Descida do Lago",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "f1b222c8718a:cand_006",
+      "human_label": "OBSERVATIONAL_ONLY",
+      "candidate_id": "cand_006",
+      "context": {
+        "track": "Autódromo José Carlos Pace",
+        "track_layout": "Autódromo José Carlos Pace",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_faster",
+      "delta_change_s": -0.054764834656410244,
+      "start_distance_m": 1510.0,
+      "end_distance_m": 1710.0,
+      "zone_length_m": 200.0,
+      "speed_delta_avg": 1.8096477633838148,
+      "throttle_delta_avg": 0.01660597210018605,
+      "brake_delta_avg": 0.0,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T5 — Descida do Lago",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "f1b222c8718a:cand_007",
+      "human_label": "OBSERVATIONAL_ONLY",
+      "candidate_id": "cand_007",
+      "context": {
+        "track": "Autódromo José Carlos Pace",
+        "track_layout": "Autódromo José Carlos Pace",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_faster",
+      "delta_change_s": 0.05597308582314042,
+      "start_distance_m": 1710.0,
+      "end_distance_m": 1992.0,
+      "zone_length_m": 282.0,
+      "speed_delta_avg": -3.0109745810653297,
+      "throttle_delta_avg": -1.7758694640615875,
+      "brake_delta_avg": 3.2894988440732895,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T5 — Descida do Lago → T6 — Ferradura",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "f1b222c8718a:cand_008",
+      "human_label": "ACTIONABLE",
+      "candidate_id": "cand_008",
+      "context": {
+        "track": "Autódromo José Carlos Pace",
+        "track_layout": "Autódromo José Carlos Pace",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_faster",
+      "delta_change_s": 0.11072787406963158,
+      "start_distance_m": 1992.0,
+      "end_distance_m": 2116.0,
+      "zone_length_m": 124.0,
+      "speed_delta_avg": -7.621973396143488,
+      "throttle_delta_avg": 10.318488236372684,
+      "brake_delta_avg": -2.2602033854338273,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T6 — Ferradura",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "f1b222c8718a:cand_009",
+      "human_label": "OBSERVATIONAL_ONLY",
+      "candidate_id": "cand_009",
+      "context": {
+        "track": "Autódromo José Carlos Pace",
+        "track_layout": "Autódromo José Carlos Pace",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_faster",
+      "delta_change_s": 0.06822397985554574,
+      "start_distance_m": 2244.0,
+      "end_distance_m": 2316.0,
+      "zone_length_m": 72.0,
+      "speed_delta_avg": -6.265991698583473,
+      "throttle_delta_avg": -10.409541432899497,
+      "brake_delta_avg": -0.23885306666771117,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T7 — Curva do Laranjinha → T8 — Pinheirinho",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "f1b222c8718a:cand_010",
+      "human_label": "OBSERVATIONAL_ONLY",
+      "candidate_id": "cand_010",
+      "context": {
+        "track": "Autódromo José Carlos Pace",
+        "track_layout": "Autódromo José Carlos Pace",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_faster",
+      "delta_change_s": -0.08618536451807302,
+      "start_distance_m": 2352.0,
+      "end_distance_m": 2400.0,
+      "zone_length_m": 48.0,
+      "speed_delta_avg": 3.058814126517842,
+      "throttle_delta_avg": -4.069620428378351,
+      "brake_delta_avg": -0.5089849778143724,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T8 — Pinheirinho",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "f1b222c8718a:cand_011",
+      "human_label": "OBSERVATIONAL_ONLY",
+      "candidate_id": "cand_011",
+      "context": {
+        "track": "Autódromo José Carlos Pace",
+        "track_layout": "Autódromo José Carlos Pace",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_faster",
+      "delta_change_s": -0.07816040435131555,
+      "start_distance_m": 2400.0,
+      "end_distance_m": 2552.0,
+      "zone_length_m": 152.0,
+      "speed_delta_avg": 1.2724960912284013,
+      "throttle_delta_avg": 2.2862147269152,
+      "brake_delta_avg": -0.6824931330230666,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T9 — Pinheirinho",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "f1b222c8718a:cand_012",
+      "human_label": "OBSERVATIONAL_ONLY",
+      "candidate_id": "cand_012",
+      "context": {
+        "track": "Autódromo José Carlos Pace",
+        "track_layout": "Autódromo José Carlos Pace",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_faster",
+      "delta_change_s": -0.1949864380900337,
+      "start_distance_m": 2860.0,
+      "end_distance_m": 3076.0,
+      "zone_length_m": 216.0,
+      "speed_delta_avg": 6.680749661447566,
+      "throttle_delta_avg": 12.623484720152257,
+      "brake_delta_avg": 0.0,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T11 — Mergulho",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "f1b222c8718a:cand_013",
+      "human_label": "OBSERVATIONAL_ONLY",
+      "candidate_id": "cand_013",
+      "context": {
+        "track": "Autódromo José Carlos Pace",
+        "track_layout": "Autódromo José Carlos Pace",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_faster",
+      "delta_change_s": -0.10028685164101603,
+      "start_distance_m": 3076.0,
+      "end_distance_m": 3212.0,
+      "zone_length_m": 136.0,
+      "speed_delta_avg": 6.854718172282882,
+      "throttle_delta_avg": -4.700923332049398,
+      "brake_delta_avg": 2.307132820115924,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T11 — Mergulho → T12 — Junção",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "f1b222c8718a:cand_014",
+      "human_label": "OBSERVATIONAL_ONLY",
+      "candidate_id": "cand_014",
+      "context": {
+        "track": "Autódromo José Carlos Pace",
+        "track_layout": "Autódromo José Carlos Pace",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_faster",
+      "delta_change_s": -0.09968388369814818,
+      "start_distance_m": 3212.0,
+      "end_distance_m": 3330.0,
+      "zone_length_m": 118.0,
+      "speed_delta_avg": 2.6121296834695613,
+      "throttle_delta_avg": -3.4896240027580494,
+      "brake_delta_avg": 0.29080118205147376,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T12 — Junção",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "b28c1536887a:cand_001",
+      "human_label": "OBSERVATIONAL_ONLY",
+      "candidate_id": "cand_001",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_faster",
+      "delta_change_s": -0.15473537989215203,
+      "start_distance_m": 896.0,
+      "end_distance_m": 949.0,
+      "zone_length_m": 53.0,
+      "speed_delta_avg": 5.277405698875287,
+      "throttle_delta_avg": -9.196483727512064,
+      "brake_delta_avg": -3.62098960440282,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T1 — Variante del Rettifilo",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "b28c1536887a:cand_002",
+      "human_label": "OBSERVATIONAL_ONLY",
+      "candidate_id": "cand_002",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_faster",
+      "delta_change_s": 0.06924044030620813,
+      "start_distance_m": 950.0,
+      "end_distance_m": 979.0,
+      "zone_length_m": 29.0,
+      "speed_delta_avg": -3.4046395873756032,
+      "throttle_delta_avg": 6.8905236382506425,
+      "brake_delta_avg": 0.0,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T2 — Variante del Rettifilo",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "b28c1536887a:cand_003",
+      "human_label": "OBSERVATIONAL_ONLY",
+      "candidate_id": "cand_003",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_faster",
+      "delta_change_s": -0.0670615910326049,
+      "start_distance_m": 979.0,
+      "end_distance_m": 1020.0,
+      "zone_length_m": 41.0,
+      "speed_delta_avg": 3.0471619280449835,
+      "throttle_delta_avg": 1.6808374568986295,
+      "brake_delta_avg": 0.0,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T2 — Variante del Rettifilo",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "b28c1536887a:cand_004",
+      "human_label": "OBSERVATIONAL_ONLY",
+      "candidate_id": "cand_004",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_faster",
+      "delta_change_s": -0.06320589247781783,
+      "start_distance_m": 1020.0,
+      "end_distance_m": 1180.0,
+      "zone_length_m": 160.0,
+      "speed_delta_avg": 2.6867034068118083,
+      "throttle_delta_avg": 2.3862430493974576,
+      "brake_delta_avg": 0.0,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T2 — Variante del Rettifilo → T3 — Curva Grande",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "b28c1536887a:cand_005",
+      "human_label": "OBSERVATIONAL_ONLY",
+      "candidate_id": "cand_005",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_faster",
+      "delta_change_s": -0.0900000877677627,
+      "start_distance_m": 1180.0,
+      "end_distance_m": 1760.0,
+      "zone_length_m": 580.0,
+      "speed_delta_avg": 2.6925157953256122,
+      "throttle_delta_avg": 0.16793644916375536,
+      "brake_delta_avg": 0.0,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T3 — Curva Grande",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "b28c1536887a:cand_006",
+      "human_label": "OBSERVATIONAL_ONLY",
+      "candidate_id": "cand_006",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_faster",
+      "delta_change_s": -0.05860549654440206,
+      "start_distance_m": 1760.0,
+      "end_distance_m": 2098.0,
+      "zone_length_m": 338.0,
+      "speed_delta_avg": 3.0656235881813294,
+      "throttle_delta_avg": 2.8225071140736335,
+      "brake_delta_avg": -0.41940901253916424,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T3 — Curva Grande → T4 — Variante della Roggia",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "b28c1536887a:cand_007",
+      "human_label": "OBSERVATIONAL_ONLY",
+      "candidate_id": "cand_007",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_faster",
+      "delta_change_s": -0.11706975621103766,
+      "start_distance_m": 2170.0,
+      "end_distance_m": 2230.0,
+      "zone_length_m": 60.0,
+      "speed_delta_avg": 7.34723096443164,
+      "throttle_delta_avg": 10.523185682660852,
+      "brake_delta_avg": 0.0,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T5 — Variante della Roggia",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "b28c1536887a:cand_008",
+      "human_label": "OBSERVATIONAL_ONLY",
+      "candidate_id": "cand_008",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_faster",
+      "delta_change_s": -0.2033112790077709,
+      "start_distance_m": 2230.0,
+      "end_distance_m": 2460.0,
+      "zone_length_m": 230.0,
+      "speed_delta_avg": 7.434250897038031,
+      "throttle_delta_avg": 4.421223345264105,
+      "brake_delta_avg": -1.2847906517201195,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T5 — Variante della Roggia → T6 — Lesmo 1",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "b28c1536887a:cand_009",
+      "human_label": "OBSERVATIONAL_ONLY",
+      "candidate_id": "cand_009",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_faster",
+      "delta_change_s": -0.19822040402448948,
+      "start_distance_m": 2460.0,
+      "end_distance_m": 2660.0,
+      "zone_length_m": 200.0,
+      "speed_delta_avg": 7.8778070781689085,
+      "throttle_delta_avg": -7.202679257064389,
+      "brake_delta_avg": -1.774643694431432,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T6 — Lesmo 1",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "b28c1536887a:cand_010",
+      "human_label": "OBSERVATIONAL_ONLY",
+      "candidate_id": "cand_010",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_faster",
+      "delta_change_s": -0.1888909326967081,
+      "start_distance_m": 2815.0,
+      "end_distance_m": 2945.0,
+      "zone_length_m": 130.0,
+      "speed_delta_avg": 9.240741473805409,
+      "throttle_delta_avg": -0.4786123015473987,
+      "brake_delta_avg": -1.5502614642817272,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T7 — Lesmo 2",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "b28c1536887a:cand_011",
+      "human_label": "NOT_COMPARABLE",
+      "candidate_id": "cand_011",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_faster",
+      "delta_change_s": -0.23482385650101634,
+      "start_distance_m": 2945.0,
+      "end_distance_m": 3885.0,
+      "zone_length_m": 940.0,
+      "speed_delta_avg": 3.8044616089345866,
+      "throttle_delta_avg": 0.9820760383866906,
+      "brake_delta_avg": -0.2250108857499645,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T7 — Lesmo 2 → T8 — Variante Ascari",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "b28c1536887a:cand_012",
+      "human_label": "OBSERVATIONAL_ONLY",
+      "candidate_id": "cand_012",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_faster",
+      "delta_change_s": -0.18127602028354772,
+      "start_distance_m": 3885.0,
+      "end_distance_m": 3990.0,
+      "zone_length_m": 105.0,
+      "speed_delta_avg": 12.166710568715336,
+      "throttle_delta_avg": -3.4931038332261033,
+      "brake_delta_avg": -7.152256566222969,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T8 — Variante Ascari",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "b28c1536887a:cand_013",
+      "human_label": "OBSERVATIONAL_ONLY",
+      "candidate_id": "cand_013",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_faster",
+      "delta_change_s": 0.07050869652628933,
+      "start_distance_m": 4225.0,
+      "end_distance_m": 5057.0,
+      "zone_length_m": 832.0,
+      "speed_delta_avg": -1.2786060385003735,
+      "throttle_delta_avg": 0.43775286832163585,
+      "brake_delta_avg": 0.7916942950384355,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T10 — Variante Ascari → T11 — Curva Alboreto",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "b28c1536887a:cand_014",
+      "human_label": "OBSERVATIONAL_ONLY",
+      "candidate_id": "cand_014",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_faster",
+      "delta_change_s": -0.3815592960461771,
+      "start_distance_m": 5115.0,
+      "end_distance_m": 5535.0,
+      "zone_length_m": 420.0,
+      "speed_delta_avg": 8.127790122067188,
+      "throttle_delta_avg": -1.7156725001918685,
+      "brake_delta_avg": -0.47175974036577156,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "T11 — Curva Alboreto",
+      "profile_localization": "not_available"
+    },
+    {
+      "audit_id": "b28c1536887a:cand_015",
+      "human_label": "OBSERVATIONAL_ONLY",
+      "candidate_id": "cand_015",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_name_raw": "IDEC Sport #18:ELMS25"
+      },
+      "delta_sign": "current_faster",
+      "delta_change_s": -0.05389562102877221,
+      "start_distance_m": 5535.0,
+      "end_distance_m": 5772.624134778976,
+      "zone_length_m": 237.62413477897644,
+      "speed_delta_avg": 4.22106936255408,
+      "throttle_delta_avg": 0.04988192229855306,
+      "brake_delta_avg": 0.0,
+      "channel_presence": {
+        "speed_delta_avg": true,
+        "throttle_delta_avg": true,
+        "brake_delta_avg": true,
+        "steering_delta_avg": true
+      },
+      "channel_count": 4,
+      "location_label": "después de T11 — Curva Alboreto",
+      "profile_localization": "not_available"
+    }
+  ],
+  "missing_feature_inventory": []
+}

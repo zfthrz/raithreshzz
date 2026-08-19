@@ -134,10 +134,15 @@ Implemented H5.3 slice:
   H4/H5.1/H5.2 prerequisites are absent; H5.3c LLM selection remains a separate
   manual tool.
 - H5.3 Nivel 2 action policy (`historical_action_policy.py`,
-  `validate_historical_actions.py`) authorizes closed throttle/brake actions for
-  ACTIONABLE, LLM-selected, current-slower candidates; speed/time never become
-  actions and faster-lap candidates are withheld; real artifact: 2 actions
-  authorized, 1 withheld, validator PASS.
+  `validate_historical_actions.py`) constructs closed throttle/brake shadow action
+  candidates for selected current-slower comparisons; speed/time never become
+  actions and faster-lap candidates are withheld. The validator reconstructs the
+  deterministic result from its hashed selection source. Production authority stays
+  false (`historical_actions_authorized=false`).
+- the additional runtime shadow pipeline uses one selection contract for its
+  deterministic and optional LLM backends. Deterministic is the default, so normal
+  orchestration performs no hidden API/local-model call. Stable artifacts are written
+  under `data/generated/h5_3_shadow/<session>/` and never modify the visible debrief.
 - Debrief refinement shadow audit
   (`audit_historical_actions_actionability.py`) classifies authorized historical
   actions as brake/throttle/mixed; the real artifact showed 2 mixed-cue candidates
@@ -234,7 +239,7 @@ LLM backend benchmark on the real 10-comparison Monza `LMP2_ELMS` session:
 See `docs/LLM_BACKEND_BENCHMARK_MONZA_V0_1.md`.
 
 Validation:
-- pytest: `185 PASS / 0 FAIL / 0 SKIP`
+- pytest: `408 PASS / 0 FAIL / 0 SKIP`
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP`
 - Objective recovery check: `READY`
 

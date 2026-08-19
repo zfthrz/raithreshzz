@@ -34,7 +34,7 @@ Componentes principales:
 | `auto_ingest_telemetry.py` | v0.1 — ingest directo desde LMU, History prioritario y backfill gradual |
 | `analyze_telemetry_file.py` | v0.1 — launcher seguro para menú contextual con DeepSeek u Ollama |
 | `hidden_history_ingest.py` | runner sin consola con log local rotativo para la tarea programada |
-| H5.3a/b/c | shadow: candidatos deterministas + auditoría humana + selección LLM controlada |
+| H5.3a-f + runtime 0.2 | shadow: candidatos, auditoría, selección unificada y render validado |
 
 Checkpoint de calibración H2 actual sobre **Spa + layout Spa + `LMP2_ELMS`**:
 
@@ -1210,7 +1210,7 @@ H4 historical benchmark selector
 H5.1 dual reference
 H5.2 raw cross-session comparison     <- disponible en modo observacional
 H5.2 LLM historical narrative         <- observacional y validada
-H5.3 historical coaching debrief       <- roadmap; H5.3a/b/c shadow implementadas; d/e/f pendientes
+H5.3 historical coaching debrief       <- roadmap productivo; H5.3a-f implementadas en shadow
 ```
 
 Todavía no crear `persistent_pattern` automáticamente sólo porque dos episodios fueron `MATCH`.
@@ -1259,9 +1259,14 @@ El gate real devuelve `PROMOTION_READY` con los 4 circuitos y ambos signos de de
 la producción histórica sigue sin autorizar (`historical_actions_authorized=false`).
 El orquestador integra una etapa `h5_3` observacional (candidatos + sección
 determinista + validator) que queda `SKIPPED_NOT_APPLICABLE` si faltan prerequisitos.
-Nivel 2: `historical_action_policy.py` autoriza acciones cerradas de freno/acelerador
-solo para candidatos ACTIONABLE seleccionados en vueltas más lentas; la velocidad y
-el tiempo nunca se convierten en acciones y las vueltas más rápidas quedan retenidas.
+Nivel 2: `historical_action_policy.py` construye candidatos de acción cerrados de
+freno/acelerador solamente para comparaciones seleccionadas de vueltas actuales más
+lentas; la velocidad y el tiempo nunca se convierten en acciones, las vueltas más
+rápidas quedan retenidas y `historical_actions_authorized` permanece en `false`.
+El pipeline runtime adicional usa selección determinista por defecto y no llama a
+ningún modelo salvo que `H5_3_BACKEND` se configure explícitamente como `deepseek`,
+`ollama` o `llamacpp`. Sus artefactos reutilizables quedan bajo
+`data/generated/h5_3_shadow/<session>/` y no modifican el debrief visible.
 Una auditoría shadow (`audit_historical_actions_actionability.py`) clasifica las
 acciones en freno/acelerador/mixtas sin promover ninguna preferencia de canal.
 Contrato:

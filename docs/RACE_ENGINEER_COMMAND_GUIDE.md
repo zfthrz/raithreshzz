@@ -207,6 +207,37 @@ de impacto, intensidad y curvas. No hace llamadas API, no carga Ollama y no alte
 pipeline. Su resultado es exclusivamente shadow y no autoriza una fórmula de ranking
 ni recomendaciones históricas.
 
+### H5.3 runtime shadow
+
+Cuando existen los prerequisitos H4/H5.1/H5.2, `race_engineer.py analyze` ejecuta
+también el pipeline H5.3 runtime en modo shadow. La selección es determinista por
+defecto: no consume API ni carga un modelo local. Escribe estos artefactos:
+
+```text
+data/generated/h5_3_shadow/SESSION/candidate_eligibility.json
+data/generated/h5_3_shadow/SESSION/candidate_selection.json
+data/generated/h5_3_shadow/SESSION/historical_actions.json
+data/generated/h5_3_shadow/SESSION/shadow_pipeline.json
+```
+
+Para una prueba explícita con un modelo se puede definir temporalmente el backend:
+
+```powershell
+$env:H5_3_BACKEND = "deepseek"  # también ollama o llamacpp
+python race_engineer.py analyze "telemetria\ARCHIVO.duckdb" --force
+Remove-Item Env:\H5_3_BACKEND
+```
+
+Esta opción puede tener costo o tiempo de carga. No cambia el debrief visible y
+`historical_actions_authorized` continúa siendo `false`. Para desactivar solamente
+este pipeline shadow:
+
+```powershell
+$env:H5_3_SHADOW_ENABLED = "0"
+python race_engineer.py analyze "telemetria\ARCHIVO.duckdb"
+Remove-Item Env:\H5_3_SHADOW_ENABLED
+```
+
 ### Auditar estructura de cues del plan sin cambiar prioridades
 
 ```powershell

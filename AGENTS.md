@@ -51,9 +51,9 @@ python race_engineer.py analyze "telemetria\ARCHIVO.duckdb" --backend ollama
 - H5.3 remains ROADMAP_ONLY; H5.3a/b/c are implemented shadow-only and never
   enable historical coaching. The orchestrator `h5_3` stage is observational-only
   and must return `SKIPPED_NOT_APPLICABLE` when H4/H5.1/H5.2 prerequisites are
-  absent. Historical actions may be authorized only through
-  `historical_action_policy.py` (closed throttle/brake vocabulary, current-slower
-  candidates only, speed and time never become actions).
+  absent. `historical_action_policy.py` may construct shadow action candidates only
+  (closed throttle/brake vocabulary, current-slower candidates only, speed and time
+  never become actions); `historical_actions_authorized` remains false.
 
 ## Current baseline
 
@@ -74,12 +74,14 @@ historical_llm_analysis.py   H5.2 LLM 0.1 / validated observational narrative
 build_historical_coaching_candidates.py H5.3a 0.1 / shadow candidates
 prepare_h5_3_audit_dataset.py + label/validate H5.3b 0.1 / audit + human review
 historical_candidate_selection.py    H5.3c 0.1 / controlled LLM selection
+historical_candidate_selection_runtime.py H5.3 runtime 0.2 / deterministic default
+historical_action_policy.py           H5.3 action candidates 0.2 / shadow only
 ```
 
 Validated integration checkpoint:
 
 ```text
-pytest:                         185 PASS / 0 FAIL / 0 SKIP
+pytest:                         408 PASS / 0 FAIL / 0 SKIP
 Objective Python regressions:  55 PASS / 0 FAIL / 0 SKIP
 ```
 

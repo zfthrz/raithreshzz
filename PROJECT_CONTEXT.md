@@ -176,7 +176,7 @@ Checkpoint: **2026-08-17 automation and historical-reference integration**.
 Validated checkpoints relevant to the current working tree:
 
 ```text
-full pytest (current working tree):   185 PASS / 0 FAIL / 0 SKIP
+full pytest (current working tree):   408 PASS / 0 FAIL / 0 SKIP
 Objective Python regressions:         55 PASS / 0 FAIL / 0 SKIP
 Objective recovery check:             READY
 ```
@@ -854,8 +854,8 @@ contract and acceptance criteria are in
 The first authorized development slice H5.3a is implemented as the standalone shadow
 builder `build_historical_coaching_candidates.py`. It consumes validated H5.1/H5.2
 JSON, emits deterministic `SHADOW_OBSERVATIONAL_ONLY` candidate records from
-localized H5.2 zones, and calls no LLM and renders no driver instructions. It is not
-integrated into the normal orchestrator. H5.3b adds the reproducible audit dataset
+localized H5.2 zones, and calls no LLM and renders no driver instructions. It is
+integrated into the normal orchestrator only as an observational stage. H5.3b adds the reproducible audit dataset
 and human-review tooling (`prepare_h5_3_audit_dataset.py`,
 `label_h5_3_audit_candidates.py`, `validate_h5_3_audit_labels.py`) with the closed
 vocabulary `ACTIONABLE / OBSERVATIONAL_ONLY / NOT_COMPARABLE / AMBIGUOUS`. H5.3c
@@ -879,11 +879,17 @@ selection and the documented human review
 (`docs/H5_3_AUDIT_REVIEW_2026_08_17.md`). The roadmap is fully implemented in shadow;
 the orchestrator now runs an observational `h5_3` stage (candidates + deterministic
 section + validator) that returns `SKIPPED_NOT_APPLICABLE` when prerequisites are
-absent. Nivel 2 (`historical_action_policy.py` + `validate_historical_actions.py`)
-authorizes deterministic actions for ACTIONABLE, LLM-selected, current-slower
-candidates only, with a closed vocabulary; speed and time codes never become
-actions, faster-lap candidates are withheld, and `session_reference` remains the
-coaching authority.
+absent. The additional H5.3 runtime shadow pipeline evaluates eligibility, selects
+up to three candidates and validates closed-vocabulary action candidates. It uses a
+single selection contract for deterministic and LLM backends, defaults to the
+deterministic backend, and calls an LLM only when `H5_3_BACKEND` explicitly requests
+one. It writes `candidate_eligibility.json`, `candidate_selection.json`,
+`historical_actions.json` and `shadow_pipeline.json` under
+`data/generated/h5_3_shadow/<session>/`. Nivel 2
+(`historical_action_policy.py` + `validate_historical_actions.py`) constructs shadow
+action candidates for current-slower comparisons only; speed and time codes never
+become actions, faster-lap candidates are withheld, `session_reference` remains the
+coaching authority and `historical_actions_authorized` remains false.
 
 ---
 

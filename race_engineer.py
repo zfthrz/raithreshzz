@@ -28,6 +28,8 @@ from cross_session_context import (
     resolve_cross_session_pair,
 )
 
+import historical_candidates_pipeline as _h5_3_shadow_pipeline
+
 
 ORCHESTRATOR_VERSION = "0.3"
 LLM_ANALYSIS_VERSION_FILE = "3_10_8_5_4"
@@ -844,6 +846,119 @@ def analyze_command(args: argparse.Namespace) -> int:
                         save_state(state_path, state)
                         stage_results["h5_3"] = STATUS_RUN
                         print_stage("h5_3", STATUS_RUN, str(h5_3_section))
+
+                    # ------------------------------------------
+                    # H5.3 shadow pipeline (eligibility -> selection -> action policy)
+                    # ------------------------------------------
+                    # Runs completely separately from the H5.3 observational stage.
+                    # Reads H5.3a candidates and applies:
+                    #   1. Eligibility v0.1 (filter ELIGIBLE_FOR_SELECTION)
+                    #   2. Deterministic top-N selection (no LLM, no human labels)
+                    #   3. Action policy v0.2 (shadow action candidates only)
+                    #
+                    # Output artifacts are written to data/generated/h5_3_shadow/.
+                    # Status: SKIPPED_NOT_APPLICABLE if no candidates,
+                    #         FAILED if validation fails, SUCCESS otherwise.
+                    #
+                    # This stage never changes session_reference, never authorizes
+                    # historical coaching actions, and never affects the visible
+                    # debrief or A/B/C coaching plan.
+                    #
+                    # The selector is deterministic by default and never calls an
+                    # LLM unless H5_3_BACKEND explicitly requests one.
+                    # Controlled by env var H5_3_SHADOW_ENABLED (default 1 = enabled).
+                    # Set H5_3_SHADOW_ENABLED=0 to disable the shadow pipeline.
+                    #
+                    h5_3_shadow_enabled = os.environ.get("H5_3_SHADOW_ENABLED", "1")
+                    if h5_3_shadow_enabled != "1":
+                        stage_results["h5_3_shadow"] = STATUS_SKIPPED
+                        print_stage("h5_3_shadow", STATUS_SKIPPED, "H5_3_SHADOW_ENABLED != 1")
+                    else:
+                        h5_3_shadow_output_path = (
+                            PROJECT_ROOT / "data" / "generated" / "h5_3_shadow" / database.stem
+                        )
+                        h5_3_shadow_output_path = h5_3_shadow_output_path / "shadow_pipeline.json"
+                        h5_3_shadow_signature = {
+                            "h5_1_sha256": sha256_file(h5_output),
+                            "h5_2_sha256": sha256_file(h5_2_output),
+                            "candidates_sha256": sha256_file(h5_3_candidates),
+                            "pipeline_sha256": sha256_file(
+                                Path(_h5_3_shadow_pipeline.__file__)
+                            ),
+                        }
+                        reuse_h5_3_shadow = (
+                            not args.force
+                            and stage_is_reusable(
+                                state,
+                                "h5_3_shadow",
+                                h5_3_shadow_signature,
+                                required_paths=(h5_3_shadow_output_path,),
+                            )
+                        )
+                        if reuse_h5_3_shadow:
+                            stage_results["h5_3_shadow"] = STATUS_REUSED
+                            print_stage("h5_3_shadow", STATUS_REUSED, str(h5_3_shadow_output_path))
+                        else:
+                            try:
+                                result = _h5_3_shadow_pipeline.run_pipeline(
+                                    h5_3_candidates,
+                                    output_dir=h5_3_shadow_output_path.parent,
+                                )
+                                pipeline_status = result["status"]
+                                if pipeline_status == "SUCCESS":
+                                    stage_status = STATUS_RUN
+                                elif pipeline_status == STATUS_SKIPPED:
+                                    stage_status = STATUS_SKIPPED
+                                else:
+                                    stage_status = STATUS_FAILED
+                                stage_results["h5_3_shadow"] = stage_status
+                                reason = result.get("reason", "")
+                                if reason:
+                                    print_stage(
+                                        "h5_3_shadow", stage_status, f"{reason}"
+                                    )
+                                else:
+                                    print_stage(
+                                        "h5_3_shadow", stage_status, str(h5_3_shadow_output_path)
+                                    )
+                                # Record shadow pipeline stage
+                                record_stage(
+                                    state,
+                                    "h5_3_shadow",
+                                    signature=h5_3_shadow_signature,
+                                    status=stage_status,
+                                    output=(
+                                        str(h5_3_shadow_output_path)
+                                        if h5_3_shadow_output_path.is_file()
+                                        else None
+                                    ),
+                                    details={
+                                        "pipeline_result": {
+                                            "status": stage_status,
+                                            "reason": reason,
+                                            "coaching_authority": result.get("coaching_authority"),
+                                        }
+                                    },
+                                )
+                                save_state(state_path, state)
+                            except Exception as exc:
+                                stage_results["h5_3_shadow"] = STATUS_FAILED
+                                print_stage(
+                                    "h5_3_shadow", STATUS_FAILED, str(exc)
+                                )
+                                record_stage(
+                                    state,
+                                    "h5_3_shadow",
+                                    signature=h5_3_shadow_signature,
+                                    status=STATUS_FAILED,
+                                    details={
+                                        "pipeline_result": {
+                                            "status": STATUS_FAILED,
+                                            "reason": str(exc),
+                                        }
+                                    },
+                                )
+                                save_state(state_path, state)
 
     state["last_summary"] = stage_results
     save_state(state_path, state)

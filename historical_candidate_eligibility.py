@@ -448,6 +448,11 @@ def _result(
             "has_throttle": _is_numeric(channel_evidence.get("throttle_delta_avg")),
             "has_brake": _is_numeric(channel_evidence.get("brake_delta_avg")),
         },
+        "observational_channel_evidence": {
+            key: channel_evidence.get(key)
+            for key in _CHANNEL_KEYS
+            if _is_numeric(channel_evidence.get(key))
+        },
         "localization": {
             "has_location_label": has_location,
             "location_label": candidate.get("location_label"),

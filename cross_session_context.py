@@ -37,15 +37,41 @@ def resolve_duckdb(
     source_database_path: str | None,
     source_json_path: str | None,
 ) -> tuple[Path | None, list[str]]:
+    """Resolve a raw DuckDB telemetry file from provenance metadata.
+
+    Priority order:
+      1. Exact absolute ``source_database_path`` -- must exist as-is.
+         This preserves evidence/source provenance for real-session paths
+         such as paths inside Steam UserData/Telemetry directories.
+      2. ``telemetry_dir / basename(source_database_path)`` -- legacy
+         historical behaviour where DuckDB files live in ``telemetria/``.
+      3. ``telemetry_dir / stem(source_json_path) + ".duckdb"`` -- derived
+         fallback when only the analysis JSON was stored.
+      4. Return ``None`` when no candidate is found.
+
+    All steps are strictly non-recursive: the function never walks
+    directories, never guesses by timestamp, and never resolves a
+    ``None`` / empty path against the working directory.
+    """
     attempted: list[str] = []
 
-    database_basename = basename_any(source_database_path)
-    if database_basename:
-        candidate = telemetry_dir / database_basename
-        attempted.append(str(candidate))
+    # Step 1: exact absolute source_database_path
+    resolved_db = norm_text(source_database_path)
+    if resolved_db:
+        candidate = Path(resolved_db)
         if candidate.is_file():
             return candidate.resolve(), attempted
 
+        # Path is recorded but file missing -- try telemetry_dir fallback
+        attempted.append(str(candidate))
+        database_basename = candidate.name
+        if database_basename:
+            fallback = telemetry_dir / database_basename
+            attempted.append(str(fallback))
+            if fallback.is_file():
+                return fallback.resolve(), attempted
+
+    # Steps 2 & 3: derive from source_json_path
     json_basename = basename_any(source_json_path)
     if json_basename:
         candidate = telemetry_dir / (Path(json_basename).stem + ".duckdb")

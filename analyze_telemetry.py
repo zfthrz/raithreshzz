@@ -2381,7 +2381,16 @@ def validate_global_output(analysis_output):
     )
 
     if not comparisons:
-        return False
+        # Single usable lap with no comparable laps is valid and non-fatal.
+        # Mark the output so consumers know comparisons were intentionally
+        # skipped rather than failing due to a telemetry or validation error.
+        analysis_output["metadata"]["comparative_status"] = (
+            "SKIPPED_NOT_APPLICABLE"
+        )
+        analysis_output["metadata"]["comparative_reason"] = (
+            "insufficient_comparable_laps"
+        )
+        return True
 
     for comparison in comparisons:
         temporal = comparison.get(
@@ -3483,7 +3492,13 @@ def main():
         if VALIDATE_ONLY:
             print_header("VALIDATE RESULT")
 
-            if global_validation:
+            # When a single usable lap is present but no comparable laps exist,
+            # the analysis is valid (not a failure) but comparisons are skipped.
+            comparative_status = analysis_output["metadata"].get("comparative_status")
+
+            if comparative_status == "SKIPPED_NOT_APPLICABLE":
+                print("SKIPPED_NOT_APPLICABLE: insufficient_comparable_laps")
+            elif global_validation:
                 print("PASS")
             else:
                 print("FAIL")

@@ -5,6 +5,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import pytest
 
 from cross_session_zone_localization import (
     build_trend_zone_summaries,
@@ -134,3 +135,240 @@ def test_unlocalized_fallback_preserves_trend_for_audit():
     assert fallback[0]["scope"] == "unlocalized_delta_trend"
     assert fallback[0]["source_trend_zone_id"] == "trend_001"
     assert fallback[0]["location"] is None
+
+
+# ── Versioned duplicate resolution ───────────────────────────────────────────
+
+
+class TestVersionedDuplicateResolution:
+    """When multiple VALIDATED profiles share exact track + layout,
+    the resolver must select the highest contractual version."""
+
+    def test_v02_and_v03_same_track_layout_selects_v03(self, tmp_path: Path):
+        """v0.2 + v0.3 with same track/layout → selects v0.3."""
+        (tmp_path / "profile_v0_2.json").write_text(
+            json.dumps({
+                "profile_id": "test-v0.2",
+                "status": "VALIDATED_MULTI_SESSION",
+                "track": "Test Track",
+                "layout": "Test Layout",
+                "turns": [
+                    {"turn": 1, "name": "T1", "start_m": 0.0, "apex_m": 50.0, "end_m": 100.0},
+                ],
+            }),
+            encoding="utf-8",
+        )
+        (tmp_path / "profile_v0_3.json").write_text(
+            json.dumps({
+                "profile_id": "test-v0.3",
+                "status": "VALIDATED_MULTI_SESSION",
+                "track": "Test Track",
+                "layout": "Test Layout",
+                "turns": [
+                    {"turn": 1, "name": "T1", "start_m": 0.0, "apex_m": 50.0, "end_m": 100.0},
+                ],
+            }),
+            encoding="utf-8",
+        )
+        selected, _ = find_validated_track_profile(
+            tmp_path,
+            track="Test Track",
+            layout="Test Layout",
+        )
+        assert selected["profile_id"] == "test-v0.3"
+
+    def test_v09_and_v010_same_track_layout_selects_v010(self, tmp_path: Path):
+        """v0.9 + v0.10 with same track/layout → selects v0.10 (semantic, not lex)."""
+        (tmp_path / "profile_v0_9.json").write_text(
+            json.dumps({
+                "profile_id": "test-v0.9",
+                "status": "VALIDATED_MULTI_SESSION",
+                "track": "Test Track",
+                "layout": "Test Layout",
+                "turns": [
+                    {"turn": 1, "name": "T1", "start_m": 0.0, "apex_m": 50.0, "end_m": 100.0},
+                ],
+            }),
+            encoding="utf-8",
+        )
+        (tmp_path / "profile_v0_10.json").write_text(
+            json.dumps({
+                "profile_id": "test-v0.10",
+                "status": "VALIDATED_MULTI_SESSION",
+                "track": "Test Track",
+                "layout": "Test Layout",
+                "turns": [
+                    {"turn": 1, "name": "T1", "start_m": 0.0, "apex_m": 50.0, "end_m": 100.0},
+                ],
+            }),
+            encoding="utf-8",
+        )
+        selected, _ = find_validated_track_profile(
+            tmp_path,
+            track="Test Track",
+            layout="Test Layout",
+        )
+        assert selected["profile_id"] == "test-v0.10"
+
+    def test_one_exact_match_unchanged(self, tmp_path: Path):
+        """Single exact match → no version disambiguation needed."""
+        (tmp_path / "profile.json").write_text(
+            json.dumps({
+                "profile_id": "single-match",
+                "status": "VALIDATED_MULTI_SESSION",
+                "track": "Test Track",
+                "layout": "Test Layout",
+                "turns": [
+                    {"turn": 1, "name": "T1", "start_m": 0.0, "apex_m": 50.0, "end_m": 100.0},
+                ],
+            }),
+            encoding="utf-8",
+        )
+        selected, _ = find_validated_track_profile(
+            tmp_path,
+            track="Test Track",
+            layout="Test Layout",
+        )
+        assert selected["profile_id"] == "single-match"
+
+    def test_same_highest_version_twice_fails_ambiguity(self, tmp_path: Path):
+        """Two distinct profiles with identical highest version → fail closed."""
+        (tmp_path / "profile_a.json").write_text(
+            json.dumps({
+                "profile_id": "test-a-v0.3",
+                "status": "VALIDATED_MULTI_SESSION",
+                "track": "Test Track",
+                "layout": "Test Layout",
+                "turns": [
+                    {"turn": 1, "name": "T1a", "start_m": 0.0, "apex_m": 50.0, "end_m": 100.0},
+                ],
+            }),
+            encoding="utf-8",
+        )
+        (tmp_path / "profile_b.json").write_text(
+            json.dumps({
+                "profile_id": "test-b-v0.3",
+                "status": "VALIDATED_MULTI_SESSION",
+                "track": "Test Track",
+                "layout": "Test Layout",
+                "turns": [
+                    {"turn": 1, "name": "T1b", "start_m": 0.0, "apex_m": 50.0, "end_m": 100.0},
+                ],
+            }),
+            encoding="utf-8",
+        )
+        with pytest.raises(ValueError, match="Múltiples perfiles distintos"):
+            find_validated_track_profile(
+                tmp_path,
+                track="Test Track",
+                layout="Test Layout",
+            )
+
+    def test_malformed_duplicate_versions_fail_closed(self, tmp_path: Path):
+        """Profiles without parseable version in duplicate → fail closed."""
+        (tmp_path / "profile_bad1.json").write_text(
+            json.dumps({
+                "profile_id": "nover",
+                "status": "VALIDATED_MULTI_SESSION",
+                "track": "Test Track",
+                "layout": "Test Layout",
+                "turns": [
+                    {"turn": 1, "name": "T1a", "start_m": 0.0, "apex_m": 50.0, "end_m": 100.0},
+                ],
+            }),
+            encoding="utf-8",
+        )
+        (tmp_path / "profile_bad2.json").write_text(
+            json.dumps({
+                "profile_id": "also-nover",
+                "status": "VALIDATED_MULTI_SESSION",
+                "track": "Test Track",
+                "layout": "Test Layout",
+                "turns": [
+                    {"turn": 1, "name": "T1b", "start_m": 0.0, "apex_m": 50.0, "end_m": 100.0},
+                ],
+            }),
+            encoding="utf-8",
+        )
+        with pytest.raises(ValueError, match="No se pudo determinar la versión"):
+            find_validated_track_profile(
+                tmp_path,
+                track="Test Track",
+                layout="Test Layout",
+            )
+
+    def test_different_layout_never_compete(self, tmp_path: Path):
+        """Profiles with different layout must never compete regardless of version."""
+        (tmp_path / "profile_layout1.json").write_text(
+            json.dumps({
+                "profile_id": "test-v0.5",
+                "status": "VALIDATED_MULTI_SESSION",
+                "track": "Test Track",
+                "layout": "Layout A",
+                "turns": [
+                    {"turn": 1, "name": "T1", "start_m": 0.0, "apex_m": 50.0, "end_m": 100.0},
+                ],
+            }),
+            encoding="utf-8",
+        )
+        (tmp_path / "profile_layout2.json").write_text(
+            json.dumps({
+                "profile_id": "test-v0.9",
+                "status": "VALIDATED_MULTI_SESSION",
+                "track": "Test Track",
+                "layout": "Layout B",
+                "turns": [
+                    {"turn": 1, "name": "T1", "start_m": 0.0, "apex_m": 50.0, "end_m": 100.0},
+                ],
+            }),
+            encoding="utf-8",
+        )
+        selected, _ = find_validated_track_profile(
+            tmp_path,
+            track="Test Track",
+            layout="Layout A",
+        )
+        assert selected["profile_id"] == "test-v0.5"
+
+        selected_b, _ = find_validated_track_profile(
+            tmp_path,
+            track="Test Track",
+            layout="Layout B",
+        )
+        assert selected_b["profile_id"] == "test-v0.9"
+
+    def test_shadow_v2_subdir_never_production_candidate(self, tmp_path: Path):
+        """Profiles inside shadow_v2/ must never be production candidates."""
+        shadow_dir = tmp_path / "shadow_v2"
+        shadow_dir.mkdir()
+        (shadow_dir / "profile_shadow.json").write_text(
+            json.dumps({
+                "profile_id": "shadow-v0.3",
+                "status": "VALIDATED_MULTI_SESSION",
+                "track": "Test Track",
+                "layout": "Test Layout",
+                "turns": [
+                    {"turn": 1, "name": "T1", "start_m": 0.0, "apex_m": 50.0, "end_m": 100.0},
+                ],
+            }),
+            encoding="utf-8",
+        )
+        (tmp_path / "profile_main.json").write_text(
+            json.dumps({
+                "profile_id": "main-v0.2",
+                "status": "VALIDATED_MULTI_SESSION",
+                "track": "Test Track",
+                "layout": "Test Layout",
+                "turns": [
+                    {"turn": 1, "name": "T1", "start_m": 0.0, "apex_m": 50.0, "end_m": 100.0},
+                ],
+            }),
+            encoding="utf-8",
+        )
+        selected, _ = find_validated_track_profile(
+            tmp_path,
+            track="Test Track",
+            layout="Test Layout",
+        )
+        # shadow_v2 is a subdirectory, so glob("*.json") only matches profile_main.json
+        assert selected["profile_id"] == "main-v0.2"

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import math
+import re
 import unicodedata
 from pathlib import Path
 from typing import Any
@@ -16,6 +17,22 @@ VALID_PROFILE_STATUSES = {
     "VALIDATED",
     "VALIDATED_MULTI_SESSION",
 }
+
+# Regex matching v{major}.{minor} anywhere inside a profile_id string.
+_PROFILE_VERSION_RE = re.compile(r"v(\d+)\.(\d+)")
+
+
+def _parse_profile_version(profile: dict[str, Any]) -> tuple[int, int] | None:
+    """Return (major, minor) from the highest ``v{M}.{N}`` in ``profile_id``.
+
+    Returns ``None`` when no version segment can be extracted reliably.
+    """
+    raw = profile.get("profile_id", "")
+    matches = _PROFILE_VERSION_RE.findall(raw)
+    if not matches:
+        return None
+    # Pick the numerically highest (major, minor) found.
+    return max((int(m), int(n)) for m, n in matches)
 
 
 def normalize_identity(value: Any) -> str:
@@ -51,14 +68,42 @@ def find_validated_track_profile(
             continue
         matches.append((profile, path.resolve()))
 
-    if len(matches) > 1:
-        names = ", ".join(path.name for _, path in matches)
-        raise ValueError(
-            "Más de un track profile validado coincide exactamente: " + names
-        )
     if not matches:
         return None, None
-    return matches[0]
+    if len(matches) == 1:
+        return matches[0]
+
+    # --- multiple exact track+layout matches: select highest version ---
+    versions: list[tuple[tuple[int, int] | None, dict[str, Any], Path]] = [
+        (_parse_profile_version(prof), prof, pth) for prof, pth in matches
+    ]
+
+    parseable = [v for v in versions if v[0] is not None]
+    unparseable = [v for v in versions if v[0] is None]
+
+    if not parseable:
+        # None of the candidates have a parseable version → fail closed.
+        names = ", ".join(p.name for _, p in matches)
+        raise ValueError(
+            "No se pudo determinar la versión contractual de múltiples perfiles: "
+            + names
+        )
+
+    # Group parseable by version tuple; pick the highest version group.
+    max_version = max(v[0] for v in parseable)
+    top = [v for v in parseable if v[0] == max_version]
+
+    if len(top) > 1:
+        # Two *distinct* profiles share the exact same highest version →
+        # true ambiguity — fail closed.
+        names = ", ".join(p.name for _, _, p in top)
+        raise ValueError(
+            "Múltiples perfiles distintos comparten la misma versión contractual "
+            "más alta (ambigüedad): " + names
+        )
+
+    _, selected_profile, selected_path = top[0]
+    return selected_profile, selected_path
 
 
 def profile_boundaries(profile: dict[str, Any]) -> list[float]:

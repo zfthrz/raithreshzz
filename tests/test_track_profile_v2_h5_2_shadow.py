@@ -425,25 +425,30 @@ class TestProductionIsolation:
     """v2 shadow profiles must not enter production resolver path."""
 
     def test_resolver_picks_v1_over_v2_for_monza(self):
-        """When v1 and v2 are co-located, resolver must pick exactly one (v1)."""
-        # Since both v1 and v2 exist in the same directory with same track/layout,
-        # the resolver will find 2 matches and raise ValueError.
-        # This is the correct fail-closed behavior for production isolation.
-        with pytest.raises(ValueError, match="Más de un track"):
-            find_validated_track_profile(
-                BASE,
-                track="Autodromo Nazionale Monza",
-                layout="Autodromo Nazionale Monza",
-            )
+        """When v1 and v2 shadow coexist in the same directory tree,
+        shadow_v2 is a subdirectory and excluded by ``*.json`` glob.
+        The resolver picks the single production candidate (v0.3)."""
+        selected, selected_path = find_validated_track_profile(
+            BASE,
+            track="Autodromo Nazionale Monza",
+            layout="Autodromo Nazionale Monza",
+        )
+        assert selected is not None
+        assert selected["profile_id"] == "monza-lmu-f1-11turn-v0.3"
+        assert selected_path == MONZA_V1.resolve()
 
     def test_resolver_picks_v1_over_v2_for_fuji(self):
-        """When v1 and v2 are co-located, resolver must pick exactly one (v1)."""
-        with pytest.raises(ValueError, match="Más de un track"):
-            find_validated_track_profile(
-                BASE,
-                track="Fuji Speedway",
-                layout="Fuji Speedway",
-            )
+        """When v1 and v2 shadow coexist in the same directory tree,
+        shadow_v2 is a subdirectory and excluded by ``*.json`` glob.
+        The resolver picks the single production candidate (v0.3)."""
+        selected, selected_path = find_validated_track_profile(
+            BASE,
+            track="Fuji Speedway",
+            layout="Fuji Speedway",
+        )
+        assert selected is not None
+        assert selected["profile_id"] == "fuji-speedway-lmu-wec16-v0.3"
+        assert selected_path == FUJI_V1.resolve()
 
     def test_v2_shadow_not_selected_alone(self, tmp_path: Path):
         """v2 shadow alone should be selected by resolver (isolated)."""

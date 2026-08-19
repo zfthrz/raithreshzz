@@ -175,6 +175,35 @@ Circuit de la Sarthe track-profile checkpoint:
 
 See `docs/LA_SARTHE_TRACK_PROFILE_V0_1.md`.
 
+### Track profile schema v2 — CLOSED SHADOW_ONLY
+
+Schema v2 adds explicit `segments` array (straight/transition types) on top of
+existing v1 `turns` array. All 6 golden profiles have v2 shadow counterparts
+in `track_profiles/shadow_v2/`.
+
+**Real A/B comparison:** `docs/TRACK_PROFILE_V2_REAL_AB_V0_1.md`
+
+| Metric | Value |
+|--------|-------|
+| Tracks compared | 6 |
+| v2 shadow profiles | 6 / 6 |
+| H5.2 A/B classification | SEMANTICALLY_EQUIVALENT (all) |
+| H5.3 invariants | IDENTICAL (all) |
+| Coaching impact | IDENTICAL (all) |
+| v2 segments assessed | 32 |
+| Verdict | A) NO_MEASURABLE_BENEFIT |
+| Promotion gate | BLOCKED_BY_NO_MEASURABLE_BENEFIT |
+| pytest | 728 / 728 passed |
+| Regressions | 55 / 55 passed |
+
+**Status:** v2 stays SHADOW_ONLY. No production code modified.
+v1 remains production authority. v2 may be re-opened only if a real-world
+case demonstrates v1 localization is insufficient or segments contribute
+measurable functional evidence.
+
+See `docs/TRACK_PROFILE_SCHEMA_V2_PROMOTION_GATE_V0_1.md` and
+`docs/TRACK_PROFILE_SCHEMA_V2_FINAL_REVIEW_V0_1.md`.
+
 Real multitrack checkpoint:
 
 | Track | Historical reference | Current reference | Current - historical | Raw zones | LLM-selected zones | Validators |

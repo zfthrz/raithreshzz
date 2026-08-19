@@ -920,6 +920,29 @@ intentional: long complexes generate multiple line-dependent curvature maxima, s
 the named interval is authoritative. See
 `docs/LA_SARTHE_TRACK_PROFILE_V0_1.md`.
 
+### Schema v2 — CLOSED SHADOW_ONLY
+
+Schema v2 adds explicit `segments` array (straight/transition types) on top of
+the v1 `turns` array. All 6 golden profiles have v2 shadow counterparts in
+`track_profiles/shadow_v2/`.
+
+Real A/B comparison: `docs/TRACK_PROFILE_V2_REAL_AB_V0_1.md`
+
+- **H5.2 A/B classification:** SEMANTICALLY_EQUIVALENT (all 6 tracks)
+- **H5.3 invariants:** IDENTICAL (all 6 tracks)
+- **Coaching impact:** IDENTICAL (all 6 tracks)
+- **v2 segments assessed:** 32
+- **Verdict:** A) NO_MEASURABLE_BENEFIT
+- **Promotion gate:** BLOCKED_BY_NO_MEASURABLE_BENEFIT
+
+v1 remains production authority. v2 shadow infrastructure preserved in
+`track_profiles/shadow_v2/` as experimental. No production code was modified.
+v2 may be re-opened only if a real-world case demonstrates v1 localization is
+insufficient or segments contribute measurable functional evidence.
+
+See `docs/TRACK_PROFILE_SCHEMA_V2_PROMOTION_GATE_V0_1.md` and
+`docs/TRACK_PROFILE_SCHEMA_V2_FINAL_REVIEW_V0_1.md`.
+
 ---
 
 # 22. Comparison Quality Gate

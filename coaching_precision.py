@@ -11,7 +11,7 @@ import re
 import statistics
 from typing import Any
 
-PRECISION_EVIDENCE_VERSION = "0.2"
+PRECISION_EVIDENCE_VERSION = "0.3"
 _COMPARISON_RE = re.compile(r"^\s*(\d+)\s*(?:->|→)\s*(\d+)\s*$")
 
 
@@ -79,8 +79,16 @@ def _turns(profile: dict[str, Any]) -> list[dict[str, Any]]:
     return sorted(result, key=lambda row: row["start_m"])
 
 
-def _select_turn(profile: dict[str, Any], point_m: float, event_kind: str) -> dict[str, Any] | None:
+def _select_turn(
+    profile: dict[str, Any],
+    point_m: float,
+    event_kind: str,
+    *,
+    allowed_turns: set[int] | None = None,
+) -> dict[str, Any] | None:
     turns = _turns(profile)
+    if allowed_turns:
+        turns = [turn for turn in turns if turn["turn"] in allowed_turns]
     if not turns:
         return None
 
@@ -103,6 +111,7 @@ def corner_relative_anchor(
     point_m: Any,
     *,
     event_kind: str,
+    allowed_turns: set[int] | None = None,
 ) -> dict[str, Any] | None:
     """Translate an absolute event point to a deterministic corner-relative label."""
     if not isinstance(profile, dict):
@@ -110,7 +119,12 @@ def corner_relative_anchor(
     point = _finite_float(point_m)
     if point is None:
         return None
-    turn = _select_turn(profile, point, event_kind)
+    turn = _select_turn(
+        profile,
+        point,
+        event_kind,
+        allowed_turns=allowed_turns,
+    )
     if turn is None:
         return None
 
@@ -244,6 +258,32 @@ def build_precision_evidence(
         event_kind=event_kind,
     )
     anchor, coherence = _coherent_anchor(raw_anchor, expected_location)
+
+    if coherence.get("status") == "WITHHELD_LOCATION_MISMATCH":
+        allowed_turns = _location_turns(expected_location)
+        constrained_anchor = corner_relative_anchor(
+            profile,
+            pattern.get(point_key),
+            event_kind=event_kind,
+            allowed_turns=allowed_turns,
+        )
+        constrained_anchor, constrained_coherence = _coherent_anchor(
+            constrained_anchor,
+            expected_location,
+        )
+        if (
+            isinstance(constrained_anchor, dict)
+            and constrained_coherence.get("status") == "MATCHED"
+        ):
+            original_anchor_turn = coherence.get("anchor_turn")
+            anchor = constrained_anchor
+            coherence = {
+                "status": "RESELECTED_WITHIN_LOCATION",
+                "anchor_turn": constrained_anchor.get("anchor_turn"),
+                "original_anchor_turn": original_anchor_turn,
+                "allowed_turns": sorted(allowed_turns),
+            }
+
     evidence = {
         "version": PRECISION_EVIDENCE_VERSION,
         "event_kind": event_kind,

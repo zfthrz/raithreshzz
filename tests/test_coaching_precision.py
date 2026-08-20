@@ -145,7 +145,7 @@ def test_single_plan_pattern_preserves_comparison_and_signed_delta():
     assert pattern["median_delta_m"] == -15.2
 
 
-def test_location_mismatch_withholds_only_relative_anchor():
+def test_location_mismatch_reselects_anchor_within_authorized_turns():
     result = build_precision_evidence(
         {
             "comparisons": ["4->3"],
@@ -167,12 +167,17 @@ def test_location_mismatch_withholds_only_relative_anchor():
     assert result["reference_lap"] == 4
     assert result["supporting_laps"] == [3]
     assert result["representative_delta_m"] == 15
-    assert result["corner_relative_reference"] is None
+    anchor = result["corner_relative_reference"]
+    assert anchor["event_distance_m"] == 4500.0
+    assert anchor["anchor_turn"] == 2
+    assert anchor["anchor_type"] == "turn_start"
+    assert anchor["relative_offset_m"] == -500.0
+    assert anchor["driver_label"] == "~500 m antes de T2 — Esses"
     assert result["anchor_coherence"] == {
-        "status": "WITHHELD_LOCATION_MISMATCH",
-        "anchor_turn": 1,
+        "status": "RESELECTED_WITHIN_LOCATION",
+        "anchor_turn": 2,
+        "original_anchor_turn": 1,
         "allowed_turns": [2],
-        "expected_label": "T2 — Esses",
     }
 
 
@@ -305,3 +310,51 @@ def test_track_reference_does_not_group_same_name_with_different_zone_marks():
     assert "- T11 — Dunlop" in rendered
     assert "- T12 — Dunlop ← ZONA A" in rendered
     assert "T11–T12" not in rendered
+def test_constrained_anchor_fails_closed_when_allowed_turn_missing_from_profile():
+    result = build_precision_evidence(
+        {
+            "comparisons": ["4->3"],
+            "deltas_m": [-15.2],
+            "median_delta_m": -15.2,
+            "reference_onset_m": 4500.0,
+        },
+        PROFILE,
+        event_kind="braking_onset",
+        point_key="reference_onset_m",
+        expected_location={
+            "status": "RESOLVED",
+            "label": "T9 — Missing",
+            "overlaps": [
+                {"turn": 9, "overlap_m": 40.0, "overlap_share": 0.8},
+            ],
+        },
+    )
+    assert result["corner_relative_reference"] is None
+    assert result["anchor_coherence"] == {
+        "status": "WITHHELD_LOCATION_MISMATCH",
+        "anchor_turn": 1,
+        "allowed_turns": [9],
+        "expected_label": "T9 — Missing",
+    }
+
+
+def test_constrained_anchor_does_not_change_absolute_event_coordinate():
+    result = build_precision_evidence(
+        {
+            "comparisons": ["4->3"],
+            "deltas_m": [-15.2],
+            "median_delta_m": -15.2,
+            "reference_onset_m": 4500.0,
+        },
+        PROFILE,
+        event_kind="braking_onset",
+        point_key="reference_onset_m",
+        expected_location={
+            "status": "RESOLVED",
+            "label": "T2 — Esses",
+            "overlaps": [
+                {"turn": 2, "overlap_m": 40.0, "overlap_share": 0.8},
+            ],
+        },
+    )
+    assert result["corner_relative_reference"]["event_distance_m"] == 4500.0

@@ -15,6 +15,7 @@ from runtime_paths import llm_debug_dir, llm_result_dir
 from coaching_precision import (
     enrich_patterns_with_precision,
     enrich_plan_items_with_precision,
+    enrich_plan_items_with_coaching_sequence,
     render_track_reference_section,
 )
 
@@ -294,7 +295,89 @@ def print_deepseek_usage_summary():
 
 # LLAMACPP V4 soporta contextos muy superiores; conservamos este valor sólo
 # como referencia del baseline local. No se envía como parámetro a la API.
-CONTEXT_SIZE = 8192
+CONTEXT_SIZE = 32768
+
+# Per-call usage log for context budget measurement.
+LLAMACPP_CALL_LOG: list[dict] = []
+
+
+def reset_llamacpp_call_log() -> None:
+    """Reset the per-call context budget log (for tests)."""
+    LLAMACPP_CALL_LOG.clear()
+
+
+def compute_context_budget(
+    prompt_tokens: int,
+    completion_tokens: int,
+    max_output_tokens: int,
+    context_window: int,
+) -> dict:
+    """Compute context budget metrics from raw token counts."""
+    total_used = prompt_tokens + completion_tokens
+    estimated_remaining = context_window - total_used
+    usage_percent = (
+        round((total_used / context_window) * 100, 1)
+        if context_window > 0
+        else 0.0
+    )
+    over_budget = total_used > context_window
+    return {
+        "prompt_tokens": prompt_tokens,
+        "completion_tokens": completion_tokens,
+        "max_output_tokens": max_output_tokens,
+        "context_window": context_window,
+        "estimated_remaining_tokens": estimated_remaining,
+        "usage_percent": usage_percent,
+        "over_budget": over_budget,
+    }
+
+
+def print_context_budget_report(budget: dict) -> None:
+    """Print one llama.cpp context-budget report."""
+    prompt = budget["prompt_tokens"]
+    output = budget["max_output_tokens"]
+    window = budget["context_window"]
+    remaining = budget["estimated_remaining_tokens"]
+    pct = budget["usage_percent"]
+
+    print("")
+    print("LLM CONTEXT")
+    print(f"Prompt tokens:      {prompt}")
+    print(f"Output budget:       {output}")
+    print(f"Context window:     {window}")
+    print(f"Remaining:          {remaining}")
+    print(f"Usage:               {pct}%")
+
+    if budget["over_budget"]:
+        print(
+            "  ERROR: over_budget — used "
+            f"{prompt + budget['completion_tokens']} of {window} tokens"
+        )
+    elif pct > 90:
+        print(f"  WARNING: usage > 90% ({pct}%) — context may be truncated")
+
+
+def print_llamacpp_budget_summary() -> None:
+    """Print a summary of all per-call context budgets measured."""
+    if not LLAMACPP_CALL_LOG:
+        return
+
+    n = len(LLAMACPP_CALL_LOG)
+    avg_pct = round(
+        sum(call["usage_percent"] for call in LLAMACPP_CALL_LOG) / n,
+        1,
+    )
+    max_pct = max(call["usage_percent"] for call in LLAMACPP_CALL_LOG)
+    last = LLAMACPP_CALL_LOG[-1]
+
+    print("")
+    print("LLAMACPP CONTEXT BUDGET SUMMARY")
+    print(f"Total calls:        {n}")
+    print(f"Average usage:      {avg_pct}%")
+    print(f"Max usage:          {max_pct}%")
+    print(f"Last call prompt_tokens:    {last['prompt_tokens']}")
+    print(f"Last call completion_tokens: {last['completion_tokens']}")
+
 
 TEMPERATURE = 0.15
 
@@ -2439,6 +2522,17 @@ def llamacpp_chat(
         record_deepseek_usage(
             result.get("usage")
         )
+
+        usage = result.get("usage")
+        if isinstance(usage, dict):
+            budget = compute_context_budget(
+                prompt_tokens=usage.get("prompt_tokens", 0),
+                completion_tokens=usage.get("completion_tokens", 0),
+                max_output_tokens=payload["max_tokens"],
+                context_window=CONTEXT_SIZE,
+            )
+            print_context_budget_report(budget)
+            LLAMACPP_CALL_LOG.append(budget)
 
         choices = result.get("choices")
         message = None
@@ -13751,6 +13845,10 @@ def build_session_coaching_facts(
         precision_profile,
     )
 
+    # H5.4/P7 — additive deterministic consolidation of already-authorized
+    # physical-point cues. Original patterns remain untouched.
+    enrich_plan_items_with_coaching_sequence(next_stint_plan)
+
     _attach_point_anchored_reference_profiles(
         next_stint_plan,
         source_data,
@@ -14939,6 +15037,47 @@ def build_driver_cues_for_plan_item(item, max_cues=2):
             "point_comparison_count": 0,
             "region_comparison_count": safe_int(item.get("comparison_count")) or 0,
         })
+
+    sequence = item.get("coaching_sequence")
+    if isinstance(sequence, dict) and sequence.get("status") == "COMBINED":
+        spatial_indexes = [
+            index
+            for index, cue in enumerate(cues)
+            if cue.get("kind") == "spatial_points"
+            and cue.get("channel") in {"brake", "throttle"}
+        ]
+        if len(spatial_indexes) >= 2:
+            first_index = spatial_indexes[0]
+            evidence = [
+                event.get("precision_evidence")
+                for event in (sequence.get("events") or [])
+                if isinstance(event, dict)
+                and isinstance(event.get("precision_evidence"), dict)
+            ]
+            combined = {
+                "channel": "brake+throttle",
+                "channels": ["brake", "throttle"],
+                "kind": "combined_spatial_sequence",
+                "text": str(sequence.get("driver_summary") or "").strip(),
+                "source": "deterministic_coaching_sequence",
+                "coaching_sequence": sequence,
+                "point_comparison_count": max(
+                    [
+                        safe_int(cues[i].get("point_comparison_count")) or 0
+                        for i in spatial_indexes
+                    ],
+                    default=0,
+                ),
+                "region_comparison_count": safe_int(item.get("comparison_count")) or 0,
+            }
+            if evidence:
+                combined["precision_evidence"] = evidence
+            cues = [
+                cue
+                for index, cue in enumerate(cues)
+                if index not in spatial_indexes
+            ]
+            cues.insert(first_index, combined)
 
     if item.get("steering_coaching_requested"):
         recommendation = str(item.get("validated_recommendation") or "").strip()
@@ -17820,7 +17959,7 @@ def save_result(
 
     output_path = os.path.join(
         output_dir,
-        stem + f"_llm_analysis_v3_10_8_5_4_{MODEL_NAME}.json",
+        stem + f"_llm_analysis_v3_10_8_5_4_llamacpp_{MODEL_NAME}.json",
     )
 
     braking_point_detection = next(
@@ -18590,6 +18729,7 @@ def main():
     )
 
     print_deepseek_usage_summary()
+    print_llamacpp_budget_summary()
 
     print()
 

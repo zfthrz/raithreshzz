@@ -429,3 +429,148 @@ def test_locality_guard_preserves_absolute_coordinate_when_reselection_is_valid(
         },
     )
     assert result["corner_relative_reference"]["event_distance_m"] == 4910.0
+
+
+def test_brake_release_prefers_exit_when_closer_than_apex():
+    profile = {"turns": [{"turn": 1, "name": "Hairpin", "start_m": 1000.0, "apex_m": 1060.0, "end_m": 1120.0}]}
+    r = corner_relative_anchor(profile, 1108.0, event_kind="brake_release")
+    assert r["event_distance_m"] == 1108.0
+    assert r["anchor_type"] == "turn_end"
+    assert r["relative_offset_m"] == -12.0
+    assert r["relative_magnitude_m"] == 12
+
+
+def test_throttle_onset_prefers_exit_when_closer_than_apex():
+    profile = {"turns": [{"turn": 1, "name": "Hairpin", "start_m": 1000.0, "apex_m": 1060.0, "end_m": 1120.0}]}
+    r = corner_relative_anchor(profile, 1110.0, event_kind="throttle_onset")
+    assert r["anchor_type"] == "turn_end"
+    assert r["relative_offset_m"] == -10.0
+
+
+def test_throttle_release_prefers_entry_when_closer_than_apex():
+    profile = {"turns": [{"turn": 1, "name": "Hairpin", "start_m": 1000.0, "apex_m": 1080.0, "end_m": 1160.0}]}
+    r = corner_relative_anchor(profile, 1015.0, event_kind="throttle_release")
+    assert r["anchor_type"] == "turn_start"
+    assert r["relative_offset_m"] == 15.0
+
+
+def test_braking_onset_remains_entry_only_even_if_exit_is_closer():
+    profile = {"turns": [{"turn": 1, "name": "Hairpin", "start_m": 1000.0, "apex_m": 1060.0, "end_m": 1120.0}]}
+    r = corner_relative_anchor(profile, 1110.0, event_kind="braking_onset")
+    assert r["anchor_type"] == "turn_start"
+
+
+def test_p6_changes_label_anchor_not_absolute_physical_point():
+    profile = {"turns": [{"turn": 1, "name": "Hairpin", "start_m": 1000.0, "apex_m": 1060.0, "end_m": 1120.0}]}
+    r = corner_relative_anchor(profile, 1108.0, event_kind="throttle_onset")
+    assert r["event_distance_m"] == 1108.0
+    assert r["anchor_type"] == "turn_end"
+    assert r["relative_offset_m"] == -12.0
+
+
+
+def _p7_pattern(point, kind, magnitude=15, direction="later"):
+    key = {
+        "braking_onset": "reference_onset_m",
+        "brake_release": "reference_release_m",
+        "throttle_onset": "reference_onset_m",
+        "throttle_release": "reference_release_m",
+    }[kind]
+    return {
+        "status": "REPEATED",
+        key: point,
+        "coaching_magnitude_m": magnitude,
+        "coaching_direction": direction,
+        "comparisons": ["1->2", "1->3"],
+        "deltas_m": [float(magnitude), float(magnitude)],
+        "median_delta_m": float(magnitude),
+    }
+
+
+def test_p7_builds_ordered_additive_coaching_sequence():
+    from coaching_precision import (
+        enrich_plan_items_with_precision,
+        enrich_plan_items_with_coaching_sequence,
+    )
+    plan = [{
+        "braking_point_patterns": [_p7_pattern(4500.0, "braking_onset", 15)],
+        "brake_release_patterns": [_p7_pattern(4690.0, "brake_release", 20)],
+        "throttle_onset_patterns": [_p7_pattern(4710.0, "throttle_onset", 25)],
+    }]
+    enrich_plan_items_with_precision(plan, PROFILE)
+    enrich_plan_items_with_coaching_sequence(plan)
+    seq = plan[0]["coaching_sequence"]
+    assert seq["status"] == "COMBINED"
+    assert seq["event_count"] == 3
+    assert [e["event_kind"] for e in seq["events"]] == [
+        "braking_onset", "brake_release", "throttle_onset"
+    ]
+    assert [e["event_distance_m"] for e in seq["events"]] == [
+        4500.0, 4690.0, 4710.0
+    ]
+
+
+def test_p7_does_not_create_sequence_for_single_physical_cue():
+    from coaching_precision import (
+        enrich_plan_items_with_precision,
+        enrich_plan_items_with_coaching_sequence,
+    )
+    plan = [{
+        "braking_point_patterns": [_p7_pattern(4500.0, "braking_onset", 15)]
+    }]
+    enrich_plan_items_with_precision(plan, PROFILE)
+    enrich_plan_items_with_coaching_sequence(plan)
+    assert "coaching_sequence" not in plan[0]
+
+
+def test_p7_fails_closed_on_invalid_same_channel_order():
+    from coaching_precision import (
+        enrich_plan_items_with_precision,
+        enrich_plan_items_with_coaching_sequence,
+    )
+    plan = [{
+        "braking_point_patterns": [_p7_pattern(4700.0, "braking_onset", 15)],
+        "brake_release_patterns": [_p7_pattern(4500.0, "brake_release", 20)],
+    }]
+    enrich_plan_items_with_precision(plan, PROFILE)
+    enrich_plan_items_with_coaching_sequence(plan)
+    assert "coaching_sequence" not in plan[0]
+
+
+def test_p7_driver_cues_consolidate_brake_and_throttle_spatial_points():
+    import llm_analysis as module
+    from coaching_precision import (
+        enrich_plan_items_with_precision,
+        enrich_plan_items_with_coaching_sequence,
+    )
+    item = {
+        "comparison_count": 2,
+        "braking_point_patterns": [_p7_pattern(4500.0, "braking_onset", 15)],
+        "brake_release_patterns": [_p7_pattern(4690.0, "brake_release", 20)],
+        "throttle_onset_patterns": [_p7_pattern(4710.0, "throttle_onset", 25)],
+    }
+    plan = [item]
+    enrich_plan_items_with_precision(plan, PROFILE)
+    enrich_plan_items_with_coaching_sequence(plan)
+    cues = module.build_driver_cues_for_plan_item(item, max_cues=2)
+    assert len(cues) == 1
+    assert cues[0]["kind"] == "combined_spatial_sequence"
+    assert cues[0]["source"] == "deterministic_coaching_sequence"
+    assert cues[0]["coaching_sequence"]["event_count"] == 3
+    assert len(cues[0]["precision_evidence"]) == 3
+
+
+
+def test_p7_active_backends_have_sequence_integration_parity():
+    from pathlib import Path
+
+    for filename in (
+        "llm_analysis.py",
+        "llm_analysis_deepseek.py",
+        "llm_analysis_llamacpp.py",
+    ):
+        source = Path(filename).read_text(encoding="utf-8")
+        assert "enrich_plan_items_with_coaching_sequence" in source, filename
+        assert "enrich_plan_items_with_coaching_sequence(next_stint_plan)" in source, filename
+        assert '"kind": "combined_spatial_sequence"' in source, filename
+        assert '"source": "deterministic_coaching_sequence"' in source, filename

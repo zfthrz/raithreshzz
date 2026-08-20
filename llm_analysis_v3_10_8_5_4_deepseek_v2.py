@@ -15,6 +15,7 @@ from runtime_paths import llm_debug_dir, llm_result_dir
 from coaching_precision import (
     enrich_patterns_with_precision,
     enrich_plan_items_with_precision,
+    enrich_plan_items_with_coaching_sequence,
     render_track_reference_section,
 )
 
@@ -13766,6 +13767,10 @@ def build_session_coaching_facts(
         precision_profile,
     )
 
+    # H5.4/P7 — additive deterministic consolidation of already-authorized
+    # physical-point cues. Original patterns remain untouched.
+    enrich_plan_items_with_coaching_sequence(next_stint_plan)
+
     _attach_point_anchored_reference_profiles(
         next_stint_plan,
         source_data,
@@ -14954,6 +14959,47 @@ def build_driver_cues_for_plan_item(item, max_cues=2):
             "point_comparison_count": 0,
             "region_comparison_count": safe_int(item.get("comparison_count")) or 0,
         })
+
+    sequence = item.get("coaching_sequence")
+    if isinstance(sequence, dict) and sequence.get("status") == "COMBINED":
+        spatial_indexes = [
+            index
+            for index, cue in enumerate(cues)
+            if cue.get("kind") == "spatial_points"
+            and cue.get("channel") in {"brake", "throttle"}
+        ]
+        if len(spatial_indexes) >= 2:
+            first_index = spatial_indexes[0]
+            evidence = [
+                event.get("precision_evidence")
+                for event in (sequence.get("events") or [])
+                if isinstance(event, dict)
+                and isinstance(event.get("precision_evidence"), dict)
+            ]
+            combined = {
+                "channel": "brake+throttle",
+                "channels": ["brake", "throttle"],
+                "kind": "combined_spatial_sequence",
+                "text": str(sequence.get("driver_summary") or "").strip(),
+                "source": "deterministic_coaching_sequence",
+                "coaching_sequence": sequence,
+                "point_comparison_count": max(
+                    [
+                        safe_int(cues[i].get("point_comparison_count")) or 0
+                        for i in spatial_indexes
+                    ],
+                    default=0,
+                ),
+                "region_comparison_count": safe_int(item.get("comparison_count")) or 0,
+            }
+            if evidence:
+                combined["precision_evidence"] = evidence
+            cues = [
+                cue
+                for index, cue in enumerate(cues)
+                if index not in spatial_indexes
+            ]
+            cues.insert(first_index, combined)
 
     if item.get("steering_coaching_requested"):
         recommendation = str(item.get("validated_recommendation") or "").strip()

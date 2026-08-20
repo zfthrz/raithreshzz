@@ -11,7 +11,7 @@ import re
 import statistics
 from typing import Any
 
-PRECISION_EVIDENCE_VERSION = "0.4"
+PRECISION_EVIDENCE_VERSION = "0.5"
 _COMPARISON_RE = re.compile(r"^\s*(\d+)\s*(?:->|→)\s*(\d+)\s*$")
 
 
@@ -106,6 +106,45 @@ def _select_turn(
     return min(turns, key=lambda t: abs(t["apex_m"] - point_m))
 
 
+
+def _driver_anchor_candidates(turn: dict[str, Any], event_kind: str) -> list[tuple[str, float]]:
+    if event_kind == "braking_onset":
+        return [("turn_start", turn["start_m"])]
+    if event_kind in {"brake_release", "throttle_onset"}:
+        return [("apex", turn["apex_m"]), ("turn_end", turn["end_m"])]
+    if event_kind == "throttle_release":
+        return [("turn_start", turn["start_m"]), ("apex", turn["apex_m"])]
+    return [("apex", turn["apex_m"])]
+
+
+def _select_driver_anchor(turn: dict[str, Any], point_m: float, event_kind: str) -> tuple[str, float]:
+    return min(_driver_anchor_candidates(turn, event_kind), key=lambda x: abs(point_m - x[1]))
+
+
+def _driver_anchor_label(turn_label: str, anchor_type: str, offset: float) -> tuple[str, str]:
+    magnitude = int(round(abs(offset)))
+    if magnitude == 0:
+        relation = "at"
+        if anchor_type == "turn_start":
+            return relation, f"en la entrada de {turn_label}"
+        if anchor_type == "turn_end":
+            return relation, f"en la salida de {turn_label}"
+        return relation, f"en el ápice de {turn_label}"
+    if offset < 0:
+        relation = "before"
+        if anchor_type == "turn_start":
+            return relation, f"~{magnitude} m antes de {turn_label}"
+        if anchor_type == "turn_end":
+            return relation, f"~{magnitude} m antes de la salida de {turn_label}"
+        return relation, f"~{magnitude} m antes del ápice de {turn_label}"
+    relation = "after"
+    if anchor_type == "turn_start":
+        return relation, f"~{magnitude} m después de la entrada de {turn_label}"
+    if anchor_type == "turn_end":
+        return relation, f"~{magnitude} m después de la salida de {turn_label}"
+    return relation, f"~{magnitude} m después del ápice de {turn_label}"
+
+
 def corner_relative_anchor(
     profile: dict[str, Any] | None,
     point_m: Any,
@@ -128,30 +167,11 @@ def corner_relative_anchor(
     if turn is None:
         return None
 
-    anchor_type = "turn_start" if event_kind == "braking_onset" else "apex"
-    anchor_m = turn["start_m"] if anchor_type == "turn_start" else turn["apex_m"]
+    anchor_type, anchor_m = _select_driver_anchor(turn, point, event_kind)
     offset = point - anchor_m
     magnitude = int(round(abs(offset)))
     turn_label = f"T{turn['turn']} — {turn.get('name') or 'Turn'}"
-
-    if magnitude == 0:
-        relation = "at"
-        if anchor_type == "turn_start":
-            driver_label = f"en la entrada de {turn_label}"
-        else:
-            driver_label = f"en el ápice de {turn_label}"
-    elif offset < 0:
-        relation = "before"
-        if anchor_type == "turn_start":
-            driver_label = f"~{magnitude} m antes de {turn_label}"
-        else:
-            driver_label = f"~{magnitude} m antes del ápice de {turn_label}"
-    else:
-        relation = "after"
-        if anchor_type == "turn_start":
-            driver_label = f"~{magnitude} m después de la entrada de {turn_label}"
-        else:
-            driver_label = f"~{magnitude} m después del ápice de {turn_label}"
+    relation, driver_label = _driver_anchor_label(turn_label, anchor_type, offset)
 
     return {
         "event_distance_m": point,
@@ -404,6 +424,135 @@ def enrich_plan_items_with_precision(
                 expected_location=item.get("track_location"),
             )
     return plan
+
+COACHING_SEQUENCE_VERSION = "0.1"
+
+_SEQUENCE_EVENT_SPECS = (
+    ("braking_onset", "braking_point_patterns", "brake", "frená"),
+    ("brake_release", "brake_release_patterns", "brake", "soltá el freno"),
+    ("throttle_release", "throttle_release_patterns", "throttle", "soltá el acelerador"),
+    ("throttle_onset", "throttle_onset_patterns", "throttle", "reaplicá el acelerador"),
+)
+
+
+def _coaching_sequence_event(
+    item: dict[str, Any],
+    spec: tuple[str, str, str, str],
+) -> dict[str, Any] | None:
+    event_kind, field, channel, verb = spec
+    values = item.get(field, []) or []
+    pattern = values[0] if values and isinstance(values[0], dict) else None
+    if not isinstance(pattern, dict):
+        return None
+
+    magnitude = _finite_float(pattern.get("coaching_magnitude_m"))
+    direction = str(pattern.get("coaching_direction") or "")
+    evidence = pattern.get("precision_evidence")
+    if magnitude is None or magnitude <= 0 or direction not in {"later", "earlier"}:
+        return None
+    if not isinstance(evidence, dict):
+        return None
+
+    anchor = evidence.get("corner_relative_reference")
+    if not isinstance(anchor, dict):
+        return None
+    point = _finite_float(anchor.get("event_distance_m"))
+    if point is None:
+        return None
+
+    coherence = evidence.get("anchor_coherence")
+    coherence_status = (
+        str(coherence.get("status") or "")
+        if isinstance(coherence, dict)
+        else ""
+    )
+    if coherence_status.startswith("WITHHELD"):
+        return None
+
+    magnitude_i = int(round(abs(magnitude)))
+    timing = "más tarde" if direction == "later" else "más temprano"
+    anchor_label = str(anchor.get("driver_label") or "").strip()
+    text = f"{verb} aproximadamente {magnitude_i} m {timing}"
+    if anchor_label:
+        text += f" ({anchor_label})"
+
+    return {
+        "event_kind": event_kind,
+        "channel": channel,
+        "event_distance_m": point,
+        "coaching_direction": direction,
+        "coaching_magnitude_m": magnitude_i,
+        "anchor_turn": anchor.get("anchor_turn"),
+        "anchor_type": anchor.get("anchor_type"),
+        "driver_label": anchor_label or None,
+        "text": text,
+        "precision_evidence": evidence,
+    }
+
+
+def build_coaching_sequence(
+    item: dict[str, Any] | None,
+) -> dict[str, Any] | None:
+    """Build an additive deterministic multi-event driver sequence."""
+    if not isinstance(item, dict):
+        return None
+
+    events = [
+        event
+        for spec in _SEQUENCE_EVENT_SPECS
+        if (event := _coaching_sequence_event(item, spec)) is not None
+    ]
+    if len(events) < 2:
+        return None
+
+    events.sort(key=lambda row: (row["event_distance_m"], row["event_kind"]))
+    points = [row["event_distance_m"] for row in events]
+    if any(b <= a for a, b in zip(points, points[1:])):
+        return None
+
+    by_kind = {row["event_kind"]: row for row in events}
+    brake_on = by_kind.get("braking_onset")
+    brake_release = by_kind.get("brake_release")
+    if (
+        brake_on
+        and brake_release
+        and brake_on["event_distance_m"] >= brake_release["event_distance_m"]
+    ):
+        return None
+
+    throttle_release = by_kind.get("throttle_release")
+    throttle_on = by_kind.get("throttle_onset")
+    if (
+        throttle_release
+        and throttle_on
+        and throttle_release["event_distance_m"] >= throttle_on["event_distance_m"]
+    ):
+        return None
+
+    return {
+        "version": COACHING_SEQUENCE_VERSION,
+        "status": "COMBINED",
+        "event_count": len(events),
+        "events": events,
+        "driver_summary": "; después, ".join(row["text"] for row in events),
+    }
+
+
+def enrich_plan_items_with_coaching_sequence(
+    plan: list[dict[str, Any]] | None,
+) -> list[dict[str, Any]] | None:
+    if not isinstance(plan, list):
+        return plan
+    for item in plan:
+        if not isinstance(item, dict):
+            continue
+        sequence = build_coaching_sequence(item)
+        if sequence is not None:
+            item["coaching_sequence"] = sequence
+        else:
+            item.pop("coaching_sequence", None)
+    return plan
+
 # ============================================================
 # H5.4 P3 - DETERMINISTIC TRACK REFERENCE
 # ============================================================

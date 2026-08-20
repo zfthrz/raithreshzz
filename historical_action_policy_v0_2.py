@@ -216,6 +216,26 @@ def build_action_candidates(selection_path: Path) -> dict[str, Any]:
             )
             continue
 
+        # H5.3 human-review correction (Point 6):
+        # current_throttle_higher alone is NOT sufficient causal/action evidence
+        # for reduce_throttle. If the ONLY mappable code is current_throttle_higher:
+        # WITHHOLD with reason "insufficient_action_context".
+        # Combined cases (e.g. current_throttle_higher + current_brake_lower)
+        # remain authorized — human review 2/2 accepted.
+        mappable_codes_set = set(classification["mappable"])
+        if mappable_codes_set == {"current_throttle_higher"}:
+            withheld.append(
+                {
+                    "candidate_id": candidate_id,
+                    "location_label": candidate.get("location_label"),
+                    "delta_sign": delta_sign,
+                    "reason": "insufficient_action_context",
+                    "observation_codes": observation_codes,
+                    "classified_observation_codes": classification,
+                }
+            )
+            continue
+
         # current_slower + al menos 1 mappable code → ELIGIBLE.
         mapped = _actions_for_observations(classification["mappable"])
         context = candidate.get("context") or {}

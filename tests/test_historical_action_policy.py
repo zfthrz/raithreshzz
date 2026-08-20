@@ -477,3 +477,178 @@ def test_build_action_candidates_via_alias(tmp_path: Path):
     """build_action_candidates a través del alias funciona correctamente."""
     output = historical_action_policy.build_action_candidates(_write_selection(tmp_path))
     assert output["status"] == "HISTORICAL_ACTION_CANDIDATES_VALIDATED"
+
+
+# ── H5.3 human-review correction: insufficient_action_context ──────────────
+
+
+def test_throttle_higher_alone_withheld_insufficient_action_context(tmp_path: Path):
+    """Test 1: current_throttle_higher alone → WITHHELD / insufficient_action_context."""
+    selection = {
+        "status": "VALIDATED_HISTORICAL_CANDIDATE_SELECTION",
+        "authorized_candidates": [
+            {
+                "candidate_id": "slow:cand_throttle_higher",
+                "context": _context(),
+                "delta_sign": "current_slower",
+                "location_label": "T13 - Acque Minerali",
+                "delta_change_s": 0.4,
+                "authorized_observations": ["current_throttle_higher"],
+            },
+        ],
+        "llm_selection": {
+            "selected_candidates": [
+                {
+                    "candidate_id": "slow:cand_throttle_higher",
+                    "significance": "primary",
+                    "observation_codes": ["current_throttle_higher"],
+                },
+            ]
+        },
+    }
+    output = build_action_candidates(_write_selection(tmp_path, selection))
+
+    assert output["status"] == "HISTORICAL_ACTION_CANDIDATES_VALIDATED"
+    assert len(output["actions"]) == 0
+    assert len(output["withheld"]) == 1
+    assert output["withheld"][0]["candidate_id"] == "slow:cand_throttle_higher"
+    assert output["withheld"][0]["reason"] == "insufficient_action_context"
+
+
+def test_throttle_higher_plus_speed_time_still_withheld(tmp_path: Path):
+    """Test 2: throttle_higher + speed_lower + time_loss → still WITHHELD."""
+    selection = {
+        "status": "VALIDATED_HISTORICAL_CANDIDATE_SELECTION",
+        "authorized_candidates": [
+            {
+                "candidate_id": "slow:cand_throttle_higher_speed",
+                "context": _context(),
+                "delta_sign": "current_slower",
+                "location_label": "T1 - Test",
+                "delta_change_s": 0.5,
+                "authorized_observations": ["current_throttle_higher", "current_speed_lower", "time_loss"],
+            },
+        ],
+        "llm_selection": {
+            "selected_candidates": [
+                {
+                    "candidate_id": "slow:cand_throttle_higher_speed",
+                    "significance": "primary",
+                    "observation_codes": ["current_throttle_higher", "current_speed_lower", "time_loss"],
+                },
+            ]
+        },
+    }
+    output = build_action_candidates(_write_selection(tmp_path, selection))
+
+    assert output["status"] == "HISTORICAL_ACTION_CANDIDATES_VALIDATED"
+    assert len(output["actions"]) == 0
+    assert len(output["withheld"]) == 1
+    assert output["withheld"][0]["candidate_id"] == "slow:cand_throttle_higher_speed"
+    assert output["withheld"][0]["reason"] == "insufficient_action_context"
+
+
+def test_throttle_lower_alone_increase_throttle_unchanged(tmp_path: Path):
+    """Test 3: current_throttle_lower alone → increase_throttle unchanged."""
+    selection = {
+        "status": "VALIDATED_HISTORICAL_CANDIDATE_SELECTION",
+        "authorized_candidates": [
+            {
+                "candidate_id": "slow:cand_throttle_lower",
+                "context": _context(),
+                "delta_sign": "current_slower",
+                "location_label": "T1 - Test",
+                "delta_change_s": 0.3,
+                "authorized_observations": ["current_throttle_lower"],
+            },
+        ],
+        "llm_selection": {
+            "selected_candidates": [
+                {
+                    "candidate_id": "slow:cand_throttle_lower",
+                    "significance": "primary",
+                    "observation_codes": ["current_throttle_lower"],
+                },
+            ]
+        },
+    }
+    output = build_action_candidates(_write_selection(tmp_path, selection))
+
+    assert output["status"] == "HISTORICAL_ACTION_CANDIDATES_VALIDATED"
+    assert len(output["actions"]) == 1
+    assert output["actions"][0]["candidate_id"] == "slow:cand_throttle_lower"
+    assert output["actions"][0]["actions"] == ["increase_throttle"]
+    assert output["actions"][0]["actions_text"] == ["aumentar acelerador"]
+    assert len(output["withheld"]) == 0
+
+
+def test_throttle_higher_plus_brake_lower_unchanged(tmp_path: Path):
+    """Test 4: throttle_higher + brake_lower → existing combined policy unchanged."""
+    selection = {
+        "status": "VALIDATED_HISTORICAL_CANDIDATE_SELECTION",
+        "authorized_candidates": [
+            {
+                "candidate_id": "slow:cand_combined",
+                "context": _context(),
+                "delta_sign": "current_slower",
+                "location_label": "T1 - Test",
+                "delta_change_s": 0.5,
+                "authorized_observations": ["current_throttle_higher", "current_brake_lower"],
+            },
+        ],
+        "llm_selection": {
+            "selected_candidates": [
+                {
+                    "candidate_id": "slow:cand_combined",
+                    "significance": "primary",
+                    "observation_codes": ["current_throttle_higher", "current_brake_lower"],
+                },
+            ]
+        },
+    }
+    output = build_action_candidates(_write_selection(tmp_path, selection))
+
+    assert output["status"] == "HISTORICAL_ACTION_CANDIDATES_VALIDATED"
+    assert len(output["actions"]) == 1
+    assert output["actions"][0]["candidate_id"] == "slow:cand_combined"
+    # Both reduce_throttle AND increase_brake should be present
+    assert set(output["actions"][0]["actions"]) == {"reduce_throttle", "increase_brake"}
+    assert len(output["withheld"]) == 0
+
+
+def test_speed_time_anti_regression_unchanged(tmp_path: Path):
+    """Test 5: speed/time anti-regression unchanged."""
+    selection = {
+        "status": "VALIDATED_HISTORICAL_CANDIDATE_SELECTION",
+        "authorized_candidates": [
+            {
+                "candidate_id": "slow:cand_speedonly",
+                "context": _context(),
+                "delta_sign": "current_slower",
+                "location_label": "T1 - Test",
+                "delta_change_s": 0.5,
+                "authorized_observations": ["time_loss", "current_speed_lower"],
+            },
+        ],
+        "llm_selection": {
+            "selected_candidates": [
+                {
+                    "candidate_id": "slow:cand_speedonly",
+                    "significance": "primary",
+                    "observation_codes": ["time_loss", "current_speed_lower"],
+                },
+            ]
+        },
+    }
+    output = build_action_candidates(_write_selection(tmp_path, selection))
+
+    assert output["status"] == "HISTORICAL_ACTION_CANDIDATES_VALIDATED"
+    assert len(output["actions"]) == 0
+    assert len(output["withheld"]) == 1
+    assert output["withheld"][0]["candidate_id"] == "slow:cand_speedonly"
+    assert output["withheld"][0]["reason"] == "no_mappable_actions"
+
+    # Verify anti-regression: speed actions never present
+    for action in output["actions"]:
+        for code in action.get("actions", []):
+            assert "speed" not in code.lower()

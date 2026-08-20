@@ -158,6 +158,171 @@ def _has_nan_or_inf(value: Any) -> bool:
         return True
 
 
+# ── H5.3a → canonical eligibility candidate normalizer ────────────────────
+
+# H5.3a raw schema (build_historical_coaching_candidates.py v0.1):
+#   candidate_id: str
+#   location: dict (segment-level location data)
+#   current_minus_historical: { delta_change_s, start_distance_m, end_distance_m, distance_m }
+#   observational_channel_evidence: { speed_delta_avg?, throttle_delta_avg?, ... }
+#   (no audit_id, delta_sign, evidence, context, label, location_label, source_artifact_sha256)
+#
+# Canonical eligibility schema (_DATASET_FIELDS):
+#   audit_id, candidate_id, context, delta_sign, evidence
+#   observational_channel_evidence, label, location_label, source_artifact_sha256
+
+# Tolerance for delta_sign derivation — same semantics as build_candidates._delta_sign.
+_DELTA_SIGN_TOLERANCE_S = 0.05
+
+
+def _compute_delta_sign(delta_change_s: float) -> str:
+    """Derive delta_sign exclusively from delta_change_s using existing semantics.
+
+    delta_change_s >  tolerance → "current_slower"
+    delta_change_s < -tolerance → "current_faster"
+    else                        → "equivalent_within_tolerance"
+
+    NO abs(). NO human label involvement.
+    """
+    if delta_change_s > _DELTA_SIGN_TOLERANCE_S:
+        return "current_slower"
+    if delta_change_s < -_DELTA_SIGN_TOLERANCE_S:
+        return "current_faster"
+    return "equivalent_within_tolerance"
+
+
+def _extract_location_label(location: Any) -> str | None:
+    """Extract a string location_label from H5.3a location dict.
+
+    H5.3a location is a dict with keys like 'segment_name', 'turn_name', etc.
+    Returns the first meaningful string or None.
+    """
+    if not isinstance(location, dict):
+        return None
+    for key in ("segment_name", "turn_name", "segment", "turn"):
+        value = location.get(key)
+        if isinstance(value, str) and value.strip():
+            return value.strip() or None
+    # Fallback: join all string values.
+    parts = [str(v) for v in location.values() if isinstance(v, str) and v.strip()]
+    return " ".join(parts) or None
+
+
+def normalize_h5_3a_candidate_for_eligibility(
+    raw_candidate: dict[str, Any],
+    source_artifact_path: Path,
+    session_context: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Normalizar un raw H5.3a candidate al canonical eligibility schema.
+
+    This function bridges the H5.3a builder output (build_historical_coaching_candidates.py)
+    to the eligibility consumer (historical_candidate_eligibility.py). It must NOT:
+    - invent human labels
+    - change MIN_SIGNIFICANT_DELTA_S
+    - weaken _DATASET_FIELDS
+    - silently accept malformed records
+
+    If the raw candidate is malformed (missing required keys), the caller must
+    handle the ValueError. This function never returns a partial record.
+
+    Returns a dict with exactly these keys:
+      audit_id, candidate_id, context, delta_sign, evidence,
+      observational_channel_evidence, label, location_label, source_artifact_sha256
+    """
+    # ── Validate required H5.3a keys ──────────────────────────────────
+    if not isinstance(raw_candidate, dict):
+        raise ValueError(f"normalize_h5_3a_candidate: record no es dict")
+
+    required_h53a_keys = ("candidate_id", "current_minus_historical", "observational_channel_evidence")
+    for key in required_h53a_keys:
+        if key not in raw_candidate:
+            raise ValueError(f"normalize_h5_3a_candidate: raw candidate ausente campo {key!r}")
+
+    cmh = raw_candidate["current_minus_historical"]
+    if not isinstance(cmh, dict):
+        raise ValueError("normalize_h5_3a_candidate: current_minus_historical no es dict")
+
+    # ── Extract canonical fields ──────────────────────────────────────
+    raw_candidate_id = raw_candidate["candidate_id"]
+    delta_change_s = cmh["delta_change_s"]
+    start_distance_m = cmh["start_distance_m"]
+    end_distance_m = cmh["end_distance_m"]
+
+    # audit_id: deterministic identity using source artifact SHA + raw candidate_id
+    source_sha = _sha256_file(source_artifact_path)
+    audit_id = f"{source_sha}:{raw_candidate_id}"
+
+    # delta_sign: derived from delta_change_s using existing semantics (no abs)
+    delta_sign = _compute_delta_sign(float(delta_change_s))
+
+    # context: from session_context (top-level of H5.3a JSON)
+    ctx = session_context or {}
+    context = {
+        "track": _known(ctx.get("track")),
+        "track_layout": _known(ctx.get("track_layout")),
+        "vehicle_variant": _known(ctx.get("vehicle_variant")),
+        "car_name_raw": _known(ctx.get("car_name_raw")),
+    }
+
+    # evidence: flat mapping from current_minus_historical
+    evidence = {
+        "delta_change_s": float(delta_change_s),
+        "start_distance_m": float(start_distance_m),
+        "end_distance_m": float(end_distance_m),
+    }
+
+    # observational_channel_evidence: pass through (may be empty dict)
+    channel_evidence = raw_candidate.get("observational_channel_evidence") or {}
+
+    # location_label: extract from H5.3a location dict
+    location_label = _extract_location_label(raw_candidate.get("location"))
+
+    return {
+        "audit_id": audit_id,
+        "candidate_id": raw_candidate_id,
+        "context": context,
+        "delta_sign": delta_sign,
+        "evidence": evidence,
+        "observational_channel_evidence": dict(channel_evidence),
+        "label": None,
+        "location_label": location_label or "UNKNOWN",
+        "source_artifact_sha256": source_sha,
+    }
+
+
+def normalize_h5_3a_candidates_for_eligibility(
+    candidates_path: Path,
+) -> list[dict[str, Any]]:
+    """Normalizar TODOS los H5.3a candidates al canonical eligibility schema.
+
+    Loads the H5.3a candidates JSON, extracts the top-level session context,
+    normalizes each candidate, and returns a flat list.
+
+    Raises ValueError if any candidate is malformed.
+    """
+    payload = json.loads(candidates_path.read_text(encoding="utf-8"))
+    if not isinstance(payload, dict):
+        raise ValueError(f"{candidates_path}: raíz JSON inválido")
+
+    candidates = payload.get("candidates")
+    if not isinstance(candidates, list):
+        raise ValueError(f"{candidates_path}: 'candidates' ausente o inválido")
+
+    # Extract session context from top-level (same structure as H5.3a JSON)
+    session_context = payload.get("context", {})
+
+    normalized: list[dict[str, Any]] = []
+    for idx, raw in enumerate(candidates):
+        try:
+            norm = normalize_h5_3a_candidate_for_eligibility(raw, candidates_path, session_context)
+        except ValueError:
+            # Fail closed: malformed candidate stops the pipeline.
+            raise
+        normalized.append(norm)
+
+    return normalized
+
+
 # ── Candidate record loading ──────────────────────────────────────────────
 
 def _load_candidate(

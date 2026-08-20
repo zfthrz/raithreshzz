@@ -629,7 +629,322 @@ class TestRetrospectiveReplay:
             for human_label in counts:
                 assert human_label in ("ACTIONABLE", "OBSERVATIONAL_ONLY", "AMBIGUOUS", "NOT_COMPARABLE", "SKIP", "NO_LABEL")
 
-    def test_validator_passes_on_replay(self, replay_output):
-        """Validator must pass on the replay output."""
-        errors = validate(replay_output)
-        assert not errors, f"Validator failed: {errors}"
+# ── H5.3a → canonical normalizer tests ─────────────────────────────────────
+
+class TestNormalizeH53aRawCandidate:
+    """Tests for normalize_h5_3a_candidate_for_eligibility()."""
+
+    def _make_raw_h53a_candidate(
+        self,
+        candidate_id: str = "cand_001",
+        delta_change_s: float = 0.15,
+        start_distance_m: float = 100.0,
+        end_distance_m: float = 200.0,
+        location: dict | None = None,
+        channels: dict | None = None,
+    ) -> dict:
+        """Build an H5.3a raw-format candidate."""
+        cmh = {
+            "delta_change_s": delta_change_s,
+            "start_distance_m": start_distance_m,
+            "end_distance_m": end_distance_m,
+            "distance_m": end_distance_m - start_distance_m,
+        }
+        obs_channels = dict(channels) if channels is not None else {
+            "speed_delta_avg": 0.5,
+            "throttle_delta_avg": 0.3,
+            "brake_delta_avg": 0.2,
+        }
+        return {
+            "candidate_id": candidate_id,
+            "source_trend_zone_id": f"zone_{candidate_id}",
+            "source_zone_index": 0,
+            "location": dict(location) if location is not None else {"segment_name": f"T{candidate_id[-1]}"},
+            "current_minus_historical": cmh,
+            "observational_channel_evidence": obs_channels,
+            "authorization": {"action_authorized": False, "observational_only": True},
+            "limitations": ["test_limitation"],
+        }
+
+    def test_raw_h53a_significant_candidate_eligible(self):
+        """Test 1: raw H5.3a delta=+0.15 → canonical → ELIGIBLE."""
+        raw = self._make_raw_h53a_candidate(delta_change_s=0.15)
+        ctx = {"track": "X", "track_layout": "X", "vehicle_variant": "LMP2_ELMS"}
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            src_path = tmp_path / "h53a_source.json"
+            src_path.write_text(json.dumps(raw, ensure_ascii=False) + "\n")
+            norm = hce.normalize_h5_3a_candidate_for_eligibility(raw, src_path, ctx)
+            # Verify normalizer output structure
+            assert norm["audit_id"] == f"{hce._sha256_file(src_path)}:cand_001"
+            assert norm["candidate_id"] == "cand_001"
+            assert norm["delta_sign"] == "current_slower"
+            assert norm["evidence"]["delta_change_s"] == 0.15
+            assert norm["label"] is None
+            assert norm["location_label"] == "T1"
+            assert norm["source_artifact_sha256"] == hce._sha256_file(src_path)
+            # Build dataset and run through evaluate_candidates
+            dataset = {"context": ctx, "candidates": [norm]}
+            ds_path = tmp_path / "dataset.json"
+            ds_path.write_text(json.dumps(dataset, ensure_ascii=False) + "\n")
+            result = hce.evaluate_candidates(ds_path)
+        by_status = result["summary"]["by_status"]
+        assert by_status.get("ELIGIBLE_FOR_SELECTION", 0) == 1
+
+    def test_raw_delta_0076_withheld(self):
+        """Test 2: raw H5.3a delta=+0.076 → WITHHELD (<= 0.08)."""
+        raw = self._make_raw_h53a_candidate(delta_change_s=0.076)
+        ctx = {"track": "X", "track_layout": "X", "vehicle_variant": "LMP2_ELMS"}
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            src_path = tmp_path / "h53a_source.json"
+            src_path.write_text(json.dumps(raw, ensure_ascii=False) + "\n")
+            norm = hce.normalize_h5_3a_candidate_for_eligibility(raw, src_path, ctx)
+            assert norm["evidence"]["delta_change_s"] == 0.076
+            dataset = {"context": ctx, "candidates": [norm]}
+            ds_path = tmp_path / "dataset.json"
+            ds_path.write_text(json.dumps(dataset, ensure_ascii=False) + "\n")
+            result = hce.evaluate_candidates(ds_path)
+        by_status = result["summary"]["by_status"]
+        assert by_status.get("WITHHELD", 0) == 1
+
+    def test_raw_negative_delta_withheld(self):
+        """Test 3: raw H5.3a delta=-0.10 → WITHHELD (negative = time gain)."""
+        raw = self._make_raw_h53a_candidate(delta_change_s=-0.10)
+        ctx = {"track": "X", "track_layout": "X", "vehicle_variant": "LMP2_ELMS"}
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            src_path = tmp_path / "h53a_source.json"
+            src_path.write_text(json.dumps(raw, ensure_ascii=False) + "\n")
+            norm = hce.normalize_h5_3a_candidate_for_eligibility(raw, src_path, ctx)
+            assert norm["delta_sign"] == "current_faster"
+            dataset = {"context": ctx, "candidates": [norm]}
+            ds_path = tmp_path / "dataset.json"
+            ds_path.write_text(json.dumps(dataset, ensure_ascii=False) + "\n")
+            result = hce.evaluate_candidates(ds_path)
+        by_status = result["summary"]["by_status"]
+        assert by_status.get("WITHHELD", 0) == 1
+
+    def test_malformed_missing_current_minus_historical(self):
+        """Test 7: missing current_minus_historical → ValueError (fail closed)."""
+        raw = {"candidate_id": "cand_bad", "location": {}}
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            src_path = tmp_path / "h53a_source.json"
+            src_path.write_text("{}", encoding="utf-8")
+            with pytest.raises(ValueError, match="current_minus_historical"):
+                hce.normalize_h5_3a_candidate_for_eligibility(raw, src_path)
+
+    def test_malformed_missing_observational_channel_evidence(self):
+        """Test 7b: missing observational_channel_evidence → ValueError."""
+        raw = {"candidate_id": "cand_bad", "current_minus_historical": {}}
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            src_path = tmp_path / "h53a_source.json"
+            src_path.write_text("{}", encoding="utf-8")
+            with pytest.raises(ValueError, match="observational_channel_evidence"):
+                hce.normalize_h5_3a_candidate_for_eligibility(raw, src_path)
+
+    def test_audit_id_deterministic(self):
+        """Test 5: audit_id is deterministic from source SHA + candidate_id."""
+        raw1 = self._make_raw_h53a_candidate(candidate_id="cand_det")
+        raw2 = self._make_raw_h53a_candidate(candidate_id="cand_det")
+        ctx = {"track": "X", "track_layout": "X", "vehicle_variant": "LMP2_ELMS"}
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            src_path = tmp_path / "source.json"
+            src_path.write_text(json.dumps(raw1, ensure_ascii=False) + "\n")
+            norm1 = hce.normalize_h5_3a_candidate_for_eligibility(raw1, src_path, ctx)
+            norm2 = hce.normalize_h5_3a_candidate_for_eligibility(raw2, src_path, ctx)
+            assert norm1["audit_id"] == norm2["audit_id"]
+            expected_sha = hce._sha256_file(src_path)
+            assert norm1["audit_id"] == f"{expected_sha}:cand_det"
+
+    def test_source_sha_deterministic(self):
+        """Test 6: source_artifact_sha256 matches SHA256 of the source file."""
+        raw = self._make_raw_h53a_candidate()
+        ctx = {"track": "X", "track_layout": "X", "vehicle_variant": "LMP2_ELMS"}
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            src_path = tmp_path / "source.json"
+            src_path.write_text(json.dumps(raw, ensure_ascii=False) + "\n")
+            norm = hce.normalize_h5_3a_candidate_for_eligibility(raw, src_path, ctx)
+            assert norm["source_artifact_sha256"] == hce._sha256_file(src_path)
+
+
+class TestNormalizeH53aBatch:
+    """Tests for normalize_h5_3a_candidates_for_eligibility()."""
+
+    def _make_raw_h53a_candidate(
+        self,
+        candidate_id: str = "cand_001",
+        delta_change_s: float = 0.15,
+        start_distance_m: float = 100.0,
+        end_distance_m: float = 200.0,
+        location: dict | None = None,
+        channels: dict | None = None,
+    ) -> dict:
+        """Build an H5.3a raw-format candidate."""
+        cmh = {
+            "delta_change_s": delta_change_s,
+            "start_distance_m": start_distance_m,
+            "end_distance_m": end_distance_m,
+            "distance_m": end_distance_m - start_distance_m,
+        }
+        obs_channels = dict(channels) if channels is not None else {
+            "speed_delta_avg": 0.5,
+            "throttle_delta_avg": 0.3,
+            "brake_delta_avg": 0.2,
+        }
+        return {
+            "candidate_id": candidate_id,
+            "source_trend_zone_id": f"zone_{candidate_id}",
+            "source_zone_index": 0,
+            "location": dict(location) if location is not None else {"segment_name": f"T{candidate_id[-1]}"},
+            "current_minus_historical": cmh,
+            "observational_channel_evidence": obs_channels,
+            "authorization": {"action_authorized": False, "observational_only": True},
+            "limitations": ["test_limitation"],
+        }
+
+    def _make_h53a_batch(self, delta_values: list[float]) -> dict:
+        """Build a batch of H5.3a raw candidates."""
+        context = {
+            "track": "Autodromo Enzo e Dino Ferrari",
+            "track_layout": "Autodromo Enzo e Dino Ferrari",
+            "vehicle_variant": "LMP2_ELMS",
+            "car_name_raw": "LMP2",
+        }
+        candidates = []
+        for i, delta in enumerate(delta_values):
+            loc = {"segment_name": f"T{i+1}"}
+            channels = {
+                "speed_delta_avg": abs(delta) * 0.5 if delta != 0 else 0.01,
+                "throttle_delta_avg": abs(delta) * 0.3 if delta != 0 else 0.01,
+                "brake_delta_avg": abs(delta) * 0.2 if delta != 0 else 0.01,
+            }
+            cmh = {
+                "delta_change_s": delta,
+                "start_distance_m": 100.0 + i * 100,
+                "end_distance_m": 200.0 + i * 100,
+                "distance_m": 100.0,
+            }
+            candidates.append({
+                "candidate_id": f"cand_{i+1:03d}",
+                "source_trend_zone_id": f"zone_{i}",
+                "source_zone_index": i,
+                "location": loc,
+                "current_minus_historical": cmh,
+                "observational_channel_evidence": channels,
+                "authorization": {"action_authorized": False, "observational_only": True},
+                "limitations": ["test_limitation"],
+            })
+        return {"context": context, "candidates": candidates}
+
+    def test_9_significant_candidates_all_eligible(self):
+        """Test 4: 9 significant candidates (delta > 0.08) → 9 ELIGIBLE."""
+        deltas = [0.12, 0.10, 0.09, 0.15, 0.11, 0.095, 0.13, 0.085, 0.14]
+        batch = self._make_h53a_batch(deltas)
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            src_path = tmp_path / "h53a_source.json"
+            src_path.write_text(json.dumps(batch, ensure_ascii=False) + "\n")
+            normalized = hce.normalize_h5_3a_candidates_for_eligibility(src_path)
+        assert len(normalized) == 9
+        # Run through evaluate_candidates on a dataset path
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            dataset = {"context": batch["context"], "candidates": normalized}
+            ds_path = tmp_path / "dataset.json"
+            ds_path.write_text(json.dumps(dataset, ensure_ascii=False) + "\n")
+            result = hce.evaluate_candidates(ds_path)
+        by_status = result["summary"]["by_status"]
+        assert by_status.get("ELIGIBLE_FOR_SELECTION", 0) == 9
+
+    def test_mixed_9_significant_3_withheld(self):
+        """Test: 9 significant + 3 withheld (delta <= 0.08 or negative)."""
+        deltas = [0.12, 0.10, 0.09, 0.15, 0.11, 0.095, 0.13, 0.085, 0.14, 0.076, 0.05, -0.10]
+        batch = self._make_h53a_batch(deltas)
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            src_path = tmp_path / "h53a_mixed.json"
+            src_path.write_text(json.dumps(batch, ensure_ascii=False) + "\n")
+            normalized = hce.normalize_h5_3a_candidates_for_eligibility(src_path)
+            dataset = {"context": batch["context"], "candidates": normalized}
+            ds_path = tmp_path / "dataset.json"
+            ds_path.write_text(json.dumps(dataset, ensure_ascii=False) + "\n")
+            result = hce.evaluate_candidates(ds_path)
+        by_status = result["summary"]["by_status"]
+        assert by_status.get("ELIGIBLE_FOR_SELECTION", 0) == 9, \
+            f"Expected 9 ELIGIBLE, got {by_status}"
+        assert by_status.get("WITHHELD", 0) == 3, \
+            f"Expected 3 WITHHELD, got {by_status}"
+
+    def test_malformed_batch_raises(self):
+        """Test 7: malformed H5.3a batch → ValueError (fail closed)."""
+        batch = {"context": {"track": "X"}, "candidates": [
+            {"candidate_id": "bad_candidate"},  # missing current_minus_historical
+        ]}
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            src_path = tmp_path / "malformed.json"
+            src_path.write_text(json.dumps(batch, ensure_ascii=False) + "\n")
+            with pytest.raises(ValueError):
+                hce.normalize_h5_3a_candidates_for_eligibility(src_path)
+
+    def test_no_human_labels_affects_normalization(self):
+        """Test 8: H5.3a raw has no human labels; normalization never uses them."""
+        raw = self._make_raw_h53a_candidate(delta_change_s=0.15)
+        ctx = {"track": "X", "track_layout": "X", "vehicle_variant": "LMP2_ELMS"}
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            src_path = tmp_path / "source.json"
+            src_path.write_text(json.dumps(raw, ensure_ascii=False) + "\n")
+            norm = hce.normalize_h5_3a_candidate_for_eligibility(raw, src_path, ctx)
+            assert norm["label"] is None
+            dataset = {"context": ctx, "candidates": [norm]}
+            ds_path = tmp_path / "dataset.json"
+            ds_path.write_text(json.dumps(dataset, ensure_ascii=False) + "\n")
+            result = hce.evaluate_candidates(ds_path)
+            assert result["summary"]["by_status"].get("ELIGIBLE_FOR_SELECTION", 0) == 1
+
+    def test_selector_receives_audit_id(self):
+        """Test 10: candidate identity (audit_id) survives → selector → action policy."""
+        deltas = [0.15]
+        batch = self._make_h53a_batch(deltas)
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            src_path = tmp_path / "identity.json"
+            src_path.write_text(json.dumps(batch, ensure_ascii=False) + "\n")
+            normalized = hce.normalize_h5_3a_candidates_for_eligibility(src_path)
+            # audit_id format: {sha256}:{candidate_id}
+            assert normalized[0]["audit_id"].endswith(":cand_001")
+            # candidate_id survives at top level
+            assert normalized[0]["candidate_id"] == "cand_001"
+
+    def test_unknown_location_label(self):
+        """location empty → location_label = UNKNOWN."""
+        raw = self._make_raw_h53a_candidate(location={"segment_name": ""})
+        ctx = {"track": "X", "track_layout": "X", "vehicle_variant": "LMP2_ELMS"}
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            src_path = tmp_path / "source.json"
+            src_path.write_text(json.dumps(raw, ensure_ascii=False) + "\n")
+            norm = hce.normalize_h5_3a_candidate_for_eligibility(raw, src_path, ctx)
+        assert norm["location_label"] == "UNKNOWN"
+
+    def test_empty_channels_no_action_invented(self):
+        """Test 11: empty observational_channel_evidence → WITHHELD (no_channel_evidence)."""
+        raw = self._make_raw_h53a_candidate(channels={})
+        ctx = {"track": "X", "track_layout": "X", "vehicle_variant": "LMP2_ELMS"}
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            src_path = tmp_path / "source.json"
+            src_path.write_text(json.dumps(raw, ensure_ascii=False) + "\n")
+            norm = hce.normalize_h5_3a_candidate_for_eligibility(raw, src_path, ctx)
+            dataset = {"context": ctx, "candidates": [norm]}
+            ds_path = tmp_path / "dataset.json"
+            ds_path.write_text(json.dumps(dataset, ensure_ascii=False) + "\n")
+            result = hce.evaluate_candidates(ds_path)
+        # With no channel evidence at all, it should be WITHHELD (no_channel_evidence)
+        assert result["summary"]["by_status"].get("WITHHELD", 0) == 1

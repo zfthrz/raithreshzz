@@ -99,6 +99,13 @@ AMBIGUOUS
 Human review is stronger ground truth than model opinion. No threshold becomes a
 production rule from a single track, vehicle or session pair.
 
+**H5.3 Human Review Round 1 (2026-08-20):**
+`docs/H5_3_HUMAN_REVIEW_ROUND_1_V0_1.md` — Reviewed 9 candidates (Imola T5/T12/T13/T14/T15/T17/T18/T1/T2).
+8 accepted, 1 rejected (Imola T13 Acque Minerali — `insufficient_action_context`).
+Policy v0.2 correction codified the rejection into `historical_action_policy.py`.
+v0.2 replay: CLEAN_AUTHORIZED=8, CLEAN_WITHHELD=1, all validators pass.
+Production promotion: STILL BLOCKED pending additional real human-review evidence.
+
 ### H5.3c — controlled LLM selection
 
 Only after H5.3a/b evidence is adequate, allow the LLM to select from Python-issued

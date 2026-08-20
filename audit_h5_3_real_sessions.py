@@ -633,7 +633,11 @@ def audit_action_policy(actions: dict) -> dict[str, Any]:
 
     for item in withheld_records:
         reason = item.get("reason", "")
-        if reason not in {"current_lap_faster_no_actions", "no_mappable_actions"}:
+        if reason not in {
+            "current_lap_faster_no_actions",
+            "no_mappable_actions",
+            "insufficient_action_context",
+        }:
             errors.append(f"withheld reason unknown: {reason}")
 
     return {

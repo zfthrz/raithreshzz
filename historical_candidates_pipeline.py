@@ -55,6 +55,68 @@ import validate_historical_candidate_selection_runtime as selection_validator
 import validate_historical_actions as action_validator
 
 
+# ── H5.3a → H5.3b normalisation helper ────────────────────────────────────
+
+def _is_h5_3a_raw(candidates_path: Path) -> bool:
+    """Detectar si el archivo de candidatos está en formato H5.3a raw.
+
+    H5.3a raw tiene candidatos con:
+      - current_minus_historical (dict con delta_change_s, start_distance_m, etc.)
+      - location (dict segment-level)
+    H5.3b canonical tiene candidatos con:
+      - evidence (dict con delta_change_s, start_distance_m, etc.)
+      - delta_sign (str)
+      - audit_id, source_artifact_sha256, observational_channel_evidence, label
+
+    Returns True si el formato es H5.3a raw, False si ya es H5.3b.
+    """
+    payload = json.loads(candidates_path.read_text(encoding="utf-8"))
+    candidates = payload.get("candidates", [])
+    if not isinstance(candidates, list) or not candidates:
+        return False
+    first = candidates[0]
+    if not isinstance(first, dict):
+        return False
+    # H5.3a raw: has current_minus_historical
+    return "current_minus_historical" in first
+
+
+def _normalize_h5_3a_candidates(
+    candidates_path: Path,
+    temp_dir: Path,
+) -> Path:
+    """Normalizar H5.3a raw candidates al formato H5.3b elegible.
+
+    Si el archivo ya está en formato H5.3b, devuelve candidates_path sin
+    transformación (pass-through).
+
+    Llama normalize_h5_3a_candidates_for_eligibility() y escribe el
+    resultado en un archivo JSON temporal con estructura H5.3b.
+
+    Returns:
+        Path al archivo JSON H5.3b normalizado.
+    """
+    # Fast path: already H5.3b format, pass through unchanged.
+    if not _is_h5_3a_raw(candidates_path):
+        return candidates_path
+
+    # Normalize H5.3a → H5.3b canonical eligibility format
+    normalized = eligibility_module.normalize_h5_3a_candidates_for_eligibility(
+        candidates_path,
+    )
+    # Build H5.3b dataset structure compatible with eligibility.evaluate_candidates().
+    # The H5.3b format expects: {"candidates": [...], ...}
+    # where each candidate has all _DATASET_FIELDS at top level.
+    h53b_dataset = {"candidates": normalized}
+
+    normalized_path = temp_dir / "h5_3a_normalized_for_eligibility.json"
+    normalized_path.write_text(
+        json.dumps(h53b_dataset, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    return normalized_path
+
+
 def utc_now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
@@ -69,10 +131,23 @@ def sha256_file(path: Path) -> str:
 
 # ── Pipeline stages ───────────────────────────────────────────────────────
 
-def _run_eligibility(candidates_path: Path) -> dict[str, Any]:
-    """Run eligibility on H5.3a candidates."""
-    # eligibility.evaluate_candidates() returns dict with metadata, policy, summary, results
-    return eligibility_module.evaluate_candidates(candidates_path)
+def _run_eligibility(candidates_path: Path, temp_dir: Path) -> dict[str, Any]:
+    """Run eligibility on H5.3a candidates.
+
+    Normalizes H5.3a → H5.3b first, then calls eligibility.evaluate_candidates()
+    on the normalized JSON.
+
+    Returns dict with:
+      - metadata
+      - policy
+      - summary
+      - results
+    """
+    # Normalize H5.3a raw → H5.3b canonical eligibility format
+    normalized_path = _normalize_h5_3a_candidates(candidates_path, temp_dir)
+
+    # eligibility.evaluate_candidates() reads the normalized H5.3b JSON
+    return eligibility_module.evaluate_candidates(normalized_path)
 
 
 def _run_selection(eligibility_result: dict[str, Any]) -> dict[str, Any]:
@@ -188,8 +263,8 @@ def run_pipeline(
         artifact_dir = Path(output_dir) if output_dir else temp_output_dir
         artifact_dir.mkdir(parents=True, exist_ok=True)
 
-        # Stage 1: Eligibility
-        eligibility_result = _run_eligibility(candidates_path)
+        # Stage 1: Eligibility (normalize H5.3a → H5.3b first)
+        eligibility_result = _run_eligibility(candidates_path, temp_output_dir)
         (artifact_dir / "candidate_eligibility.json").write_text(
             json.dumps(eligibility_result, ensure_ascii=False, indent=2) + "\n",
             encoding="utf-8",

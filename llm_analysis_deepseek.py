@@ -11,9 +11,12 @@ import urllib.error
 import urllib.request
 from datetime import datetime, timezone
 
+from runtime_paths import llm_debug_dir, llm_result_dir
+from coaching_precision import enrich_patterns_with_precision
+
 
 # ============================================================
-# RACE ENGINEER - LLM ANALYSIS v3.10.8.5.2 / DeepSeek provisional v1
+# RACE ENGINEER - LLM ANALYSIS v3.10.8.5.4 / DeepSeek provisional v1
 # ============================================================
 #
 # Diseñado para:
@@ -3891,7 +3894,7 @@ STEERING_DIRECT_ACTION_RE = re.compile(
 
 def _steering_direct_action_present(text):
     """
-    v3.10.8.5.2
+    v3.10.8.5.4
 
     Distingue una mención descriptiva de steering de una orden directa.
     El steering puede seguir apareciendo en interpretation/observaciones sin
@@ -3937,7 +3940,7 @@ def validate_episode_steering_secondary_contract(
     field_name="recommendation",
 ):
     """
-    Steering coaching v3.10.8.5.2.
+    Steering coaching v3.10.8.5.4.
 
     Permitido:
       - steering como recomendación única o secundaria cuando el canal está
@@ -4055,7 +4058,7 @@ def validate_summary_steering_secondary_contract(
 
 
 # ============================================================
-# ACTION TARGET MUST BE THE REFERENCE LAP v3.10.8.5.2
+# ACTION TARGET MUST BE THE REFERENCE LAP v3.10.8.5.4
 # ============================================================
 
 COMPARISON_LAP_TARGET_PHRASE_RE = re.compile(
@@ -5837,7 +5840,7 @@ def repair_invalid_episode_semantic_fields(response, episode, errors):
     ):
         return None, {}
 
-    # v3.10.8.5.2: si el único problema de recommendation es que el LLM
+    # v3.10.8.5.4: si el único problema de recommendation es que el LLM
     # tomó la vuelta comparada como modelo, corregimos solamente ese destino
     # y preservamos el resto del texto validado.
     target_reference_repairs = []
@@ -6846,7 +6849,7 @@ def validate_comparison_summary_llm_response(
 
 def _neutral_summary_recommendation_from_validated(recommendation):
     """
-    v3.10.8.5.2 hotfix.
+    v3.10.8.5.4 hotfix.
 
     Convierte una recomendación individual YA validada en una formulación
     neutral por canal. Se usa únicamente cuando el resumen de comparación no
@@ -6881,7 +6884,7 @@ def build_deterministic_comparison_summary(
     episode_catalog,
 ):
     """
-    v3.10.8.5.2 hotfix.
+    v3.10.8.5.4 hotfix.
 
     Construye una síntesis mínima exclusivamente desde evaluaciones de episodio
     que YA fueron validadas individualmente por Python. Se usa sólo cuando el
@@ -6955,7 +6958,7 @@ def build_deterministic_comparison_summary(
     if not errors:
         return candidate
 
-    # v3.10.8.5.2: una recomendación puede ser válida a nivel de episodio
+    # v3.10.8.5.4: una recomendación puede ser válida a nivel de episodio
     # pero dejar de ser direccionalmente válida al sintetizar varios episodios
     # con steering en sentidos opuestos. En ese caso neutralizamos solamente
     # los canales ya presentes en la recomendación validada y revalidamos.
@@ -7125,7 +7128,7 @@ def get_validated_comparison_summary_response(
     )
     if deterministic_summary is not None:
         print(
-            "    Resumen: fallback determinista v3.10.8.5.2 aplicado; "
+            "    Resumen: fallback determinista v3.10.8.5.4 aplicado; "
             "la síntesis se reconstruyó desde episodios ya validados."
         )
         return {
@@ -9133,7 +9136,7 @@ def _point_pattern_reference_event_ids(item, fields):
 
 def _point_anchored_profile(item, source_data, channel):
     """
-    v3.10.8.5.2: un onset/release autorizado arrastra la forma del MISMO evento
+    v3.10.8.5.4: un onset/release autorizado arrastra la forma del MISMO evento
     de referencia por reference_event_id.
 
     Esto evita perder el perfil cuando el punto de referencia queda apenas
@@ -9248,19 +9251,36 @@ def _attach_point_anchored_reference_profiles(plan, source_data):
     return plan
 
 
+
 def _coaching_target_for_channel_direction(
     channel,
     direction,
 ):
     """
-    v3.10.8: una diferencia de nivel de canal es evidencia, no una orden.
+    v3.10.8.5.4: diferencias deterministas unívocas de NIVEL en brake/throttle
+    pueden convertirse en coaching cualitativo hacia la vuelta de referencia.
 
-    Sólo reference_action_profile o detectores espaciales onset/release pueden
-    autorizar coaching driver-facing a nivel de sesión. Steering permanece
-    siempre observation-only hasta disponer de evidencia de trayectoria.
+    Límites:
+    - no inventa metros, porcentajes ni causalidad;
+    - mixed/ambiguo permanece observacional;
+    - steering conserva su vía separada de autorización LLM+Python;
+    - los detectores onset/release siguen siendo los únicos dueños de targets
+      espaciales numéricos.
     """
-    if channel in {"throttle", "brake", "steering_magnitude"}:
+    if channel not in {"brake", "throttle"}:
         return None
+
+    label = {
+        "brake": "el freno",
+        "throttle": "el acelerador",
+    }[channel]
+
+    if direction == "higher_in_comparison_lap":
+        return f"reducir {label} hacia la referencia"
+
+    if direction == "lower_in_comparison_lap":
+        return f"aumentar {label} hacia la referencia"
+
     return None
 
 def _channel_event_distance_intervals(
@@ -10207,6 +10227,11 @@ def _build_priority_regions(
                 channel
             )
 
+            qualitative_target = _coaching_target_for_channel_direction(
+                channel,
+                direction,
+            )
+
             repeated_differences.append({
                 "channel":
                     channel,
@@ -10228,12 +10253,17 @@ def _build_priority_regions(
                         0,
                     ),
                 "target":
-                    _coaching_target_for_channel_direction(
-                        channel,
-                        direction,
-                    ),
-                "actionability": "observation_only",
-                "target_source": "observation_only_channel_difference",
+                    qualitative_target,
+                "actionability": (
+                    "qualitative_reference_alignment"
+                    if qualitative_target
+                    else "observation_only"
+                ),
+                "target_source": (
+                    "deterministic_observed_level_to_reference"
+                    if qualitative_target
+                    else "observation_only_channel_difference"
+                ),
                 "quantitative":
                     _aggregate_channel_quantitative_facts(
                         row.get(
@@ -10524,7 +10554,7 @@ def _sanitize_recurrence_regions(regions):
     """
     Elimina metadata dependiente del ranker de la capa física de recurrencia.
 
-    v3.10.8.5.2: NO muta los dicts originales. priority_findings y
+    v3.10.8.5.4: NO muta los dicts originales. priority_findings y
     recurrence_findings pueden compartir objetos durante la construcción;
     sanear in-place borraba relative_priority_rank/classification también de
     la capa prioritaria y terminaba degradando el desempate del plan.
@@ -10581,6 +10611,7 @@ def _sanitize_recurrence_regions(regions):
     return cleaned_regions
 
 
+
 def _single_finding_plan_item(
     finding,
     label,
@@ -10589,6 +10620,26 @@ def _single_finding_plan_item(
     brake_release = _single_fact_as_plan_pattern(finding.get("brake_release"))
     throttle_onset = _single_fact_as_plan_pattern(finding.get("throttle_onset"))
     throttle_release = _single_fact_as_plan_pattern(finding.get("throttle_release"))
+
+    channel_rows = [
+        item
+        for item in (finding.get("channels", []) or [])
+        if isinstance(item, dict)
+    ]
+
+    qualitative_targets = []
+    observation_only = []
+
+    for item in channel_rows:
+        description = item.get("description")
+        target = _coaching_target_for_channel_direction(
+            item.get("channel"),
+            item.get("direction"),
+        )
+        if target:
+            qualitative_targets.append(target)
+        elif description:
+            observation_only.append(description)
 
     return {
         "plan_label": label,
@@ -10599,27 +10650,27 @@ def _single_finding_plan_item(
         "comparison_count": 1,
         "observed_differences": [
             item.get("description")
-            for item in (finding.get("channels", []) or [])
+            for item in channel_rows
             if item.get("description")
         ],
-        "observation_only_differences": [
-            item.get("description")
-            for item in (finding.get("channels", []) or [])
-            if item.get("description")
-        ],
-        "targets": [],
+        "observation_only_differences": observation_only,
+        "targets": qualitative_targets,
         "reference_action_profiles": [],
         "quantitative_observations": [
             text
             for text in (
                 _format_single_channel_quantitative_observation(item)
-                for item in (finding.get("channels", []) or [])
+                for item in channel_rows
             )
             if text
         ],
         "temporal_relationships": [
             text
-            for text in [_format_single_brake_throttle_relation(finding.get("brake_throttle_relation"))]
+            for text in [
+                _format_single_brake_throttle_relation(
+                    finding.get("brake_throttle_relation")
+                )
+            ]
             if text
         ],
         "temporal_target": None,
@@ -10643,7 +10694,7 @@ def _single_finding_plan_item(
         "steering_direction": next(
             (
                 item.get("direction")
-                for item in (finding.get("channels", []) or [])
+                for item in channel_rows
                 if item.get("channel") == "steering_magnitude"
             ),
             None,
@@ -11893,7 +11944,7 @@ def _build_next_stint_plan(
 # PRIORIDAD DE SESIÓN POR RECURRENCIA v3.10.8
 # ============================================================
 
-SESSION_PRIORITY_POLICY_VERSION = "1.8"
+SESSION_PRIORITY_POLICY_VERSION = "1.9"
 
 
 def _plan_overlap_m(
@@ -12280,13 +12331,18 @@ def _session_plan_sort_key(
     item,
 ):
     """
-    v3.10.8.5.2: prioridad por especificidad + calidad del hallazgo.
+    v3.10.8.5.4: prioridad por especificidad + calidad del hallazgo.
 
     Jerarquía:
       1) punto físico REPETIDO (Braking Point 2.1 / Throttle Point 1.2.1);
       2) punto físico VALID individual autorizado;
       3) reference_action_profile concreto;
       4) resto de evidencia accionable.
+
+    Dentro del tier de puntos repetidos, el soporte del propio punto físico
+    precede a la recurrencia más amplia de la zona. Esto evita que una zona
+    frecuente con un punto observado pocas veces desplace a un punto físico
+    mejor repetido.
 
     Dentro del tier individual, el orden es:
       comparison_priority_rank -> episode_priority_rank -> pérdida local.
@@ -12309,7 +12365,21 @@ def _session_plan_sort_key(
 
     repeated_point_count = sum(
         1 for pattern in point_patterns
-        if pattern.get("status") == "REPEATED"
+        if (
+            pattern.get("status") == "REPEATED"
+            and bool(pattern.get("authorized_numeric_coaching"))
+        )
+    )
+    repeated_point_support_count = max(
+        [
+            safe_int(pattern.get("comparison_count")) or 1
+            for pattern in point_patterns
+            if (
+                pattern.get("status") == "REPEATED"
+                and bool(pattern.get("authorized_numeric_coaching"))
+            )
+        ],
+        default=0,
     )
     single_authorized_point_count = sum(
         1 for pattern in point_patterns
@@ -12361,8 +12431,9 @@ def _session_plan_sort_key(
     if evidence_tier == 0:
         return (
             0,
-            -comparison_count,
+            -repeated_point_support_count,
             -repeated_point_count,
+            -comparison_count,
             comparison_rank,
             episode_rank,
             -max_loss,
@@ -12721,7 +12792,7 @@ def _session_comparison_key(comparison):
 
 def _comparison_quality_diagnostics(comparison):
     """
-    v3.10.8.5.2 — diagnóstico determinista para confirmar o rechazar un
+    v3.10.8.5.4 — diagnóstico determinista para confirmar o rechazar un
     candidato estadístico del quality gate.
 
     Puede trabajar sobre una comparación cruda de analyze_telemetry,
@@ -13519,6 +13590,40 @@ def build_session_coaching_facts(
         track_location_context,
     )
 
+    # H5.4/P1 — precisión driver-facing derivada. La coordenada LMU absoluta
+    # permanece intacta; sólo se añade provenance de vueltas y una referencia
+    # relativa a curva cuando existe un perfil validado.
+    precision_profile = (
+        track_location_context.get("profile")
+        if isinstance(track_location_context, dict)
+        and track_location_context.get("status") == "ACTIVE"
+        else None
+    )
+    enrich_patterns_with_precision(
+        repeated_braking_point_patterns,
+        precision_profile,
+        event_kind="braking_onset",
+        point_key="reference_onset_m",
+    )
+    enrich_patterns_with_precision(
+        repeated_brake_release_patterns,
+        precision_profile,
+        event_kind="brake_release",
+        point_key="reference_release_m",
+    )
+    enrich_patterns_with_precision(
+        repeated_throttle_onset_patterns,
+        precision_profile,
+        event_kind="throttle_onset",
+        point_key="reference_onset_m",
+    )
+    enrich_patterns_with_precision(
+        repeated_throttle_release_patterns,
+        precision_profile,
+        event_kind="throttle_release",
+        point_key="reference_release_m",
+    )
+
     # Patrones usados por el debrief mantienen compatibilidad con el plan de
     # coaching. En paralelo exponemos una capa de recurrencia puramente física.
     repeated_input_patterns = []
@@ -13695,7 +13800,7 @@ def build_session_coaching_facts(
             "version":
                 SESSION_PRIORITY_POLICY_VERSION,
             "method":
-                "physical_point_specificity_then_priority_rank",
+                "physical_point_support_then_specificity_then_priority_rank",
             "order":
                 [
                     "repeated_physical_point",
@@ -13730,7 +13835,7 @@ def build_session_coaching_facts(
             "actionability_policy_version":
                 SESSION_ACTIONABILITY_POLICY_VERSION,
             "generic_channel_difference_policy":
-                "observation_only_except_validated_priority_steering",
+                "qualitative_reference_alignment_for_unambiguous_brake_throttle; steering_separate_validated_path",
             "steering_target_policy":
                 "validated_llm_direct_or_secondary_low_priority_no_causal_claim",
             "driver_cue_limit_per_zone":
@@ -13782,18 +13887,25 @@ def _finding_text_for_llm(
         or []
     )
 
-    if (
+    lower_speed_seen = (
         "lower_in_comparison_lap"
         in speed_directions
-    ):
+    )
+    higher_speed_seen = (
+        "higher_in_comparison_lap"
+        in speed_directions
+    )
+
+    if lower_speed_seen and higher_speed_seen:
+        speed_context.append(
+            "velocidad variable respecto de la referencia "
+            "entre comparaciones"
+        )
+    elif lower_speed_seen:
         speed_context.append(
             "velocidad inferior a la referencia"
         )
-
-    if (
-        "higher_in_comparison_lap"
-        in speed_directions
-    ):
+    elif higher_speed_seen:
         speed_context.append(
             "velocidad superior a la referencia"
         )
@@ -14018,18 +14130,25 @@ def _render_speed_context_fact(
         or []
     )
 
-    if (
+    lower_speed_seen = (
         "lower_in_comparison_lap"
         in speed_directions
-    ):
+    )
+    higher_speed_seen = (
+        "higher_in_comparison_lap"
+        in speed_directions
+    )
+
+    if lower_speed_seen and higher_speed_seen:
+        parts.append(
+            "velocidad variable respecto de la referencia "
+            "entre comparaciones"
+        )
+    elif lower_speed_seen:
         parts.append(
             "velocidad inferior a la referencia"
         )
-
-    if (
-        "higher_in_comparison_lap"
-        in speed_directions
-    ):
+    elif higher_speed_seen:
         parts.append(
             "velocidad superior a la referencia"
         )
@@ -14377,7 +14496,7 @@ REGLAS:
 - podés usar las etiquetas alfabéticas "zona prioritaria A", "B", "C";
 - next_session_priorities y repeated_observations son propiedad exclusiva de
   Python; repeated_observations debe devolverse sólo como [] placeholder;
-- observed_differences y observation_only_differences son observaciones, NO órdenes;
+- observed_differences son hechos; sólo aquellos que Python materializó también en coaching_targets/driver_cues pueden convertirse en acción; observation_only_differences nunca son órdenes;
 - sólo driver_cues, coaching_targets y puntos espaciales autorizados pueden convertirse en acciones;
 - steering_magnitude puede ser una oportunidad o conclusión por sí solo SÓLO
   cuando Python lo incluyó explícitamente en driver_cues de esa zona;
@@ -14474,7 +14593,7 @@ No texto fuera del JSON.
 # ACTIONABILITY GATE v3.10.8
 # ============================================================
 
-SESSION_ACTIONABILITY_POLICY_VERSION = "1.3"
+SESSION_ACTIONABILITY_POLICY_VERSION = "1.7"
 
 
 def _region_has_actionable_coaching(region):
@@ -14506,7 +14625,7 @@ def _plan_item_has_actionable_coaching(item):
         return False
     if any(str(value or "").strip() for value in (item.get("targets", []) or [])):
         return True
-    # v3.10.8.5.2: un hallazgo PRIORITARIO puede llegar al plan sólo por
+    # v3.10.8.5.4: un hallazgo PRIORITARIO puede llegar al plan sólo por
     # steering si el LLM validado lo eligió explícitamente como coaching.
     # Queda en el tier de menor especificidad y nunca desplaza un punto físico
     # repetido/individual ni un reference_action_profile concreto.
@@ -14565,16 +14684,55 @@ def _driver_facing_throttle_shape_summary(summary):
     return value
 
 
+def _driver_facing_throttle_profile_text(summary):
+    """Convierte únicamente formas conocidas en una secuencia driver-facing."""
+    value = str(summary or "").strip()
+    if not value:
+        return ""
+
+    fallback = (
+        "replicá la secuencia de acelerador de la referencia: "
+        + value
+    )
+    actions = {
+        "aplicación": "replicá la aplicación de acelerador",
+        "aplicación parcial": "usá una aplicación parcial de acelerador",
+        "aplicación media": "usá una aplicación media de acelerador",
+        "aplicación alta": "usá una aplicación alta de acelerador",
+        "aplicación parcial breve": "hacé una aplicación parcial y breve de acelerador",
+        "aplicación media breve": "hacé una aplicación media y breve de acelerador",
+        "aplicación alta breve": "hacé una aplicación alta y breve de acelerador",
+        "liberación breve": "hacé una liberación breve del acelerador",
+        "acelerador liberado": "soltá el acelerador",
+        "reaplicación sostenida": "reaplicá y sostené el acelerador",
+        "reaplicación sostenida sin volver a soltar dentro de la zona": (
+            "reaplicá y sostené el acelerador"
+        ),
+    }
+
+    tokens = [part.strip() for part in value.split("→") if part.strip()]
+    if not tokens or any(token not in actions for token in tokens):
+        return fallback
+
+    return "; después, ".join(actions[token] for token in tokens) + (
+        " como en la referencia"
+    )
+
+
+
 def build_driver_cues_for_plan_item(item, max_cues=2):
     """
     Construye como máximo dos cues driver-facing.
 
-    v3.10.8.5.2:
-    - onset/release conserva máxima prioridad como target físico;
-    - steering puede ser cue único o secundario sólo cuando el LLM validado lo
-      eligió explícitamente para un hallazgo PRIORITARIO;
-    - si existe un perfil descriptivo del MISMO evento de referencia, el cue
-      de throttle incorpora también su forma.
+    v3.10.8.5.4:
+    1) onset/release conserva máxima prioridad como target físico;
+    2) reference_action_profile conserva prioridad sobre diferencias de nivel;
+    3) brake/throttle con dirección determinista unívoca pueden producir un cue
+       cualitativo hacia la referencia, sin magnitud inventada;
+    4) steering puede ser cue único o secundario sólo cuando el LLM validado lo
+       eligió explícitamente para un hallazgo PRIORITARIO;
+    5) temporal_relationships sigue siendo observación y nunca se convierte en
+       target por esta función.
     """
     if not isinstance(item, dict):
         return []
@@ -14629,14 +14787,22 @@ def build_driver_cues_for_plan_item(item, max_cues=2):
             [safe_int(pattern.get("comparison_count")) or 1 for pattern in brake_patterns],
             default=1,
         )
-        cues.append({
+        cue = {
             "channel": "brake",
             "kind": "spatial_points",
             "text": text,
             "source": "authorized_brake_onset_release",
             "point_comparison_count": point_count,
             "region_comparison_count": safe_int(item.get("comparison_count")) or 0,
-        })
+        }
+        precision_evidence = [
+            pattern.get("precision_evidence")
+            for pattern in brake_patterns
+            if isinstance(pattern.get("precision_evidence"), dict)
+        ]
+        if precision_evidence:
+            cue["precision_evidence"] = precision_evidence
+        cues.append(cue)
 
     throttle_onset = point_phrase(
         first_pattern("throttle_onset_patterns"),
@@ -14650,8 +14816,8 @@ def build_driver_cues_for_plan_item(item, max_cues=2):
     )
     if throttle_onset or throttle_release:
         profile = profiles_by_channel.get("throttle")
-        summary = (
-            _driver_facing_throttle_shape_summary(
+        profile_text = (
+            _driver_facing_throttle_profile_text(
                 profile.get("shape_summary")
             )
             if profile is not None
@@ -14660,29 +14826,10 @@ def build_driver_cues_for_plan_item(item, max_cues=2):
 
         if throttle_onset and throttle_release:
             text = f"{throttle_onset} y {throttle_release}"
-            if summary:
-                text += (
-                    f"; entre ambos puntos, replicá la forma de acelerador "
-                    f"de la referencia ({summary})"
-                )
         elif throttle_onset:
             text = throttle_onset
-            if summary == "reaplicación sostenida":
-                text += (
-                    " y, desde ahí, sostené la reaplicación como en la referencia"
-                )
-            elif summary:
-                text += (
-                    f" y, desde ahí, replicá la forma de acelerador "
-                    f"de la referencia ({summary})"
-                )
         else:
             text = throttle_release
-            if summary:
-                text = (
-                    f"mantené la forma de acelerador de la referencia "
-                    f"({summary}) hasta {throttle_release}"
-                )
 
         throttle_patterns = [
             pattern
@@ -14705,7 +14852,22 @@ def build_driver_cues_for_plan_item(item, max_cues=2):
         }
         if profile is not None:
             cue["reference_action_profile"] = profile
+        precision_evidence = [
+            pattern.get("precision_evidence")
+            for pattern in throttle_patterns
+            if isinstance(pattern.get("precision_evidence"), dict)
+        ]
+        if precision_evidence:
+            cue["precision_evidence"] = precision_evidence
         cues.append(cue)
+        if profile is not None and profile_text:
+            cues.append({
+                "channel": "throttle",
+                "kind": "reference_action_profile",
+                "text": profile_text,
+                "source": "reference_action_profile",
+                "reference_action_profile": profile,
+            })
 
     existing_channels = {cue.get("channel") for cue in cues}
     for channel in ("brake", "throttle"):
@@ -14718,14 +14880,56 @@ def build_driver_cues_for_plan_item(item, max_cues=2):
         if not summary:
             continue
         prefix = "freno" if channel == "brake" else "acelerador"
+        text = (
+            _driver_facing_throttle_profile_text(summary)
+            if channel == "throttle"
+            else f"replicá la secuencia de {prefix} de la referencia: {summary}"
+        )
         cues.append({
             "channel": channel,
             "kind": "reference_action_profile",
-            "text": f"replicá la secuencia de {prefix} de la referencia: {summary}",
+            "text": text,
             "source": "reference_action_profile",
             "reference_action_profile": profile,
         })
         existing_channels.add(channel)
+
+    # v3.10.8.5.4 — si no existe un cue más específico para el canal, una
+    # diferencia de nivel unívoca ya materializada en `targets` por Python
+    # puede convertirse en instrucción cualitativa. Cuando brake y throttle
+    # aparecen juntos, se combinan en UN cue para no expulsar automáticamente
+    # un steering secundario del límite de dos cues.
+    level_parts = []
+    level_channels = []
+    for target in (item.get("targets", []) or []):
+        if not isinstance(target, str):
+            continue
+        direction_map = _explicit_command_direction_map(target)
+        for channel in ("brake", "throttle"):
+            if channel in existing_channels or channel in level_channels:
+                continue
+            if channel not in direction_map:
+                continue
+            direct = _direct_coaching_target_text(target)
+            if not direct:
+                continue
+            level_parts.append(direct)
+            level_channels.append(channel)
+
+    if level_parts:
+        cues.append({
+            "channel": (
+                "brake+throttle"
+                if set(level_channels) == {"brake", "throttle"}
+                else level_channels[0]
+            ),
+            "channels": list(level_channels),
+            "kind": "qualitative_reference_level",
+            "text": " y ".join(level_parts),
+            "source": "deterministic_observed_level_to_reference",
+            "point_comparison_count": 0,
+            "region_comparison_count": safe_int(item.get("comparison_count")) or 0,
+        })
 
     if item.get("steering_coaching_requested"):
         recommendation = str(item.get("validated_recommendation") or "").strip()
@@ -14747,6 +14951,64 @@ def build_driver_cues_for_plan_item(item, max_cues=2):
             })
 
     return cues[:max_cues]
+
+def _render_precision_evidence_lines(cue):
+    if not isinstance(cue, dict):
+        return []
+    evidence_rows = [
+        row
+        for row in (cue.get("precision_evidence", []) or [])
+        if isinstance(row, dict)
+    ]
+    if not evidence_rows:
+        return []
+
+    # El primer punto del cue es el ancla principal. Si el cue contiene onset
+    # y release, los detalles completos permanecen en el JSON.
+    evidence = evidence_rows[0]
+    reference_lap = safe_int(evidence.get("reference_lap"))
+    supporting_laps = [
+        safe_int(value)
+        for value in (evidence.get("supporting_laps", []) or [])
+        if safe_int(value) is not None
+    ]
+    anchor = evidence.get("corner_relative_reference")
+    anchor_label = (
+        str(anchor.get("driver_label") or "").strip()
+        if isinstance(anchor, dict)
+        else ""
+    )
+
+    lines = []
+    reference_parts = []
+    if reference_lap is not None:
+        reference_parts.append(f"vuelta {reference_lap}")
+    if anchor_label:
+        reference_parts.append(f"punto de referencia {anchor_label}")
+    if reference_parts:
+        lines.append("**Referencia del cue:** " + "; ".join(reference_parts) + ".")
+
+    if supporting_laps:
+        if len(supporting_laps) == 1:
+            laps_text = f"la vuelta {supporting_laps[0]}"
+        else:
+            laps_text = "las vueltas " + ", ".join(str(v) for v in supporting_laps[:-1]) + f" y {supporting_laps[-1]}"
+        evidence_parts = [f"el mismo desvío apareció en {laps_text}"]
+        low = safe_float(evidence.get("observed_delta_min_m"))
+        high = safe_float(evidence.get("observed_delta_max_m"))
+        representative = safe_int(evidence.get("representative_delta_m"))
+        if low is not None and high is not None:
+            low_i = int(round(low))
+            high_i = int(round(high))
+            if low_i == high_i:
+                evidence_parts.append(f"diferencia observada ~{low_i} m")
+            else:
+                evidence_parts.append(f"rango observado {low_i}–{high_i} m")
+        if representative is not None:
+            evidence_parts.append(f"valor representativo {representative} m")
+        lines.append("**Evidencia entre vueltas:** " + "; ".join(evidence_parts) + ".")
+
+    return lines
 
 
 def _deterministic_session_focus(plan):
@@ -15175,7 +15437,7 @@ OBJETIVO DE CADA CAMPO:
 
 opportunities:
 - resumí únicamente los driver_cues accionables del next_stint_plan;
-- no conviertas observed_differences en acciones adicionales;
+- no conviertas observed_differences en acciones adicionales salvo que Python ya las haya materializado en coaching_targets/driver_cues de esa misma zona;
 - steering_magnitude puede aparecer como acción única o secundaria sólo si
   Python lo incluyó explícitamente en driver_cues de esa misma zona;
 - no generalices a todo el circuito;
@@ -15633,6 +15895,7 @@ def _plan_item_observed_channels(plan_item):
     return channels
 
 
+
 def _plan_item_primary_driver_cue_channels(plan_item):
     channels = set()
 
@@ -15642,12 +15905,18 @@ def _plan_item_primary_driver_cue_channels(plan_item):
     for cue in (plan_item.get("driver_cues", []) or []):
         if not isinstance(cue, dict):
             continue
+
+        explicit_channels = cue.get("channels")
+        if isinstance(explicit_channels, list):
+            for channel in explicit_channels:
+                if channel in {"brake", "throttle"}:
+                    channels.add(channel)
+
         channel = cue.get("channel")
         if channel in {"brake", "throttle"}:
             channels.add(channel)
 
     return channels
-
 
 def _plan_item_secondary_steering_expected_direction(plan_item):
     observed = _plan_item_observed_direction_map(plan_item).get(
@@ -15662,7 +15931,7 @@ def _plan_item_secondary_steering_expected_direction(plan_item):
 
 def _secondary_steering_allowed_for_plan_text(value, plan_item):
     """
-    Contrato global v3.10.8.5.2.
+    Contrato global v3.10.8.5.4.
 
     Steering directo puede ser único o secundario, pero sólo si Python ya lo
     materializó explícitamente como driver_cue de ESA zona. Una mera
@@ -16433,6 +16702,158 @@ def prune_only_invalid_global_list_items(
 
     return pruned, removed
 
+
+
+def build_deterministic_global_fallback(
+    session_coaching_facts,
+):
+    """
+    Fallback global v3.10.8.5.4.
+
+    La síntesis narrativa del LLM nunca debe ser un punto único de fallo.
+    Si el backend no logra entregar un JSON global válido, Python construye
+    un cierre mínimo únicamente desde next_stint_plan y los hechos recurrentes
+    ya validados. No inventa causas, dominios ni objetivos nuevos.
+    """
+    plan = (
+        session_coaching_facts.get("next_stint_plan", [])
+        if isinstance(session_coaching_facts, dict)
+        else []
+    ) or []
+
+    opportunities = []
+    qualitative_by_label = {}
+
+    for item in plan[:3]:
+        if not isinstance(item, dict):
+            continue
+
+        label = str(item.get("plan_label") or "").strip().upper()
+        if not label:
+            continue
+
+        parts = []
+        for target in item.get("targets", []) or []:
+            direct = _direct_coaching_target_text(target)
+            if not direct:
+                continue
+
+            # opportunities/conclusion no admiten cifras. Los targets de punto
+            # espacial permanecen exclusivamente en next_session_priorities.
+            if text_contains_forbidden_numeric_content(direct):
+                continue
+
+            if direct not in parts:
+                parts.append(direct)
+
+        if not parts:
+            continue
+
+        qualitative_by_label[label] = parts
+        opportunities.append(
+            f"Zona {label}: " + "; ".join(parts) + "."
+        )
+
+    if not opportunities:
+        opportunities = [
+            "Concentrá la próxima tanda en los inputs repetidos de las zonas prioritarias."
+        ]
+
+    repeated_observations = build_deterministic_repeated_observations(
+        session_coaching_facts
+    )
+
+    primary_label = None
+    primary_parts = None
+    for item in plan[:3]:
+        if not isinstance(item, dict):
+            continue
+        label = str(item.get("plan_label") or "").strip().upper()
+        parts = qualitative_by_label.get(label)
+        if label and parts:
+            primary_label = label
+            primary_parts = parts
+            break
+
+    if primary_label and primary_parts:
+        conclusion = (
+            f"Empezá la próxima tanda por la zona {primary_label}: "
+            + "; ".join(primary_parts)
+            + ". Después continuá con las demás zonas prioritarias."
+        )
+    else:
+        conclusion = (
+            "En la próxima tanda, concentrá la ejecución en los inputs repetidos "
+            "de las zonas prioritarias."
+        )
+
+    return {
+        "opportunities": opportunities[:4],
+        "repeated_observations": repeated_observations[:4],
+        "hypotheses": [],
+        "limitations": [],
+        "conclusion": conclusion,
+    }
+
+
+GLOBAL_STEERING_CONCLUSION_ANCHOR_ERROR = (
+    "conclusion global: steering_magnitude directo debe quedar anclado "
+    "a una única zona A/B/C."
+)
+
+
+def repair_global_steering_conclusion_anchor(
+    response,
+    valid_comparison_results,
+    session_coaching_facts,
+    errors,
+):
+    """
+    Hotfix v3.10.8.5.4.
+
+    Repara exclusivamente el caso en que la conclusión del LLM convierte
+    steering_magnitude en una orden global sin anclarla a una sola zona.
+    El validator NO se relaja: reemplazamos únicamente `conclusion` por la
+    conclusión cualitativa derivada del plan determinista y revalidamos todo.
+    """
+    if not isinstance(response, dict) or not errors:
+        return None, {}, list(errors or [])
+
+    if GLOBAL_STEERING_CONCLUSION_ANCHOR_ERROR not in {
+        str(error) for error in errors
+    }:
+        return None, {}, list(errors or [])
+
+    deterministic = build_deterministic_global_fallback(
+        session_coaching_facts
+    )
+    replacement = deterministic.get("conclusion")
+    if not isinstance(replacement, str) or not replacement.strip():
+        return None, {}, list(errors or [])
+
+    repaired = dict(response)
+    repaired["conclusion"] = replacement.strip()
+
+    remaining = validate_global_llm_response(
+        repaired,
+        valid_comparison_results,
+        session_coaching_facts,
+    )
+
+    # Si por algún cambio futuro el reemplazo sigue violando el mismo contrato,
+    # no lo aceptamos silenciosamente.
+    if GLOBAL_STEERING_CONCLUSION_ANCHOR_ERROR in {
+        str(error) for error in remaining
+    }:
+        return None, {}, list(errors or [])
+
+    return repaired, {
+        "field": "conclusion",
+        "reason": "direct_steering_without_single_zone_anchor",
+        "strategy": "deterministic_conclusion_from_next_stint_plan",
+    }, remaining
+
+
 def get_validated_global_response(
     metadata,
     valid_comparison_results,
@@ -16512,6 +16933,25 @@ def get_validated_global_response(
             session_coaching_facts,
         )
 
+        steering_conclusion_repair = {}
+        if errors:
+            repaired_response, steering_conclusion_repair, repaired_errors = (
+                repair_global_steering_conclusion_anchor(
+                    parsed,
+                    valid_comparison_results,
+                    session_coaching_facts,
+                    errors,
+                )
+            )
+            if repaired_response is not None:
+                parsed = repaired_response
+                errors = repaired_errors
+                print(
+                    "Síntesis global: reparación determinista v3.10.8.5.4 "
+                    "aplicada sin retry; conclusion con steering global fue "
+                    "reemplazada por una conclusión anclada al plan de Python."
+                )
+
         if not errors:
             parsed[
                 "next_session_priorities"
@@ -16520,6 +16960,14 @@ def get_validated_global_response(
                     session_coaching_facts
                 )
             )
+
+            deterministic_repairs = {}
+            if overflow_repairs:
+                deterministic_repairs["optional_list_overflow"] = overflow_repairs
+            if steering_conclusion_repair:
+                deterministic_repairs["global_steering_conclusion"] = (
+                    steering_conclusion_repair
+                )
 
             return {
                 "status":
@@ -16535,9 +16983,7 @@ def get_validated_global_response(
                     [],
 
                 "deterministic_repairs":
-                    {
-                        "optional_list_overflow": overflow_repairs
-                    } if overflow_repairs else {},
+                    deterministic_repairs,
             }
 
     pruned_response, removed_items = (
@@ -16582,6 +17028,42 @@ def get_validated_global_response(
             "validation_errors": [],
             "fallback": "PRUNED_INVALID_OPTIONAL_GLOBAL_ITEMS",
             "pruned_global_items": removed_items,
+        }
+
+    # Última barrera v3.10.8.5.4: la narrativa global no invalida
+    # hechos deterministas ya validados. Si retries + repairs no alcanzan,
+    # construimos una síntesis mínima desde next_stint_plan y recurrencia.
+    fallback_response = build_deterministic_global_fallback(
+        session_coaching_facts
+    )
+    fallback_errors = validate_global_llm_response(
+        fallback_response,
+        valid_comparison_results,
+        session_coaching_facts,
+    )
+
+    if not fallback_errors:
+        fallback_response[
+            "next_session_priorities"
+        ] = (
+            build_deterministic_next_session_priorities(
+                session_coaching_facts
+            )
+        )
+
+        print(
+            "Síntesis global: fallback determinista v3.10.8.5.4 aplicado; "
+            "la narrativa del backend no pudo validarse, pero la sesión se "
+            "guarda desde next_stint_plan y recurrencia de Python."
+        )
+
+        return {
+            "status": "VALID",
+            "attempts": MAX_GLOBAL_LLM_VALIDATION_ATTEMPTS,
+            "response": fallback_response,
+            "validation_errors": [],
+            "fallback": "DETERMINISTIC_GLOBAL_FROM_NEXT_STINT_PLAN",
+            "llm_validation_errors": errors or [],
         }
 
     rejected_path = os.path.join(
@@ -16809,6 +17291,12 @@ def render_global_analysis(
                 if second_cue:
                     lines.append(f"**Segundo cue:** {prose(second_cue)}")
                     lines.append("")
+
+            precision_lines = _render_precision_evidence_lines(driver_cues[0])
+            for precision_line in precision_lines:
+                lines.append(precision_line)
+            if precision_lines:
+                lines.append("")
 
         reference_profiles = [
             profile
@@ -17314,12 +17802,7 @@ def save_result(
         )
     )[0]
 
-    output_dir = os.path.join(
-        os.path.dirname(
-            input_path
-        ),
-        stem + "_llm",
-    )
+    output_dir = str(llm_result_dir(input_path))
 
     os.makedirs(
         output_dir,
@@ -17328,7 +17811,7 @@ def save_result(
 
     output_path = os.path.join(
         output_dir,
-        stem + f"_llm_analysis_v3_10_8_5_2_deepseek_v2_{MODEL_NAME}.json",
+        stem + f"_llm_analysis_v3_10_8_5_4_deepseek_v2_{MODEL_NAME}.json",
     )
 
     braking_point_detection = next(
@@ -17366,7 +17849,7 @@ def save_result(
     result = {
         "metadata": {
             "llm_analysis_version":
-                "3.10.8.5.2",
+                "3.10.8.5.4",
 
             "report_presentation_version": "2.4",
 
@@ -17489,7 +17972,7 @@ def main():
     reset_deepseek_usage()
 
     print_header(
-        "RACE ENGINEER - LLM ANALYSIS v3.10.8.5.2 / DeepSeek provisional v2"
+        "RACE ENGINEER - LLM ANALYSIS v3.10.8.5.4 / DeepSeek provisional v2"
     )
 
     input_path = find_json_file()
@@ -17540,12 +18023,7 @@ def main():
         )
     )[0]
 
-    output_dir = os.path.join(
-        os.path.dirname(
-            input_path
-        ),
-        stem + "_llm",
-    )
+    output_dir = str(llm_debug_dir(input_path, backend="deepseek"))
 
     os.makedirs(
         output_dir,
@@ -17590,7 +18068,7 @@ def main():
     print()
 
     print(
-        "Arquitectura v3.10.8.5.2:"
+        "Arquitectura v3.10.8.5.4:"
     )
 
     print(
@@ -17725,7 +18203,7 @@ def main():
             raise RuntimeError(
                 "No hay driver_action_episode disponibles "
                 f"para {reference_lap} -> {comparison_lap}. "
-                "La v3.10.8.5.2 requiere analyze_telemetry v3.8 "
+                "La v3.10.8.5.4 requiere analyze_telemetry v3.8 "
                 "con episodios primarios."
             )
 
@@ -17766,7 +18244,7 @@ def main():
             }
         elif episode_catalog:
             print(
-                "Solicitando interpretación aislada + ranking comparativo v3.10.8.5.2..."
+                "Solicitando interpretación aislada + ranking comparativo v3.10.8.5.4..."
             )
 
             validated = (

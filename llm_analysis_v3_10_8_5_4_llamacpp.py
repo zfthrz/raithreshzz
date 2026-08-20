@@ -16,7 +16,7 @@ from coaching_precision import enrich_patterns_with_precision
 
 
 # ============================================================
-# RACE ENGINEER - LLM ANALYSIS v3.10.8.5.4
+# RACE ENGINEER - LLM ANALYSIS v3.10.8.5.4 / LLAMACPP provisional v1
 # ============================================================
 #
 # Diseñado para:
@@ -43,7 +43,7 @@ from coaching_precision import enrich_patterns_with_precision
 # - interpreta cada episodio en aislamiento
 # - clasifica prioridades en una llamada comparativa separada
 #
-# Una llamada a Ollama por episodio.
+# Una llamada a LLAMACPP API por episodio.
 # Una llamada comparativa para clasificar prioridades.
 # Una llamada de resumen por comparación.
 # Una llamada final para sintetizar la sesión.
@@ -55,10 +55,241 @@ from coaching_precision import enrich_patterns_with_precision
 # CONFIGURACIÓN
 # ============================================================
 
-OLLAMA_URL = "http://localhost:11434/api/chat"
+LLAMACPP_URL = os.environ.get(
+    "LLAMACPP_API_URL",
+    "http://localhost:8080/v1/chat/completions",
+)
 
-MODEL_NAME = "ingenierov3"
+# Modelo provisional por defecto. Puede cambiarse sin editar el archivo:
+#   export DEEPSEEK_MODEL=deepseek-v4-pro
+MODEL_NAME = os.environ.get(
+    "LLAMACPP_MODEL",
+    "qwen3-14b",
+)
 
+LLAMACPP_API_KEY_ENV = "LLAMACPP_API_KEY"
+
+LLAMACPP_PRICING_USD_PER_MILLION = {
+    # Pricing supplied for this experiment.
+    "deepseek-v4-flash": {
+        "input_cache_hit": 0.0028,
+        "input_cache_miss": 0.14,
+        "output": 0.28,
+    },
+    "qwen3.6-35b-a3b": {
+        "input_cache_hit": 0.003625,
+        "input_cache_miss": 0.435,
+        "output": 0.87,
+    },
+}
+
+DEEPSEEK_USAGE = {
+    "http_request_count": 0,
+    "usage_response_count": 0,
+    "prompt_tokens": 0,
+    "prompt_cache_hit_tokens": 0,
+    "prompt_cache_miss_tokens": 0,
+    "completion_tokens": 0,
+    "total_tokens": 0,
+}
+
+
+def reset_deepseek_usage():
+    for key in DEEPSEEK_USAGE:
+        DEEPSEEK_USAGE[key] = 0
+
+
+def _usage_int(value):
+    try:
+        value = int(value)
+    except (TypeError, ValueError):
+        return None
+    return max(0, value)
+
+
+def _first_usage_int(usage, *keys):
+    if not isinstance(usage, dict):
+        return None
+    for key in keys:
+        value = _usage_int(usage.get(key))
+        if value is not None:
+            return value
+    return None
+
+
+def record_deepseek_usage(usage):
+    """
+    Acumula el `usage` devuelto por LLAMACPP para TODAS las respuestas
+    HTTP válidas, incluidos retries de generación.
+
+    Si LLAMACPP no devuelve desglose hit/miss, todo el input desconocido se
+    cobra como cache miss para que la estimación no sea optimista.
+    """
+    if not isinstance(usage, dict):
+        return
+
+    prompt = _first_usage_int(
+        usage,
+        "prompt_tokens",
+        "input_tokens",
+    ) or 0
+
+    completion = _first_usage_int(
+        usage,
+        "completion_tokens",
+        "output_tokens",
+    ) or 0
+
+    total = _first_usage_int(
+        usage,
+        "total_tokens",
+    )
+    if total is None:
+        total = prompt + completion
+
+    cache_hit = _first_usage_int(
+        usage,
+        "prompt_cache_hit_tokens",
+        "cache_hit_tokens",
+        "input_cache_hit_tokens",
+    )
+
+    cache_miss = _first_usage_int(
+        usage,
+        "prompt_cache_miss_tokens",
+        "cache_miss_tokens",
+        "input_cache_miss_tokens",
+    )
+
+    # Reconstruct missing side conservatively from prompt_tokens.
+    if cache_hit is None and cache_miss is None:
+        cache_hit = 0
+        cache_miss = prompt
+    elif cache_hit is None:
+        cache_hit = max(0, prompt - cache_miss)
+    elif cache_miss is None:
+        cache_miss = max(0, prompt - cache_hit)
+
+    # Do not let malformed provider accounting exceed prompt total.
+    if prompt > 0 and cache_hit + cache_miss > prompt:
+        overflow = cache_hit + cache_miss - prompt
+        cache_miss = max(0, cache_miss - overflow)
+
+    accounted = cache_hit + cache_miss
+    if prompt > accounted:
+        # Unknown remainder -> cache miss, conservative.
+        cache_miss += prompt - accounted
+
+    DEEPSEEK_USAGE["usage_response_count"] += 1
+    DEEPSEEK_USAGE["prompt_tokens"] += prompt
+    DEEPSEEK_USAGE["prompt_cache_hit_tokens"] += cache_hit
+    DEEPSEEK_USAGE["prompt_cache_miss_tokens"] += cache_miss
+    DEEPSEEK_USAGE["completion_tokens"] += completion
+    DEEPSEEK_USAGE["total_tokens"] += total
+
+
+def deepseek_usage_summary():
+    pricing = LLAMACPP_PRICING_USD_PER_MILLION.get(
+        MODEL_NAME
+    )
+
+    summary = {
+        "model": MODEL_NAME,
+        "http_request_count":
+            DEEPSEEK_USAGE["http_request_count"],
+        "usage_response_count":
+            DEEPSEEK_USAGE["usage_response_count"],
+        "prompt_tokens":
+            DEEPSEEK_USAGE["prompt_tokens"],
+        "prompt_cache_hit_tokens":
+            DEEPSEEK_USAGE["prompt_cache_hit_tokens"],
+        "prompt_cache_miss_tokens":
+            DEEPSEEK_USAGE["prompt_cache_miss_tokens"],
+        "completion_tokens":
+            DEEPSEEK_USAGE["completion_tokens"],
+        "total_tokens":
+            DEEPSEEK_USAGE["total_tokens"],
+        "pricing_usd_per_million":
+            dict(pricing) if pricing else None,
+        "estimated_cost_usd": None,
+        "estimated_100_runs_usd": None,
+        "pricing_note":
+            "pricing supplied for this LLAMACPP experiment",
+    }
+
+    if pricing:
+        cost = (
+            DEEPSEEK_USAGE["prompt_cache_hit_tokens"]
+            / 1_000_000
+            * pricing["input_cache_hit"]
+        )
+        cost += (
+            DEEPSEEK_USAGE["prompt_cache_miss_tokens"]
+            / 1_000_000
+            * pricing["input_cache_miss"]
+        )
+        cost += (
+            DEEPSEEK_USAGE["completion_tokens"]
+            / 1_000_000
+            * pricing["output"]
+        )
+
+        summary["estimated_cost_usd"] = round(cost, 8)
+        summary["estimated_100_runs_usd"] = round(
+            cost * 100,
+            6,
+        )
+
+    return summary
+
+
+def print_deepseek_usage_summary():
+    usage = deepseek_usage_summary()
+
+    print()
+    print_header("LLAMACPP USAGE / COST")
+    print(
+        f"HTTP requests:      {usage['http_request_count']}"
+    )
+    print(
+        f"Usage responses:    {usage['usage_response_count']}"
+    )
+    print(
+        f"Input tokens:       {usage['prompt_tokens']:,}"
+    )
+    print(
+        "  cache hit:        "
+        f"{usage['prompt_cache_hit_tokens']:,}"
+    )
+    print(
+        "  cache miss:       "
+        f"{usage['prompt_cache_miss_tokens']:,}"
+    )
+    print(
+        f"Output tokens:      {usage['completion_tokens']:,}"
+    )
+    print(
+        f"Total tokens:       {usage['total_tokens']:,}"
+    )
+
+    if usage["estimated_cost_usd"] is not None:
+        print(
+            "Estimated cost:     "
+            f"${usage['estimated_cost_usd']:.6f}"
+        )
+        print(
+            "100 similar runs:   "
+            f"${usage['estimated_100_runs_usd']:.4f}"
+        )
+    else:
+        print(
+            "Estimated cost:     unavailable "
+            f"(no pricing table for {MODEL_NAME})"
+        )
+
+
+# LLAMACPP V4 soporta contextos muy superiores; conservamos este valor sólo
+# como referencia del baseline local. No se envía como parámetro a la API.
 CONTEXT_SIZE = 8192
 
 TEMPERATURE = 0.15
@@ -74,29 +305,15 @@ TIMEOUT_SECONDS = 600
 # diez minutos antes de recuperar el intento. Los reintentos de transporte
 # son independientes de MAX_LLM_VALIDATION_ATTEMPTS.
 RANKER_TIMEOUT_SECONDS = 240
-
-# La síntesis global local es una respuesta estructurada corta.
-# No debe heredar el timeout genérico de 600 s ni generación ilimitada:
-# si el modelo entra en una salida runaway bajo JSON schema, el pipeline
-# debe recuperar el control en un plazo acotado.
-GLOBAL_TIMEOUT_SECONDS = 180
-
-# La síntesis global necesita un presupuesto acotado, pero 1024 tokens puede
-# truncar el JSON de Qwen antes del cierre. Escalamos sólo entre intentos de
-# validación global: el primer intento sigue siendo corto y los siguientes
-# reciben más margen únicamente si la salida anterior no pudo validarse.
-GLOBAL_NUM_PREDICT_SCHEDULE = (1536, 2048)
-GLOBAL_TRANSPORT_ATTEMPTS = 1
-
-MAX_OLLAMA_TRANSPORT_ATTEMPTS = 2
-OLLAMA_TRANSPORT_RETRY_DELAY_SECONDS = 2
+MAX_DEEPSEEK_TRANSPORT_ATTEMPTS = 2
+DEEPSEEK_TRANSPORT_RETRY_DELAY_SECONDS = 2
 
 # Una respuesta HTTP 200 con message.content vacío no debe abortar la sesión.
 # Se considera un fallo recuperable de generación y se repite la misma
 # solicitud. "thinking" se desactiva explícitamente porque este pipeline
 # sólo consume el JSON final.
-MAX_OLLAMA_GENERATION_ATTEMPTS = 3
-OLLAMA_GENERATION_RETRY_DELAY_SECONDS = 1
+MAX_DEEPSEEK_GENERATION_ATTEMPTS = 3
+DEEPSEEK_GENERATION_RETRY_DELAY_SECONDS = 1
 
 MAX_DRIVER_ACTION_EPISODES = 8
 
@@ -2019,10 +2236,10 @@ def build_llm_dataset(
 
 
 # ============================================================
-# OLLAMA
+# DEEPSEEK API - PROVISIONAL BACKEND
 # ============================================================
 
-def ollama_chat(
+def llamacpp_chat(
     system_prompt,
     user_prompt,
     temperature=None,
@@ -2030,71 +2247,53 @@ def ollama_chat(
     timeout_seconds=None,
     transport_attempts=None,
     format_schema=None,
-    num_predict=None,
 ):
     """
-    Wrapper robusto para /api/chat.
+    Wrapper robusto para LLAMACPP Chat Completions.
 
-    Dos niveles de retry independientes:
-    1. transporte: timeout / URLError;
-    2. generación: HTTP válido pero JSON/message/content inutilizable.
+    Mantiene la misma interfaz interna que el antiguo wrapper de Ollama para
+    no modificar prompts, validadores ni el flujo de Race Engineer.
 
-    `think=False` es deliberado: Race Engineer sólo consume la respuesta
-    estructurada final y nunca utiliza ni expone el razonamiento interno.
+    Decisiones deliberadas para esta prueba:
+    - LLAMACPP V4 en NON-THINKING para consumir sólo el JSON final y para que
+      `temperature` siga teniendo efecto.
+    - `response_format={"type": "json_object"}` en todas las llamadas.
+    - `seed` se conserva en la firma por compatibilidad con el pipeline, pero
+      no se envía: la API pública actual de LLAMACPP no documenta `seed`.
+    - `format_schema` no se envía como JSON Schema porque LLAMACPP JSON Output
+      expone `json_object`; los validadores Python existentes siguen siendo la
+      autoridad del schema y fuerzan retries si la respuesta no coincide.
     """
-    payload = {
-        "model":
-            MODEL_NAME,
+    api_key = os.environ.get(LLAMACPP_API_KEY_ENV)
 
+    payload = {
+        "model": MODEL_NAME,
         "messages": [
             {
-                "role":
-                    "system",
-
-                "content":
-                    system_prompt,
+                "role": "system",
+                "content": system_prompt,
             },
             {
-                "role":
-                    "user",
-
-                "content":
-                    user_prompt,
+                "role": "user",
+                "content": user_prompt,
             },
         ],
-
-        "stream":
-            False,
-
-        # Ollama puede devolver `thinking` separado de `content` en modelos
-        # compatibles. Para este pipeline queremos únicamente el JSON final.
-        "think":
-            False,
-
-        "format":
-            format_schema if format_schema is not None else "json",
-
-        "options": {
-            "temperature":
-                TEMPERATURE if temperature is None else temperature,
-
-            "num_ctx":
-                CONTEXT_SIZE,
+        "stream": False,
+        "temperature": (
+            TEMPERATURE if temperature is None else temperature
+        ),
+        "response_format": {
+            "type": "json_object",
         },
+        # Suficiente para los JSON del pipeline actual y evita respuestas
+        # accidentalmente enormes.
+        "max_tokens": 8192,
     }
-
-    if seed is not None:
-        payload["options"]["seed"] = int(seed)
-
-    if num_predict is not None:
-        payload["options"]["num_predict"] = max(1, int(num_predict))
 
     body = json.dumps(
         payload,
         ensure_ascii=False,
-    ).encode(
-        "utf-8"
-    )
+    ).encode("utf-8")
 
     effective_timeout = (
         TIMEOUT_SECONDS
@@ -2103,7 +2302,7 @@ def ollama_chat(
     )
 
     max_transport_attempts = (
-        MAX_OLLAMA_TRANSPORT_ATTEMPTS
+        MAX_DEEPSEEK_TRANSPORT_ATTEMPTS
         if transport_attempts is None
         else max(1, int(transport_attempts))
     )
@@ -2112,19 +2311,18 @@ def ollama_chat(
 
     for generation_attempt in range(
         1,
-        MAX_OLLAMA_GENERATION_ATTEMPTS + 1,
+        MAX_DEEPSEEK_GENERATION_ATTEMPTS + 1,
     ):
         raw = None
         last_transport_error = None
 
-        # Crear Request nuevo en cada intento de generación.
+        headers = {"Content-Type": "application/json"}
+        if api_key:
+            headers["Authorization"] = f"Bearer {api_key}"
         request = urllib.request.Request(
-            OLLAMA_URL,
+            LLAMACPP_URL,
             data=body,
-            headers={
-                "Content-Type":
-                    "application/json",
-            },
+            headers=headers,
             method="POST",
         )
 
@@ -2133,6 +2331,7 @@ def ollama_chat(
             max_transport_attempts + 1,
         ):
             try:
+                DEEPSEEK_USAGE["http_request_count"] += 1
                 with urllib.request.urlopen(
                     request,
                     timeout=effective_timeout,
@@ -2142,6 +2341,39 @@ def ollama_chat(
                 last_transport_error = None
                 break
 
+            except urllib.error.HTTPError as exc:
+                try:
+                    error_body = exc.read().decode(
+                        "utf-8",
+                        errors="replace",
+                    )
+                except Exception:
+                    error_body = ""
+
+                # 429/5xx pueden ser transitorios. 4xx restantes son de
+                # configuración/payload y conviene fallar inmediatamente.
+                retryable = (
+                    exc.code == 429
+                    or 500 <= exc.code <= 599
+                )
+
+                if retryable and transport_attempt < max_transport_attempts:
+                    print(
+                        "    LLAMACPP: HTTP transitorio "
+                        f"{exc.code} (intento {transport_attempt}/"
+                        f"{max_transport_attempts}). Reintentando..."
+                    )
+                    time.sleep(
+                        DEEPSEEK_TRANSPORT_RETRY_DELAY_SECONDS
+                    )
+                    continue
+
+                raise RuntimeError(
+                    "DEEPSEEK_HTTP_ERROR. "
+                    f"HTTP {exc.code}. URL: {LLAMACPP_URL}\n"
+                    f"Respuesta: {error_body[:1200]}"
+                ) from exc
+
             except (
                 TimeoutError,
                 urllib.error.URLError,
@@ -2150,50 +2382,31 @@ def ollama_chat(
 
                 if transport_attempt < max_transport_attempts:
                     print(
-                        "    Ollama: fallo de transporte "
+                        "    LLAMACPP: fallo de transporte "
                         f"(intento {transport_attempt}/"
                         f"{max_transport_attempts}): "
-                        f"{type(exc).__name__}. "
-                        "Reintentando la misma solicitud..."
+                        f"{type(exc).__name__}. Reintentando..."
                     )
                     time.sleep(
-                        OLLAMA_TRANSPORT_RETRY_DELAY_SECONDS
+                        DEEPSEEK_TRANSPORT_RETRY_DELAY_SECONDS
                     )
                     continue
 
-                if isinstance(exc, TimeoutError):
-                    raise RuntimeError(
-                        "OLLAMA_TRANSPORT_TIMEOUT. "
-                        "Ollama no respondió dentro del tiempo límite "
-                        f"tras {max_transport_attempts} intento(s).\n"
-                        f"URL: {OLLAMA_URL}\n"
-                        f"Timeout por intento: "
-                        f"{effective_timeout:g} s"
-                    ) from exc
-
                 raise RuntimeError(
-                    "No se pudo conectar con Ollama tras "
-                    f"{max_transport_attempts} intento(s).\n"
-                    f"URL: {OLLAMA_URL}\n"
+                    "DEEPSEEK_TRANSPORT_FAILED. "
+                    f"URL: {LLAMACPP_URL}\n"
+                    f"Timeout por intento: {effective_timeout:g} s\n"
                     f"Error: {exc}"
                 ) from exc
 
         if raw is None:
             raise RuntimeError(
-                "OLLAMA_TRANSPORT_FAILED sin respuesta utilizable. "
+                "DEEPSEEK_TRANSPORT_FAILED sin respuesta utilizable. "
                 f"Último error: {last_transport_error}"
             )
 
-        # --------------------------------------------------------
-        # Validación de la envoltura de Ollama.
-        # Una anomalía acá es recuperable y repite la generación.
-        # --------------------------------------------------------
         try:
-            result = json.loads(
-                raw.decode(
-                    "utf-8"
-                )
-            )
+            result = json.loads(raw.decode("utf-8"))
         except (
             UnicodeDecodeError,
             json.JSONDecodeError,
@@ -2202,94 +2415,70 @@ def ollama_chat(
                 "respuesta HTTP no decodificable como JSON válido"
             )
 
-            if generation_attempt < MAX_OLLAMA_GENERATION_ATTEMPTS:
+            if generation_attempt < MAX_DEEPSEEK_GENERATION_ATTEMPTS:
                 print(
-                    "    Ollama: respuesta de generación inválida "
+                    "    LLAMACPP: respuesta de generación inválida "
                     f"(intento {generation_attempt}/"
-                    f"{MAX_OLLAMA_GENERATION_ATTEMPTS}): "
-                    f"{last_generation_diagnostic}. "
+                    f"{MAX_DEEPSEEK_GENERATION_ATTEMPTS}). "
                     "Reintentando..."
                 )
                 time.sleep(
-                    OLLAMA_GENERATION_RETRY_DELAY_SECONDS
+                    DEEPSEEK_GENERATION_RETRY_DELAY_SECONDS
                 )
                 continue
 
             raise RuntimeError(
-                "OLLAMA_GENERATION_INVALID_JSON tras "
-                f"{MAX_OLLAMA_GENERATION_ATTEMPTS} intento(s)."
+                "DEEPSEEK_GENERATION_INVALID_JSON tras "
+                f"{MAX_DEEPSEEK_GENERATION_ATTEMPTS} intento(s)."
             ) from exc
 
-        message = result.get(
-            "message"
+        record_deepseek_usage(
+            result.get("usage")
         )
 
-        if not isinstance(
-            message,
-            dict,
-        ):
-            last_generation_diagnostic = (
-                "la respuesta no contiene un objeto message"
-            )
+        choices = result.get("choices")
+        message = None
+        finish_reason = None
 
-        else:
-            content = message.get(
-                "content"
-            )
+        if isinstance(choices, list) and choices:
+            first_choice = choices[0]
+            if isinstance(first_choice, dict):
+                message = first_choice.get("message")
+                finish_reason = first_choice.get("finish_reason")
 
-            if isinstance(
-                content,
-                str,
-            ) and content.strip():
+        if isinstance(message, dict):
+            content = message.get("content")
+
+            if isinstance(content, str) and content.strip():
                 return content
 
-            # No leemos ni imprimimos el contenido de `thinking`.
-            # Sólo registramos si Ollama informó que existía.
-            thinking_present = bool(
-                message.get(
-                    "thinking"
-                )
-            )
+        usage = result.get("usage")
+        last_generation_diagnostic = (
+            "choices[0].message.content vacío/ausente"
+            f"; finish_reason={finish_reason!r}"
+            f"; usage={usage!r}"
+        )
 
-            done_reason = result.get(
-                "done_reason"
-            )
-            eval_count = result.get(
-                "eval_count"
-            )
-            prompt_eval_count = result.get(
-                "prompt_eval_count"
-            )
-
-            last_generation_diagnostic = (
-                "message.content vacío"
-                f"; thinking_present={thinking_present}"
-                f"; done_reason={done_reason!r}"
-                f"; prompt_eval_count={prompt_eval_count!r}"
-                f"; eval_count={eval_count!r}"
-            )
-
-        if generation_attempt < MAX_OLLAMA_GENERATION_ATTEMPTS:
+        if generation_attempt < MAX_DEEPSEEK_GENERATION_ATTEMPTS:
             print(
-                "    Ollama: respuesta vacía/inutilizable "
+                "    LLAMACPP: respuesta vacía/inutilizable "
                 f"(intento {generation_attempt}/"
-                f"{MAX_OLLAMA_GENERATION_ATTEMPTS}): "
-                f"{last_generation_diagnostic}. "
-                "Reintentando la misma generación..."
+                f"{MAX_DEEPSEEK_GENERATION_ATTEMPTS}): "
+                f"{last_generation_diagnostic}. Reintentando..."
             )
             time.sleep(
-                OLLAMA_GENERATION_RETRY_DELAY_SECONDS
+                DEEPSEEK_GENERATION_RETRY_DELAY_SECONDS
             )
             continue
 
         raise RuntimeError(
-            "OLLAMA_EMPTY_CONTENT tras "
-            f"{MAX_OLLAMA_GENERATION_ATTEMPTS} intento(s). "
+            "DEEPSEEK_EMPTY_CONTENT tras "
+            f"{MAX_DEEPSEEK_GENERATION_ATTEMPTS} intento(s). "
             f"Diagnóstico: {last_generation_diagnostic}"
         )
 
     raise RuntimeError(
-        "OLLAMA_GENERATION_FAILED sin respuesta utilizable."
+        "DEEPSEEK_GENERATION_FAILED sin respuesta utilizable."
     )
 
 
@@ -2641,7 +2830,7 @@ MAX_LLM_VALIDATION_ATTEMPTS = 2
 # La síntesis global integra varias restricciones simultáneas
 # (ranking + targets de onset/release + estilo). Le damos un intento extra,
 # sin aumentar los reintentos de cada episodio.
-MAX_GLOBAL_LLM_VALIDATION_ATTEMPTS = 2
+MAX_GLOBAL_LLM_VALIDATION_ATTEMPTS = 3
 
 
 # ============================================================
@@ -5860,7 +6049,7 @@ def get_validated_episode_response(
             )
             save_text(path, prompt)
 
-        raw = ollama_chat(
+        raw = llamacpp_chat(
             EPISODE_SYSTEM_PROMPT,
             prompt,
         )
@@ -6381,7 +6570,7 @@ def get_validated_comparison_ranker_response(
             )
             save_text(path, prompt)
 
-        raw = ollama_chat(
+        raw = llamacpp_chat(
             COMPARISON_RANKER_SYSTEM_PROMPT,
             prompt,
             temperature=RANKER_TEMPERATURE,
@@ -6833,7 +7022,7 @@ def get_validated_comparison_summary_response(
             )
             save_text(path, prompt)
 
-        raw = ollama_chat(
+        raw = llamacpp_chat(
             COMPARISON_SUMMARY_SYSTEM_PROMPT,
             prompt,
         )
@@ -12167,19 +12356,13 @@ def _session_plan_sort_key(
 
     repeated_point_count = sum(
         1 for pattern in point_patterns
-        if (
-            pattern.get("status") == "REPEATED"
-            and bool(pattern.get("authorized_numeric_coaching"))
-        )
+        if pattern.get("status") == "REPEATED"
     )
     repeated_point_support_count = max(
         [
             safe_int(pattern.get("comparison_count")) or 1
             for pattern in point_patterns
-            if (
-                pattern.get("status") == "REPEATED"
-                and bool(pattern.get("authorized_numeric_coaching"))
-            )
+            if pattern.get("status") == "REPEATED"
         ],
         default=0,
     )
@@ -15238,7 +15421,6 @@ ETIQUETAS DE ZONA DEL PLAN:
 OBJETIVO DE CADA CAMPO:
 
 opportunities:
-- devolvé como máximo una opportunity breve por cada zona prioritaria;
 - resumí únicamente los driver_cues accionables del next_stint_plan;
 - no conviertas observed_differences en acciones adicionales salvo que Python ya las haya materializado en coaching_targets/driver_cues de esa misma zona;
 - steering_magnitude puede aparecer como acción única o secundaria sólo si
@@ -16506,15 +16688,16 @@ def prune_only_invalid_global_list_items(
     return pruned, removed
 
 
+
 def build_deterministic_global_fallback(
     session_coaching_facts,
 ):
     """
-    Fallback global v3.10.8.
+    Fallback global v3.10.8.5.4.
 
     La síntesis narrativa del LLM nunca debe ser un punto único de fallo.
-    Si Ollama no logra entregar un JSON global válido, Python construye un
-    cierre mínimo únicamente desde next_stint_plan y los hechos recurrentes
+    Si el backend no logra entregar un JSON global válido, Python construye
+    un cierre mínimo únicamente desde next_stint_plan y los hechos recurrentes
     ya validados. No inventa causas, dominios ni objetivos nuevos.
     """
     plan = (
@@ -16589,15 +16772,13 @@ def build_deterministic_global_fallback(
             "de las zonas prioritarias."
         )
 
-    response = {
+    return {
         "opportunities": opportunities[:4],
         "repeated_observations": repeated_observations[:4],
         "hypotheses": [],
         "limitations": [],
         "conclusion": conclusion,
     }
-
-    return response
 
 
 GLOBAL_STEERING_CONCLUSION_ANCHOR_ERROR = (
@@ -16658,37 +16839,6 @@ def repair_global_steering_conclusion_anchor(
     }, remaining
 
 
-def _global_num_predict_for_attempt(attempt):
-    """Presupuesto de salida escalonado para la síntesis global local."""
-    try:
-        index = max(0, int(attempt) - 1)
-    except (TypeError, ValueError):
-        index = 0
-
-    index = min(
-        index,
-        len(GLOBAL_NUM_PREDICT_SCHEDULE) - 1,
-    )
-    return int(GLOBAL_NUM_PREDICT_SCHEDULE[index])
-
-
-def _looks_like_truncated_json(raw, exc=None):
-    """Heurística de transporte/salida: distingue JSON cortado de un fallo semántico."""
-    value = str(raw or "").strip()
-    error_text = str(exc or "").lower()
-
-    if value.startswith("{") and not value.endswith("}"):
-        return True
-
-    truncation_markers = (
-        "unterminated string",
-        "unterminated",
-        "unexpected end",
-        "end of data",
-    )
-    return any(marker in error_text for marker in truncation_markers)
-
-
 def get_validated_global_response(
     metadata,
     valid_comparison_results,
@@ -16697,8 +16847,6 @@ def get_validated_global_response(
 ):
     errors = None
     last_raw = None
-    last_parsed = None
-    last_parsed_errors = None
 
     for attempt in range(
         1,
@@ -16716,61 +16864,37 @@ def get_validated_global_response(
                 output_dir,
                 f"global_prompt_attempt_{attempt}.txt",
             )
-            save_text(prompt_path, prompt)
 
-        global_num_predict = _global_num_predict_for_attempt(attempt)
+            save_text(
+                prompt_path,
+                prompt,
+            )
 
-        print(
-            "Síntesis global local: "
-            f"timeout={GLOBAL_TIMEOUT_SECONDS}s, "
-            f"num_predict<={global_num_predict} "
-            f"(intento {attempt}/{MAX_GLOBAL_LLM_VALIDATION_ATTEMPTS})."
-        )
-
-        raw = ollama_chat(
+        raw = llamacpp_chat(
             GLOBAL_SYSTEM_PROMPT,
             prompt,
             temperature=0.0,
             seed=3815,
-            timeout_seconds=GLOBAL_TIMEOUT_SECONDS,
-            transport_attempts=GLOBAL_TRANSPORT_ATTEMPTS,
             format_schema=GLOBAL_RESPONSE_SCHEMA,
-            num_predict=global_num_predict,
         )
+
         last_raw = raw
 
         try:
-            parsed = parse_llm_json(raw)
+            parsed = parse_llm_json(
+                raw
+            )
         except Exception as exc:
-            truncated = _looks_like_truncated_json(raw, exc)
-            raw_attempt_path = os.path.join(
-                output_dir,
-                f"global_raw_attempt_{attempt}_INVALID.txt",
-            )
-            save_text(
-                raw_attempt_path,
-                raw if isinstance(raw, str) else repr(raw),
-            )
-
-            if truncated:
-                errors = [
-                    "LLM_JSON_TRUNCATED: la respuesta anterior quedó incompleta. "
-                    "Devolvé un JSON completo y conciso, cerrando todas las "
-                    "cadenas, arrays y el objeto raíz."
-                ]
-                if attempt < MAX_GLOBAL_LLM_VALIDATION_ATTEMPTS:
-                    next_budget = _global_num_predict_for_attempt(attempt + 1)
-                    print(
-                        "Síntesis global: JSON truncado; "
-                        f"se amplía num_predict a {next_budget} en el próximo intento."
-                    )
-            else:
-                errors = [str(exc)]
+            errors = [
+                str(exc)
+            ]
             continue
 
         if isinstance(parsed, dict) and "repeated_observations" in parsed:
             parsed["repeated_observations"] = (
-                build_deterministic_repeated_observations(session_coaching_facts)
+                build_deterministic_repeated_observations(
+                    session_coaching_facts
+                )
             )
 
         parsed, overflow_repairs = repair_global_optional_list_overflow(
@@ -16814,9 +16938,14 @@ def get_validated_global_response(
                 )
 
         if not errors:
-            parsed["next_session_priorities"] = (
-                build_deterministic_next_session_priorities(session_coaching_facts)
+            parsed[
+                "next_session_priorities"
+            ] = (
+                build_deterministic_next_session_priorities(
+                    session_coaching_facts
+                )
             )
+
             deterministic_repairs = {}
             if overflow_repairs:
                 deterministic_repairs["optional_list_overflow"] = overflow_repairs
@@ -16824,80 +16953,71 @@ def get_validated_global_response(
                 deterministic_repairs["global_steering_conclusion"] = (
                     steering_conclusion_repair
                 )
+
             return {
-                "status": "VALID",
-                "attempts": attempt,
-                "response": parsed,
-                "validation_errors": [],
-                "deterministic_repairs": deterministic_repairs,
+                "status":
+                    "VALID",
+
+                "attempts":
+                    attempt,
+
+                "response":
+                    parsed,
+
+                "validation_errors":
+                    [],
+
+                "deterministic_repairs":
+                    deterministic_repairs,
             }
 
-        # v3.10.8: no gastar otro request si el único problema está en
-        # items opcionales narrativos que Python puede eliminar y revalidar.
-        pruned_response, removed_items = prune_only_invalid_global_list_items(
-            parsed,
+    pruned_response, removed_items = (
+        prune_only_invalid_global_list_items(
+            parsed if 'parsed' in locals() else None,
             valid_comparison_results,
             session_coaching_facts,
             errors,
         )
-        if pruned_response is not None:
-            removed_count = sum(len(indexes) for indexes in removed_items.values())
-            pruned_response["repeated_observations"] = (
-                build_deterministic_repeated_observations(session_coaching_facts)
-            )
-            pruned_response["next_session_priorities"] = (
-                build_deterministic_next_session_priorities(session_coaching_facts)
-            )
-            print(
-                "Síntesis global: reparación determinista v3.10.8 aplicada "
-                f"sin retry; se descartaron {removed_count} item(s) opcional(es) "
-                "no grounded."
-            )
-            return {
-                "status": "VALID",
-                "attempts": attempt,
-                "response": pruned_response,
-                "validation_errors": [],
-                "fallback": "PRUNED_INVALID_OPTIONAL_GLOBAL_ITEMS",
-                "pruned_global_items": removed_items,
-            }
+    )
 
-        last_parsed = parsed
-        last_parsed_errors = list(errors)
-
-    # Si hubo un candidato parseable en un intento anterior, intentamos una
-    # última poda con SUS propios errores (no con el error de un intento
-    # posterior truncado).
-    if last_parsed is not None and last_parsed_errors:
-        pruned_response, removed_items = prune_only_invalid_global_list_items(
-            last_parsed,
-            valid_comparison_results,
-            session_coaching_facts,
-            last_parsed_errors,
+    if pruned_response is not None:
+        removed_count = sum(
+            len(indexes)
+            for indexes in removed_items.values()
         )
-        if pruned_response is not None:
-            removed_count = sum(len(indexes) for indexes in removed_items.values())
-            pruned_response["repeated_observations"] = (
-                build_deterministic_repeated_observations(session_coaching_facts)
-            )
-            pruned_response["next_session_priorities"] = (
-                build_deterministic_next_session_priorities(session_coaching_facts)
-            )
-            print(
-                "Síntesis global: recuperación del último JSON parseable; "
-                f"se descartaron {removed_count} item(s) opcional(es) no grounded."
-            )
-            return {
-                "status": "VALID",
-                "attempts": MAX_GLOBAL_LLM_VALIDATION_ATTEMPTS,
-                "response": pruned_response,
-                "validation_errors": [],
-                "fallback": "RECOVERED_LAST_PARSEABLE_GLOBAL",
-                "pruned_global_items": removed_items,
-            }
 
-    # Última barrera: la narrativa global nunca invalida hechos deterministas
-    # ya validados. Construimos una síntesis mínima sólo desde next_stint_plan.
+        pruned_response["repeated_observations"] = (
+            build_deterministic_repeated_observations(
+                session_coaching_facts
+            )
+        )
+
+        pruned_response[
+            "next_session_priorities"
+        ] = (
+            build_deterministic_next_session_priorities(
+                session_coaching_facts
+            )
+        )
+
+        print(
+            "Síntesis global: fallback determinista v3.10.8 "
+            f"aplicado; se descartaron {removed_count} items "
+            "opcionales no grounded."
+        )
+
+        return {
+            "status": "VALID",
+            "attempts": MAX_GLOBAL_LLM_VALIDATION_ATTEMPTS,
+            "response": pruned_response,
+            "validation_errors": [],
+            "fallback": "PRUNED_INVALID_OPTIONAL_GLOBAL_ITEMS",
+            "pruned_global_items": removed_items,
+        }
+
+    # Última barrera v3.10.8.5.4: la narrativa global no invalida
+    # hechos deterministas ya validados. Si retries + repairs no alcanzan,
+    # construimos una síntesis mínima desde next_stint_plan y recurrencia.
     fallback_response = build_deterministic_global_fallback(
         session_coaching_facts
     )
@@ -16908,14 +17028,20 @@ def get_validated_global_response(
     )
 
     if not fallback_errors:
-        fallback_response["next_session_priorities"] = (
-            build_deterministic_next_session_priorities(session_coaching_facts)
+        fallback_response[
+            "next_session_priorities"
+        ] = (
+            build_deterministic_next_session_priorities(
+                session_coaching_facts
+            )
         )
+
         print(
             "Síntesis global: fallback determinista v3.10.8.5.4 aplicado; "
-            "la respuesta narrativa local no pudo validarse, pero la sesión "
-            "se guarda desde next_stint_plan y recurrencia de Python."
+            "la narrativa del backend no pudo validarse, pero la sesión se "
+            "guarda desde next_stint_plan y recurrencia de Python."
         )
+
         return {
             "status": "VALID",
             "attempts": MAX_GLOBAL_LLM_VALIDATION_ATTEMPTS,
@@ -16925,20 +17051,44 @@ def get_validated_global_response(
             "llm_validation_errors": errors or [],
         }
 
-    rejected_path = os.path.join(output_dir, "global_REJECTED.txt")
+    rejected_path = os.path.join(
+        output_dir,
+        "global_REJECTED.txt",
+    )
+
     save_text(
         rejected_path,
-        "VALIDATION ERRORS\n=================\n"
-        + "\n".join(fallback_errors or errors or [])
-        + "\n\nRAW RESPONSE\n============\n"
-        + (last_raw if isinstance(last_raw, str) else repr(last_raw)),
+        (
+            "VALIDATION ERRORS\n"
+            "=================\n"
+            + "\n".join(
+                errors or []
+            )
+            + "\n\nRAW RESPONSE\n"
+            "============\n"
+            + (
+                last_raw
+                if isinstance(
+                    last_raw,
+                    str,
+                )
+                else repr(last_raw)
+            )
+        ),
     )
 
     return {
-        "status": "REJECTED",
-        "attempts": MAX_GLOBAL_LLM_VALIDATION_ATTEMPTS,
-        "response": None,
-        "validation_errors": fallback_errors or errors or [],
+        "status":
+            "REJECTED",
+
+        "attempts":
+            MAX_GLOBAL_LLM_VALIDATION_ATTEMPTS,
+
+        "response":
+            None,
+
+        "validation_errors":
+            errors or [],
     }
 
 
@@ -17127,9 +17277,10 @@ def render_global_analysis(
                     lines.append(f"**Segundo cue:** {prose(second_cue)}")
                     lines.append("")
 
-            for precision_line in _render_precision_evidence_lines(driver_cues[0]):
+            precision_lines = _render_precision_evidence_lines(driver_cues[0])
+            for precision_line in precision_lines:
                 lines.append(precision_line)
-            if _render_precision_evidence_lines(driver_cues[0]):
+            if precision_lines:
                 lines.append("")
 
         reference_profiles = [
@@ -17718,6 +17869,9 @@ def save_result(
             "model":
                 MODEL_NAME,
 
+            "deepseek_usage":
+                deepseek_usage_summary(),
+
             "context":
                 CONTEXT_SIZE,
 
@@ -17800,8 +17954,10 @@ def save_result(
 # ============================================================
 
 def main():
+    reset_deepseek_usage()
+
     print_header(
-        "RACE ENGINEER - LLM ANALYSIS v3.10.8.5.4"
+        "RACE ENGINEER - LLM ANALYSIS v3.10.8.5.4 / LLAMACPP provisional v2"
     )
 
     input_path = find_json_file()
@@ -17852,7 +18008,7 @@ def main():
         )
     )[0]
 
-    output_dir = str(llm_debug_dir(input_path, backend="ollama"))
+    output_dir = str(llm_debug_dir(input_path, backend="deepseek"))
 
     os.makedirs(
         output_dir,
@@ -17862,7 +18018,7 @@ def main():
     print()
 
     print(
-        f"Modelo: {MODEL_NAME}"
+        f"Modelo/API: {MODEL_NAME} @ LLAMACPP"
     )
 
     print(
@@ -18397,6 +18553,8 @@ def main():
         global_analysis,
         global_validation_audit=global_validation_audit,
     )
+
+    print_deepseek_usage_summary()
 
     print()
 

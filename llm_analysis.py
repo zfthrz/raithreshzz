@@ -12,6 +12,7 @@ import urllib.request
 from datetime import datetime, timezone
 
 from runtime_paths import llm_debug_dir, llm_result_dir
+from coaching_precision import enrich_patterns_with_precision
 
 
 # ============================================================
@@ -13391,6 +13392,40 @@ def build_session_coaching_facts(
         track_location_context,
     )
 
+    # H5.4/P1 — precisión driver-facing derivada. La coordenada LMU absoluta
+    # permanece intacta; sólo se añade provenance de vueltas y una referencia
+    # relativa a curva cuando existe un perfil validado.
+    precision_profile = (
+        track_location_context.get("profile")
+        if isinstance(track_location_context, dict)
+        and track_location_context.get("status") == "ACTIVE"
+        else None
+    )
+    enrich_patterns_with_precision(
+        repeated_braking_point_patterns,
+        precision_profile,
+        event_kind="braking_onset",
+        point_key="reference_onset_m",
+    )
+    enrich_patterns_with_precision(
+        repeated_brake_release_patterns,
+        precision_profile,
+        event_kind="brake_release",
+        point_key="reference_release_m",
+    )
+    enrich_patterns_with_precision(
+        repeated_throttle_onset_patterns,
+        precision_profile,
+        event_kind="throttle_onset",
+        point_key="reference_onset_m",
+    )
+    enrich_patterns_with_precision(
+        repeated_throttle_release_patterns,
+        precision_profile,
+        event_kind="throttle_release",
+        point_key="reference_release_m",
+    )
+
     # Patrones usados por el debrief mantienen compatibilidad con el plan de
     # coaching. En paralelo exponemos una capa de recurrencia puramente física.
     repeated_input_patterns = []
@@ -14554,14 +14589,22 @@ def build_driver_cues_for_plan_item(item, max_cues=2):
             [safe_int(pattern.get("comparison_count")) or 1 for pattern in brake_patterns],
             default=1,
         )
-        cues.append({
+        cue = {
             "channel": "brake",
             "kind": "spatial_points",
             "text": text,
             "source": "authorized_brake_onset_release",
             "point_comparison_count": point_count,
             "region_comparison_count": safe_int(item.get("comparison_count")) or 0,
-        })
+        }
+        precision_evidence = [
+            pattern.get("precision_evidence")
+            for pattern in brake_patterns
+            if isinstance(pattern.get("precision_evidence"), dict)
+        ]
+        if precision_evidence:
+            cue["precision_evidence"] = precision_evidence
+        cues.append(cue)
 
     throttle_onset = point_phrase(
         first_pattern("throttle_onset_patterns"),
@@ -14611,6 +14654,13 @@ def build_driver_cues_for_plan_item(item, max_cues=2):
         }
         if profile is not None:
             cue["reference_action_profile"] = profile
+        precision_evidence = [
+            pattern.get("precision_evidence")
+            for pattern in throttle_patterns
+            if isinstance(pattern.get("precision_evidence"), dict)
+        ]
+        if precision_evidence:
+            cue["precision_evidence"] = precision_evidence
         cues.append(cue)
         if profile is not None and profile_text:
             cues.append({
@@ -14703,6 +14753,65 @@ def build_driver_cues_for_plan_item(item, max_cues=2):
             })
 
     return cues[:max_cues]
+
+def _render_precision_evidence_lines(cue):
+    if not isinstance(cue, dict):
+        return []
+    evidence_rows = [
+        row
+        for row in (cue.get("precision_evidence", []) or [])
+        if isinstance(row, dict)
+    ]
+    if not evidence_rows:
+        return []
+
+    # El primer punto del cue es el ancla principal. Si el cue contiene onset
+    # y release, los detalles completos permanecen en el JSON.
+    evidence = evidence_rows[0]
+    reference_lap = safe_int(evidence.get("reference_lap"))
+    supporting_laps = [
+        safe_int(value)
+        for value in (evidence.get("supporting_laps", []) or [])
+        if safe_int(value) is not None
+    ]
+    anchor = evidence.get("corner_relative_reference")
+    anchor_label = (
+        str(anchor.get("driver_label") or "").strip()
+        if isinstance(anchor, dict)
+        else ""
+    )
+
+    lines = []
+    reference_parts = []
+    if reference_lap is not None:
+        reference_parts.append(f"vuelta {reference_lap}")
+    if anchor_label:
+        reference_parts.append(f"punto de referencia {anchor_label}")
+    if reference_parts:
+        lines.append("**Referencia del cue:** " + "; ".join(reference_parts) + ".")
+
+    if supporting_laps:
+        if len(supporting_laps) == 1:
+            laps_text = f"la vuelta {supporting_laps[0]}"
+        else:
+            laps_text = "las vueltas " + ", ".join(str(v) for v in supporting_laps[:-1]) + f" y {supporting_laps[-1]}"
+        evidence_parts = [f"el mismo desvío apareció en {laps_text}"]
+        low = safe_float(evidence.get("observed_delta_min_m"))
+        high = safe_float(evidence.get("observed_delta_max_m"))
+        representative = safe_int(evidence.get("representative_delta_m"))
+        if low is not None and high is not None:
+            low_i = int(round(low))
+            high_i = int(round(high))
+            if low_i == high_i:
+                evidence_parts.append(f"diferencia observada ~{low_i} m")
+            else:
+                evidence_parts.append(f"rango observado {low_i}–{high_i} m")
+        if representative is not None:
+            evidence_parts.append(f"valor representativo {representative} m")
+        lines.append("**Evidencia entre vueltas:** " + "; ".join(evidence_parts) + ".")
+
+    return lines
+
 
 def _deterministic_session_focus(plan):
     parts = []
@@ -17017,6 +17126,11 @@ def render_global_analysis(
                 if second_cue:
                     lines.append(f"**Segundo cue:** {prose(second_cue)}")
                     lines.append("")
+
+            for precision_line in _render_precision_evidence_lines(driver_cues[0]):
+                lines.append(precision_line)
+            if _render_precision_evidence_lines(driver_cues[0]):
+                lines.append("")
 
         reference_profiles = [
             profile

@@ -12,7 +12,11 @@ import urllib.request
 from datetime import datetime, timezone
 
 from runtime_paths import llm_debug_dir, llm_result_dir
-from coaching_precision import enrich_patterns_with_precision, enrich_plan_items_with_precision
+from coaching_precision import (
+    enrich_patterns_with_precision,
+    enrich_plan_items_with_precision,
+    render_track_reference_section,
+)
 
 
 # ============================================================
@@ -18407,6 +18411,17 @@ def main():
             global_structured,
         )
     )
+
+    track_reference_section = render_track_reference_section(
+        track_location_context.get("profile"),
+        session_coaching_facts.get("next_stint_plan"),
+    )
+    if track_reference_section:
+        global_analysis = (
+            global_analysis.rstrip()
+            + "\n\n"
+            + track_reference_section
+        )
 
     output_path, _ = save_result(
         input_path,

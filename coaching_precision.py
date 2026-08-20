@@ -310,3 +310,125 @@ def enrich_plan_items_with_precision(
                 expected_location=item.get("track_location"),
             )
     return plan
+# ============================================================
+# H5.4 P3 - DETERMINISTIC TRACK REFERENCE
+# ============================================================
+
+_TRACK_REFERENCE_VALID_STATUSES = {
+    "VALIDATED_MULTI_SESSION",
+    "VALIDATED",
+}
+
+
+def _track_reference_turn_label(start_turn: int, end_turn: int) -> str:
+    if start_turn == end_turn:
+        return f"T{start_turn}"
+    return f"T{start_turn}\u2013T{end_turn}"
+
+
+def _track_reference_label_turns(
+    location: dict[str, Any] | None,
+) -> set[int]:
+    if not isinstance(location, dict):
+        return set()
+
+    label = str(location.get("label") or "")
+    return {
+        int(value)
+        for value in re.findall(r"\bT(\d+)\b", label)
+    }
+
+
+def _track_reference_plan_zones(
+    plan: list[dict[str, Any]] | None,
+) -> dict[int, list[str]]:
+    if not isinstance(plan, list):
+        return {}
+
+    by_turn: dict[int, list[str]] = {}
+    for index, item in enumerate(plan[:26]):
+        if not isinstance(item, dict):
+            continue
+
+        zone_label = f"ZONA {chr(ord('A') + index)}"
+        location = item.get("track_location")
+
+        turns = _track_reference_label_turns(location)
+        if not turns:
+            turns = _location_turns(location)
+
+        for turn in sorted(turns):
+            labels = by_turn.setdefault(turn, [])
+            if zone_label not in labels:
+                labels.append(zone_label)
+
+    return by_turn
+
+
+def build_track_reference_rows(
+    profile: dict[str, Any] | None,
+    plan: list[dict[str, Any]] | None = None,
+) -> list[dict[str, Any]]:
+    if not isinstance(profile, dict):
+        return []
+    if str(profile.get("status") or "") not in _TRACK_REFERENCE_VALID_STATUSES:
+        return []
+
+    turns = _turns(profile)
+    if not turns:
+        return []
+
+    zone_by_turn = _track_reference_plan_zones(plan)
+    rows: list[dict[str, Any]] = []
+
+    for turn in turns:
+        number = int(turn["turn"])
+        raw_name = str(turn.get("name") or "").strip()
+        name = raw_name or f"Turn {number}"
+        zone_labels = list(zone_by_turn.get(number, []))
+
+        if (
+            rows
+            and rows[-1]["end_turn"] + 1 == number
+            and rows[-1]["name"] == name
+            and rows[-1]["plan_zones"] == zone_labels
+        ):
+            rows[-1]["end_turn"] = number
+            for label in zone_labels:
+                if label not in rows[-1]["plan_zones"]:
+                    rows[-1]["plan_zones"].append(label)
+            continue
+
+        rows.append({
+            "start_turn": number,
+            "end_turn": number,
+            "name": name,
+            "plan_zones": zone_labels,
+        })
+
+    return rows
+
+
+def render_track_reference_section(
+    profile: dict[str, Any] | None,
+    plan: list[dict[str, Any]] | None = None,
+) -> str:
+    rows = build_track_reference_rows(profile, plan)
+    if not rows:
+        return ""
+
+    lines = [
+        "## Referencia rápida del circuito",
+        "",
+    ]
+    for row in rows:
+        turn_label = _track_reference_turn_label(
+            row["start_turn"],
+            row["end_turn"],
+        )
+        line = f"- {turn_label} — {row['name']}"
+        if row["plan_zones"]:
+            line += " \u2190 " + " / ".join(row["plan_zones"])
+        lines.append(line)
+
+    return "\n".join(lines)

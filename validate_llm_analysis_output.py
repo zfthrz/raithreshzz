@@ -898,6 +898,23 @@ def validate_global_render(
             f"renderizador determinista: {exc}"
         )
     else:
+        # H5.4 P3: global_analysis includes a deterministic track-reference
+        # appendix after the canonical coaching renderer. Reconstruct exactly
+        # the same appendix here instead of weakening the equality check.
+        track_location_context = llm_renderer.load_track_location_context(
+            data.get("metadata", {})
+        )
+        track_reference_section = llm_renderer.render_track_reference_section(
+            track_location_context.get("profile"),
+            data.get("session_coaching_facts", {}).get("next_stint_plan"),
+        )
+        if track_reference_section:
+            expected_analysis = (
+                expected_analysis.rstrip()
+                + "\n\n"
+                + track_reference_section
+            )
+
         if analysis != expected_analysis:
             errors.append(
                 "global_analysis no coincide exactamente con el "

@@ -1,7 +1,9 @@
 from coaching_precision import (
     build_precision_evidence,
+    build_track_reference_rows,
     corner_relative_anchor,
     lap_support_from_pattern,
+    render_track_reference_section,
 )
 
 
@@ -199,3 +201,107 @@ def test_location_match_keeps_relative_anchor():
         "anchor_turn": 2,
         "allowed_turns": [2],
     }
+def test_track_reference_groups_consecutive_same_name_and_marks_plan():
+    profile = {
+        "status": "VALIDATED_MULTI_SESSION",
+        "turns": [
+            {"turn": 1, "name": "TGR Corner", "start_m": 700, "apex_m": 760, "end_m": 820},
+            {"turn": 2, "name": "Turn 2", "start_m": 830, "apex_m": 900, "end_m": 1000},
+            {"turn": 3, "name": "Coca-Cola Corner", "start_m": 1200, "apex_m": 1280, "end_m": 1380},
+            {"turn": 4, "name": "100R", "start_m": 1500, "apex_m": 1620, "end_m": 1750},
+            {"turn": 5, "name": "100R", "start_m": 1750, "apex_m": 1850, "end_m": 1950},
+        ],
+    }
+    plan = [
+        {"track_location": {
+            "status": "RESOLVED",
+            "label": "T1 — TGR Corner",
+            "overlaps": [{"turn": 1, "overlap_m": 40.0, "overlap_share": 0.8}],
+        }},
+        {"track_location": {
+            "status": "RESOLVED",
+            "label": "T3 — Coca-Cola Corner",
+            "overlaps": [{"turn": 3, "overlap_m": 30.0, "overlap_share": 0.6}],
+        }},
+        {"track_location": {
+            "status": "RESOLVED",
+            "label": "T4–T5 — 100R",
+            "overlaps": [
+                {"turn": 4, "overlap_m": 50.0, "overlap_share": 0.7},
+                {"turn": 5, "overlap_m": 45.0, "overlap_share": 0.6},
+            ],
+        }},
+    ]
+
+    rows = build_track_reference_rows(profile, plan)
+    assert rows == [
+        {"start_turn": 1, "end_turn": 1, "name": "TGR Corner", "plan_zones": ["ZONA A"]},
+        {"start_turn": 2, "end_turn": 2, "name": "Turn 2", "plan_zones": []},
+        {"start_turn": 3, "end_turn": 3, "name": "Coca-Cola Corner", "plan_zones": ["ZONA B"]},
+        {"start_turn": 4, "end_turn": 5, "name": "100R", "plan_zones": ["ZONA C"]},
+    ]
+
+    rendered = render_track_reference_section(profile, plan)
+    assert "- T1 — TGR Corner ← ZONA A" in rendered
+    assert "- T4–T5 — 100R ← ZONA C" in rendered
+
+
+def test_track_reference_fails_closed_without_validated_profile():
+    profile = {
+        "status": "SHADOW_ONLY",
+        "turns": [
+            {"turn": 1, "name": "Hairpin", "start_m": 0, "apex_m": 50, "end_m": 100},
+        ],
+    }
+    assert build_track_reference_rows(profile) == []
+    assert render_track_reference_section(profile) == ""
+def test_track_reference_prefers_explicit_label_turns_over_overlap_spill():
+    profile = {
+        "status": "VALIDATED_MULTI_SESSION",
+        "turns": [
+            {"turn": 11, "name": "Dunlop", "start_m": 2850, "apex_m": 2910, "end_m": 3000},
+            {"turn": 12, "name": "Dunlop", "start_m": 3000, "apex_m": 3060, "end_m": 3120},
+            {"turn": 13, "name": "13th Corner", "start_m": 3120, "apex_m": 3180, "end_m": 3240},
+        ],
+    }
+    plan = [{
+        "track_location": {
+            "status": "RESOLVED",
+            "label": "T12 — Dunlop",
+            "overlaps": [
+                {"turn": 12, "overlap_m": 60.0, "overlap_share": 0.75},
+                {"turn": 13, "overlap_m": 20.0, "overlap_share": 0.25},
+            ],
+        },
+    }]
+
+    rows = build_track_reference_rows(profile, plan)
+    assert rows == [
+        {"start_turn": 11, "end_turn": 11, "name": "Dunlop", "plan_zones": []},
+        {"start_turn": 12, "end_turn": 12, "name": "Dunlop", "plan_zones": ["ZONA A"]},
+        {"start_turn": 13, "end_turn": 13, "name": "13th Corner", "plan_zones": []},
+    ]
+
+
+def test_track_reference_does_not_group_same_name_with_different_zone_marks():
+    profile = {
+        "status": "VALIDATED_MULTI_SESSION",
+        "turns": [
+            {"turn": 11, "name": "Dunlop", "start_m": 2850, "apex_m": 2910, "end_m": 3000},
+            {"turn": 12, "name": "Dunlop", "start_m": 3000, "apex_m": 3060, "end_m": 3120},
+        ],
+    }
+    plan = [{
+        "track_location": {
+            "status": "RESOLVED",
+            "label": "T12 — Dunlop",
+            "overlaps": [
+                {"turn": 12, "overlap_m": 60.0, "overlap_share": 1.0},
+            ],
+        },
+    }]
+
+    rendered = render_track_reference_section(profile, plan)
+    assert "- T11 — Dunlop" in rendered
+    assert "- T12 — Dunlop ← ZONA A" in rendered
+    assert "T11–T12" not in rendered

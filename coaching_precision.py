@@ -11,7 +11,7 @@ import re
 import statistics
 from typing import Any
 
-PRECISION_EVIDENCE_VERSION = "0.3"
+PRECISION_EVIDENCE_VERSION = "0.4"
 _COMPARISON_RE = re.compile(r"^\s*(\d+)\s*(?:->|→)\s*(\d+)\s*$")
 
 
@@ -244,6 +244,48 @@ def _coherent_anchor(
         "allowed_turns": sorted(allowed_turns),
     }
 
+def _constrained_anchor_locality(
+    anchor: dict[str, Any] | None,
+    profile: dict[str, Any] | None,
+) -> dict[str, Any]:
+    """Require a P4-reselected anchor to remain local to its target turn.
+
+    The gate is geometry-derived rather than a fixed metre threshold: the
+    absolute cue offset must not exceed the validated span of the target turn.
+    This applies only to constrained reselection; ordinary P1/P2 anchors are
+    unchanged.
+    """
+    if not isinstance(anchor, dict) or not isinstance(profile, dict):
+        return {"status": "UNAVAILABLE"}
+
+    try:
+        anchor_turn = int(anchor.get("anchor_turn"))
+    except (TypeError, ValueError):
+        return {"status": "UNAVAILABLE"}
+
+    offset = _finite_float(anchor.get("relative_offset_m"))
+    target = next(
+        (turn for turn in _turns(profile) if turn["turn"] == anchor_turn),
+        None,
+    )
+    if offset is None or target is None:
+        return {"status": "UNAVAILABLE", "anchor_turn": anchor_turn}
+
+    turn_span_m = target["end_m"] - target["start_m"]
+    if turn_span_m <= 0:
+        return {"status": "UNAVAILABLE", "anchor_turn": anchor_turn}
+
+    abs_offset_m = abs(offset)
+    result = {
+        "anchor_turn": anchor_turn,
+        "abs_offset_m": abs_offset_m,
+        "turn_span_m": turn_span_m,
+    }
+    if abs_offset_m > turn_span_m:
+        return {"status": "NONLOCAL", **result}
+    return {"status": "LOCAL", **result}
+
+
 def build_precision_evidence(
     pattern: dict[str, Any],
     profile: dict[str, Any] | None,
@@ -276,13 +318,25 @@ def build_precision_evidence(
             and constrained_coherence.get("status") == "MATCHED"
         ):
             original_anchor_turn = coherence.get("anchor_turn")
-            anchor = constrained_anchor
-            coherence = {
-                "status": "RESELECTED_WITHIN_LOCATION",
-                "anchor_turn": constrained_anchor.get("anchor_turn"),
-                "original_anchor_turn": original_anchor_turn,
-                "allowed_turns": sorted(allowed_turns),
-            }
+            locality = _constrained_anchor_locality(constrained_anchor, profile)
+            if locality.get("status") == "LOCAL":
+                anchor = constrained_anchor
+                coherence = {
+                    "status": "RESELECTED_WITHIN_LOCATION",
+                    "anchor_turn": constrained_anchor.get("anchor_turn"),
+                    "original_anchor_turn": original_anchor_turn,
+                    "allowed_turns": sorted(allowed_turns),
+                    "locality": locality,
+                }
+            else:
+                anchor = None
+                coherence = {
+                    "status": "WITHHELD_NONLOCAL_RESELECTION",
+                    "anchor_turn": original_anchor_turn,
+                    "candidate_anchor_turn": constrained_anchor.get("anchor_turn"),
+                    "allowed_turns": sorted(allowed_turns),
+                    "locality": locality,
+                }
 
     evidence = {
         "version": PRECISION_EVIDENCE_VERSION,

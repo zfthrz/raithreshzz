@@ -12,7 +12,7 @@ import urllib.request
 from datetime import datetime, timezone
 
 from runtime_paths import llm_debug_dir, llm_result_dir
-from coaching_precision import enrich_patterns_with_precision
+from coaching_precision import enrich_patterns_with_precision, enrich_plan_items_with_precision
 
 
 # ============================================================
@@ -10616,10 +10616,11 @@ def _single_finding_plan_item(
     finding,
     label,
 ):
-    braking = _single_fact_as_plan_pattern(finding.get("braking_point"))
-    brake_release = _single_fact_as_plan_pattern(finding.get("brake_release"))
-    throttle_onset = _single_fact_as_plan_pattern(finding.get("throttle_onset"))
-    throttle_release = _single_fact_as_plan_pattern(finding.get("throttle_release"))
+    comparison = finding.get("comparison")
+    braking = _single_fact_as_plan_pattern(finding.get("braking_point"), comparison)
+    brake_release = _single_fact_as_plan_pattern(finding.get("brake_release"), comparison)
+    throttle_onset = _single_fact_as_plan_pattern(finding.get("throttle_onset"), comparison)
+    throttle_release = _single_fact_as_plan_pattern(finding.get("throttle_release"), comparison)
 
     channel_rows = [
         item
@@ -13754,6 +13755,13 @@ def build_session_coaching_facts(
         track_location_context,
     )
 
+    # H5.4/P2 — extend the same deterministic precision layer to the final
+    # selected plan, including authorized SINGLE physical-point cues.
+    enrich_plan_items_with_precision(
+        next_stint_plan,
+        precision_profile,
+    )
+
     _attach_point_anchored_reference_profiles(
         next_stint_plan,
         source_data,
@@ -14657,7 +14665,7 @@ def _plan_item_has_actionable_coaching(item):
     return False
 
 
-def _single_fact_as_plan_pattern(fact):
+def _single_fact_as_plan_pattern(fact, comparison=None):
     if not isinstance(fact, dict):
         return None
     if not fact.get("authorized_numeric_coaching"):
@@ -14669,6 +14677,18 @@ def _single_fact_as_plan_pattern(fact):
     value = dict(fact)
     value["status"] = "SINGLE"
     value["comparison_count"] = 1
+
+    # H5.4/P2 — preserve explicit single-comparison provenance so the same
+    # deterministic precision helper used by repeated patterns can describe
+    # reference/supporting laps and the observed magnitude without inference.
+    comparison_text = str(comparison or "").strip()
+    signed_delta = safe_float(value.get("comparison_minus_reference_m"))
+    if comparison_text:
+        value["comparisons"] = [comparison_text]
+    if signed_delta is not None:
+        value["deltas_m"] = [signed_delta]
+        value["median_delta_m"] = signed_delta
+
     return value
 
 

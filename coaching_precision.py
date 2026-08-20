@@ -11,7 +11,7 @@ import re
 import statistics
 from typing import Any
 
-PRECISION_EVIDENCE_VERSION = "0.1"
+PRECISION_EVIDENCE_VERSION = "0.2"
 _COMPARISON_RE = re.compile(r"^\s*(\d+)\s*(?:->|→)\s*(\d+)\s*$")
 
 
@@ -152,22 +152,104 @@ def corner_relative_anchor(
     }
 
 
+
+
+def _location_turns(location: dict[str, Any] | None) -> set[int]:
+    """Return deterministic turn ids represented by a resolved track location.
+
+    Prefer resolver overlaps because they are structured.  Labels are used only
+    as a fallback for transition/between-corner locations with no meaningful
+    overlap.  Empty means the location cannot safely constrain an anchor.
+    """
+    if not isinstance(location, dict) or location.get("status") not in {None, "RESOLVED"}:
+        return set()
+
+    turns: set[int] = set()
+    for row in location.get("overlaps", []) or []:
+        if not isinstance(row, dict):
+            continue
+        try:
+            turn = int(row.get("turn"))
+        except (TypeError, ValueError):
+            continue
+        overlap_m = _finite_float(row.get("overlap_m"))
+        overlap_share = _finite_float(row.get("overlap_share"))
+        if (overlap_m is not None and overlap_m >= 8.0) or (
+            overlap_share is not None and overlap_share >= 0.10
+        ):
+            turns.add(turn)
+
+    if turns:
+        return turns
+
+    label = str(location.get("label") or "")
+    return {int(value) for value in re.findall(r"\bT(\d+)\b", label)}
+
+
+def _coherent_anchor(
+    anchor: dict[str, Any] | None,
+    expected_location: dict[str, Any] | None,
+) -> tuple[dict[str, Any] | None, dict[str, Any]]:
+    """Fail closed when a relative anchor points to a different corner.
+
+    The parent plan item's validated track_location is authoritative for the
+    driver-facing region.  If it identifies turns and the derived anchor turn is
+    outside that set, suppress only the relative label; lap provenance/delta
+    evidence remains valid and renderable.
+    """
+    if not isinstance(anchor, dict):
+        return None, {"status": "NO_ANCHOR"}
+
+    allowed_turns = _location_turns(expected_location)
+    if not allowed_turns:
+        return anchor, {"status": "NOT_CONSTRAINED"}
+
+    try:
+        anchor_turn = int(anchor.get("anchor_turn"))
+    except (TypeError, ValueError):
+        return None, {
+            "status": "WITHHELD_UNRESOLVED_ANCHOR_TURN",
+            "allowed_turns": sorted(allowed_turns),
+        }
+
+    if anchor_turn not in allowed_turns:
+        return None, {
+            "status": "WITHHELD_LOCATION_MISMATCH",
+            "anchor_turn": anchor_turn,
+            "allowed_turns": sorted(allowed_turns),
+            "expected_label": (
+                expected_location.get("label")
+                if isinstance(expected_location, dict)
+                else None
+            ),
+        }
+
+    return anchor, {
+        "status": "MATCHED",
+        "anchor_turn": anchor_turn,
+        "allowed_turns": sorted(allowed_turns),
+    }
+
 def build_precision_evidence(
     pattern: dict[str, Any],
     profile: dict[str, Any] | None,
     *,
     event_kind: str,
     point_key: str,
+    expected_location: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
+    raw_anchor = corner_relative_anchor(
+        profile,
+        pattern.get(point_key),
+        event_kind=event_kind,
+    )
+    anchor, coherence = _coherent_anchor(raw_anchor, expected_location)
     evidence = {
         "version": PRECISION_EVIDENCE_VERSION,
         "event_kind": event_kind,
         **lap_support_from_pattern(pattern),
-        "corner_relative_reference": corner_relative_anchor(
-            profile,
-            pattern.get(point_key),
-            event_kind=event_kind,
-        ),
+        "corner_relative_reference": anchor,
+        "anchor_coherence": coherence,
     }
     return evidence
 
@@ -178,6 +260,7 @@ def enrich_patterns_with_precision(
     *,
     event_kind: str,
     point_key: str,
+    expected_location: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]] | None:
     """Attach deterministic precision evidence in-place to valid point patterns."""
     if not isinstance(patterns, list):
@@ -190,5 +273,40 @@ def enrich_patterns_with_precision(
             profile,
             event_kind=event_kind,
             point_key=point_key,
+            expected_location=expected_location,
         )
     return patterns
+
+
+def enrich_plan_items_with_precision(
+    plan: list[dict[str, Any]] | None,
+    profile: dict[str, Any] | None,
+) -> list[dict[str, Any]] | None:
+    """Attach precision evidence to every physical-point pattern in a plan.
+
+    Repeated patterns may already be enriched upstream; rebuilding the same
+    deterministic evidence is harmless. SINGLE patterns are enriched only when
+    their parent finding preserved an explicit comparison id and signed delta.
+    """
+    if not isinstance(plan, list):
+        return plan
+
+    specs = (
+        ("braking_point_patterns", "braking_onset", "reference_onset_m"),
+        ("brake_release_patterns", "brake_release", "reference_release_m"),
+        ("throttle_onset_patterns", "throttle_onset", "reference_onset_m"),
+        ("throttle_release_patterns", "throttle_release", "reference_release_m"),
+    )
+
+    for item in plan:
+        if not isinstance(item, dict):
+            continue
+        for field, event_kind, point_key in specs:
+            enrich_patterns_with_precision(
+                item.get(field),
+                profile,
+                event_kind=event_kind,
+                point_key=point_key,
+                expected_location=item.get("track_location"),
+            )
+    return plan

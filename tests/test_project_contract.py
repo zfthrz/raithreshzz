@@ -1,6 +1,6 @@
 import importlib
 import json
-import hashlib
+import os
 from pathlib import Path
 
 import prepare_calibration_batch
@@ -53,19 +53,6 @@ def test_analyzer_uses_centralized_runtime_output_path():
     assert "analysis_output_path(DB_PATH)" in source
 
 
-def test_llm_aliases_match_their_versioned_sources():
-    alias_contracts = {
-        "llm_analysis.py": "llm_analysis_v3_10_8_5_4_ingenierov3.py",
-        "llm_analysis_ingenierov3.py": "llm_analysis_v3_10_8_5_4_ingenierov3.py",
-        "llm_analysis_deepseek.py": "llm_analysis_v3_10_8_5_4_deepseek_v2.py",
-    }
-
-    for alias_name, source_name in alias_contracts.items():
-        alias_digest = hashlib.sha256((ROOT / alias_name).read_bytes()).digest()
-        source_digest = hashlib.sha256((ROOT / source_name).read_bytes()).digest()
-        assert alias_digest == source_digest
-
-
 def test_h5_2_raw_aliases_match_v0_2_sources():
     alias_contracts = {
         "build_cross_session_comparison.py": (
@@ -81,13 +68,21 @@ def test_h5_2_raw_aliases_match_v0_2_sources():
 
 def test_llm_scripts_use_centralized_runtime_paths_and_current_version():
     contracts = {
-        "llm_analysis_v3_10_8_5_4_ingenierov3.py": (
+        "llm_analysis.py": (
             'llm_debug_dir(input_path, backend="ollama")',
             '_llm_analysis_v3_10_8_5_4_{MODEL_NAME}.json',
         ),
-        "llm_analysis_v3_10_8_5_4_deepseek_v2.py": (
+        "llm_analysis_deepseek.py": (
             'llm_debug_dir(input_path, backend="deepseek")',
             '_llm_analysis_v3_10_8_5_4_deepseek_v2_{MODEL_NAME}.json',
+        ),
+        "llm_analysis_ingenierov3.py": (
+            'llm_debug_dir(input_path, backend="ollama")',
+            '_llm_analysis_v3_10_8_5_4_{MODEL_NAME}.json',
+        ),
+        "llm_analysis_llamacpp.py": (
+            'llm_debug_dir(input_path, backend="deepseek")',
+            '_llm_analysis_v3_10_8_5_4_llamacpp_{MODEL_NAME}.json',
         ),
     }
 

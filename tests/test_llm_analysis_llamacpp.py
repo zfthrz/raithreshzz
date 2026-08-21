@@ -24,16 +24,6 @@ def test_llamacpp_module_defaults(monkeypatch):
     assert hasattr(module, "llamacpp_chat")
 
 
-def test_llamacpp_aliases_match_versioned_sources():
-    alias_hash = hashlib.sha256(
-        (ROOT / "llm_analysis_llamacpp.py").read_bytes()
-    ).digest()
-    source_hash = hashlib.sha256(
-        (ROOT / "llm_analysis_v3_10_8_5_4_llamacpp.py").read_bytes()
-    ).digest()
-    assert alias_hash == source_hash
-
-
 def test_race_engineer_resolves_llamacpp_backend(monkeypatch):
     monkeypatch.delenv("LLAMACPP_MODEL", raising=False)
 

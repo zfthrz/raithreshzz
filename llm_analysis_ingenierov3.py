@@ -18,6 +18,8 @@ from coaching_precision import (
     enrich_plan_items_with_coaching_sequence,
     enrich_cues_with_deterministic_priority,
     enrich_plan_with_p9_presentation_metadata,
+    build_p10_plan_presentation,
+    build_p11_plan_focus,
     render_track_reference_section,
 )
 
@@ -13595,6 +13597,12 @@ def build_session_coaching_facts(
         next_stint_plan,
     )
 
+    # H5.4/P10 — deterministic driver-facing plan projection
+    next_stint_plan_presentation = build_p10_plan_presentation(next_stint_plan)
+
+    # H5.4/P11 — deterministic driver focus slots
+    next_stint_focus = build_p11_plan_focus(next_stint_plan, next_stint_plan_presentation)
+
     return {
         "track_location_profile":
             track_location_context_summary(
@@ -13626,6 +13634,10 @@ def build_session_coaching_facts(
             repeated_throttle_release_patterns,
         "next_stint_plan":
             next_stint_plan,
+        "next_stint_plan_presentation":
+            next_stint_plan_presentation,
+        "next_stint_focus":
+            next_stint_focus,
         "session_priority_policy": {
             "version":
                 SESSION_PRIORITY_POLICY_VERSION,

@@ -7,6 +7,8 @@ and lap-support provenance from already-authorized physical-point patterns.
 from __future__ import annotations
 
 import math
+import copy
+
 import re
 import statistics
 from typing import Any
@@ -1017,5 +1019,224 @@ def build_p9_presentation_order(plan: list[dict]) -> list[dict]:
     return result
 
 
-# Keep a simple reference function for backend integration.
+# Alias for mirrors: enrich plan items with P9 presentation metadata.
 enrich_plan_with_p9_presentation_metadata = build_p9_presentation_order
+
+
+# ============================================================
+# H5.4 P11 - DETERMINISTIC DRIVER FOCUS SLOTS
+# ============================================================
+
+_P11_POLICY_VERSION = "0.1"
+_P11_STATUS_ACTIVE = "ACTIVE"
+_P11_STATUS_UNAVAILABLE = "UNAVAILABLE"
+_P11_MAX_FOCUS_ITEMS = 2
+
+
+def build_p11_plan_focus(
+    next_stint_plan: list[dict],
+    next_stint_plan_presentation: dict,
+) -> dict:
+    """Derive a presentation-only driver focus view from P10 projection.
+
+    This function:
+      1. Takes at most the first _MAX_FOCUS_ITEMS items from P10 presentation.
+      2. Deep-copies them into focus items.
+      3. Preserves all existing structured fields and driver_cues exactly.
+      4. Never uses time_loss, magnitude, speed, or LLM score.
+      5. Returns UNAVAILABLE if P10 is not ACTIVE or presentation is invalid.
+      6. Never mutates next_stint_plan or next_stint_plan_presentation.
+
+    Returns a dict with:
+      - "status": "ACTIVE" | "UNAVAILABLE"
+      - "policy_version": "0.1"
+      - "focus_count": number of items in items list
+      - "items": list of deep-copied plan items (at most 2)
+
+    This is presentation-only.  next_stint_plan and next_stint_plan_presentation
+    are NEVER reordered, mutated, filtered, or re-ranked by this function.
+    """
+    p10_meta = next_stint_plan_presentation.get("_p10_presentation", {})
+    if p10_meta.get("status") != _P10_STATUS_ACTIVE:
+        return {
+            "status": _P11_STATUS_UNAVAILABLE,
+            "policy_version": _P11_POLICY_VERSION,
+            "focus_count": 0,
+            "items": [],
+        }
+
+    presentation = next_stint_plan_presentation.get("presentation", [])
+    if not isinstance(presentation, list):
+        return {
+            "status": _P11_STATUS_UNAVAILABLE,
+            "policy_version": _P11_POLICY_VERSION,
+            "focus_count": 0,
+            "items": [],
+        }
+
+    # Take at most the first N items from P10 presentation.
+    focus_items = [copy.deepcopy(presentation[i]) for i in range(min(_P11_MAX_FOCUS_ITEMS, len(presentation)))]
+
+    return {
+        "status": _P11_STATUS_ACTIVE,
+        "policy_version": _P11_POLICY_VERSION,
+        "focus_count": len(focus_items),
+        "items": focus_items,
+    }
+
+
+# ============================================================
+# H5.4 P10 - DETERMINISTIC DRIVER-FACING PLAN PROJECTION
+# ============================================================
+
+_P10_STATUS_ACTIVE = "ACTIVE"
+_P10_STATUS_FALLBACK = "FALLBACK_ORIGINAL_ORDER"
+_P10_POLICY_VERSION = "0.1"
+
+# Closed failure reason codes.
+_REASON_MISSING_P9_METADATA = "MISSING_P9_METADATA"
+_REASON_INVALID_PRESENTATION_RANK = "INVALID_PRESENTATION_RANK"
+_REASON_DUPLICATE_PRESENTATION_RANK = "DUPLICATE_PRESENTATION_RANK"
+_REASON_NON_CONTIGUOUS_PRESENTATION_RANK = "NON_CONTIGUOUS_PRESENTATION_RANK"
+
+_VALID_REASONS = {
+    _REASON_MISSING_P9_METADATA,
+    _REASON_INVALID_PRESENTATION_RANK,
+    _REASON_DUPLICATE_PRESENTATION_RANK,
+    _REASON_NON_CONTIGUOUS_PRESENTATION_RANK,
+}
+
+
+def build_p10_plan_presentation(next_stint_plan: list[dict]) -> dict:
+    """Derive a presentation-only view of next_stint_plan, projected by P9 ranks.
+
+    This function:
+      1. Reads the _p9_presentation_metadata.presentation_rank from every item.
+      2. Validates that all ranks exist, are unique integers in {0..n-1}.
+      3. If validation passes: returns a NEW list (deepcopy) sorted by presentation_rank.
+      4. If validation fails: returns the original plan as a copy with FALLBACK metadata.
+
+    Returns a dict with:
+      - "presentation": the projected plan list
+      - "_p10_presentation": deterministic metadata dict
+
+    This is presentation-only.  The authoritative next_stint_plan is NEVER
+    reordered, mutated, filtered, or re-ranked by this function.
+    """
+    if not isinstance(next_stint_plan, list):
+        return {
+            "presentation": next_stint_plan if isinstance(next_stint_plan, list) else [],
+            "_p10_presentation": {
+                "status": _P10_STATUS_FALLBACK,
+                "policy_version": _P10_POLICY_VERSION,
+                "item_count": 0,
+                "reordered": False,
+                "reason": _REASON_MISSING_P9_METADATA,
+            },
+        }
+
+    n = len(next_stint_plan)
+
+    # Step 1: extract and validate presentation_ranks.
+    ranks: list[int | None] = []
+    for item in next_stint_plan:
+        if not isinstance(item, dict):
+            return {
+                "presentation": list(next_stint_plan),
+                "_p10_presentation": {
+                    "status": _P10_STATUS_FALLBACK,
+                    "policy_version": _P10_POLICY_VERSION,
+                    "item_count": n,
+                    "reordered": False,
+                    "reason": _REASON_MISSING_P9_METADATA,
+                },
+            }
+        p9_meta = item.get("_p9_presentation_metadata")
+        if not isinstance(p9_meta, dict):
+            return {
+                "presentation": list(next_stint_plan),
+                "_p10_presentation": {
+                    "status": _P10_STATUS_FALLBACK,
+                    "policy_version": _P10_POLICY_VERSION,
+                    "item_count": n,
+                    "reordered": False,
+                    "reason": _REASON_MISSING_P9_METADATA,
+                },
+            }
+        rank = p9_meta.get("presentation_rank")
+        if not isinstance(rank, int):
+            return {
+                "presentation": list(next_stint_plan),
+                "_p10_presentation": {
+                    "status": _P10_STATUS_FALLBACK,
+                    "policy_version": _P10_POLICY_VERSION,
+                    "item_count": n,
+                    "reordered": False,
+                    "reason": _REASON_INVALID_PRESENTATION_RANK,
+                },
+            }
+        ranks.append(rank)
+
+    # Step 2: check for duplicates.
+    if len(set(ranks)) != len(ranks):
+        return {
+            "presentation": list(next_stint_plan),
+            "_p10_presentation": {
+                "status": _P10_STATUS_FALLBACK,
+                "policy_version": _P10_POLICY_VERSION,
+                "item_count": n,
+                "reordered": False,
+                "reason": _REASON_DUPLICATE_PRESENTATION_RANK,
+            },
+        }
+
+    # Step 3: check ranks form exactly {0..n-1}.
+    expected = set(range(n))
+    rank_set = set(ranks)
+    if rank_set != expected:
+        return {
+            "presentation": list(next_stint_plan),
+            "_p10_presentation": {
+                "status": _P10_STATUS_FALLBACK,
+                "policy_version": _P10_POLICY_VERSION,
+                "item_count": n,
+                "reordered": False,
+                "reason": _REASON_NON_CONTIGUOUS_PRESENTATION_RANK,
+            },
+        }
+
+    # Step 4: build presentation view as a deepcopy sorted by presentation_rank.
+    indexed = list(enumerate(next_stint_plan))
+    indexed.sort(key=lambda ix: ranks[ix[0]])
+
+    presentation = [copy.deepcopy(next_stint_plan[idx]) for idx, _ in indexed]
+
+    # Determine if presentation order differs from original by comparing indices.
+    original_order = [idx for idx, _ in indexed]
+    reordered = original_order != list(range(n))
+
+    # Infer a human-readable reason from the ordering.
+    reason_text = None
+    if reordered:
+        # Check if there are repeated families.
+        families = [
+            item.get("_p9_presentation_metadata", {}).get("primary_action_family", "UNKNOWN")
+            for item in presentation
+        ]
+        if len(set(families)) < n:
+            reason_text = "REPETITION_ELIMINATION"
+        else:
+            reason_text = "DIVERSITY_REORDERING"
+    else:
+        reason_text = "DIVERSITY_NO_CHANGE"
+
+    return {
+        "presentation": presentation,
+        "_p10_presentation": {
+            "status": _P10_STATUS_ACTIVE,
+            "policy_version": _P10_POLICY_VERSION,
+            "item_count": n,
+            "reordered": reordered,
+            "reason": reason_text,
+        },
+    }

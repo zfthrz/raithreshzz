@@ -595,7 +595,21 @@ def _track_reference_plan_zones(
         if not isinstance(item, dict):
             continue
 
-        zone_label = f"ZONA {chr(ord('A') + index)}"
+        # Preserve authoritative zone identity after P9/P10 presentation
+        # reordering. Legacy/pre-P9 items may not carry plan_label, so keep
+        # the historical positional label only as a compatibility fallback.
+        raw_plan_label = item.get("plan_label")
+        plan_label = (
+            raw_plan_label.strip().upper()
+            if isinstance(raw_plan_label, str)
+            else ""
+        )
+
+        if re.fullmatch(r"[A-Z]", plan_label):
+            zone_label = f"ZONA {plan_label}"
+        else:
+            zone_label = f"ZONA {chr(ord('A') + index)}"
+
         location = item.get("track_location")
 
         turns = _track_reference_label_turns(location)

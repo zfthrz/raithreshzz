@@ -17,6 +17,7 @@ from coaching_precision import (
     enrich_plan_items_with_precision,
     enrich_plan_items_with_coaching_sequence,
     enrich_cues_with_deterministic_priority,
+    enrich_plan_with_p9_presentation_metadata,
     render_track_reference_section,
 )
 
@@ -13786,6 +13787,11 @@ def build_session_coaching_facts(
             item["driver_cues"],
         )
         item["actionable_cue_count"] = len(item["driver_cues"])
+
+    # H5.4/P9 — deterministic cross-zone driver-plan diversity ordering
+    next_stint_plan = enrich_plan_with_p9_presentation_metadata(
+        next_stint_plan,
+    )
 
     return {
         "track_location_profile":

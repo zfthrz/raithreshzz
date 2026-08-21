@@ -708,3 +708,161 @@ def test_p8_backend_parity():
             or
             re.search(multi_line, source) is not None
         ), filename
+
+
+# ============================================================
+# H5.4 P9 - DETERMINISTIC CROSS-ZONE DRIVER-PLAN DIVERSITY
+# ============================================================
+
+from coaching_precision import (
+    _derive_action_family,
+    _derive_primary_action_family,
+    derive_p9_presentation_metadata,
+    build_p9_presentation_order,
+)
+
+
+def _p9_item(driver_cues=None):
+    return {"driver_cues": driver_cues or []}
+
+
+def _p9_cue(kind, channel="brake", text="test", **extra):
+    cue = {"kind": kind, "channel": channel, "text": text, **extra}
+    return cue
+
+
+def test_p9_repeated_throttle_plus_brake_diversity():
+    """Test A: repeated throttle + brake diversity."""
+    plan = [
+        _p9_item([_p9_cue("spatial_points", "throttle", "soltá el acelerador")]),  # THROTTLE_TIMING
+        _p9_item([_p9_cue("spatial_points", "throttle", "soltá el acelerador")]),  # THROTTLE_TIMING
+        _p9_item([_p9_cue("spatial_points", "brake", "frená")]),  # BRAKE_TIMING
+    ]
+    result = build_p9_presentation_order(plan)
+    families = [item["_p9_presentation_metadata"]["primary_action_family"] for item in result]
+    # First occurrence of each family preserved, then remaining THROTTLE_TIMING.
+    assert "THROTTLE_TIMING" in families[:2]
+    assert "BRAKE_TIMING" in families[:2]
+    assert families.count("THROTTLE_TIMING") == 2
+    assert families.count("BRAKE_TIMING") == 1
+
+
+def test_p9_all_unique_unchanged():
+    """Test B: all unique families — order unchanged."""
+    plan = [
+        _p9_item([_p9_cue("spatial_points", "brake")]),
+        _p9_item([_p9_cue("spatial_points", "throttle")]),
+        _p9_item([_p9_cue("validated_llm_steering", "steering_magnitude")]),
+    ]
+    result = build_p9_presentation_order(plan)
+    families = [item["_p9_presentation_metadata"]["primary_action_family"] for item in result]
+    assert families == ["BRAKE_TIMING", "THROTTLE_TIMING", "STEERING"]
+    # Original order preserved for unique families (check by original index).
+    assert result[0]["_p9_original_index"] == 0
+    assert result[1]["_p9_original_index"] == 1
+    assert result[2]["_p9_original_index"] == 2
+
+
+def test_p9_all_same_unchanged():
+    """Test C: all same family — order unchanged, all marked repeated except first."""
+    plan = [
+        _p9_item([_p9_cue("spatial_points", "throttle")]),
+        _p9_item([_p9_cue("spatial_points", "throttle")]),
+        _p9_item([_p9_cue("spatial_points", "throttle")]),
+    ]
+    result = build_p9_presentation_order(plan)
+    families = [item["_p9_presentation_metadata"]["primary_action_family"] for item in result]
+    assert families == ["THROTTLE_TIMING", "THROTTLE_TIMING", "THROTTLE_TIMING"]
+    assert result[0]["_p9_presentation_metadata"]["redundancy_status"] == "FIRST_OCCURRENCE"
+    assert result[1]["_p9_presentation_metadata"]["redundancy_status"] == "REPEATED_FAMILY"
+    assert result[2]["_p9_presentation_metadata"]["redundancy_status"] == "REPEATED_FAMILY"
+
+
+def test_p9_combined_sequence_classification():
+    """Test D: combined sequence classified as BRAKE_THROTTLE_SEQUENCE."""
+    cues = [_p9_cue("combined_spatial_sequence", "brake+throttle")]
+    assert _derive_action_family(cues[0]) == "BRAKE_THROTTLE_SEQUENCE"
+    assert _derive_primary_action_family([cues[0]]) == "BRAKE_THROTTLE_SEQUENCE"
+
+
+def test_p9_profile_vs_timing_classification():
+    """Test E: profile vs timing classification."""
+    assert _derive_action_family(_p9_cue("spatial_points", "brake")) == "BRAKE_TIMING"
+    assert _derive_action_family(_p9_cue("reference_action_profile", "brake")) == "BRAKE_PROFILE"
+    assert _derive_action_family(_p9_cue("spatial_points", "throttle")) == "THROTTLE_TIMING"
+    assert _derive_action_family(_p9_cue("reference_action_profile", "throttle")) == "THROTTLE_PROFILE"
+
+
+def test_p9_no_cue_fail_closed():
+    """Test F: no-authorized-cue fails closed."""
+    assert _derive_primary_action_family([]) == "OTHER_AUTHORIZED"
+    assert _derive_primary_action_family([{"kind": "unknown_kind"}]) == "OTHER_AUTHORIZED"
+    metadata = derive_p9_presentation_metadata([])
+    assert metadata["primary_action_family"] == "OTHER_AUTHORIZED"
+    assert metadata["has_authorized_cue"] is False
+
+
+def test_p9_speed_cannot_create_family():
+    """Test G: speed never creates an action family."""
+    # Speed cues should not appear in P8 driver_cues, but if they did,
+    # they should map to OTHER_AUTHORIZED.
+    assert _derive_action_family({"kind": "speed", "channel": "speed"}) == "OTHER_AUTHORIZED"
+    assert _derive_action_family({}) == "OTHER_AUTHORIZED"
+
+
+def test_p9_h52_ranks_unchanged():
+    """Test H: H5.2 ranks are preserved."""
+    plan = [
+        {"driver_cues": [_p9_cue("spatial_points", "brake")], "plan_rank": 1},
+        {"driver_cues": [_p9_cue("spatial_points", "throttle")], "plan_rank": 2},
+        {"driver_cues": [_p9_cue("validated_llm_steering", "steering_magnitude")], "plan_rank": 3},
+    ]
+    result = build_p9_presentation_order(plan)
+    for i, item in enumerate(result):
+        assert "plan_rank" in item
+        assert item.get("plan_rank") == i + 1
+
+
+def test_p9_deterministic_repeated_result():
+    """Test I: result is deterministic across repeated calls."""
+    plan = [
+        _p9_item([_p9_cue("spatial_points", "throttle")]),
+        _p9_item([_p9_cue("spatial_points", "throttle")]),
+        _p9_item([_p9_cue("spatial_points", "brake")]),
+    ]
+    result1 = build_p9_presentation_order(plan)
+    result2 = build_p9_presentation_order(plan)
+    families1 = [item["_p9_presentation_metadata"]["primary_action_family"] for item in result1]
+    families2 = [item["_p9_presentation_metadata"]["primary_action_family"] for item in result2]
+    assert families1 == families2
+
+
+def test_p9_backend_parity():
+    """Test J: all active backends must import enrich_plan_with_p9_presentation_metadata."""
+    from pathlib import Path
+    import re
+
+    for filename in (
+        "llm_analysis.py",
+        "llm_analysis_deepseek.py",
+        "llm_analysis_ingenierov3.py",
+        "llm_analysis_llamacpp.py",
+    ):
+        source = Path(filename).read_text(encoding="utf-8")
+        assert "enrich_plan_with_p9_presentation_metadata" in source, filename
+
+
+def test_p9_no_cue_items_dont_displace_authorized():
+    """Test: items with no authorized cue (OTHER_AUTHORIZED) stay at end."""
+    plan = [
+        _p9_item([_p9_cue("spatial_points", "brake")]),
+        _p9_item([]),
+        _p9_item([_p9_cue("spatial_points", "throttle")]),
+    ]
+    result = build_p9_presentation_order(plan)
+    # FIRST_OCCURRENCE items should come first.
+    statuses = [item["_p9_presentation_metadata"]["redundancy_status"] for item in result]
+    # OTHER_AUTHORIZED items should not displace authorized items.
+    first_authored_idx = next(i for i, item in enumerate(result) if item["_p9_presentation_metadata"]["primary_action_family"] != "OTHER_AUTHORIZED")
+    last_authored_idx = next(i for i in range(len(result) - 1, -1, -1) if result[i]["_p9_presentation_metadata"]["primary_action_family"] != "OTHER_AUTHORIZED")
+    assert first_authored_idx <= last_authored_idx

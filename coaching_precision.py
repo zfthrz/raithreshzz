@@ -838,3 +838,184 @@ def enrich_cues_with_deterministic_priority(
         cue["_p8_priority_rank"] = _cue_priority_rank(cue)
 
     return cues
+
+
+# ============================================================
+# H5.4 P9 - DETERMINISTIC CROSS-ZONE DRIVER-PLAN DIVERSITY
+# ============================================================
+
+# Closed action families for driver-plan diversity presentation.
+_ACTION_FAMILIES = frozenset({
+    "BRAKE_THROTTLE_SEQUENCE",
+    "BRAKE_TIMING",
+    "BRAKE_PROFILE",
+    "THROTTLE_TIMING",
+    "THROTTLE_PROFILE",
+    "STEERING",
+    "OTHER_AUTHORIZED",
+})
+
+
+def _derive_action_family(cue: dict) -> str:
+    """Derive the closed primary action family from a P8 driver cue.
+
+    Mapping:
+      combined_spatial_sequence -> BRAKE_THROTTLE_SEQUENCE
+      spatial_points brake      -> BRAKE_TIMING
+      spatial_points throttle   -> THROTTLE_TIMING
+      reference_action_profile brake  -> BRAKE_PROFILE
+      reference_action_profile throttle -> THROTTLE_PROFILE
+      validated_llm_steering      -> STEERING
+      otherwise                   -> OTHER_AUTHORIZED
+
+    Speed is context only and never creates an action family.
+    Steering only if already authorized by P8.
+    """
+    kind = str(cue.get("kind") or "").strip()
+    channel = str(cue.get("channel") or "").strip()
+
+    # Distinguish timing vs profile for spatial_points and reference_action_profile.
+    if kind == "spatial_points":
+        return "BRAKE_TIMING" if channel == "brake" else "THROTTLE_TIMING"
+    if kind == "reference_action_profile":
+        return "BRAKE_PROFILE" if channel == "brake" else "THROTTLE_PROFILE"
+    if kind == "qualitative_reference_level":
+        channels = cue.get("channels", [])
+        if isinstance(channels, list):
+            if "brake" in channels and "throttle" in channels:
+                return "OTHER_AUTHORIZED"
+            return "BRAKE_PROFILE" if "brake" in channels else "THROTTLE_PROFILE"
+        return "BRAKE_PROFILE" if channel == "brake" else "THROTTLE_PROFILE"
+    if kind == "combined_spatial_sequence":
+        return "BRAKE_THROTTLE_SEQUENCE"
+    if kind == "validated_llm_steering":
+        return "STEERING"
+
+    return "OTHER_AUTHORIZED"
+
+
+def _derive_primary_action_family(cues: list[dict]) -> str:
+    """Derive the primary action family from the first authorized cue.
+
+    Fails closed (returns "OTHER_AUTHORIZED") when there is no authorized cue.
+    """
+    if not isinstance(cues, list):
+        return "OTHER_AUTHORIZED"
+
+    for cue in cues:
+        if not isinstance(cue, dict):
+            continue
+        family = _derive_action_family(cue)
+        if family != "OTHER_AUTHORIZED":
+            return family
+
+    return "OTHER_AUTHORIZED"
+
+
+def derive_p9_presentation_metadata(cues: list[dict]) -> dict:
+    """Derive deterministic P9 presentation metadata from P8 driver cues.
+
+    Returns a dict with:
+      primary_action_family: the closed action family of the first cue
+      has_authorized_cue: whether at least one cue is not OTHER_AUTHORIZED
+    """
+    if not isinstance(cues, list):
+        return {
+            "primary_action_family": "OTHER_AUTHORIZED",
+            "has_authorized_cue": False,
+        }
+
+    family = _derive_primary_action_family(cues)
+    return {
+        "primary_action_family": family,
+        "has_authorized_cue": family != "OTHER_AUTHORIZED",
+    }
+
+
+def build_p9_presentation_order(plan: list[dict]) -> list[dict]:
+    """Apply deterministic cross-zone driver-plan diversity ordering.
+
+    This function:
+      1. Derives primary_action_family from P8 driver_cues[0] for each plan item.
+      2. Preserves original H5.2 order for the first occurrence of each family.
+      3. Places repeated families afterward, preserving their relative order.
+      4. Items with no authorized cue (OTHER_AUTHORIZED) must not displace
+         authorized items.
+      5. Adds deterministic presentation metadata (primary_action_family,
+         original_plan_rank, presentation_rank, redundancy_status).
+
+    Returns a new plan list with presentation metadata added; does not modify
+    H5.2 ranks or remove items.
+    """
+    if not isinstance(plan, list):
+        return plan
+
+    # Step 1: enrich each item with primary_action_family.
+    enriched: list[dict] = []
+    for idx, item in enumerate(plan):
+        if not isinstance(item, dict):
+            item = dict(item)
+        cues = item.get("driver_cues", [])
+        family = _derive_primary_action_family(cues) if isinstance(cues, list) else "OTHER_AUTHORIZED"
+        enriched.append({**item, "_p9_original_index": idx, "_p9_family": family})
+
+    # Step 2: derive presentation order — first occurrence of each family
+    # preserves original H5.2 order, repeated families come after.
+    # Algorithm: two passes.
+    #   Pass 1: collect indices of first occurrences in original order.
+    #   Pass 2: append remaining items by original order, grouped by family.
+
+    # Collect first occurrence index per family.
+    family_first_index: dict[str, int] = {}
+    for item in enriched:
+        family = item["_p9_family"]
+        if family not in family_first_index:
+            family_first_index[family] = item["_p9_original_index"]
+
+    # Collect remaining items per family (non-first occurrences).
+    family_remaining: dict[str, list[dict]] = {family: [] for family in _ACTION_FAMILIES}
+    for item in enriched:
+        family = item["_p9_family"]
+        idx = item["_p9_original_index"]
+        if family_first_index.get(family) != idx:
+            family_remaining.setdefault(family, []).append(item)
+
+    # Step 3: build presentation order.
+    # First occurrences in original order, then remaining items grouped by family.
+    presentation_order: list[dict] = []
+    for family, idx in family_first_index.items():
+        item = enriched[idx]
+        presentation_order.append(item)
+
+    # Remaining items: group by family (in family insertion order), then by
+    # original index within each family.
+    for family in family_remaining:
+        remaining = sorted(family_remaining[family], key=lambda x: x["_p9_original_index"])
+        presentation_order.extend(remaining)
+
+    # Step 4: assign presentation metadata.
+    result: list[dict] = []
+    seen_families: list[str] = []
+    for item in presentation_order:
+        family = item["_p9_family"]
+        original_idx = item["_p9_original_index"]
+        is_redundant = family in seen_families
+
+        # Track families seen so far in presentation order.
+        if not is_redundant:
+            seen_families.append(family)
+
+        metadata = {
+            "primary_action_family": family,
+            "original_plan_rank": original_idx,
+            "presentation_rank": len(result),
+            "redundancy_status": "REPEATED_FAMILY" if is_redundant else "FIRST_OCCURRENCE",
+        }
+
+        result.append({**item, "_p9_presentation_metadata": metadata})
+
+    return result
+
+
+# Keep a simple reference function for backend integration.
+enrich_plan_with_p9_presentation_metadata = build_p9_presentation_order

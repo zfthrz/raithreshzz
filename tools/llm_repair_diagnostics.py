@@ -55,6 +55,7 @@ class SessionDiagnostic:
     source_json: str
     backend: str
     model: str
+    prompt_policy: str
     track: str
     comparison_count: int
     episode_count: int
@@ -222,6 +223,9 @@ def diagnose_payload(payload: dict[str, Any], *, path: str = "<memory>") -> Sess
     model = str(metadata.get("model") or "UNKNOWN")
     track = str(metadata.get("track") or "UNKNOWN")
     backend = _infer_backend(metadata, model, path)
+    prompt_policy = str(
+        _dict(metadata.get("prompt_shadow")).get("policy") or "production"
+    )
 
     episode_count = 0
     clean_episode_count = 0
@@ -320,6 +324,7 @@ def diagnose_payload(payload: dict[str, Any], *, path: str = "<memory>") -> Sess
         source_json=source_json,
         backend=backend,
         model=model,
+        prompt_policy=prompt_policy,
         track=track,
         comparison_count=len(payload["comparisons"]),
         episode_count=episode_count,
@@ -400,10 +405,21 @@ def _paired_source_groups(sessions: list[SessionDiagnostic]) -> list[dict[str, A
 
     pairs = []
     for members in grouped.values():
-        model_keys = {(member.backend, member.model) for member in members}
-        if len(model_keys) < 2:
+        variant_keys = {
+            (member.backend, member.model, member.prompt_policy)
+            for member in members
+        }
+        if len(variant_keys) < 2:
             continue
-        ordered = sorted(members, key=lambda item: (item.backend, item.model, item.path))
+        ordered = sorted(
+            members,
+            key=lambda item: (
+                item.backend,
+                item.model,
+                item.prompt_policy,
+                item.path,
+            ),
+        )
         pairs.append(
             {
                 "source_json": ordered[0].source_json,
@@ -415,6 +431,7 @@ def _paired_source_groups(sessions: list[SessionDiagnostic]) -> list[dict[str, A
                     {
                         "backend": item.backend,
                         "model": item.model,
+                        "prompt_policy": item.prompt_policy,
                         "comparison_count": item.comparison_count,
                         "episode_count": item.episode_count,
                         "episodes_requiring_repair_count": item.episodes_requiring_repair_count,
@@ -432,16 +449,25 @@ def _paired_source_groups(sessions: list[SessionDiagnostic]) -> list[dict[str, A
 
 
 def aggregate_sessions(sessions: list[SessionDiagnostic]) -> dict[str, Any]:
-    grouped: dict[tuple[str, str, str], list[SessionDiagnostic]] = {}
+    grouped: dict[tuple[str, str, str, str], list[SessionDiagnostic]] = {}
     for session in sessions:
-        grouped.setdefault((session.backend, session.model, session.track), []).append(session)
+        grouped.setdefault(
+            (
+                session.backend,
+                session.model,
+                session.prompt_policy,
+                session.track,
+            ),
+            [],
+        ).append(session)
 
     groups = []
-    for (backend, model, track), members in sorted(grouped.items()):
+    for (backend, model, prompt_policy, track), members in sorted(grouped.items()):
         groups.append(
             {
                 "backend": backend,
                 "model": model,
+                "prompt_policy": prompt_policy,
                 "track": track,
                 **_totals(members),
             }
@@ -501,7 +527,8 @@ def _human_report(sessions: list[SessionDiagnostic], aggregate: dict[str, Any]) 
     lines.extend(["", "BY BACKEND / MODEL / TRACK"])
     for group in aggregate["groups"]:
         lines.append(
-            f"  {group['backend']} / {group['model']} / {group['track']}: "
+            f"  {group['backend']} / {group['model']} / {group['prompt_policy']} / "
+            f"{group['track']}: "
             f"outputs={group['output_count']}, episodes={group['episode_count']}, "
             f"repairs={group['episodes_requiring_repair_count']} "
             f"({group['repair_rate']:.1%}), clean={group['clean_output_rate']:.1%}"
@@ -511,7 +538,8 @@ def _human_report(sessions: list[SessionDiagnostic], aggregate: dict[str, Any]) 
         lines.append(f"  {pair['track']} | {Path(pair['source_json']).name}")
         for model in pair["models"]:
             lines.append(
-                f"    {model['backend']}/{model['model']}: "
+                f"    {model['backend']}/{model['model']} "
+                f"[{model['prompt_policy']}]: "
                 f"episodes={model['episode_count']}, "
                 f"repairs={model['episodes_requiring_repair_count']} "
                 f"({model['repair_rate']:.1%}), fallbacks={model['fallback_count']}"
@@ -519,7 +547,8 @@ def _human_report(sessions: list[SessionDiagnostic], aggregate: dict[str, Any]) 
     lines.extend(["", "OUTPUT DETAILS"])
     for session in sessions:
         lines.append(
-            f"  {session.track} | {session.backend}/{session.model} | "
+            f"  {session.track} | {session.backend}/{session.model} "
+            f"[{session.prompt_policy}] | "
             f"comparisons={session.comparison_count}, episodes={session.episode_count}, "
             f"repairs={session.episodes_requiring_repair_count}, retries={session.episode_retry_count}, "
             f"fallbacks={session.fallback_count}, clean={'YES' if session.clean_output else 'NO'}"

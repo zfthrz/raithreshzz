@@ -104,6 +104,7 @@ def test_clean_output_has_zero_repair_burden_and_does_not_mutate_source():
 
     assert payload == original
     assert result.backend == "deepseek"
+    assert result.prompt_policy == "production"
     assert result.comparison_count == 1
     assert result.episode_count == 1
     assert result.clean_episode_count == 1
@@ -218,9 +219,12 @@ def test_aggregate_groups_by_backend_model_and_track():
     assert aggregate["repair_rate"] == 1 / 3
     assert aggregate["clean_output_count"] == 1
     assert aggregate["clean_output_rate"] == 0.5
-    assert [(group["backend"], group["model"], group["track"]) for group in aggregate["groups"]] == [
-        ("deepseek", "deepseek-v4-pro", "Monza"),
-        ("ollama", "ingenierov3", "Imola"),
+    assert [
+        (group["backend"], group["model"], group["prompt_policy"], group["track"])
+        for group in aggregate["groups"]
+    ] == [
+        ("deepseek", "deepseek-v4-pro", "production", "Monza"),
+        ("ollama", "ingenierov3", "production", "Imola"),
     ]
     assert aggregate["paired_source_count"] == 0
 
@@ -248,10 +252,33 @@ def test_aggregate_only_pairs_distinct_models_for_the_same_source():
     assert pair["output_count"] == 2
     assert pair["comparison_count_consistent"] is True
     assert pair["episode_count_consistent"] is False
-    assert [(item["backend"], item["model"]) for item in pair["models"]] == [
-        ("deepseek", "deepseek-v4-pro"),
-        ("ollama", "ingenierov3"),
+    assert [
+        (item["backend"], item["model"], item["prompt_policy"])
+        for item in pair["models"]
+    ] == [
+        ("deepseek", "deepseek-v4-pro", "production"),
+        ("ollama", "ingenierov3", "production"),
     ]
+
+
+def test_aggregate_pairs_same_model_with_distinct_prompt_policies():
+    production = clean_payload(model="deepseek-v4-pro", track="Imola")
+    production["metadata"]["source_json"] = "C:/analysis/imola.json"
+    shadow = clean_payload(model="deepseek-v4-pro", track="Imola")
+    shadow["metadata"]["source_json"] = "c:\\analysis\\imola.json"
+    shadow["metadata"]["prompt_shadow"] = {
+        "policy": "episode-grounding-shadow-v0.1"
+    }
+
+    aggregate = aggregate_sessions(
+        [diagnose_payload(production), diagnose_payload(shadow)]
+    )
+
+    assert aggregate["paired_source_count"] == 1
+    assert [
+        item["prompt_policy"]
+        for item in aggregate["paired_sources"][0]["models"]
+    ] == ["episode-grounding-shadow-v0.1", "production"]
 
 
 def test_cli_writes_optional_json_and_csv_without_rewriting_input(tmp_path: Path, capsys):

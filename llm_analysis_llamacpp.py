@@ -2376,6 +2376,13 @@ def llamacpp_chat(
         "response_format": {
             "type": "json_object",
         },
+        # La plantilla de chat de Qwen en llama.cpp abre un bloque <think>
+        # por defecto. Sin este argumento el razonamiento puede consumir todo
+        # max_tokens y dejar message.content vacío. La plantilla expuesta por
+        # llama-server admite explícitamente enable_thinking=false.
+        "chat_template_kwargs": {
+            "enable_thinking": False,
+        },
         # Suficiente para los JSON del pipeline actual y evita respuestas
         # accidentalmente enormes.
         "max_tokens": 8192,
@@ -13869,19 +13876,17 @@ def build_session_coaching_facts(
         item["actionable_cue_count"] = len(item["driver_cues"])
 
     # H5.4/P9 — deterministic cross-zone driver-plan diversity ordering
-    session_coaching_facts["next_stint_plan"] = enrich_plan_with_p9_presentation_metadata(
-        session_coaching_facts.get("next_stint_plan", []),
+    next_stint_plan = enrich_plan_with_p9_presentation_metadata(
+        next_stint_plan,
     )
 
     # H5.4/P10 — deterministic driver-facing plan projection
-    session_coaching_facts["next_stint_plan_presentation"] = build_p10_plan_presentation(
-        session_coaching_facts["next_stint_plan"],
-    )
+    next_stint_plan_presentation = build_p10_plan_presentation(next_stint_plan)
 
     # H5.4/P11 — deterministic driver focus slots
-    session_coaching_facts["next_stint_focus"] = build_p11_plan_focus(
-        session_coaching_facts["next_stint_plan"],
-        session_coaching_facts["next_stint_plan_presentation"],
+    next_stint_focus = build_p11_plan_focus(
+        next_stint_plan,
+        next_stint_plan_presentation,
     )
 
     return {
@@ -13916,9 +13921,9 @@ def build_session_coaching_facts(
         "next_stint_plan":
             next_stint_plan,
         "next_stint_plan_presentation":
-            session_coaching_facts["next_stint_plan_presentation"],
+            next_stint_plan_presentation,
         "next_stint_focus":
-            session_coaching_facts["next_stint_focus"],
+            next_stint_focus,
         "session_priority_policy": {
             "version":
                 SESSION_PRIORITY_POLICY_VERSION,

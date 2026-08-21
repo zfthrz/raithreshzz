@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import os
 from pathlib import Path
 
@@ -22,6 +23,42 @@ def test_llamacpp_module_defaults(monkeypatch):
     assert module.MODEL_NAME == "qwen3-14b"
     assert module.LLAMACPP_URL == "http://localhost:8080/v1/chat/completions"
     assert hasattr(module, "llamacpp_chat")
+
+
+def test_llamacpp_chat_disables_qwen_thinking(monkeypatch):
+    observed = {}
+
+    class Response:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, traceback):
+            return False
+
+        def read(self):
+            return json.dumps({
+                "choices": [{
+                    "message": {"content": '{"ok": true}'},
+                    "finish_reason": "stop",
+                }],
+                "usage": {
+                    "prompt_tokens": 10,
+                    "completion_tokens": 5,
+                },
+            }).encode("utf-8")
+
+    def fake_urlopen(request, timeout):
+        observed["payload"] = json.loads(request.data.decode("utf-8"))
+        return Response()
+
+    monkeypatch.setattr(llamacpp.urllib.request, "urlopen", fake_urlopen)
+
+    result = llamacpp.llamacpp_chat("system", "user")
+
+    assert result == '{"ok": true}'
+    assert observed["payload"]["chat_template_kwargs"] == {
+        "enable_thinking": False,
+    }
 
 
 def test_race_engineer_resolves_llamacpp_backend(monkeypatch):

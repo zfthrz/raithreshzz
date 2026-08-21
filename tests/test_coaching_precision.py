@@ -842,7 +842,7 @@ def test_p9_deterministic_repeated_result():
 
 
 def test_p9_backend_parity():
-    """Test J: all active backends must import enrich_plan_with_p9_presentation_metadata."""
+    """Test J: all active backends apply P9 to the local plan under construction."""
     from pathlib import Path
     import re
 
@@ -854,6 +854,15 @@ def test_p9_backend_parity():
     ):
         source = Path(filename).read_text(encoding="utf-8")
         assert "enrich_plan_with_p9_presentation_metadata" in source, filename
+        build_facts = source.split(
+            "def build_session_coaching_facts(",
+            1,
+        )[1].split("\ndef ", 1)[0]
+        assert (
+            "next_stint_plan = enrich_plan_with_p9_presentation_metadata("
+            in build_facts
+        ), filename
+        assert 'session_coaching_facts["next_stint_plan"]' not in build_facts, filename
 
 
 def test_p9_no_cue_items_dont_displace_authorized():

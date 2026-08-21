@@ -1102,6 +1102,16 @@ Current priority order:
 3. Expand H2 calibration beyond the current limited context before calling it general.
 4. Continue adding real H5.2 contexts without relaxing the track/layout/vehicle/car gates.
 
+Episode prompt changes are isolated through `run_llm_prompt_shadow.py`.
+`assess_llm_prompt_shadow_promotion.py` accepts only exact A/B pairs with the
+same deterministic source, backend and model; cross-model results are backend
+observations, not proof of prompt improvement. The current verdict is
+`PROMOTION_BLOCKED_INSUFFICIENT_PAIRED_EVIDENCE`: the only exact pair (Imola,
+DeepSeek V4 Pro) tied production at 4/43 repaired episodes and zero fallbacks.
+Monza Flash and Fuji llama.cpp/Qwen3.6 35B passed validation but are unpaired.
+Production remains unchanged. See
+`docs/LLM_PROMPT_SHADOW_PROMOTION_GATE_V0_1.md`.
+
 Do not skip directly to “learning from all history” before context isolation and raw-validation gates are trustworthy.
 
 ---

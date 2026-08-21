@@ -267,8 +267,24 @@ LLM backend benchmark on the real 10-comparison Monza `LMP2_ELMS` session:
 
 See `docs/LLM_BACKEND_BENCHMARK_MONZA_V0_1.md`.
 
+LLM episode-prompt shadow checkpoint:
+- `run_llm_prompt_shadow.py` isolates experimental artifacts and records the
+  prompt policy/hash without replacing production results;
+- llama.cpp explicitly disables Qwen thinking, preventing hidden reasoning from
+  exhausting the 8192-token output budget;
+- the exact Imola DeepSeek V4 Pro A/B is tied at 4/43 repaired episodes (9.3%)
+  with zero fallbacks on both production and shadow;
+- Monza Flash (6/49 repairs) and Fuji Qwen3.6 35B A3B IQ2_M (1/18 repairs) are
+  valid unpaired observations, not isolated prompt comparisons;
+- `assess_llm_prompt_shadow_promotion.py` returns
+  `PROMOTION_BLOCKED_INSUFFICIENT_PAIRED_EVIDENCE`: 1/3 exact pairs and 1/2
+  tracks, with no regression and no measurable benefit;
+- production prompt, ranking and coaching remain unchanged.
+
+See `docs/LLM_PROMPT_SHADOW_PROMOTION_GATE_V0_1.md`.
+
 Validation:
-- pytest: `408 PASS / 0 FAIL / 0 SKIP`
+- pytest: `934 PASS / 0 FAIL / 0 SKIP`
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP`
 - Objective recovery check: `READY`
 

@@ -206,6 +206,25 @@ python llm_analysis_qwen3_8_27b_iq3m.py "ARCHIVO.json"
 
 Resultados y recomendación: [`docs/LLM_BACKEND_BENCHMARK_MONZA_V0_1.md`](docs/LLM_BACKEND_BENCHMARK_MONZA_V0_1.md).
 
+#### LLM episode prompt shadow gate
+
+`run_llm_prompt_shadow.py` ejecuta experimentos opt-in bajo
+`data/generated/llm_prompt_shadow/` sin reemplazar producción. El gate acepta
+como evidencia de prompt solamente pares con la misma fuente determinista,
+backend y modelo:
+
+```powershell
+python assess_llm_prompt_shadow_promotion.py `
+  "data\generated\llm_results\SESSION\PRODUCTION.json" `
+  "data\generated\llm_prompt_shadow\episode-grounding-shadow-v0.1" `
+  --output "data\generated\diagnostics\llm_prompt_shadow_promotion_v0_1.json"
+```
+
+Estado actual: `PROMOTION_BLOCKED_INSUFFICIENT_PAIRED_EVIDENCE`. El par exacto
+de Imola está empatado en 4/43 reparaciones; Monza y Fuji cambian también de
+modelo y permanecen como observaciones no pareadas. Ver
+[`docs/LLM_PROMPT_SHADOW_PROMOTION_GATE_V0_1.md`](docs/LLM_PROMPT_SHADOW_PROMOTION_GATE_V0_1.md).
+
 ### Backend local vía llama.cpp
 
 Si querés usar otro LLM local servido por llama.cpp (API compatible con OpenAI),

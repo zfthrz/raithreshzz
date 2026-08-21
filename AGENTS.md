@@ -43,6 +43,11 @@ python race_engineer.py analyze "telemetria\ARCHIVO.duckdb" --backend ollama
 - H5.2 LLM output is a controlled-code selection only: Python authorizes and renders every observation; free text, historical actions, causal claims and replacement of `session_reference` are forbidden.
 - H5.2 zone-selection audit metrics are shadow evidence only. Impact, intensity or
   corner specificity cannot become a production ranking formula without broader validation.
+- LLM prompt experiments must use `run_llm_prompt_shadow.py`. Promotion evidence
+  requires exact same-source/backend/model A/B pairs assessed by
+  `assess_llm_prompt_shadow_promotion.py`; cross-model comparisons are
+  observational only and cannot authorize a production prompt change. The current
+  verdict is `PROMOTION_BLOCKED_INSUFFICIENT_PAIRED_EVIDENCE`.
 - A throttle physical point remains a concise cue; its reference sequence is a separate
   secondary cue when capacity allows. Actionability audit counts are shadow evidence and
   cannot authorize a brake/throttle channel preference or complexity score.
@@ -81,7 +86,7 @@ historical_action_policy.py           H5.3 action candidates 0.2 / shadow only
 Validated integration checkpoint:
 
 ```text
-pytest:                         408 PASS / 0 FAIL / 0 SKIP
+pytest:                         934 PASS / 0 FAIL / 0 SKIP
 Objective Python regressions:  55 PASS / 0 FAIL / 0 SKIP
 ```
 

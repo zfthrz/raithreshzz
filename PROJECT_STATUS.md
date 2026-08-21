@@ -284,7 +284,7 @@ LLM episode-prompt shadow checkpoint:
 See `docs/LLM_PROMPT_SHADOW_PROMOTION_GATE_V0_1.md`.
 
 Validation:
-- pytest: `934 PASS / 0 FAIL / 0 SKIP`
+- pytest: `941 PASS / 0 FAIL / 0 SKIP`
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP`
 - Objective recovery check: `READY`
 
@@ -310,6 +310,13 @@ LLM output validator `1.2` recognizes the exact deterministic fallback for a
 comparison excluded by the global quality gate before the LLM call. It requires
 all exclusion markers and exact fallback content, while preserving the original
 non-contiguous episode IDs left after an anomalous episode is separated for audit.
+
+Desktop interface v0.1 is available as `RaceEngineer.pyw` /
+`race_engineer_gui.py`. It is a read-only session hub backed by orchestrator
+`state.json` files. It lists recent runs, distinguishes History-only sessions from
+validated debriefs, renders the next-stint plan and exposes pipeline status without
+calling an LLM or changing History. The first real catalogue smoke test loaded 46
+sessions successfully. See `docs/RACE_ENGINEER_GUI_V0_1.md`.
 
 Calibration batch orchestrator `1.5` requires the current History schema 4 contract,
 reports its runtime version consistently and has a regression test against schema drift.

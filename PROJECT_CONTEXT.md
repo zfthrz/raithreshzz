@@ -1122,6 +1122,13 @@ Do not skip directly to “learning from all history” before context isolation
 source is LMU's `UserData/Telemetry` directory; raw DuckDBs are opened read-only and
 do not need to be copied into the repository.
 
+The read-only desktop entry point is `RaceEngineer.pyw` (implementation:
+`race_engineer_gui.py`). Its catalogue is owned by `race_engineer_ui_model.py` and
+uses orchestrator `state.json` rather than scanning result filenames heuristically.
+GUI v0.1 can inspect sessions, validated debriefs, next-stint plans and pipeline
+statuses; it cannot start analysis, call an LLM or mutate History. See
+`docs/RACE_ENGINEER_GUI_V0_1.md`.
+
 The scheduled task must execute `hidden_history_ingest.py` through `pythonw.exe`.
 That wrapper preserves the same maintenance arguments, creates no console window and
 redirects stdout/stderr to the ignored rotating local log

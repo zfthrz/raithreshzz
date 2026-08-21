@@ -6,11 +6,15 @@ import json
 from pathlib import Path
 
 from tools.llm_repair_diagnostics import (
+    ERROR_CHANNELS,
     ERROR_CATEGORIES,
+    ERROR_FIELDS,
     aggregate_sessions,
     classify_validation_error,
     diagnose_payload,
     main,
+    validation_error_channel,
+    validation_error_field,
 )
 
 
@@ -107,6 +111,8 @@ def test_clean_output_has_zero_repair_burden_and_does_not_mutate_source():
     assert result.repair_rate == 0.0
     assert result.clean_output is True
     assert result.validation_error_categories == {category: 0 for category in ERROR_CATEGORIES}
+    assert result.validation_error_fields == {field: 0 for field in ERROR_FIELDS}
+    assert result.validation_error_channels == {channel: 0 for channel in ERROR_CHANNELS}
 
 
 def test_repair_metrics_deduplicate_pruned_indexes_and_count_retries():
@@ -133,6 +139,24 @@ def test_repair_metrics_deduplicate_pruned_indexes_and_count_retries():
         "WRONG_REFERENCE_TARGET": 1,
         "UNOBSERVED_DOMAIN": 1,
         "OTHER": 1,
+    }
+    assert result.validation_error_fields == {
+        "interpretation": 1,
+        "recommendation": 1,
+        "hypotheses": 2,
+        "repeated_observations": 0,
+        "next_session_priorities": 0,
+        "opportunities": 1,
+        "limitations": 0,
+        "conclusion": 0,
+        "OTHER": 0,
+    }
+    assert result.validation_error_channels == {
+        "brake": 0,
+        "throttle": 1,
+        "steering": 1,
+        "speed": 0,
+        "UNSPECIFIED": 3,
     }
 
 
@@ -173,6 +197,15 @@ def test_error_classifier_uses_closed_categories():
         assert classify_validation_error(value) == expected
 
 
+def test_error_field_and_channel_attribution_is_explicit():
+    assert validation_error_field("hypotheses[2]: dominio no observado") == "hypotheses"
+    assert validation_error_field("conclusion global: steering_magnitude no autorizado") == "conclusion"
+    assert validation_error_field("mensaje sin campo") == "OTHER"
+    assert validation_error_channel("interpretation: dirección factual invertida para freno") == "brake"
+    assert validation_error_channel("recommendation: velocidad usada como acción") == "speed"
+    assert validation_error_channel("hypotheses[0]: dominio no observado (potencia)") == "UNSPECIFIED"
+
+
 def test_aggregate_groups_by_backend_model_and_track():
     clean = diagnose_payload(clean_payload(), path="clean.json")
     repaired = diagnose_payload(repaired_payload(), path="repaired.json")
@@ -188,6 +221,36 @@ def test_aggregate_groups_by_backend_model_and_track():
     assert [(group["backend"], group["model"], group["track"]) for group in aggregate["groups"]] == [
         ("deepseek", "deepseek-v4-pro", "Monza"),
         ("ollama", "ingenierov3", "Imola"),
+    ]
+    assert aggregate["paired_source_count"] == 0
+
+
+def test_aggregate_only_pairs_distinct_models_for_the_same_source():
+    pro_payload = clean_payload(model="deepseek-v4-pro", track="Monza")
+    pro_payload["metadata"]["source_json"] = r"C:\analysis\same-session.json"
+    local_payload = repaired_payload()
+    local_payload["metadata"]["track"] = "Monza"
+    local_payload["metadata"]["source_json"] = "c:/analysis/same-session.json"
+    unrelated_payload = clean_payload(model="qwen3-14b", track="Fuji")
+    unrelated_payload["metadata"]["source_json"] = "C:/analysis/other-session.json"
+
+    aggregate = aggregate_sessions(
+        [
+            diagnose_payload(pro_payload, path="pro.json"),
+            diagnose_payload(local_payload, path="local.json"),
+            diagnose_payload(unrelated_payload, path="unrelated.json"),
+        ]
+    )
+
+    assert aggregate["paired_source_count"] == 1
+    pair = aggregate["paired_sources"][0]
+    assert pair["track"] == "Monza"
+    assert pair["output_count"] == 2
+    assert pair["comparison_count_consistent"] is True
+    assert pair["episode_count_consistent"] is False
+    assert [(item["backend"], item["model"]) for item in pair["models"]] == [
+        ("deepseek", "deepseek-v4-pro"),
+        ("ollama", "ingenierov3"),
     ]
 
 
@@ -206,10 +269,13 @@ def test_cli_writes_optional_json_and_csv_without_rewriting_input(tmp_path: Path
     assert report["metadata"]["authority"] == "DIAGNOSTIC_ONLY"
     assert report["metadata"]["source_artifacts_modified"] is False
     assert report["aggregate"]["output_count"] == 1
+    assert report["metadata"]["diagnostic_version"] == "0.2"
     with csv_report.open("r", encoding="utf-8-sig", newline="") as handle:
         rows = list(csv.DictReader(handle))
     assert len(rows) == 1
     assert rows[0]["model"] == "ingenierov3"
+    assert rows[0]["fields_hypotheses"] == "2"
+    assert rows[0]["channels_steering"] == "1"
     output = capsys.readouterr().out
     assert "Authority: DIAGNOSTIC ONLY" in output
     assert "RESULT: PASS" in output

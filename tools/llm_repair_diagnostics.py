@@ -17,13 +17,31 @@ from pathlib import Path
 from typing import Any, Iterable
 
 
-DIAGNOSTIC_VERSION = "0.1"
+DIAGNOSTIC_VERSION = "0.2"
 ERROR_CATEGORIES = (
     "FACTUAL_DIRECTION_INVERSION",
     "UNAUTHORIZED_CHANNEL",
     "WRONG_REFERENCE_TARGET",
     "UNOBSERVED_DOMAIN",
     "OTHER",
+)
+ERROR_FIELDS = (
+    "interpretation",
+    "recommendation",
+    "hypotheses",
+    "repeated_observations",
+    "next_session_priorities",
+    "opportunities",
+    "limitations",
+    "conclusion",
+    "OTHER",
+)
+ERROR_CHANNELS = (
+    "brake",
+    "throttle",
+    "steering",
+    "speed",
+    "UNSPECIFIED",
 )
 NON_REPAIR_FALLBACKS = {
     "ALL_EPISODES_EXCLUDED_BY_ANOMALY_GATE",
@@ -34,6 +52,7 @@ NON_REPAIR_FALLBACKS = {
 @dataclass(frozen=True)
 class SessionDiagnostic:
     path: str
+    source_json: str
     backend: str
     model: str
     track: str
@@ -53,6 +72,8 @@ class SessionDiagnostic:
     repair_rate: float
     clean_output: bool
     validation_error_categories: dict[str, int]
+    validation_error_fields: dict[str, int]
+    validation_error_channels: dict[str, int]
 
 
 def _dict(value: Any) -> dict[str, Any]:
@@ -107,6 +128,38 @@ def classify_validation_error(error: str) -> str:
     ):
         return "FACTUAL_DIRECTION_INVERSION"
     return "OTHER"
+
+
+def validation_error_field(error: str) -> str:
+    """Return the closed output field named by a stored validator error."""
+
+    prefix = _normalized(str(error)).split(":", 1)[0].strip()
+    if prefix.startswith("hypotheses["):
+        return "hypotheses"
+    if prefix in {"interpretation", "recommendation", "opportunities", "limitations"}:
+        return prefix
+    if prefix in {"conclusion", "conclusion global", "global conclusion"}:
+        return "conclusion"
+    if prefix.startswith("repeated_observations"):
+        return "repeated_observations"
+    if prefix.startswith("next_session_priorities"):
+        return "next_session_priorities"
+    return "OTHER"
+
+
+def validation_error_channel(error: str) -> str:
+    """Identify an explicitly named driving channel; never infer vehicle dynamics."""
+
+    value = _normalized(str(error))
+    if any(token in value for token in ("steering_magnitude", "direccion/volante", "volante")):
+        return "steering"
+    if "acelerador" in value or "throttle" in value:
+        return "throttle"
+    if "freno" in value or "brake" in value:
+        return "brake"
+    if "velocidad" in value or "speed_context" in value:
+        return "speed"
+    return "UNSPECIFIED"
 
 
 def _infer_backend(metadata: dict[str, Any], model: str, path: str) -> str:
@@ -165,6 +218,7 @@ def diagnose_payload(payload: dict[str, Any], *, path: str = "<memory>") -> Sess
         raise ValueError("not a Race Engineer LLM output: comparisons list is missing")
 
     metadata = _dict(payload.get("metadata"))
+    source_json = str(metadata.get("source_json") or "UNKNOWN")
     model = str(metadata.get("model") or "UNKNOWN")
     track = str(metadata.get("track") or "UNKNOWN")
     backend = _infer_backend(metadata, model, path)
@@ -238,8 +292,12 @@ def diagnose_payload(payload: dict[str, Any], *, path: str = "<memory>") -> Sess
         fallback_count += 1
 
     categories = Counter({category: 0 for category in ERROR_CATEGORIES})
+    fields = Counter({field: 0 for field in ERROR_FIELDS})
+    channels = Counter({channel: 0 for channel in ERROR_CHANNELS})
     for error in _stored_errors(payload):
         categories[classify_validation_error(error)] += 1
+        fields[validation_error_field(error)] += 1
+        channels[validation_error_channel(error)] += 1
 
     has_global_repairs = bool(
         _dict(global_audit.get("deterministic_repairs"))
@@ -259,6 +317,7 @@ def diagnose_payload(payload: dict[str, Any], *, path: str = "<memory>") -> Sess
 
     return SessionDiagnostic(
         path=path,
+        source_json=source_json,
         backend=backend,
         model=model,
         track=track,
@@ -278,6 +337,8 @@ def diagnose_payload(payload: dict[str, Any], *, path: str = "<memory>") -> Sess
         repair_rate=(repaired_episode_count / episode_count if episode_count else 0.0),
         clean_output=clean_output,
         validation_error_categories=dict(categories),
+        validation_error_fields=dict(fields),
+        validation_error_channels=dict(channels),
     )
 
 
@@ -315,10 +376,59 @@ def _totals(sessions: list[SessionDiagnostic]) -> dict[str, Any]:
         result["clean_output_count"] / result["output_count"] if result["output_count"] else 0.0
     )
     category_totals = Counter({category: 0 for category in ERROR_CATEGORIES})
+    field_totals = Counter({field: 0 for field in ERROR_FIELDS})
+    channel_totals = Counter({channel: 0 for channel in ERROR_CHANNELS})
     for session in sessions:
         category_totals.update(session.validation_error_categories)
+        field_totals.update(session.validation_error_fields)
+        channel_totals.update(session.validation_error_channels)
     result["validation_error_categories"] = dict(category_totals)
+    result["validation_error_fields"] = dict(field_totals)
+    result["validation_error_channels"] = dict(channel_totals)
     return result
+
+
+def _source_key(value: str) -> str:
+    return value.replace("\\", "/").casefold()
+
+
+def _paired_source_groups(sessions: list[SessionDiagnostic]) -> list[dict[str, Any]]:
+    grouped: dict[str, list[SessionDiagnostic]] = {}
+    for session in sessions:
+        if session.source_json != "UNKNOWN":
+            grouped.setdefault(_source_key(session.source_json), []).append(session)
+
+    pairs = []
+    for members in grouped.values():
+        model_keys = {(member.backend, member.model) for member in members}
+        if len(model_keys) < 2:
+            continue
+        ordered = sorted(members, key=lambda item: (item.backend, item.model, item.path))
+        pairs.append(
+            {
+                "source_json": ordered[0].source_json,
+                "track": ordered[0].track,
+                "output_count": len(ordered),
+                "comparison_count_consistent": len({item.comparison_count for item in ordered}) == 1,
+                "episode_count_consistent": len({item.episode_count for item in ordered}) == 1,
+                "models": [
+                    {
+                        "backend": item.backend,
+                        "model": item.model,
+                        "comparison_count": item.comparison_count,
+                        "episode_count": item.episode_count,
+                        "episodes_requiring_repair_count": item.episodes_requiring_repair_count,
+                        "repair_rate": item.repair_rate,
+                        "fallback_count": item.fallback_count,
+                        "validation_error_categories": item.validation_error_categories,
+                        "validation_error_fields": item.validation_error_fields,
+                        "validation_error_channels": item.validation_error_channels,
+                    }
+                    for item in ordered
+                ],
+            }
+        )
+    return sorted(pairs, key=lambda item: _source_key(item["source_json"]))
 
 
 def aggregate_sessions(sessions: list[SessionDiagnostic]) -> dict[str, Any]:
@@ -336,7 +446,13 @@ def aggregate_sessions(sessions: list[SessionDiagnostic]) -> dict[str, Any]:
                 **_totals(members),
             }
         )
-    return {**_totals(sessions), "groups": groups}
+    paired_sources = _paired_source_groups(sessions)
+    return {
+        **_totals(sessions),
+        "groups": groups,
+        "paired_source_count": len(paired_sources),
+        "paired_sources": paired_sources,
+    }
 
 
 def _expand_paths(inputs: list[str]) -> list[Path]:
@@ -376,6 +492,12 @@ def _human_report(sessions: list[SessionDiagnostic], aggregate: dict[str, Any]) 
     ]
     for category in ERROR_CATEGORIES:
         lines.append(f"  {category}: {aggregate['validation_error_categories'][category]}")
+    lines.extend(["", "VALIDATION ERROR FIELDS"])
+    for field in ERROR_FIELDS:
+        lines.append(f"  {field}: {aggregate['validation_error_fields'][field]}")
+    lines.extend(["", "VALIDATION ERROR CHANNELS"])
+    for channel in ERROR_CHANNELS:
+        lines.append(f"  {channel}: {aggregate['validation_error_channels'][channel]}")
     lines.extend(["", "BY BACKEND / MODEL / TRACK"])
     for group in aggregate["groups"]:
         lines.append(
@@ -384,6 +506,16 @@ def _human_report(sessions: list[SessionDiagnostic], aggregate: dict[str, Any]) 
             f"repairs={group['episodes_requiring_repair_count']} "
             f"({group['repair_rate']:.1%}), clean={group['clean_output_rate']:.1%}"
         )
+    lines.extend(["", f"PAIRED SOURCES: {aggregate['paired_source_count']}"])
+    for pair in aggregate["paired_sources"]:
+        lines.append(f"  {pair['track']} | {Path(pair['source_json']).name}")
+        for model in pair["models"]:
+            lines.append(
+                f"    {model['backend']}/{model['model']}: "
+                f"episodes={model['episode_count']}, "
+                f"repairs={model['episodes_requiring_repair_count']} "
+                f"({model['repair_rate']:.1%}), fallbacks={model['fallback_count']}"
+            )
     lines.extend(["", "OUTPUT DETAILS"])
     for session in sessions:
         lines.append(
@@ -421,7 +553,11 @@ def _write_csv(path: Path, sessions: list[SessionDiagnostic]) -> None:
     for session in sessions:
         row = asdict(session)
         categories = row.pop("validation_error_categories")
+        fields = row.pop("validation_error_fields")
+        channels = row.pop("validation_error_channels")
         row.update({f"errors_{key.lower()}": value for key, value in categories.items()})
+        row.update({f"fields_{key.lower()}": value for key, value in fields.items()})
+        row.update({f"channels_{key.lower()}": value for key, value in channels.items()})
         rows.append(row)
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8-sig", newline="") as handle:

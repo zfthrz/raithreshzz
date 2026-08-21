@@ -118,6 +118,8 @@ def _infer_backend(metadata: dict[str, Any], model: str, path: str) -> str:
     evidence = f"{model} {path}".casefold()
     if "deepseek" in evidence:
         return "deepseek"
+    if "qwen38-27b" in evidence or "qwen3.8-27b" in evidence:
+        return "ollama"
     if "ingenierov3" in evidence or "ollama" in evidence:
         return "ollama"
     if "qwen3-14b" in evidence or "llamacpp" in evidence or "llama.cpp" in evidence:

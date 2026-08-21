@@ -152,6 +152,14 @@ def test_quality_gate_exclusion_is_not_counted_as_repair_fallback():
     assert result.repair_rate == 0.0
 
 
+def test_qwen38_27b_alias_is_identified_as_ollama():
+    payload = clean_payload(model="qwen38-27b-iq3m")
+
+    result = diagnose_payload(payload)
+
+    assert result.backend == "ollama"
+
+
 def test_error_classifier_uses_closed_categories():
     cases = {
         "recommendation: dirección de coaching invertida para freno": "FACTUAL_DIRECTION_INVERSION",

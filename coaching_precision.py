@@ -675,3 +675,166 @@ def render_track_reference_section(
         lines.append(line)
 
     return "\n".join(lines)
+
+
+# ============================================================
+# H5.4 P8 - DETERMINISTIC DRIVER-FACING CUE PRIORITY
+# ============================================================
+
+_P8_VERSION = "0.1"
+
+# Priority classes mapped to integer rank (lower = higher priority).
+# Only kinds that can actually appear in build_driver_cues output are
+# included; unrecognized kinds sink to the bottom.
+_PRIORITY_KINDS = {
+    "combined_spatial_sequence": 1,
+    "spatial_points": 2,
+    "reference_action_profile": 3,
+    "qualitative_reference_level": 4,
+    "validated_llm_steering": 5,
+}
+
+
+def _cue_priority_rank(cue: dict) -> int:
+    """Return the integer priority rank for a cue; unrecognized kinds sink."""
+    kind = str(cue.get("kind") or "").strip()
+    return _PRIORITY_KINDS.get(kind, 999)
+
+
+def _spatial_event_distance_m(cue: dict) -> float | None:
+    """Return the event_distance_m that represents physical event order for a spatial cue.
+
+    Used for Rule R3: ordering independent spatial cues by physical event order.
+    """
+    if not isinstance(cue, dict):
+        return None
+    if cue.get("kind") != "spatial_points":
+        return None
+    precision_evidence = cue.get("precision_evidence", [])
+    if isinstance(precision_evidence, list) and precision_evidence:
+        first = precision_evidence[0]
+        if isinstance(first, dict):
+            anchor = first.get("corner_relative_reference")
+            if isinstance(anchor, dict):
+                dist = anchor.get("event_distance_m")
+                if isinstance(dist, (int, float)):
+                    return float(dist)
+    return cue.get("event_distance_m")
+
+
+def _remove_suppressed_spatial_cues(
+    cues: list[dict],
+) -> list[dict]:
+    """Rule R2: remove spatial_points cues subsumed by combined_spatial_sequence.
+
+    When a combined_spatial_sequence exists (Rule R1), the individual spatial
+    cue that is its component must not appear alongside it.
+    """
+    if not cues:
+        return cues
+
+    # Check if combined_spatial_sequence is present.
+    if not any(cue.get("kind") == "combined_spatial_sequence" for cue in cues):
+        return cues
+
+    # Filter: remove spatial_points cues that share brake or throttle channel.
+    result = []
+    for cue in cues:
+        if cue.get("kind") == "spatial_points":
+            channels = cue.get("channels", [])
+            if isinstance(channels, list) and channels:
+                channel_set = set(channels)
+            elif isinstance(cue.get("channel"), str):
+                channel_set = {cue["channel"]}
+            else:
+                channel_set = set()
+            # A spatial_points cue is suppressed if its brake/throttle channel
+            # is already covered by a combined_spatial_sequence.
+            if "brake" in channel_set or "throttle" in channel_set:
+                continue
+        result.append(cue)
+
+    return result
+
+
+def _deduplicate_coaching_cues(
+    cues: list[dict],
+) -> list[dict]:
+    """Remove duplicate cue kinds beyond the first occurrence.
+
+    This prevents reference_action_profile or spatial_points for the same
+    channel from appearing twice when a combined_spatial_sequence is present.
+    Only the first cue per (kind, channel) pair survives; this is a
+    pre-filter applied before priority sorting so that independent spatial
+    cues for different channels (e.g. brake and throttle) are both retained.
+    """
+    seen: dict[str, int] = {}
+    result: list[dict] = []
+    for cue in cues:
+        kind = cue.get("kind")
+        channel = cue.get("channel")
+        key = (kind, channel)
+        if key in seen:
+            continue
+        seen[key] = 1
+        result.append(cue)
+    return result
+
+
+def _prioritize_cues(
+    cues: list[dict],
+) -> list[dict]:
+    """Apply deterministic priority ordering to a cue list (Rule R1, R3, R4, R5).
+
+    Priority classes:
+        1. combined_spatial_sequence
+        2. spatial_points
+        3. reference_action_profile
+        4. qualitative_reference_level
+        5. validated_llm_steering
+
+    Independent spatial cues are ordered by physical event order
+    (event_distance_m), not hard-coded channel order.
+
+    Steering is never allowed to displace physical evidence.
+    """
+    if len(cues) <= 1:
+        return cues
+
+    # Deduplicate first.
+    cues = _deduplicate_coaching_cues(cues)
+
+    # Sort by priority rank, then physical event order for spatial cues.
+    cues.sort(key=lambda cue: (
+        _cue_priority_rank(cue),
+        (_spatial_event_distance_m(cue) or float("inf")),
+    ))
+
+    return cues
+
+
+def enrich_cues_with_deterministic_priority(
+    cues: list[dict],
+) -> list[dict]:
+    """Apply H5.4 P8 deterministic cue priority ordering to a cue list.
+
+    This function:
+        1. Removes spatial cues suppressed by combined_spatial_sequence (Rule R2).
+        2. Sorts by priority rank (Rules R1, R3, R4, R5).
+        3. Deduplicates cue kinds.
+        4. Adds P8 metadata to each cue for auditability.
+
+    Returns a new cue list; does not trim to max_cues.
+    """
+    if not isinstance(cues, list):
+        return cues
+
+    # Apply rules in order: suppression, then priority ordering.
+    cues = _remove_suppressed_spatial_cues(cues)
+    cues = _prioritize_cues(cues)
+
+    # Enrich each cue with P8 metadata.
+    for cue in cues:
+        cue["_p8_priority_rank"] = _cue_priority_rank(cue)
+
+    return cues

@@ -16,6 +16,7 @@ from coaching_precision import (
     enrich_patterns_with_precision,
     enrich_plan_items_with_precision,
     enrich_plan_items_with_coaching_sequence,
+    enrich_cues_with_deterministic_priority,
     render_track_reference_section,
 )
 
@@ -13780,6 +13781,10 @@ def build_session_coaching_facts(
         if not isinstance(item, dict):
             continue
         item["driver_cues"] = build_driver_cues_for_plan_item(item, max_cues=2)
+        # H5.4/P8 — deterministic driver-facing cue priority ordering
+        item["driver_cues"] = enrich_cues_with_deterministic_priority(
+            item["driver_cues"],
+        )
         item["actionable_cue_count"] = len(item["driver_cues"])
 
     return {

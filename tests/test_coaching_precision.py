@@ -574,3 +574,137 @@ def test_p7_active_backends_have_sequence_integration_parity():
         assert "enrich_plan_items_with_coaching_sequence(next_stint_plan)" in source, filename
         assert '"kind": "combined_spatial_sequence"' in source, filename
         assert '"source": "deterministic_coaching_sequence"' in source, filename
+
+
+# ============================================================
+# H5.4 P8 — DETERMINISTIC DRIVER-FACING CUE PRIORITY
+# ============================================================
+
+from coaching_precision import (
+    enrich_cues_with_deterministic_priority,
+    _cue_priority_rank,
+    _remove_suppressed_spatial_cues,
+    _prioritize_cues,
+    _deduplicate_coaching_cues,
+)
+
+
+def _cue(kind, channel=None, text="", event_distance_m=None, **extra):
+    cue = {"kind": kind, "channel": channel, "text": text, **extra}
+    if event_distance_m is not None:
+        cue["event_distance_m"] = event_distance_m
+    return cue
+
+
+def test_p8_combined_spatial_sequence_gets_slot_1():
+    """Test A: combined_spatial_sequence must occupy cue slot 1."""
+    cues = [
+        _cue("spatial_points", "brake", "frená 15 m más tarde", 4500.0),
+        _cue("combined_spatial_sequence", "brake+throttle", "frená 15 m más tarde; después soltá el freno 20 m más tarde", 4490.0),
+        _cue("validated_llm_steering", "steering_magnitude", "reducí la magnitud del volante", 9000.0),
+    ]
+    result = enrich_cues_with_deterministic_priority(cues)
+    assert result[0]["kind"] == "combined_spatial_sequence"
+    assert result[0]["text"] != ""
+
+
+def test_p8_component_spatial_cue_not_duplicated_after_combined_sequence():
+    """Test B: component spatial cue is not duplicated after combined sequence."""
+    cues = [
+        _cue("combined_spatial_sequence", "brake+throttle", "frená 15 m más tarde; después soltá el freno 20 m más tarde", 4490.0),
+        _cue("spatial_points", "brake", "frená 15 m más tarde", 4500.0),
+        _cue("validated_llm_steering", "steering_magnitude", "reducí la magnitud del volante", 9000.0),
+    ]
+    result = enrich_cues_with_deterministic_priority(cues)
+    kinds = [cue["kind"] for cue in result]
+    assert "spatial_points" not in kinds
+
+
+def test_p8_two_independent_physical_cues_ordered_by_event_distance_m():
+    """Test C: two independent spatial cues are ordered by event_distance_m."""
+    cues = [
+        _cue("spatial_points", "throttle", "soltá el acelerador 10 m más tarde", 4700.0),
+        _cue("spatial_points", "brake", "frená 15 m más tarde", 4500.0),
+        _cue("validated_llm_steering", "steering_magnitude", "reducí la magnitud del volante", 9000.0),
+    ]
+    result = enrich_cues_with_deterministic_priority(cues)
+    assert result[0]["kind"] == "spatial_points"
+    assert result[0]["channel"] == "brake"
+    assert result[0]["event_distance_m"] == 4500.0
+    assert result[1]["kind"] == "spatial_points"
+    assert result[1]["channel"] == "throttle"
+    assert result[1]["event_distance_m"] == 4700.0
+
+
+def test_p8_physical_cue_beats_reference_profile():
+    """Test D: physical cue beats reference_action_profile by priority rank."""
+    cues = [
+        _cue("reference_action_profile", "brake", "replicá la secuencia de freno de la referencia: consistente", 9000.0),
+        _cue("spatial_points", "brake", "frená 15 m más tarde", 4500.0),
+        _cue("validated_llm_steering", "steering_magnitude", "reducí la magnitud del volante", 9500.0),
+    ]
+    result = enrich_cues_with_deterministic_priority(cues)
+    assert result[0]["kind"] == "spatial_points"
+    assert result[1]["kind"] == "reference_action_profile"
+
+
+def test_p8_reference_profile_can_fill_slot_2_when_distinct():
+    """Test E: reference_profile can fill slot 2 when distinct from spatial cue."""
+    cues = [
+        _cue("spatial_points", "brake", "frená 15 m más tarde", 4500.0),
+        _cue("reference_action_profile", "throttle", "replicá la secuencia de acelerador de la referencia: consistente", 9000.0),
+    ]
+    result = enrich_cues_with_deterministic_priority(cues)
+    kinds = [cue["kind"] for cue in result]
+    assert "spatial_points" in kinds
+    assert "reference_action_profile" in kinds
+
+
+def test_p8_steering_cannot_displace_physical_brake_throttle_cue():
+    """Test F: steering must never displace authorized brake/throttle physical evidence."""
+    cues = [
+        _cue("spatial_points", "brake", "frená 15 m más tarde", 4500.0),
+        _cue("validated_llm_steering", "steering_magnitude", "reducí la magnitud del volante", 9000.0),
+    ]
+    result = enrich_cues_with_deterministic_priority(cues)
+    kinds = [cue["kind"] for cue in result]
+    spatial_idx = next(i for i, c in enumerate(result) if c["kind"] == "spatial_points")
+    steering_idx = next(i for i, c in enumerate(result) if c["kind"] == "validated_llm_steering")
+    assert spatial_idx < steering_idx
+
+
+def test_p8_single_cue_legacy_behavior_unchanged():
+    """Test G: single-cue legacy behavior must remain unchanged."""
+    cues = [
+        _cue("validated_llm_steering", "steering_magnitude", "reducí la magnitud del volante", 9000.0),
+    ]
+    result = enrich_cues_with_deterministic_priority(cues)
+    assert len(result) == 1
+    assert result[0]["kind"] == "validated_llm_steering"
+
+
+def test_p8_backend_parity():
+    """Test H: all active backends must call enrich_cues_with_deterministic_priority."""
+    from pathlib import Path
+    import re
+
+    for filename in (
+        "llm_analysis.py",
+        "llm_analysis_deepseek.py",
+        "llm_analysis_ingenierov3.py",
+        "llm_analysis_llamacpp.py",
+    ):
+        source = Path(filename).read_text(encoding="utf-8")
+        assert "enrich_cues_with_deterministic_priority" in source, filename
+        # Accept both one-line and multi-line call patterns.
+        one_line = (
+            'enrich_cues_with_deterministic_priority(item["driver_cues"])'
+        )
+        multi_line = (
+            r'enrich_cues_with_deterministic_priority\(\s*item\["driver_cues"\]'
+        )
+        assert (
+            one_line in source
+            or
+            re.search(multi_line, source) is not None
+        ), filename

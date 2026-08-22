@@ -65,7 +65,7 @@ python race_engineer.py analyze "telemetria\ARCHIVO.duckdb" --backend ollama
 
 ## Current baseline
 
-Checkpoint: 2026-08-18 automation + H5.3 shadow + local LLM backends.
+Checkpoint: 2026-08-22 GUI v1.4 + H5.4 P1–P11 + H5.3 production gate review pending.
 
 ```text
 race_engineer.py             orchestrator 0.3

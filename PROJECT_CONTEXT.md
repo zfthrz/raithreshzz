@@ -1,7 +1,7 @@
 # Race Engineer — PROJECT_CONTEXT v1.0
 
 > Canonical end-to-end onboarding context for coding agents and LLMs working on the Race Engineer repository.
-> Baseline represented here: integration and local automation checkpoint 2026-08-17.
+> Baseline represented here: GUI v1.4, H5.4 P1–P11 and historical-shadow checkpoint 2026-08-22.
 >
 > This is the detailed mental model of the project. `AGENTS.md` should instruct coding agents to read this file before non-trivial work.
 
@@ -147,11 +147,12 @@ DeepSeek pseudo-labels/reviews are assistance and must never be silently mixed w
 
 # 4. Current operational baseline
 
-Checkpoint: **2026-08-17 automation and historical-reference integration**.
+Checkpoint: **2026-08-22 GUI v1.4, H5.4 presentation and historical shadow**.
 
 | Component | Current operational baseline |
 |---|---|
 | `race_engineer.py` | orchestrator v0.3 |
+| `race_engineer_gui.py` | v1.4 / P11 focus + GPS map + 10 Hz telemetry chart |
 | `analyze_telemetry.py` | v3.8 + Objective Python v6 |
 | Brake point | 2.1 / schema 2.1 |
 | Throttle point | 1.2.1 / schema 1.2 |
@@ -172,11 +173,12 @@ Checkpoint: **2026-08-17 automation and historical-reference integration**.
 | H5.1 dual reference | v0.2 |
 | H5.2 | v0.2 profile-localized raw comparison + v0.1 validated observational LLM narrative |
 | H5.3 historical coaching debrief | roadmap only / shadow complete (H5.3a-f) + Nivel 2 action policy / production gated |
+| H5.4 coaching precision | P1–P11 implemented / P10–P11 presentation-only |
 
 Validated checkpoints relevant to the current working tree:
 
 ```text
-full pytest (current working tree):   408 PASS / 0 FAIL / 0 SKIP
+full pytest (current working tree):   987 PASS / 0 FAIL / 0 SKIP
 Objective Python regressions:         55 PASS / 0 FAIL / 0 SKIP
 Objective recovery check:             READY
 ```

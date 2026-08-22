@@ -2,6 +2,15 @@
 
 ## Current integration checkpoint
 
+Checkpoint: **2026-08-22** / `main` commit `fb91b12`.
+
+Validated baseline:
+
+- full pytest: `987 PASS / 0 FAIL / 0 SKIP`;
+- Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP` (last analyzer-affecting checkpoint);
+- GUI: v1.4, deterministic H5.4 P11 focus over the preserved complete plan;
+- H5.3: shadow implementation complete, production historical actions still disabled.
+
 ### analyze_telemetry
 Current: `3.8`
 
@@ -19,6 +28,25 @@ Contract:
 - qualitative text cannot contain numbers
 - Python owns ground truth and final rendering
 - invalid LLM response is rejected
+
+### H5.4 coaching precision and presentation
+
+Current: deterministic P1–P11 implemented in the canonical LLM backends.
+
+- precision evidence and locality/track-reference guards remain Python-owned;
+- P8 orders driver-facing cues without inventing evidence;
+- P9 adds deterministic cross-zone diversity metadata;
+- P10 creates a presentation-only plan projection;
+- P11 takes at most two items from that projection as driver focus;
+- P10/P11 never mutate or re-authorize `next_stint_plan`;
+- GUI v1.4 shows a consistent P11 focus first and preserves the complete plan below;
+- five recent real debriefs exposed `ACTIVE / 2` focus, while older artifacts safely
+  fall back to the complete plan.
+
+The next product decision is not another precision-policy patch. It is a controlled
+review of whether H5.3 historical coaching should move beyond shadow. Do not enable
+`historical_actions_authorized` merely because the existing promotion manifest says
+`PROMOTION_READY`.
 
 ### history
 Current: `session_history v1.4 / schema 4`

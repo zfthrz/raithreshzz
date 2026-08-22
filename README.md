@@ -12,7 +12,7 @@ Este README documenta el flujo operativo actual del proyecto: análisis de una s
 
 > Interfaz de escritorio: [`docs/RACE_ENGINEER_GUI_V1_4.md`](docs/RACE_ENGINEER_GUI_V1_4.md).
 
-> Traspaso operativo actualizado al 17/08/2026: [`docs/DEEPSEEK_HANDOFF_2026_08_17.md`](docs/DEEPSEEK_HANDOFF_2026_08_17.md).
+> Traspaso para continuar en ChatGPT actualizado al 22/08/2026: [`docs/CHATGPT_HANDOFF_2026_08_22.md`](docs/CHATGPT_HANDOFF_2026_08_22.md).
 
 ---
 

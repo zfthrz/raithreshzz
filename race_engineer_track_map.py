@@ -28,7 +28,7 @@ from extract_lmu_track_gps import (
 )
 
 
-TRACK_MAP_VERSION = "0.4"
+TRACK_MAP_VERSION = "0.5"
 
 
 @dataclass(frozen=True)
@@ -86,6 +86,16 @@ class TrackTelemetrySummary:
     throttle_max_percent: float | None
     brake_mean_percent: float | None
     brake_max_percent: float | None
+
+
+@dataclass(frozen=True)
+class TrackTelemetryChart:
+    speed_max_kmh: float
+    speed: tuple[tuple[float, float], ...]
+    throttle: tuple[tuple[float, float], ...]
+    brake: tuple[tuple[float, float], ...]
+    distance_min_m: float
+    distance_max_m: float
 
 
 def load_track_map(
@@ -385,6 +395,86 @@ def nearest_fitted_point_index(
         if distance_sq > max_distance_px**2:
             return None
     return index
+
+
+def build_track_telemetry_chart(
+    points: tuple[TrackMapPoint, ...],
+    *,
+    width_px: int,
+    height_px: int,
+    left_px: int = 74,
+    right_px: int = 18,
+    top_px: int = 12,
+    bottom_px: int = 12,
+) -> TrackTelemetryChart | None:
+    """Fit native channels into three deterministic distance-based chart lanes."""
+
+    valid_distances = [
+        float(point.lap_distance_m)
+        for point in points
+        if point.lap_distance_m is not None and math.isfinite(point.lap_distance_m)
+    ]
+    if not valid_distances or width_px <= left_px + right_px or height_px <= top_px + bottom_px:
+        return None
+    distance_min = min(valid_distances)
+    distance_max = max(valid_distances)
+    if distance_max <= distance_min:
+        return None
+    speeds = [
+        float(point.speed_kmh)
+        for point in points
+        if point.speed_kmh is not None and math.isfinite(point.speed_kmh)
+    ]
+    observed_speed_max = max(speeds, default=0.0)
+    speed_max = max(100.0, math.ceil(observed_speed_max / 50.0) * 50.0)
+    usable_width = float(width_px - left_px - right_px)
+    usable_height = float(height_px - top_px - bottom_px)
+    lane_height = usable_height / 3.0
+
+    def x_for(distance: float) -> float:
+        return left_px + (distance - distance_min) / (distance_max - distance_min) * usable_width
+
+    def series(attribute: str, lane: int, maximum: float) -> tuple[tuple[float, float], ...]:
+        result = []
+        lane_top = top_px + lane * lane_height
+        for point in points:
+            distance = point.lap_distance_m
+            value = getattr(point, attribute)
+            if distance is None or value is None:
+                continue
+            if not math.isfinite(distance) or not math.isfinite(value):
+                continue
+            normalized = min(max(float(value) / maximum, 0.0), 1.0)
+            result.append((x_for(float(distance)), lane_top + (1.0 - normalized) * lane_height))
+        return tuple(result)
+
+    return TrackTelemetryChart(
+        speed_max_kmh=speed_max,
+        speed=series("speed_kmh", 0, speed_max),
+        throttle=series("throttle_percent", 1, 100.0),
+        brake=series("brake_percent", 2, 100.0),
+        distance_min_m=distance_min,
+        distance_max_m=distance_max,
+    )
+
+
+def telemetry_chart_x_for_distance(
+    chart: TrackTelemetryChart,
+    distance_m: float,
+    *,
+    width_px: int,
+    left_px: int = 74,
+    right_px: int = 18,
+) -> float:
+    """Map LMU lap distance to the shared x axis used by the telemetry chart."""
+
+    span = chart.distance_max_m - chart.distance_min_m
+    if span <= 0 or width_px <= left_px + right_px:
+        return float(left_px)
+    clamped = min(max(distance_m, chart.distance_min_m), chart.distance_max_m)
+    return left_px + (clamped - chart.distance_min_m) / span * (
+        width_px - left_px - right_px
+    )
 
 
 def load_track_zones(path: Path | None) -> tuple[TrackMapZone, ...]:

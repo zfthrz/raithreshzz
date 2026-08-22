@@ -284,7 +284,7 @@ LLM episode-prompt shadow checkpoint:
 See `docs/LLM_PROMPT_SHADOW_PROMOTION_GATE_V0_1.md`.
 
 Validation:
-- pytest: `981 PASS / 0 FAIL / 0 SKIP`
+- pytest: `983 PASS / 0 FAIL / 0 SKIP`
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP`
 - Objective recovery check: `READY`
 
@@ -381,6 +381,13 @@ continuously along the circuit and remains snapped to the closest rendered GPS
 sample. The feature is read-only and changes
 no coaching authority, selection or pipeline artifact. See
 `docs/RACE_ENGINEER_GUI_V1_1.md`.
+
+GUI v1.2 adds a full-lap chart below the GPS map with independent speed, throttle
+and brake lanes on one `Lap Dist` axis. The draggable white map marker controls a
+shared vertical chart cursor; selecting an H5.2 zone or validated priority shades
+its exact interval behind the traces. The chart consumes only the already aligned
+complete-lap native channels, remains read-only and changes no coaching or historical
+authority. See `docs/RACE_ENGINEER_GUI_V1_2.md`.
 
 Calibration batch orchestrator `1.5` requires the current History schema 4 contract,
 reports its runtime version consistently and has a regression test against schema drift.

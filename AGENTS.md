@@ -66,7 +66,7 @@ Checkpoint: 2026-08-18 automation + H5.3 shadow + local LLM backends.
 
 ```text
 race_engineer.py             orchestrator 0.3
-race_engineer_gui.py         desktop session hub 1.1 / native telemetry inspection by GPS zone
+race_engineer_gui.py         desktop session hub 1.2 / synchronized full-lap telemetry chart
 analyze_telemetry.py         3.8 + Objective Python v6
 llm_analysis*.py             3.10.8.5.4
 llm_analysis_llamacpp.py     3.10.8.5.4 / llama.cpp local (default qwen3-14b)
@@ -87,7 +87,7 @@ historical_action_policy.py           H5.3 action candidates 0.2 / shadow only
 Validated integration checkpoint:
 
 ```text
-pytest:                         981 PASS / 0 FAIL / 0 SKIP
+pytest:                         983 PASS / 0 FAIL / 0 SKIP
 Objective Python regressions:  55 PASS / 0 FAIL / 0 SKIP
 ```
 

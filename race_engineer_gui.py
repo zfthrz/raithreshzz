@@ -42,6 +42,7 @@ from race_engineer_track_map import (
     TrackMapPoint,
     TrackTelemetrySummary,
     TrackMapZone,
+    build_track_telemetry_chart,
     fit_track_points,
     load_track_map,
     load_track_priorities,
@@ -49,12 +50,13 @@ from race_engineer_track_map import (
     nearest_fitted_point_index,
     priority_for_distance,
     summarize_track_interval,
+    telemetry_chart_x_for_distance,
     zone_for_distance,
     zone_point_ranges,
 )
 
 
-GUI_VERSION = "1.1"
+GUI_VERSION = "1.2"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 PROJECT_ROOT = Path(__file__).resolve().parent
 BACKEND_LABELS = {
@@ -442,6 +444,18 @@ class RaceEngineerApp:
             wraplength=960,
             justify="left",
         ).pack(fill="x", padx=8, pady=(0, 4))
+        telemetry_canvas = self.tk.Canvas(
+            frame,
+            height=180,
+            background="#111111",
+            highlightthickness=1,
+            highlightbackground="#333333",
+        )
+        telemetry_canvas.pack(fill="x", padx=0, pady=(4, 0))
+        telemetry_canvas.bind(
+            "<Configure>", lambda _event: self._render_track_telemetry_chart()
+        )
+        self.track_telemetry_canvas = telemetry_canvas
         return canvas
 
     def _set_text(self, widget, value: str, *, markdown: bool = False):
@@ -615,6 +629,7 @@ class RaceEngineerApp:
         self.selected_track_point_index = None
         self.track_map_dragging = False
         self.track_map_canvas.delete("all")
+        self.track_telemetry_canvas.delete("all")
         self.track_map_status.set("Seleccioná una sesión para reconstruir el mapa GPS.")
         self.track_map_zone_status.set("Sin capas de zonas para esta sesión.")
         self.track_map_telemetry_status.set(
@@ -634,6 +649,7 @@ class RaceEngineerApp:
         self.selected_track_point_index = None
         self.track_map_dragging = False
         self.track_map_canvas.delete("all")
+        self.track_telemetry_canvas.delete("all")
         self.track_map_zone_status.set("Buscando zonas H5.2 y prioridades del debrief…")
         self.track_map_telemetry_status.set(
             "Hacé clic en el trazado para inspeccionar velocidad, freno y acelerador."
@@ -744,6 +760,7 @@ class RaceEngineerApp:
                 self.current_fitted_track_points = ()
                 self.selected_track_point_index = None
                 self.track_map_canvas.delete("all")
+                self.track_telemetry_canvas.delete("all")
                 self.track_map_status.set(f"Mapa GPS no disponible: {value}")
                 self.track_map_zone_status.set("Sin mapa GPS para superponer zonas.")
         if self.track_map_loading and not current_completed:
@@ -952,6 +969,7 @@ class RaceEngineerApp:
         canvas.delete("all")
         data = self.current_track_map
         if data is None:
+            self._render_track_telemetry_chart()
             return
         width = max(canvas.winfo_width(), 100)
         height = max(canvas.winfo_height(), 100)
@@ -1072,6 +1090,127 @@ class RaceEngineerApp:
                 outline="#101010",
                 width=2,
             )
+        self._render_track_telemetry_chart()
+
+    def _render_track_telemetry_chart(self):
+        canvas = self.track_telemetry_canvas
+        canvas.delete("all")
+        data = self.current_track_map
+        if data is None:
+            return
+        width = max(canvas.winfo_width(), 180)
+        height = max(canvas.winfo_height(), 120)
+        chart = build_track_telemetry_chart(
+            data.points,
+            width_px=width,
+            height_px=height,
+        )
+        if chart is None:
+            canvas.create_text(
+                12,
+                12,
+                text="Canales de telemetría no disponibles.",
+                fill="#8fa5b8",
+                anchor="nw",
+                font=("Segoe UI", 9),
+            )
+            return
+
+        lane_height = (height - 24) / 3.0
+        for lane in (1, 2):
+            y = 12 + lane * lane_height
+            canvas.create_line(74, y, width - 18, y, fill="#303030", width=1)
+
+        selected_interval = self._selected_track_interval()
+        if selected_interval is not None:
+            start_x = telemetry_chart_x_for_distance(
+                chart,
+                selected_interval[0],
+                width_px=width,
+            )
+            end_x = telemetry_chart_x_for_distance(
+                chart,
+                selected_interval[1],
+                width_px=width,
+            )
+            canvas.create_rectangle(
+                start_x,
+                12,
+                end_x,
+                height - 12,
+                fill="#272727",
+                outline="",
+                stipple="gray25",
+            )
+
+        lane_labels = (
+            (f"Velocidad\n0–{chart.speed_max_kmh:.0f}", "#55b7e8"),
+            ("Acelerador\n0–100%", "#45c98c"),
+            ("Freno\n0–100%", "#e45a5a"),
+        )
+        for lane, (label, color) in enumerate(lane_labels):
+            canvas.create_text(
+                8,
+                12 + lane * lane_height + lane_height / 2,
+                text=label,
+                fill=color,
+                anchor="w",
+                font=("Segoe UI", 8),
+            )
+
+        for values, color in (
+            (chart.speed, "#55b7e8"),
+            (chart.throttle, "#45c98c"),
+            (chart.brake, "#e45a5a"),
+        ):
+            if len(values) >= 2:
+                coordinates = [coordinate for point in values for coordinate in point]
+                canvas.create_line(
+                    *coordinates,
+                    fill=color,
+                    width=2,
+                    joinstyle="round",
+                )
+
+        if (
+            self.selected_track_point_index is not None
+            and 0 <= self.selected_track_point_index < len(data.points)
+        ):
+            point = data.points[self.selected_track_point_index]
+            if point.lap_distance_m is not None:
+                marker_x = telemetry_chart_x_for_distance(
+                    chart,
+                    point.lap_distance_m,
+                    width_px=width,
+                )
+                canvas.create_line(
+                    marker_x,
+                    8,
+                    marker_x,
+                    height - 8,
+                    fill="#f2f7fb",
+                    width=2,
+                )
+
+    def _selected_track_interval(self) -> tuple[float, float] | None:
+        selected = self.selected_track_overlay
+        if selected is None:
+            return None
+        kind, identifier = selected
+        values = (
+            self.current_track_priorities
+            if kind == "priority"
+            else self.current_track_zones
+        )
+        for value in values:
+            value_id = (
+                value.priority_id
+                if isinstance(value, TrackMapPriority)
+                else value.zone_id
+            )
+            if value_id == identifier:
+                return value.start_distance_m, value.end_distance_m
+        return None
 
     def _open_selected_folder(self):
         from tkinter import messagebox

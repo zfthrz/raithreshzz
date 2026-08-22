@@ -9,6 +9,7 @@ import pytest
 
 from race_engineer_track_map import (
     TrackMapPoint,
+    build_track_telemetry_chart,
     fit_track_points,
     load_track_map,
     load_track_priorities,
@@ -16,6 +17,7 @@ from race_engineer_track_map import (
     nearest_fitted_point_index,
     priority_for_distance,
     summarize_track_interval,
+    telemetry_chart_x_for_distance,
     zone_for_distance,
     zone_point_ranges,
 )
@@ -212,6 +214,39 @@ def test_nearest_map_point_supports_hit_radius_and_unconstrained_drag():
     assert nearest_fitted_point_index(
         fitted, x_px=65.0, y_px=75.0, max_distance_px=None
     ) == 2
+
+
+def test_telemetry_chart_uses_shared_distance_axis_and_three_fixed_lanes():
+    points = (
+        TrackMapPoint(0.0, 0.0, 0.0, 0.0, 0.0, 100.0),
+        TrackMapPoint(1.0, 0.0, 100.0, 200.0, 100.0, 0.0),
+    )
+
+    chart = build_track_telemetry_chart(points, width_px=200, height_px=132)
+
+    assert chart is not None
+    assert chart.speed_max_kmh == 200
+    assert chart.speed == ((74.0, 48.0), (182.0, 12.0))
+    assert chart.throttle == ((74.0, 84.0), (182.0, 48.0))
+    assert chart.brake == ((74.0, 84.0), (182.0, 120.0))
+    assert telemetry_chart_x_for_distance(chart, 50.0, width_px=200) == 128.0
+
+
+def test_telemetry_chart_requires_distance_but_tolerates_missing_channels():
+    without_channels = (
+        TrackMapPoint(0.0, 0.0, 0.0),
+        TrackMapPoint(1.0, 0.0, 100.0),
+    )
+
+    chart = build_track_telemetry_chart(without_channels, width_px=200, height_px=132)
+
+    assert chart is not None
+    assert chart.speed == ()
+    assert chart.throttle == ()
+    assert chart.brake == ()
+    assert build_track_telemetry_chart(
+        (TrackMapPoint(0.0, 0.0, None),), width_px=200, height_px=132
+    ) is None
 
 
 def test_h5_2_zones_are_loaded_in_track_order_and_mapped_by_lap_distance(

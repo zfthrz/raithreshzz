@@ -7,11 +7,16 @@ import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable
+from typing import Callable, Mapping
 
 
 UI_ANALYSIS_VERSION = "0.1"
 SUPPORTED_BACKENDS = ("deepseek", "llamacpp", "ollama")
+ALLOWED_ENVIRONMENT_OVERRIDES = {
+    "DEEPSEEK_MODEL",
+    "LLAMACPP_MODEL",
+    "LLAMACPP_API_URL",
+}
 
 
 @dataclass(frozen=True)
@@ -21,6 +26,7 @@ class AnalysisLaunchPlan:
     project_root: Path
     python_executable: Path
     command: tuple[str, ...]
+    environment_overrides: tuple[tuple[str, str], ...]
 
 
 def console_python_executable(executable: str | Path = sys.executable) -> Path:
@@ -40,6 +46,7 @@ def build_analysis_plan(
     backend: str,
     project_root: Path,
     python_executable: str | Path = sys.executable,
+    environment_overrides: Mapping[str, str] | None = None,
 ) -> AnalysisLaunchPlan:
     root = Path(project_root).resolve()
     launcher = root / "analyze_telemetry_file.py"
@@ -57,12 +64,17 @@ def build_analysis_plan(
         "--backend",
         backend,
     )
+    overrides = tuple(sorted((environment_overrides or {}).items()))
+    unknown = {name for name, _ in overrides} - ALLOWED_ENVIRONMENT_OVERRIDES
+    if unknown:
+        raise ValueError("Variables de entorno GUI no autorizadas: " + ", ".join(sorted(unknown)))
     return AnalysisLaunchPlan(
         database_path=database,
         backend=backend,
         project_root=root,
         python_executable=python,
         command=command,
+        environment_overrides=overrides,
     )
 
 
@@ -109,6 +121,7 @@ def stream_analysis(
     # be printed without failing after the result has already been saved.
     environment["PYTHONUTF8"] = "1"
     environment["PYTHONIOENCODING"] = "utf-8"
+    environment.update(dict(plan.environment_overrides))
     process = popen_factory(
         list(plan.command),
         cwd=plan.project_root,

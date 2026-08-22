@@ -11,6 +11,14 @@ import threading
 from pathlib import Path
 
 from race_engineer_history_gui import open_history_browser
+from race_engineer_gui_settings import (
+    backend_environment,
+    backend_model_label,
+    default_settings,
+    load_settings,
+    save_settings,
+)
+from race_engineer_settings_gui import edit_settings
 from runtime_paths import history_db_default_path
 
 from race_engineer_ui_model import (
@@ -29,7 +37,7 @@ from race_engineer_ui_analysis import (
 )
 
 
-GUI_VERSION = "0.3"
+GUI_VERSION = "0.4"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 PROJECT_ROOT = Path(__file__).resolve().parent
 BACKEND_LABELS = {
@@ -64,11 +72,19 @@ class RaceEngineerApp:
         self.analysis_queue: queue.Queue[tuple[str, object]] = queue.Queue()
         self.analysis_running = False
         self.analysis_database: Path | None = None
+        self.analysis_model: str | None = None
+        self.settings_path = PROJECT_ROOT / "data" / "local" / "race_engineer_gui_settings.json"
+        try:
+            self.settings = load_settings(self.settings_path)
+            self.settings_warning = ""
+        except (OSError, ValueError, TypeError) as exc:
+            self.settings = default_settings()
+            self.settings_warning = f"Configuración local inválida; se usan defaults: {exc}"
 
         root.title(f"Race Engineer — Session Hub v{GUI_VERSION}")
         root.geometry("1320x820")
         root.minsize(1020, 650)
-        root.configure(background="#10151b")
+        root.configure(background="#101010")
         root.protocol("WM_DELETE_WINDOW", self._on_close)
 
         self._configure_style()
@@ -79,29 +95,29 @@ class RaceEngineerApp:
         style = self.ttk.Style(self.root)
         if "clam" in style.theme_names():
             style.theme_use("clam")
-        style.configure("App.TFrame", background="#10151b")
-        style.configure("Panel.TFrame", background="#18212b")
+        style.configure("App.TFrame", background="#101010")
+        style.configure("Panel.TFrame", background="#1c1c1c")
         style.configure(
             "Title.TLabel",
-            background="#10151b",
+            background="#101010",
             foreground="#f2f7fb",
             font=("Segoe UI Semibold", 22),
         )
         style.configure(
             "Subtitle.TLabel",
-            background="#10151b",
+            background="#101010",
             foreground="#8fa5b8",
             font=("Segoe UI", 10),
         )
         style.configure(
             "Metric.TLabel",
-            background="#18212b",
+            background="#1c1c1c",
             foreground="#e8f1f7",
             font=("Segoe UI Semibold", 11),
         )
         style.configure(
             "Muted.TLabel",
-            background="#18212b",
+            background="#1c1c1c",
             foreground="#91a6b8",
             font=("Segoe UI", 9),
         )
@@ -124,8 +140,8 @@ class RaceEngineerApp:
         style.configure("TButton", font=("Segoe UI", 10), padding=(10, 7))
         style.configure(
             "Treeview",
-            background="#141c24",
-            fieldbackground="#141c24",
+            background="#171717",
+            fieldbackground="#171717",
             foreground="#dce7ef",
             rowheight=29,
             borderwidth=0,
@@ -133,23 +149,23 @@ class RaceEngineerApp:
         )
         style.configure(
             "Treeview.Heading",
-            background="#24313e",
+            background="#2a2a2a",
             foreground="#dce7ef",
             font=("Segoe UI Semibold", 9),
             padding=(5, 8),
         )
-        style.map("Treeview", background=[("selected", "#256b73")])
-        style.configure("TNotebook", background="#18212b", borderwidth=0)
+        style.map("Treeview", background=[("selected", "#3b3b3b")])
+        style.configure("TNotebook", background="#1c1c1c", borderwidth=0)
         style.configure(
             "TNotebook.Tab",
-            background="#24313e",
+            background="#2a2a2a",
             foreground="#b8c7d3",
             padding=(14, 8),
             font=("Segoe UI Semibold", 9),
         )
         style.map(
             "TNotebook.Tab",
-            background=[("selected", "#18212b")],
+            background=[("selected", "#1c1c1c")],
             foreground=[("selected", "#55decf")],
         )
 
@@ -189,6 +205,8 @@ class RaceEngineerApp:
         self.refresh_button.pack(side="left")
         self.history_button = ttk.Button(actions, text="History", command=self._open_history)
         self.history_button.pack(side="left", padx=(8, 0))
+        self.settings_button = ttk.Button(actions, text="Configuración", command=self._edit_settings)
+        self.settings_button.pack(side="left", padx=(8, 0))
 
         content = ttk.Panedwindow(self.root, orient="horizontal")
         content.pack(fill="both", expand=True, padx=18, pady=(0, 18))
@@ -251,6 +269,7 @@ class RaceEngineerApp:
         self.notebook.pack(fill="both", expand=True)
         self.debrief_text = self._text_tab(self.notebook, "Debrief")
         self.plan_text = self._text_tab(self.notebook, "Próxima tanda")
+        self.laps_text = self._text_tab(self.notebook, "Vueltas")
         self.historical_reference_text = self._text_tab(self.notebook, "Referencia histórica")
         self.pipeline_text = self._text_tab(self.notebook, "Pipeline")
         self.execution_text = self._text_tab(self.notebook, "Ejecución")
@@ -266,7 +285,10 @@ class RaceEngineerApp:
         self.progress = ttk.Progressbar(execution_bar, mode="indeterminate", length=180)
         self.progress.pack(side="right")
 
-        self.footer_var = tk.StringVar(value=str(self.runs_root))
+        footer = str(self.runs_root)
+        if self.settings_warning:
+            footer += " · " + self.settings_warning
+        self.footer_var = tk.StringVar(value=footer)
         ttk.Label(
             self.root,
             textvariable=self.footer_var,
@@ -280,10 +302,10 @@ class RaceEngineerApp:
         text = self.tk.Text(
             frame,
             wrap="word",
-            background="#111820",
+            background="#151515",
             foreground="#dce7ef",
             insertbackground="#dce7ef",
-            selectbackground="#256b73",
+            selectbackground="#3b3b3b",
             relief="flat",
             padx=18,
             pady=16,
@@ -353,7 +375,12 @@ class RaceEngineerApp:
         self.tree.tag_configure("HISTORY_READY", foreground="#f0c674")
         self.tree.tag_configure("FAILED", foreground="#ff7b72")
         self.count_var.set(f"{len(self.sessions)} sesiones · {len(errors)} errores de lectura")
-        self.footer_var.set(str(self.runs_root) + (f" · {errors[0]}" if errors else ""))
+        footer_parts = [str(self.runs_root)]
+        if errors:
+            footer_parts.append(errors[0])
+        if self.settings_warning:
+            footer_parts.append(self.settings_warning)
+        self.footer_var.set(" · ".join(footer_parts))
 
         target = None
         if preferred_database is not None:
@@ -406,6 +433,7 @@ class RaceEngineerApp:
         )
         self._set_text(self.debrief_text, detail.debrief_markdown, markdown=True)
         self._set_text(self.plan_text, detail.plan_text)
+        self._set_text(self.laps_text, detail.laps_text)
         self._set_text(self.historical_reference_text, detail.historical_reference_text)
         pipeline = detail.pipeline_text
         if detail.warnings:
@@ -419,6 +447,7 @@ class RaceEngineerApp:
         for widget in (
             self.debrief_text,
             self.plan_text,
+            self.laps_text,
             self.historical_reference_text,
             self.pipeline_text,
         ):
@@ -444,6 +473,31 @@ class RaceEngineerApp:
             self.root,
             history_db_default_path(),
             preferred_database=preferred,
+        )
+
+    def _edit_settings(self):
+        from tkinter import messagebox
+
+        if self.analysis_running:
+            messagebox.showinfo(
+                "Race Engineer",
+                "Esperá a que termine el análisis antes de cambiar el modelo.",
+                parent=self.root,
+            )
+            return
+        updated = edit_settings(self.root, self.settings)
+        if updated is None:
+            return
+        try:
+            self.settings = save_settings(self.settings_path, updated)
+            self.settings_warning = ""
+        except (OSError, ValueError) as exc:
+            messagebox.showerror("Race Engineer", str(exc), parent=self.root)
+            return
+        messagebox.showinfo(
+            "Race Engineer",
+            "Configuración guardada localmente. Se aplicará al próximo análisis.",
+            parent=self.root,
         )
 
     def _choose_analysis_file(self):
@@ -515,6 +569,7 @@ class RaceEngineerApp:
             return
         backend_label = self.backend_var.get()
         backend = BACKEND_LABELS[backend_label]
+        model = backend_model_label(self.settings, backend)
         remote_note = (
             "\n\nDeepSeek usa la API remota y puede generar un costo."
             if backend == "deepseek"
@@ -522,7 +577,7 @@ class RaceEngineerApp:
         )
         if not messagebox.askyesno(
             "Confirmar análisis",
-            f"Archivo:\n{database}\n\nBackend: {backend_label}{remote_note}\n\n"
+            f"Archivo:\n{database}\n\nBackend: {backend_label}\nModelo: {model}{remote_note}\n\n"
             "El launcher volverá a comprobar LMU, tamaño, estabilidad y vueltas válidas.\n"
             "¿Continuar?",
             parent=self.root,
@@ -533,10 +588,12 @@ class RaceEngineerApp:
                 database,
                 backend=backend,
                 project_root=PROJECT_ROOT,
+                environment_overrides=backend_environment(self.settings, backend),
             )
         except (ValueError, FileNotFoundError, OSError) as exc:
             messagebox.showerror("Race Engineer", str(exc), parent=self.root)
             return
+        self.analysis_model = model
         self._start_analysis(plan)
 
     def _start_analysis(self, plan):
@@ -550,7 +607,8 @@ class RaceEngineerApp:
         self._set_text(
             self.execution_text,
             "RACE ENGINEER — EJECUCIÓN DESDE GUI\n"
-            f"Archivo: {plan.database_path}\nBackend: {plan.backend}\n",
+            f"Archivo: {plan.database_path}\nBackend: {plan.backend}\n"
+            f"Modelo: {self.analysis_model or '—'}\n",
         )
         self.notebook.select(self.execution_text.master)
 
@@ -645,6 +703,7 @@ class RaceEngineerApp:
                 parent=self.root,
             )
         self.analysis_database = None
+        self.analysis_model = None
 
     def _on_close(self):
         from tkinter import messagebox

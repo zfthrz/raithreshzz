@@ -84,11 +84,11 @@ validated through the GUI.
 
 ## Deferred
 
-- model/server settings screen;
 - desktop/Start Menu shortcut installer;
 - packaging into a standalone executable.
 
 The History browser and historical-reference detail were completed in GUI v0.3.
+The non-secret model/server settings screen was completed in GUI v0.4.
 
 The v0.1 read-only contract remains documented in
 `docs/RACE_ENGINEER_GUI_V0_1.md`.

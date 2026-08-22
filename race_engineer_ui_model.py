@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any
 
 
-UI_MODEL_VERSION = "0.2"
+UI_MODEL_VERSION = "0.3"
 READY_STAGE_STATUSES = {"RUN", "REUSED"}
 FAILED_STAGE_STATUSES = {"FAILED"}
 
@@ -41,6 +41,7 @@ class SessionDetail:
     record: SessionRecord
     debrief_markdown: str
     plan_text: str
+    laps_text: str
     pipeline_text: str
     historical_reference_text: str
     warnings: tuple[str, ...]
@@ -232,6 +233,53 @@ def _plan_text(facts: dict[str, Any]) -> str:
     return "\n\n".join(sections)
 
 
+def _laps_text(analysis: dict[str, Any]) -> str:
+    metadata = _dict(analysis.get("metadata"))
+    reference_lap = _integer(metadata.get("reference_lap"))
+    valid_laps = {_integer(value) for value in _list(metadata.get("valid_laps"))}
+    discarded_laps = {_integer(value) for value in _list(metadata.get("discarded_laps"))}
+    ignored_laps = {_integer(value) for value in _list(metadata.get("ignored_initial_laps"))}
+    lap_times = _dict(metadata.get("lap_times_s"))
+    reference_time = _number(lap_times.get(str(reference_lap)))
+    rows = []
+    for value in _list(analysis.get("laps")):
+        lap = _dict(value)
+        number = _integer(lap.get("lap"))
+        if number is None:
+            continue
+        duration = _number(lap.get("duration"))
+        if duration is None:
+            duration = _number(lap_times.get(str(number)))
+        flags = []
+        if number == reference_lap:
+            flags.append("REFERENCIA")
+        if number in valid_laps:
+            flags.append("válida")
+        if number in discarded_laps:
+            flags.append("descartada/incompleta")
+        if number in ignored_laps:
+            flags.append("inicial ignorada")
+        delta = ""
+        if (
+            number in valid_laps
+            and number != reference_lap
+            and duration is not None
+            and reference_time is not None
+        ):
+            delta = f" · {duration - reference_time:+.3f} s vs referencia"
+        rows.append(
+            (
+                number,
+                f"Vuelta {number}: {format_lap_time(duration)}{delta}"
+                f" · {', '.join(flags) or 'sin clasificación'}",
+            )
+        )
+    if not rows:
+        return "No hay tiempos de vuelta disponibles en el análisis determinista."
+    rows.sort(key=lambda item: item[0])
+    return "\n".join(text for _, text in rows)
+
+
 def _pipeline_text(record: SessionRecord) -> str:
     lines = [
         f"Estado general: {record.status_detail}",
@@ -290,6 +338,7 @@ def load_session_detail(record: SessionRecord) -> SessionDetail:
     warnings = []
     debrief = "Esta sesión todavía no tiene un debrief LLM validado."
     plan = "No hay un plan de próxima tanda disponible."
+    laps = "No hay tiempos de vuelta disponibles en el análisis determinista."
     historical_reference = "Esta sesión todavía no tiene una selección H4 disponible."
     if record.debrief_path:
         try:
@@ -298,6 +347,8 @@ def load_session_detail(record: SessionRecord) -> SessionDetail:
             plan = _plan_text(_dict(payload.get("session_coaching_facts")))
         except (OSError, UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
             warnings.append(f"No se pudo leer el debrief: {exc}")
+    if record.analysis_path:
+        laps = _laps_text(_json(record.analysis_path))
     try:
         historical_reference = _historical_reference_text(record.reference_selection_path)
     except (OSError, UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
@@ -306,6 +357,7 @@ def load_session_detail(record: SessionRecord) -> SessionDetail:
         record=record,
         debrief_markdown=debrief,
         plan_text=plan,
+        laps_text=laps,
         pipeline_text=_pipeline_text(record),
         historical_reference_text=historical_reference,
         warnings=tuple(warnings),

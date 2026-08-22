@@ -284,7 +284,7 @@ LLM episode-prompt shadow checkpoint:
 See `docs/LLM_PROMPT_SHADOW_PROMOTION_GATE_V0_1.md`.
 
 Validation:
-- pytest: `952 PASS / 0 FAIL / 0 SKIP`
+- pytest: `962 PASS / 0 FAIL / 0 SKIP`
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP`
 - Objective recovery check: `READY`
 
@@ -329,6 +329,11 @@ GUI v0.3 adds a schema-4, strictly read-only History browser with search and lap
 detail, plus a per-session H4 reference tab. It shows the selected historical lap
 or the exact non-applicable result without changing coaching authority. The analysis
 button uses a dedicated dark-red style. See `docs/RACE_ENGINEER_GUI_V0_3.md`.
+
+GUI v0.4 adds a deterministic `Vueltas` tab, non-secret DeepSeek/llama.cpp model
+settings and a black/neutral-grey theme. Settings preserve existing compatible
+environment variables until saved, never store API keys and restrict llama.cpp URLs
+to localhost. See `docs/RACE_ENGINEER_GUI_V0_4.md`.
 
 Calibration batch orchestrator `1.5` requires the current History schema 4 contract,
 reports its runtime version consistently and has a regression test against schema drift.

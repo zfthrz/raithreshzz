@@ -31,7 +31,12 @@ def make_session(tmp_path: Path, name: str, *, llm: bool = True) -> Path:
                     "variant": "LMP2_ELMS",
                     "car_name_raw": "IDEC Sport #18",
                 },
-            }
+            },
+            "laps": [
+                {"lap": 0, "duration": 120.0},
+                {"lap": 1, "duration": 90.94},
+                {"lap": 2, "duration": 91.44},
+            ],
         },
     )
     debrief = write_json(
@@ -112,6 +117,16 @@ def test_detail_reads_debrief_and_authorized_plan(tmp_path: Path):
     assert "llm_validator" in detail.pipeline_text
 
 
+def test_detail_renders_deterministic_lap_times_and_reference_delta(tmp_path: Path):
+    make_session(tmp_path, "session-laps")
+    record = discover_sessions(tmp_path / "runs")[0][0]
+
+    detail = load_session_detail(record)
+
+    assert "Vuelta 1: 1:30.940 · REFERENCIA, válida" in detail.laps_text
+    assert "Vuelta 2: 1:31.440 · +0.500 s vs referencia · válida" in detail.laps_text
+
+
 def test_detail_renders_selected_h4_reference_as_observational(tmp_path: Path):
     state_path = make_session(tmp_path, "session-h4")
     h4 = write_json(
@@ -183,8 +198,8 @@ def test_gui_entry_points_and_documentation_are_present():
     assert (root / "launch_race_engineer_gui.cmd").is_file()
     for relative in ("AGENTS.md", "PROJECT_CONTEXT.md", "PROJECT_STATUS.md", "README.md"):
         source = (root / relative).read_text(encoding="utf-8")
-        assert "race_engineer_gui.py" in source or "RACE_ENGINEER_GUI_V0_3.md" in source
-    assert (root / "docs" / "RACE_ENGINEER_GUI_V0_3.md").is_file()
+        assert "race_engineer_gui.py" in source or "RACE_ENGINEER_GUI_V0_4.md" in source
+    assert (root / "docs" / "RACE_ENGINEER_GUI_V0_4.md").is_file()
     assert "analyze_telemetry_file.py" in (
-        root / "docs" / "RACE_ENGINEER_GUI_V0_3.md"
+        root / "docs" / "RACE_ENGINEER_GUI_V0_4.md"
     ).read_text(encoding="utf-8")

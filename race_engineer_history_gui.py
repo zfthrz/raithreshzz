@@ -42,7 +42,7 @@ class HistoryBrowser:
         self.window.title("Race Engineer — History")
         self.window.geometry("1180x720")
         self.window.minsize(900, 560)
-        self.window.configure(background="#10151b")
+        self.window.configure(background="#101010")
 
         header = ttk.Frame(self.window, style="App.TFrame", padding=(18, 16, 18, 10))
         header.pack(fill="x")
@@ -81,7 +81,7 @@ class HistoryBrowser:
         self.title = tk.StringVar(value="Seleccioná una sesión histórica")
         ttk.Label(right, textvariable=self.title, style="Metric.TLabel").pack(anchor="w", pady=(0, 8))
         self.detail = tk.Text(
-            right, wrap="word", background="#111820", foreground="#dce7ef",
+            right, wrap="word", background="#151515", foreground="#dce7ef",
             relief="flat", padx=16, pady=14, font=("Segoe UI", 10),
         )
         detail_scroll = ttk.Scrollbar(right, orient="vertical", command=self.detail.yview)
@@ -193,4 +193,3 @@ class HistoryBrowser:
 
 def open_history_browser(parent, database_path: Path, preferred_database: Path | None = None):
     return HistoryBrowser(parent, database_path, preferred_database)
-

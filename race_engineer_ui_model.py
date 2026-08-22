@@ -9,9 +9,10 @@ from pathlib import Path
 from typing import Any
 
 
-UI_MODEL_VERSION = "0.3"
+UI_MODEL_VERSION = "0.4"
 READY_STAGE_STATUSES = {"RUN", "REUSED"}
 FAILED_STAGE_STATUSES = {"FAILED"}
+SESSION_FILTERS = {"ALL", "DEBRIEF_READY", "HISTORY_READY", "FAILED"}
 
 
 @dataclass(frozen=True)
@@ -204,6 +205,36 @@ def discover_sessions(runs_root: Path) -> tuple[list[SessionRecord], list[str]]:
             errors.append(f"{state_path}: {exc}")
     sessions.sort(key=lambda item: (-item.modified_timestamp, item.session_key.casefold()))
     return sessions, errors
+
+
+def filter_sessions(
+    sessions: list[SessionRecord],
+    *,
+    query: str = "",
+    status_filter: str = "ALL",
+) -> list[SessionRecord]:
+    if status_filter not in SESSION_FILTERS:
+        raise ValueError(f"Filtro de sesión no soportado: {status_filter}")
+    terms = [term.casefold() for term in query.split() if term.strip()]
+    result = []
+    for session in sessions:
+        if status_filter != "ALL" and session.status != status_filter:
+            continue
+        haystack = " ".join(
+            (
+                session.session_key,
+                session.timestamp_utc,
+                format_timestamp(session.timestamp_utc, session.modified_timestamp),
+                session.track,
+                session.session_type,
+                session.vehicle,
+                session.status,
+                session.status_detail,
+            )
+        ).casefold()
+        if all(term in haystack for term in terms):
+            result.append(session)
+    return result
 
 
 def _cue_text(cue: Any) -> str:

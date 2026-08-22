@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import json
+from dataclasses import replace
 from pathlib import Path
 
 from race_engineer_ui_model import (
     discover_sessions,
+    filter_sessions,
     format_lap_time,
     load_session_detail,
 )
@@ -187,6 +189,44 @@ def test_sessions_are_sorted_by_latest_state_first(tmp_path: Path):
     assert sessions[0].session_key == "first"
 
 
+def test_main_session_filters_combine_search_terms_and_status(tmp_path: Path):
+    make_session(tmp_path, "fuji-debrief")
+    make_session(tmp_path, "fuji-history", llm=False)
+    sessions, _ = discover_sessions(tmp_path / "runs")
+    failed = replace(
+        sessions[0],
+        session_key="monza-failed",
+        track="Autodromo Nazionale Monza",
+        vehicle="Toyota #7",
+        status="FAILED",
+        status_detail="Falló: llm",
+    )
+    sessions.append(failed)
+
+    assert [item.session_key for item in filter_sessions(sessions, query="fuji validado")] == [
+        "fuji-debrief"
+    ]
+    assert [
+        item.session_key
+        for item in filter_sessions(sessions, status_filter="HISTORY_READY")
+    ] == ["fuji-history"]
+    assert [
+        item.session_key
+        for item in filter_sessions(sessions, query="monza toyota", status_filter="FAILED")
+    ] == ["monza-failed"]
+
+
+def test_main_session_filter_rejects_unknown_status(tmp_path: Path):
+    make_session(tmp_path, "session")
+    sessions, _ = discover_sessions(tmp_path / "runs")
+    try:
+        filter_sessions(sessions, status_filter="UNKNOWN")
+    except ValueError as exc:
+        assert "no soportado" in str(exc)
+    else:
+        raise AssertionError("unknown session filter should fail closed")
+
+
 def test_lap_time_formatter_is_driver_friendly():
     assert format_lap_time(90.94) == "1:30.940"
     assert format_lap_time(None) == "—"
@@ -198,8 +238,8 @@ def test_gui_entry_points_and_documentation_are_present():
     assert (root / "launch_race_engineer_gui.cmd").is_file()
     for relative in ("AGENTS.md", "PROJECT_CONTEXT.md", "PROJECT_STATUS.md", "README.md"):
         source = (root / relative).read_text(encoding="utf-8")
-        assert "race_engineer_gui.py" in source or "RACE_ENGINEER_GUI_V0_4.md" in source
-    assert (root / "docs" / "RACE_ENGINEER_GUI_V0_4.md").is_file()
+        assert "race_engineer_gui.py" in source or "RACE_ENGINEER_GUI_V0_6.md" in source
+    assert (root / "docs" / "RACE_ENGINEER_GUI_V0_6.md").is_file()
     assert "analyze_telemetry_file.py" in (
-        root / "docs" / "RACE_ENGINEER_GUI_V0_4.md"
+        root / "docs" / "RACE_ENGINEER_GUI_V0_6.md"
     ).read_text(encoding="utf-8")

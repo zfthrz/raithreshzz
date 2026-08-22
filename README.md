@@ -10,7 +10,7 @@ Este README documenta el flujo operativo actual del proyecto: análisis de una s
 
 > Automatización de History: [`docs/AUTOMATIC_TELEMETRY_INGEST_V0_1.md`](docs/AUTOMATIC_TELEMETRY_INGEST_V0_1.md). Menú contextual seguro: [`docs/RACE_ENGINEER_CONTEXT_MENU.md`](docs/RACE_ENGINEER_CONTEXT_MENU.md).
 
-> Interfaz de escritorio: [`docs/RACE_ENGINEER_GUI_V0_4.md`](docs/RACE_ENGINEER_GUI_V0_4.md).
+> Interfaz de escritorio: [`docs/RACE_ENGINEER_GUI_V0_6.md`](docs/RACE_ENGINEER_GUI_V0_6.md).
 
 > Traspaso operativo actualizado al 17/08/2026: [`docs/DEEPSEEK_HANDOFF_2026_08_17.md`](docs/DEEPSEEK_HANDOFF_2026_08_17.md).
 
@@ -34,7 +34,7 @@ Componentes principales:
 | `audit_episode_pair_matches.py` | v0.2 |
 | DeepSeek assisted pair review | H2.2 v1.0 — benchmark en curso |
 | `auto_ingest_telemetry.py` | v0.1 — ingest directo desde LMU, History prioritario y backfill gradual |
-| `analyze_telemetry_file.py` | v0.1 — launcher seguro para menú contextual con DeepSeek u Ollama |
+| `analyze_telemetry_file.py` | v0.2 — launcher seguro con override explícito sólo para la espera de estabilidad |
 | `hidden_history_ingest.py` | runner sin consola con log local rotativo para la tarea programada |
 | H5.3a-f + runtime 0.2 | shadow: candidatos, auditoría, selección unificada y render validado |
 

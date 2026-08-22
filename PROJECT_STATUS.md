@@ -284,7 +284,7 @@ LLM episode-prompt shadow checkpoint:
 See `docs/LLM_PROMPT_SHADOW_PROMOTION_GATE_V0_1.md`.
 
 Validation:
-- pytest: `962 PASS / 0 FAIL / 0 SKIP`
+- pytest: `968 PASS / 0 FAIL / 0 SKIP`
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP`
 - Objective recovery check: `READY`
 
@@ -334,6 +334,17 @@ GUI v0.4 adds a deterministic `Vueltas` tab, non-secret DeepSeek/llama.cpp model
 settings and a black/neutral-grey theme. Settings preserve existing compatible
 environment variables until saved, never store API keys and restrict llama.cpp URLs
 to localhost. See `docs/RACE_ENGINEER_GUI_V0_4.md`.
+
+GUI v0.5 adds local multi-term search and `Todas / Con debrief / Sólo History /
+Fallidas` filters to the main session catalogue. Filtering never changes the exact
+session/DuckDB mapping used by detail views or double-click analysis. See
+`docs/RACE_ENGINEER_GUI_V0_5.md`.
+
+GUI v0.6 adds the opt-in **Omitir espera 10 min** control for a finished telemetry
+file the user explicitly wants to analyze immediately. The flag skips only file
+age: LMU-running, authorized root, DuckDB/History, 5 MiB, History-first and two
+valid lap gates remain mandatory. Automatic ingest is unchanged. See
+`docs/RACE_ENGINEER_GUI_V0_6.md`.
 
 Calibration batch orchestrator `1.5` requires the current History schema 4 contract,
 reports its runtime version consistently and has a regression test against schema drift.

@@ -1125,15 +1125,17 @@ do not need to be copied into the repository.
 The desktop entry point is `RaceEngineer.pyw` (implementation:
 `race_engineer_gui.py`). Its catalogue is owned by `race_engineer_ui_model.py` and
 uses orchestrator `state.json` rather than scanning result filenames heuristically.
-GUI v0.4 can inspect sessions, deterministic lap times, validated debriefs,
+GUI v0.6 can search/filter sessions and inspect deterministic lap times, validated debriefs,
 next-stint plans, pipeline statuses, schema-4 History and the exact H4
 historical-reference selection. History is opened read-only. Non-secret DeepSeek and
 llama.cpp model settings are stored under ignored `data/local/`, while API keys remain
 environment-only and llama.cpp GUI endpoints are restricted to localhost. The GUI
 can explicitly invoke `analyze_telemetry_file.py` with a selected backend while
-streaming progress. The existing launcher remains the sole authority
-for LMU/file/stability/lap gates; the GUI cannot weaken them and never offers
-cancellation. See `docs/RACE_ENGINEER_GUI_V0_4.md`.
+streaming progress. A per-run, opt-in override can omit only the 10-minute
+file-age wait; LMU-running, authorized-root, telemetry type, 5 MiB and two-valid-lap
+gates remain mandatory. The scheduled automatic ingest never uses this override.
+The launcher remains the sole safety authority and the GUI never offers
+cancellation. See `docs/RACE_ENGINEER_GUI_V0_6.md`.
 
 The scheduled task must execute `hidden_history_ingest.py` through `pythonw.exe`.
 That wrapper preserves the same maintenance arguments, creates no console window and
@@ -1157,10 +1159,12 @@ deterministic analysis and was imported as History `session_id=23`; LLM remained
 disabled for that automatic stage.
 
 `analyze_telemetry_file.py` is the explicit user-authorized LLM path used by the
-Windows Explorer context menu. It accepts only DuckDBs inside authorized telemetry
-roots, blocks History databases, LMU-running state, files below 5 MiB and files
-younger than 10 minutes. It first runs deterministic analysis + History without an
-LLM, requires at least two Python-confirmed valid laps, and only then runs the full
+Windows Explorer context menu and desktop GUI. It accepts only DuckDBs inside authorized
+telemetry roots, blocks History databases, LMU-running state and files below 5 MiB.
+By default it also blocks files younger than 10 minutes; GUI v0.6 or the explicit
+`--skip-stability-wait` flag may omit only that age check. It first runs
+deterministic analysis + History without an LLM, requires at least two
+Python-confirmed valid laps, and only then runs the full
 selected backend. The Windows context menu exposes three verbs: DeepSeek,
 `ingenierov3` (Ollama) and `llama.cpp` (default model `qwen3-14b`).
 `race_engineer.py` reuse remains responsible for preventing

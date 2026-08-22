@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Callable, Mapping
 
 
-UI_ANALYSIS_VERSION = "0.1"
+UI_ANALYSIS_VERSION = "0.2"
 SUPPORTED_BACKENDS = ("deepseek", "llamacpp", "ollama")
 ALLOWED_ENVIRONMENT_OVERRIDES = {
     "DEEPSEEK_MODEL",
@@ -27,6 +27,7 @@ class AnalysisLaunchPlan:
     python_executable: Path
     command: tuple[str, ...]
     environment_overrides: tuple[tuple[str, str], ...]
+    skip_stability_wait: bool
 
 
 def console_python_executable(executable: str | Path = sys.executable) -> Path:
@@ -47,6 +48,7 @@ def build_analysis_plan(
     project_root: Path,
     python_executable: str | Path = sys.executable,
     environment_overrides: Mapping[str, str] | None = None,
+    skip_stability_wait: bool = False,
 ) -> AnalysisLaunchPlan:
     root = Path(project_root).resolve()
     launcher = root / "analyze_telemetry_file.py"
@@ -56,14 +58,17 @@ def build_analysis_plan(
         raise FileNotFoundError(launcher)
     database = Path(database_path).expanduser().resolve()
     python = console_python_executable(python_executable)
-    command = (
+    command_parts = [
         str(python),
         "-u",
         str(launcher),
         str(database),
         "--backend",
         backend,
-    )
+    ]
+    if skip_stability_wait:
+        command_parts.append("--skip-stability-wait")
+    command = tuple(command_parts)
     overrides = tuple(sorted((environment_overrides or {}).items()))
     unknown = {name for name, _ in overrides} - ALLOWED_ENVIRONMENT_OVERRIDES
     if unknown:
@@ -75,6 +80,7 @@ def build_analysis_plan(
         python_executable=python,
         command=command,
         environment_overrides=overrides,
+        skip_stability_wait=skip_stability_wait,
     )
 
 

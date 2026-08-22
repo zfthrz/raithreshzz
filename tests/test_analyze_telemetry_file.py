@@ -119,6 +119,72 @@ def test_safe_launcher_blocks_small_or_recent_database(tmp_path: Path):
         raise AssertionError("archivo reciente aceptado")
 
 
+def test_explicit_override_skips_only_recent_file_wait(tmp_path: Path):
+    database = make_database(tmp_path)
+    calls: list[tuple[Path, list[str]]] = []
+
+    result = launcher.analyze_selected_file(
+        str(database),
+        backend="deepseek",
+        roots=(database.parent,),
+        runner=lambda path, args: calls.append((path, args)),
+        lap_counter=lambda path: 2,
+        game_running=lambda: False,
+        min_size_mib=0,
+        min_stable_seconds=600,
+        now_seconds=database.stat().st_mtime + 1,
+        skip_stability_wait=True,
+    )
+
+    assert result == 0
+    assert calls == [
+        (database, ["--no-llm", "--no-historical-context"]),
+        (database, ["--backend", "deepseek"]),
+    ]
+
+
+def test_override_never_bypasses_game_running_block(tmp_path: Path):
+    database = make_database(tmp_path)
+    calls = []
+
+    result = launcher.analyze_selected_file(
+        str(database),
+        backend="deepseek",
+        roots=(database.parent,),
+        runner=lambda path, args: calls.append((path, args)),
+        game_running=lambda: True,
+        min_size_mib=0,
+        skip_stability_wait=True,
+    )
+
+    assert result == 2
+    assert calls == []
+
+
+def test_override_never_bypasses_minimum_file_size(tmp_path: Path):
+    database = make_database(tmp_path)
+
+    try:
+        launcher.validate_selected_database(
+            str(database),
+            roots=(database.parent,),
+            min_size_mib=5,
+            min_stable_seconds=600,
+            skip_stability_wait=True,
+        )
+    except ValueError as exc:
+        assert "5 MiB" in str(exc)
+    else:
+        raise AssertionError("el override aceptó un archivo menor al tamaño mínimo")
+
+
+def test_parser_exposes_explicit_stability_override():
+    args = launcher.build_parser().parse_args(
+        ["session.duckdb", "--skip-stability-wait"]
+    )
+    assert args.skip_stability_wait is True
+
+
 def test_safe_launcher_withholds_llm_when_valid_laps_are_insufficient(tmp_path: Path):
     database = make_database(tmp_path)
     calls: list[tuple[Path, list[str]]] = []

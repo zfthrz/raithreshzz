@@ -44,6 +44,7 @@ def test_plan_invokes_only_the_existing_safe_launcher(tmp_path: Path):
     )
     assert "race_engineer.py" not in plan.command
     assert plan.environment_overrides == ()
+    assert plan.skip_stability_wait is False
 
 
 def test_plan_rejects_unknown_backend(tmp_path: Path):
@@ -65,8 +66,11 @@ def test_plan_allows_only_non_secret_backend_overrides(tmp_path: Path):
             "LLAMACPP_MODEL": "qwen-local",
             "LLAMACPP_API_URL": "http://localhost:8080/v1/chat/completions",
         },
+        skip_stability_wait=True,
     )
     assert dict(plan.environment_overrides)["LLAMACPP_MODEL"] == "qwen-local"
+    assert plan.command[-1] == "--skip-stability-wait"
+    assert plan.skip_stability_wait is True
     with pytest.raises(ValueError, match="no autorizadas"):
         build_analysis_plan(
             tmp_path / "file.duckdb",

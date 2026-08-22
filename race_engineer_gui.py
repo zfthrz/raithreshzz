@@ -25,6 +25,7 @@ from race_engineer_ui_model import (
     SessionDetail,
     SessionRecord,
     discover_sessions,
+    filter_sessions,
     format_lap_time,
     format_timestamp,
     load_session_detail,
@@ -37,13 +38,19 @@ from race_engineer_ui_analysis import (
 )
 
 
-GUI_VERSION = "0.4"
+GUI_VERSION = "0.6"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 PROJECT_ROOT = Path(__file__).resolve().parent
 BACKEND_LABELS = {
     "DeepSeek (remoto)": "deepseek",
     "llama.cpp (local)": "llamacpp",
     "Ollama / ingenierov3 (local)": "ollama",
+}
+SESSION_FILTER_LABELS = {
+    "Todas": "ALL",
+    "Con debrief": "DEBRIEF_READY",
+    "Sólo History": "HISTORY_READY",
+    "Fallidas": "FAILED",
 }
 
 
@@ -69,6 +76,8 @@ class RaceEngineerApp:
         self.root = root
         self.runs_root = runs_root
         self.sessions: list[SessionRecord] = []
+        self.all_sessions: list[SessionRecord] = []
+        self.session_read_errors: list[str] = []
         self.analysis_queue: queue.Queue[tuple[str, object]] = queue.Queue()
         self.analysis_running = False
         self.analysis_database: Path | None = None
@@ -137,6 +146,13 @@ class RaceEngineerApp:
             padding=(12, 7),
         )
         style.map("Analyze.TButton", background=[("active", "#9b3548")])
+        style.configure(
+            "TCheckbutton",
+            background="#101010",
+            foreground="#c9c9c9",
+            font=("Segoe UI", 9),
+        )
+        style.map("TCheckbutton", background=[("active", "#101010")])
         style.configure("TButton", font=("Segoe UI", 10), padding=(10, 7))
         style.configure(
             "Treeview",
@@ -194,6 +210,13 @@ class RaceEngineerApp:
             width=27,
         )
         self.backend_combo.pack(side="left", padx=(0, 8))
+        self.skip_stability_var = tk.BooleanVar(value=False)
+        self.skip_stability_check = ttk.Checkbutton(
+            actions,
+            text="Omitir espera 10 min",
+            variable=self.skip_stability_var,
+        )
+        self.skip_stability_check.pack(side="left", padx=(0, 8))
         self.analyze_button = ttk.Button(
             actions,
             text="Elegir archivo…",
@@ -216,10 +239,33 @@ class RaceEngineerApp:
         content.add(left, weight=5)
         content.add(right, weight=7)
 
+        session_tools = ttk.Frame(left, style="Panel.TFrame")
+        session_tools.pack(fill="x", pady=(0, 8))
         self.count_var = tk.StringVar(value="Buscando sesiones…")
-        ttk.Label(left, textvariable=self.count_var, style="Metric.TLabel").pack(
-            anchor="w", pady=(0, 8)
+        ttk.Label(session_tools, textvariable=self.count_var, style="Metric.TLabel").pack(
+            side="left"
         )
+        self.session_filter_var = tk.StringVar(value="Todas")
+        self.session_filter_combo = ttk.Combobox(
+            session_tools,
+            textvariable=self.session_filter_var,
+            values=tuple(SESSION_FILTER_LABELS),
+            state="readonly",
+            width=15,
+        )
+        self.session_filter_combo.pack(side="right", padx=(8, 0))
+        self.session_query_var = tk.StringVar()
+        self.session_query_entry = ttk.Entry(
+            session_tools,
+            textvariable=self.session_query_var,
+            width=24,
+        )
+        self.session_query_entry.pack(side="right")
+        ttk.Label(session_tools, text="Buscar:", style="Muted.TLabel").pack(
+            side="right", padx=(0, 6)
+        )
+        self.session_filter_combo.bind("<<ComboboxSelected>>", self._apply_session_filters)
+        self.session_query_var.trace_add("write", lambda *_: self._apply_session_filters())
 
         columns = ("date", "track", "vehicle", "laps", "best", "status")
         self.tree = ttk.Treeview(left, columns=columns, show="headings", selectmode="browse")
@@ -353,7 +399,34 @@ class RaceEngineerApp:
     def refresh(self, *, preferred_database: Path | None = None):
         previous = self.selected_record()
         previous_key = previous.session_key if previous else None
-        self.sessions, errors = discover_sessions(self.runs_root)
+        self.all_sessions, errors = discover_sessions(self.runs_root)
+        self.session_read_errors = errors
+        self._populate_session_tree(
+            errors=errors,
+            preferred_database=preferred_database,
+            previous_key=previous_key,
+        )
+
+    def _apply_session_filters(self, _event=None):
+        previous = self.selected_record()
+        self._populate_session_tree(
+            errors=self.session_read_errors,
+            previous_key=previous.session_key if previous else None,
+        )
+
+    def _populate_session_tree(
+        self,
+        *,
+        errors: list[str],
+        preferred_database: Path | None = None,
+        previous_key: str | None = None,
+    ):
+        status_filter = SESSION_FILTER_LABELS[self.session_filter_var.get()]
+        self.sessions = filter_sessions(
+            self.all_sessions,
+            query=self.session_query_var.get(),
+            status_filter=status_filter,
+        )
         for item in self.tree.get_children():
             self.tree.delete(item)
         for index, session in enumerate(self.sessions):
@@ -374,7 +447,10 @@ class RaceEngineerApp:
         self.tree.tag_configure("DEBRIEF_READY", foreground="#67e5d5")
         self.tree.tag_configure("HISTORY_READY", foreground="#f0c674")
         self.tree.tag_configure("FAILED", foreground="#ff7b72")
-        self.count_var.set(f"{len(self.sessions)} sesiones · {len(errors)} errores de lectura")
+        self.count_var.set(
+            f"{len(self.sessions)} de {len(self.all_sessions)} sesiones"
+            + (f" · {len(errors)} errores" if errors else "")
+        )
         footer_parts = [str(self.runs_root)]
         if errors:
             footer_parts.append(errors[0])
@@ -570,15 +646,24 @@ class RaceEngineerApp:
         backend_label = self.backend_var.get()
         backend = BACKEND_LABELS[backend_label]
         model = backend_model_label(self.settings, backend)
+        skip_stability_wait = bool(self.skip_stability_var.get())
         remote_note = (
             "\n\nDeepSeek usa la API remota y puede generar un costo."
             if backend == "deepseek"
             else "\n\nEl servidor/modelo local debe estar iniciado."
         )
+        stability_note = (
+            "\n\nATENCIÓN: se omitirá la espera de estabilidad de 10 minutos. "
+            "LMU debe estar cerrado y los demás controles siguen activos."
+            if skip_stability_wait
+            else ""
+        )
         if not messagebox.askyesno(
             "Confirmar análisis",
-            f"Archivo:\n{database}\n\nBackend: {backend_label}\nModelo: {model}{remote_note}\n\n"
-            "El launcher volverá a comprobar LMU, tamaño, estabilidad y vueltas válidas.\n"
+            f"Archivo:\n{database}\n\nBackend: {backend_label}\nModelo: {model}"
+            f"{remote_note}{stability_note}\n\n"
+            "El launcher volverá a comprobar LMU, tamaño y vueltas válidas; "
+            "la estabilidad se omite sólo con este override.\n"
             "¿Continuar?",
             parent=self.root,
         ):
@@ -589,6 +674,7 @@ class RaceEngineerApp:
                 backend=backend,
                 project_root=PROJECT_ROOT,
                 environment_overrides=backend_environment(self.settings, backend),
+                skip_stability_wait=skip_stability_wait,
             )
         except (ValueError, FileNotFoundError, OSError) as exc:
             messagebox.showerror("Race Engineer", str(exc), parent=self.root)
@@ -601,6 +687,7 @@ class RaceEngineerApp:
         self.analysis_database = plan.database_path
         self.analyze_button.configure(state="disabled")
         self.backend_combo.configure(state="disabled")
+        self.skip_stability_check.configure(state="disabled")
         self.refresh_button.configure(state="disabled")
         self.progress.start(12)
         self.execution_status.set(f"Analizando con {plan.backend}…")
@@ -608,7 +695,8 @@ class RaceEngineerApp:
             self.execution_text,
             "RACE ENGINEER — EJECUCIÓN DESDE GUI\n"
             f"Archivo: {plan.database_path}\nBackend: {plan.backend}\n"
-            f"Modelo: {self.analysis_model or '—'}\n",
+            f"Modelo: {self.analysis_model or '—'}\n"
+            f"Override espera 10 min: {'SÍ' if plan.skip_stability_wait else 'NO'}\n",
         )
         self.notebook.select(self.execution_text.master)
 
@@ -651,6 +739,8 @@ class RaceEngineerApp:
         self.progress.stop()
         self.analyze_button.configure(state="normal")
         self.backend_combo.configure(state="readonly")
+        self.skip_stability_var.set(False)
+        self.skip_stability_check.configure(state="normal")
         self.refresh_button.configure(state="normal")
         database = self.analysis_database
         self.refresh(preferred_database=database)
@@ -669,6 +759,9 @@ class RaceEngineerApp:
         if outcome == "PASS":
             self.execution_status.set("Análisis terminado correctamente")
             self._append_execution_line("\nGUI RESULT: PASS")
+            self.session_query_var.set("")
+            self.session_filter_var.set("Todas")
+            self.refresh(preferred_database=database)
             self.notebook.select(self.debrief_text.master)
             messagebox.showinfo(
                 "Race Engineer",

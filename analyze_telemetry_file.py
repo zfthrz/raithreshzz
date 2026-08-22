@@ -36,6 +36,7 @@ def validate_selected_database(
     min_size_mib: float = MINIMUM_SIZE_MIB,
     min_stable_seconds: int = MINIMUM_STABLE_SECONDS,
     now_seconds: float | None = None,
+    skip_stability_wait: bool = False,
 ) -> Path:
     path = Path(argument).expanduser().resolve()
     if not path.is_file():
@@ -56,7 +57,7 @@ def validate_selected_database(
         )
     current_seconds = time.time() if now_seconds is None else now_seconds
     age_seconds = max(0.0, current_seconds - stat.st_mtime)
-    if age_seconds < min_stable_seconds:
+    if not skip_stability_wait and age_seconds < min_stable_seconds:
         remaining = min_stable_seconds - age_seconds
         raise ValueError(
             "El DuckDB todavía no cumplió la espera de estabilidad; "
@@ -77,14 +78,21 @@ def analyze_selected_file(
     min_valid_laps: int = MINIMUM_VALID_LAPS,
     min_stable_seconds: int = MINIMUM_STABLE_SECONDS,
     now_seconds: float | None = None,
+    skip_stability_wait: bool = False,
 ) -> int:
     print("=" * 72)
-    print("RACE ENGINEER - SAFE TELEMETRY LAUNCHER v0.1")
+    print("RACE ENGINEER - SAFE TELEMETRY LAUNCHER v0.2")
     print("=" * 72)
     if game_running():
         print("BLOCKED: Le Mans Ultimate está abierto.")
-        print("Cerrá el juego y esperá 10 minutos antes de analizar.")
+        if skip_stability_wait:
+            print("Cerrá el juego; el override no omite este bloqueo.")
+        else:
+            print("Cerrá el juego y esperá 10 minutos antes de analizar.")
         return 2
+
+    if skip_stability_wait:
+        print("WARNING: override explícito de espera de estabilidad activado.")
 
     try:
         database = validate_selected_database(
@@ -93,6 +101,7 @@ def analyze_selected_file(
             min_size_mib=min_size_mib,
             min_stable_seconds=min_stable_seconds,
             now_seconds=now_seconds,
+            skip_stability_wait=skip_stability_wait,
         )
     except (FileNotFoundError, ValueError, OSError) as exc:
         print(f"BLOCKED: {exc}")
@@ -141,12 +150,24 @@ def build_parser() -> argparse.ArgumentParser:
         choices=("deepseek", "ollama", "llamacpp"),
         default="deepseek",
     )
+    parser.add_argument(
+        "--skip-stability-wait",
+        action="store_true",
+        help=(
+            "omite sólo la espera de 10 minutos; LMU cerrado, tamaño y vueltas "
+            "válidas siguen siendo obligatorios"
+        ),
+    )
     return parser
 
 
 def main() -> int:
     args = build_parser().parse_args()
-    return analyze_selected_file(args.database, backend=args.backend)
+    return analyze_selected_file(
+        args.database,
+        backend=args.backend,
+        skip_stability_wait=args.skip_stability_wait,
+    )
 
 
 if __name__ == "__main__":

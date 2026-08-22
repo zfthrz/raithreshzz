@@ -33,11 +33,14 @@ The existing launcher rechecks:
 - the path is inside an authorized telemetry root;
 - the file is a telemetry DuckDB rather than the History database;
 - minimum size is 5 MiB;
-- minimum stability age is 10 minutes;
+- minimum stability age is 10 minutes by default;
 - deterministic analysis and History complete first;
 - Python confirms at least two valid laps before any LLM call.
 
 GUI code does not bypass or duplicate these decisions.
+
+GUI v0.6 later added a user-confirmed override for only the default stability-age
+check. LMU-running and every other launcher gate listed above remain mandatory.
 
 The double-click lookup uses the exact `database` path stored by the orchestrator
 in that session's `state.json`. If the raw file was moved or removed, the GUI

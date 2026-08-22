@@ -900,6 +900,14 @@ action candidates for current-slower comparisons only; speed and time codes neve
 become actions, faster-lap candidates are withheld, `session_reference` remains the
 coaching authority and `historical_actions_authorized` remains false.
 
+H5.3f v0.2 (`assess_h5_3_promotion_v0_2.py`) adds a reviewed-action evidence gate
+without replacing the v0.1 structural gate. The 2026-08-22 real review completed 15
+deduplicated items across Imola, Interlagos and Fuji (13 `ACTION_USEFUL`, 2
+`CORRECTLY_WITHHELD`). Its real verdict is `EVIDENCE_INCOMPLETE` because Monza,
+`current_faster`, isolated `increase_brake` and isolated `reduce_brake` review
+coverage is absent. Even its strongest possible verdict only permits an explicit
+product decision; it cannot authorize historical actions automatically.
+
 ---
 
 # 21. Track profiles and nomenclature

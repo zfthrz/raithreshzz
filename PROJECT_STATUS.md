@@ -7,7 +7,7 @@ H5.3 readiness review described below.
 
 Validated baseline:
 
-- full pytest: `995 PASS / 0 FAIL / 0 SKIP`;
+- full pytest: `1000 PASS / 0 FAIL / 0 SKIP`;
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP` (last analyzer-affecting checkpoint);
 - GUI: v1.4, deterministic H5.4 P11 focus over the preserved complete plan;
 - H5.3: shadow implementation complete, production historical actions still disabled.
@@ -47,8 +47,7 @@ Current: deterministic P1–P11 implemented in the canonical LLM backends.
 The controlled production-readiness review concluded **KEEP SHADOW**. The existing
 `PROMOTION_READY` manifest proves structural multitrack coverage, not enough reviewed
 action quality for driver-facing production. The current six action artifacts and
-seven historical sections validate, but human review still covers only nine
-candidates from one Imola session. Do not enable `historical_actions_authorized`.
+seven historical sections validate. Do not enable `historical_actions_authorized`.
 See `docs/H5_3_PRODUCTION_READINESS_REVIEW_2026_08_22.md`.
 The 15-item runtime action-review queue now has a resumable interactive labeler and
 dedicated validator. Review round 2 completed all 15 items representing 18 source
@@ -56,6 +55,9 @@ occurrences: 13 `ACTION_USEFUL`, 2 `CORRECTLY_WITHHELD`, zero unsafe/ambiguous a
 zero pending across Imola, Interlagos and Fuji. Monza action-review coverage is still
 absent, so production authority remains disabled. See
 `docs/H5_3_ACTION_REVIEW_ROUND_2_2026_08_22.md`.
+H5.3f v0.2 consumes that real review and returns `EVIDENCE_INCOMPLETE`: Monza,
+`current_faster`, isolated `increase_brake` and isolated `reduce_brake` review
+branches are missing. This is an expected evidence verdict, not a pipeline failure.
 
 ### history
 Current: `session_history v1.4 / schema 4`

@@ -271,6 +271,18 @@ Un `PASS` con advertencia de pendientes significa que el archivo es consistente,
 pero la revisión todavía no terminó. Estos labels siguen siendo evidencia humana
 shadow y nunca activan `historical_actions_authorized`.
 
+El gate H5.3f v0.2 combina el gate estructural anterior con la cola y los labels
+reales. Su mejor resultado exige igualmente una decisión explícita y no activa
+producción:
+
+```powershell
+python assess_h5_3_promotion_v0_2.py `
+  "data\generated\h5_3\promotion_manifest.json" `
+  "data\generated\h5_3\action_review_queue.json" `
+  "data\generated\h5_3\action_review_labels.json" `
+  --output "data\generated\h5_3\promotion_report_v0_2.json"
+```
+
 ### Auditar estructura de cues del plan sin cambiar prioridades
 
 ```powershell

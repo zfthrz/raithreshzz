@@ -82,7 +82,21 @@ It does not authorize production historical coaching:
 KEEP SHADOW
 ```
 
-The next safe implementation slice is H5.3f v0.2: consume the validated action-review
-queue and labels, require complete review, report track/action-direction coverage and
-block promotion on unsafe, ambiguous or actionable-but-withheld results. It must not
-change `historical_actions_authorized`.
+H5.3f v0.2 is implemented by `assess_h5_3_promotion_v0_2.py`. It consumes the
+validated action-review queue and labels, requires complete review, reports
+track/action-direction coverage and blocks readiness on non-affirmative results. Its
+strongest verdict is only `EVIDENCE_READY_FOR_EXPLICIT_DECISION`; it cannot change
+`historical_actions_authorized`.
+
+Real v0.2 result:
+
+```text
+Verdict: EVIDENCE_INCOMPLETE
+Missing reviewed action track: Autodromo Nazionale Monza
+Missing reviewed delta sign: current_faster
+Missing authorized single-action branches: increase_brake, reduce_brake
+Authority: SHADOW ONLY
+```
+
+This is an expected evidence verdict and the intended reason to keep H5.3 out of
+production. The gate itself completed successfully.

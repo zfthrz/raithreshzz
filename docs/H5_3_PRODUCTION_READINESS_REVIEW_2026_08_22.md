@@ -26,7 +26,7 @@ show historical instructions to the driver as production coaching.
 - Deduplicated action-review queue: 15 review items from 18 source occurrences
   (13 authorized shadow-action shapes and 2 withheld shapes). These cover Imola,
   Fuji and Interlagos; the current runtime action artifacts do not cover Monza.
-- Full repository suite after the review-labeling slice: 995 passed.
+- Full repository suite after the H5.3f v0.2 evidence-gate slice: 1000 passed.
 - Authority in every inspected action artifact remained false.
 
 No generated artifact was changed or regenerated during this review.

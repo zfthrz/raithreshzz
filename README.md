@@ -10,7 +10,7 @@ Este README documenta el flujo operativo actual del proyecto: análisis de una s
 
 > Automatización de History: [`docs/AUTOMATIC_TELEMETRY_INGEST_V0_1.md`](docs/AUTOMATIC_TELEMETRY_INGEST_V0_1.md). Menú contextual seguro: [`docs/RACE_ENGINEER_CONTEXT_MENU.md`](docs/RACE_ENGINEER_CONTEXT_MENU.md).
 
-> Interfaz de escritorio: [`docs/RACE_ENGINEER_GUI_V0_2.md`](docs/RACE_ENGINEER_GUI_V0_2.md).
+> Interfaz de escritorio: [`docs/RACE_ENGINEER_GUI_V0_3.md`](docs/RACE_ENGINEER_GUI_V0_3.md).
 
 > Traspaso operativo actualizado al 17/08/2026: [`docs/DEEPSEEK_HANDOFF_2026_08_17.md`](docs/DEEPSEEK_HANDOFF_2026_08_17.md).
 

@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any
 
 
-UI_MODEL_VERSION = "0.1"
+UI_MODEL_VERSION = "0.2"
 READY_STAGE_STATUSES = {"RUN", "REUSED"}
 FAILED_STAGE_STATUSES = {"FAILED"}
 
@@ -31,6 +31,7 @@ class SessionRecord:
     analysis_path: Path | None
     debrief_path: Path | None
     historical_path: Path | None
+    reference_selection_path: Path | None
     database_path: Path | None
     stages: tuple[tuple[str, str], ...]
 
@@ -41,6 +42,7 @@ class SessionDetail:
     debrief_markdown: str
     plan_text: str
     pipeline_text: str
+    historical_reference_text: str
     warnings: tuple[str, ...]
 
 
@@ -150,6 +152,7 @@ def load_session_record(state_path: Path) -> SessionRecord:
     analyze_stage = _dict(stages_payload.get("analyze"))
     llm_stage = _dict(stages_payload.get("llm"))
     historical_stage = _dict(stages_payload.get("h5_3"))
+    reference_selection_stage = _dict(stages_payload.get("h4"))
 
     analysis_path = _existing_path(analyze_stage.get("output"))
     analysis = _json(analysis_path) if analysis_path else {}
@@ -180,6 +183,7 @@ def load_session_record(state_path: Path) -> SessionRecord:
         analysis_path=analysis_path,
         debrief_path=_existing_path(llm_stage.get("output")),
         historical_path=_existing_path(historical_stage.get("output")),
+        reference_selection_path=_existing_path(reference_selection_stage.get("output")),
         database_path=Path(database) if isinstance(database, str) and database else None,
         stages=stages,
     )
@@ -236,6 +240,7 @@ def _pipeline_text(record: SessionRecord) -> str:
         f"Análisis: {record.analysis_path or '—'}",
         f"Debrief: {record.debrief_path or '—'}",
         f"Histórico H5.3: {record.historical_path or '—'}",
+        f"Selección H4: {record.reference_selection_path or '—'}",
         "",
         "Etapas:",
     ]
@@ -243,10 +248,49 @@ def _pipeline_text(record: SessionRecord) -> str:
     return "\n".join(lines)
 
 
+def _historical_reference_text(path: Path | None) -> str:
+    if path is None:
+        return "Esta sesión todavía no tiene una selección H4 disponible."
+    payload = _json(path)
+    status = str(payload.get("selection_status") or "UNKNOWN")
+    target = _dict(payload.get("target_session"))
+    target_reference = _dict(target.get("session_reference"))
+    summary = _dict(payload.get("candidate_summary"))
+    selected = _dict(payload.get("selected_historical_reference"))
+    lines = [
+        f"Estado H4: {status}",
+        "",
+        f"Referencia de la sesión: vuelta {target_reference.get('lap', '—')} / "
+        f"{format_lap_time(_number(target_reference.get('duration_s')))}",
+        f"Contexto: {target.get('track', '—')} / {target.get('track_layout', '—')}",
+        f"Vehículo: {target.get('vehicle_variant', '—')} / {target.get('car_name_raw', '—')}",
+        f"Candidatas consideradas: {summary.get('candidate_sessions_considered', 0)} · "
+        f"elegibles: {summary.get('eligible', 0)} · rechazadas: {summary.get('rejected', 0)}",
+    ]
+    if selected:
+        delta = _number(selected.get("historical_minus_session_reference_s"))
+        delta_text = f"{delta:+.3f} s" if delta is not None else "—"
+        lines.extend(
+            (
+                "",
+                "Referencia histórica seleccionada:",
+                f"  History #{selected.get('session_id', '—')} · vuelta {selected.get('lap', '—')}",
+                f"  Tiempo: {format_lap_time(_number(selected.get('duration_s')))}",
+                f"  Histórico - sesión: {delta_text}",
+                f"  Fecha: {selected.get('timestamp_utc', '—')}",
+            )
+        )
+    else:
+        lines.extend(("", "No existe una referencia histórica compatible bajo los gates H4."))
+    lines.extend(("", "Autoridad: observacional; no reemplaza la referencia de la sesión."))
+    return "\n".join(lines)
+
+
 def load_session_detail(record: SessionRecord) -> SessionDetail:
     warnings = []
     debrief = "Esta sesión todavía no tiene un debrief LLM validado."
     plan = "No hay un plan de próxima tanda disponible."
+    historical_reference = "Esta sesión todavía no tiene una selección H4 disponible."
     if record.debrief_path:
         try:
             payload = _json(record.debrief_path)
@@ -254,10 +298,15 @@ def load_session_detail(record: SessionRecord) -> SessionDetail:
             plan = _plan_text(_dict(payload.get("session_coaching_facts")))
         except (OSError, UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
             warnings.append(f"No se pudo leer el debrief: {exc}")
+    try:
+        historical_reference = _historical_reference_text(record.reference_selection_path)
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
+        warnings.append(f"No se pudo leer la selección H4: {exc}")
     return SessionDetail(
         record=record,
         debrief_markdown=debrief,
         plan_text=plan,
         pipeline_text=_pipeline_text(record),
+        historical_reference_text=historical_reference,
         warnings=tuple(warnings),
     )

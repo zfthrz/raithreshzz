@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Race Engineer desktop session browser v0.1 (read-only)."""
+"""Race Engineer desktop session hub and read-only History browser."""
 
 from __future__ import annotations
 
@@ -9,6 +9,9 @@ import queue
 import sys
 import threading
 from pathlib import Path
+
+from race_engineer_history_gui import open_history_browser
+from runtime_paths import history_db_default_path
 
 from race_engineer_ui_model import (
     SessionDetail,
@@ -26,7 +29,7 @@ from race_engineer_ui_analysis import (
 )
 
 
-GUI_VERSION = "0.2"
+GUI_VERSION = "0.3"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 PROJECT_ROOT = Path(__file__).resolve().parent
 BACKEND_LABELS = {
@@ -110,6 +113,14 @@ class RaceEngineerApp:
             padding=(12, 7),
         )
         style.map("Accent.TButton", background=[("active", "#67e5d5")])
+        style.configure(
+            "Analyze.TButton",
+            font=("Segoe UI Semibold", 10),
+            foreground="#fff4f4",
+            background="#7d2938",
+            padding=(12, 7),
+        )
+        style.map("Analyze.TButton", background=[("active", "#9b3548")])
         style.configure("TButton", font=("Segoe UI", 10), padding=(10, 7))
         style.configure(
             "Treeview",
@@ -170,12 +181,14 @@ class RaceEngineerApp:
         self.analyze_button = ttk.Button(
             actions,
             text="Elegir archivo…",
-            style="Accent.TButton",
+            style="Analyze.TButton",
             command=self._choose_analysis_file,
         )
         self.analyze_button.pack(side="left", padx=(0, 8))
         self.refresh_button = ttk.Button(actions, text="Actualizar", command=self.refresh)
         self.refresh_button.pack(side="left")
+        self.history_button = ttk.Button(actions, text="History", command=self._open_history)
+        self.history_button.pack(side="left", padx=(8, 0))
 
         content = ttk.Panedwindow(self.root, orient="horizontal")
         content.pack(fill="both", expand=True, padx=18, pady=(0, 18))
@@ -238,6 +251,7 @@ class RaceEngineerApp:
         self.notebook.pack(fill="both", expand=True)
         self.debrief_text = self._text_tab(self.notebook, "Debrief")
         self.plan_text = self._text_tab(self.notebook, "Próxima tanda")
+        self.historical_reference_text = self._text_tab(self.notebook, "Referencia histórica")
         self.pipeline_text = self._text_tab(self.notebook, "Pipeline")
         self.execution_text = self._text_tab(self.notebook, "Ejecución")
 
@@ -392,6 +406,7 @@ class RaceEngineerApp:
         )
         self._set_text(self.debrief_text, detail.debrief_markdown, markdown=True)
         self._set_text(self.plan_text, detail.plan_text)
+        self._set_text(self.historical_reference_text, detail.historical_reference_text)
         pipeline = detail.pipeline_text
         if detail.warnings:
             pipeline += "\n\nAdvertencias:\n" + "\n".join(detail.warnings)
@@ -401,7 +416,12 @@ class RaceEngineerApp:
     def _clear_detail(self):
         self.detail_title.set("No hay sesiones disponibles")
         self.detail_subtitle.set("Ejecutá un análisis o verificá el directorio configurado.")
-        for widget in (self.debrief_text, self.plan_text, self.pipeline_text):
+        for widget in (
+            self.debrief_text,
+            self.plan_text,
+            self.historical_reference_text,
+            self.pipeline_text,
+        ):
             self._set_text(widget, "")
         self.open_button.configure(state="disabled")
 
@@ -416,6 +436,15 @@ class RaceEngineerApp:
             _open_path(target)
         except (OSError, RuntimeError) as exc:
             messagebox.showerror("Race Engineer", str(exc), parent=self.root)
+
+    def _open_history(self):
+        record = self.selected_record()
+        preferred = record.database_path if record else None
+        open_history_browser(
+            self.root,
+            history_db_default_path(),
+            preferred_database=preferred,
+        )
 
     def _choose_analysis_file(self):
         from tkinter import filedialog, messagebox

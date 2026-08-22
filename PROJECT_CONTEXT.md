@@ -1125,11 +1125,12 @@ do not need to be copied into the repository.
 The desktop entry point is `RaceEngineer.pyw` (implementation:
 `race_engineer_gui.py`). Its catalogue is owned by `race_engineer_ui_model.py` and
 uses orchestrator `state.json` rather than scanning result filenames heuristically.
-GUI v0.2 can inspect sessions, validated debriefs, next-stint plans and pipeline
-statuses, and can explicitly invoke `analyze_telemetry_file.py` with a selected
+GUI v0.3 can inspect sessions, validated debriefs, next-stint plans, pipeline
+statuses, schema-4 History and the exact H4 historical-reference selection. History
+is opened read-only. The GUI can explicitly invoke `analyze_telemetry_file.py` with a selected
 backend while streaming progress. The existing launcher remains the sole authority
 for LMU/file/stability/lap gates; the GUI cannot weaken them and never offers
-cancellation. See `docs/RACE_ENGINEER_GUI_V0_2.md`.
+cancellation. See `docs/RACE_ENGINEER_GUI_V0_3.md`.
 
 The scheduled task must execute `hidden_history_ingest.py` through `pythonw.exe`.
 That wrapper preserves the same maintenance arguments, creates no console window and

@@ -284,7 +284,7 @@ LLM episode-prompt shadow checkpoint:
 See `docs/LLM_PROMPT_SHADOW_PROMOTION_GATE_V0_1.md`.
 
 Validation:
-- pytest: `947 PASS / 0 FAIL / 0 SKIP`
+- pytest: `952 PASS / 0 FAIL / 0 SKIP`
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP`
 - Objective recovery check: `READY`
 
@@ -324,6 +324,11 @@ so LMU-running, authorized-root, 5 MiB, 10-minute stability and two-valid-lap
 gates remain authoritative. One process is allowed at a time, there is no cancel
 button and the window refuses to close while analysis is active. See
 `docs/RACE_ENGINEER_GUI_V0_2.md`.
+
+GUI v0.3 adds a schema-4, strictly read-only History browser with search and lap
+detail, plus a per-session H4 reference tab. It shows the selected historical lap
+or the exact non-applicable result without changing coaching authority. The analysis
+button uses a dedicated dark-red style. See `docs/RACE_ENGINEER_GUI_V0_3.md`.
 
 Calibration batch orchestrator `1.5` requires the current History schema 4 contract,
 reports its runtime version consistently and has a regression test against schema drift.

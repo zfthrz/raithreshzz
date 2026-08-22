@@ -112,6 +112,41 @@ def test_detail_reads_debrief_and_authorized_plan(tmp_path: Path):
     assert "llm_validator" in detail.pipeline_text
 
 
+def test_detail_renders_selected_h4_reference_as_observational(tmp_path: Path):
+    state_path = make_session(tmp_path, "session-h4")
+    h4 = write_json(
+        tmp_path / "h4" / "selection.json",
+        {
+            "selection_status": "HISTORICAL_REFERENCE_SELECTED",
+            "target_session": {
+                "track": "Fuji Speedway",
+                "track_layout": "Fuji Speedway",
+                "vehicle_variant": "LMP2_ELMS",
+                "car_name_raw": "IDEC Sport #18",
+                "session_reference": {"lap": 1, "duration_s": 92.26},
+            },
+            "selected_historical_reference": {
+                "session_id": 7,
+                "lap": 8,
+                "duration_s": 90.98,
+                "timestamp_utc": "2026-08-18T12:00:00Z",
+                "historical_minus_session_reference_s": -1.28,
+            },
+            "candidate_summary": {"candidate_sessions_considered": 6, "eligible": 1, "rejected": 5},
+        },
+    )
+    state = json.loads(state_path.read_text(encoding="utf-8"))
+    state["stages"]["h4"] = {"status": "RUN", "output": str(h4)}
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+
+    detail = load_session_detail(discover_sessions(tmp_path / "runs")[0][0])
+
+    assert "History #7 · vuelta 8" in detail.historical_reference_text
+    assert "1:30.980" in detail.historical_reference_text
+    assert "-1.280 s" in detail.historical_reference_text
+    assert "no reemplaza la referencia de la sesión" in detail.historical_reference_text
+
+
 def test_malformed_state_is_reported_without_hiding_valid_sessions(tmp_path: Path):
     make_session(tmp_path, "valid")
     broken = tmp_path / "runs" / "broken" / "state.json"
@@ -148,8 +183,8 @@ def test_gui_entry_points_and_documentation_are_present():
     assert (root / "launch_race_engineer_gui.cmd").is_file()
     for relative in ("AGENTS.md", "PROJECT_CONTEXT.md", "PROJECT_STATUS.md", "README.md"):
         source = (root / relative).read_text(encoding="utf-8")
-        assert "race_engineer_gui.py" in source or "RACE_ENGINEER_GUI_V0_2.md" in source
-    assert (root / "docs" / "RACE_ENGINEER_GUI_V0_2.md").is_file()
+        assert "race_engineer_gui.py" in source or "RACE_ENGINEER_GUI_V0_3.md" in source
+    assert (root / "docs" / "RACE_ENGINEER_GUI_V0_3.md").is_file()
     assert "analyze_telemetry_file.py" in (
-        root / "docs" / "RACE_ENGINEER_GUI_V0_2.md"
+        root / "docs" / "RACE_ENGINEER_GUI_V0_3.md"
     ).read_text(encoding="utf-8")

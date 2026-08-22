@@ -5,7 +5,9 @@ from __future__ import annotations
 
 import argparse
 import os
+import queue
 import sys
+import threading
 from pathlib import Path
 
 from race_engineer_ui_model import (
@@ -16,10 +18,21 @@ from race_engineer_ui_model import (
     format_timestamp,
     load_session_detail,
 )
+from race_engineer_ui_analysis import (
+    build_analysis_plan,
+    stream_analysis,
+    validate_analysis_candidate,
+)
 
 
-GUI_VERSION = "0.1"
+GUI_VERSION = "0.2"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
+PROJECT_ROOT = Path(__file__).resolve().parent
+BACKEND_LABELS = {
+    "DeepSeek (remoto)": "deepseek",
+    "llama.cpp (local)": "llamacpp",
+    "Ollama / ingenierov3 (local)": "ollama",
+}
 
 
 def _open_path(path: Path) -> None:
@@ -44,11 +57,15 @@ class RaceEngineerApp:
         self.root = root
         self.runs_root = runs_root
         self.sessions: list[SessionRecord] = []
+        self.analysis_queue: queue.Queue[tuple[str, object]] = queue.Queue()
+        self.analysis_running = False
+        self.analysis_database: Path | None = None
 
         root.title(f"Race Engineer — Session Hub v{GUI_VERSION}")
         root.geometry("1320x820")
         root.minsize(1020, 650)
         root.configure(background="#10151b")
+        root.protocol("WM_DELETE_WINDOW", self._on_close)
 
         self._configure_style()
         self._build_layout()
@@ -138,9 +155,26 @@ class RaceEngineerApp:
             text="Sesiones, History y debriefs en un solo lugar · interfaz de solo lectura",
             style="Subtitle.TLabel",
         ).pack(anchor="w", pady=(2, 0))
-        ttk.Button(header, text="Actualizar", style="Accent.TButton", command=self.refresh).pack(
-            side="right"
+        actions = ttk.Frame(header, style="App.TFrame")
+        actions.pack(side="right")
+        self.backend_var = tk.StringVar(value="DeepSeek (remoto)")
+        self.backend_combo = ttk.Combobox(
+            actions,
+            textvariable=self.backend_var,
+            values=tuple(BACKEND_LABELS),
+            state="readonly",
+            width=27,
         )
+        self.backend_combo.pack(side="left", padx=(0, 8))
+        self.analyze_button = ttk.Button(
+            actions,
+            text="Elegir archivo…",
+            style="Accent.TButton",
+            command=self._choose_analysis_file,
+        )
+        self.analyze_button.pack(side="left", padx=(0, 8))
+        self.refresh_button = ttk.Button(actions, text="Actualizar", command=self.refresh)
+        self.refresh_button.pack(side="left")
 
         content = ttk.Panedwindow(self.root, orient="horizontal")
         content.pack(fill="both", expand=True, padx=18, pady=(0, 18))
@@ -174,6 +208,12 @@ class RaceEngineerApp:
         scrollbar.pack(side="right", fill="y")
         self.tree.pack(fill="both", expand=True)
         self.tree.bind("<<TreeviewSelect>>", self._on_select)
+        self.tree.bind("<Double-1>", self._on_session_double_click)
+        ttk.Label(
+            left,
+            text="Doble clic: analizar el DuckDB de esa sesión con el backend seleccionado",
+            style="Muted.TLabel",
+        ).pack(anchor="w", pady=(8, 0))
 
         detail_header = ttk.Frame(right, style="Panel.TFrame")
         detail_header.pack(fill="x", pady=(0, 10))
@@ -193,11 +233,23 @@ class RaceEngineerApp:
         )
         self.open_button.pack(side="right")
 
-        notebook = ttk.Notebook(right)
-        notebook.pack(fill="both", expand=True)
-        self.debrief_text = self._text_tab(notebook, "Debrief")
-        self.plan_text = self._text_tab(notebook, "Próxima tanda")
-        self.pipeline_text = self._text_tab(notebook, "Pipeline")
+        self.notebook = ttk.Notebook(right)
+        self.notebook.pack(fill="both", expand=True)
+        self.debrief_text = self._text_tab(self.notebook, "Debrief")
+        self.plan_text = self._text_tab(self.notebook, "Próxima tanda")
+        self.pipeline_text = self._text_tab(self.notebook, "Pipeline")
+        self.execution_text = self._text_tab(self.notebook, "Ejecución")
+
+        execution_bar = ttk.Frame(right, style="Panel.TFrame")
+        execution_bar.pack(fill="x", pady=(10, 0))
+        self.execution_status = tk.StringVar(value="Sin análisis en ejecución")
+        ttk.Label(
+            execution_bar,
+            textvariable=self.execution_status,
+            style="Muted.TLabel",
+        ).pack(side="left")
+        self.progress = ttk.Progressbar(execution_bar, mode="indeterminate", length=180)
+        self.progress.pack(side="right")
 
         self.footer_var = tk.StringVar(value=str(self.runs_root))
         ttk.Label(
@@ -255,7 +307,13 @@ class RaceEngineerApp:
         widget.configure(state="disabled")
         widget.yview_moveto(0)
 
-    def refresh(self):
+    def _append_execution_line(self, value: str):
+        self.execution_text.configure(state="normal")
+        self.execution_text.insert("end", value + "\n")
+        self.execution_text.see("end")
+        self.execution_text.configure(state="disabled")
+
+    def refresh(self, *, preferred_database: Path | None = None):
         previous = self.selected_record()
         previous_key = previous.session_key if previous else None
         self.sessions, errors = discover_sessions(self.runs_root)
@@ -282,10 +340,27 @@ class RaceEngineerApp:
         self.count_var.set(f"{len(self.sessions)} sesiones · {len(errors)} errores de lectura")
         self.footer_var.set(str(self.runs_root) + (f" · {errors[0]}" if errors else ""))
 
-        target = next(
-            (str(i) for i, session in enumerate(self.sessions) if session.session_key == previous_key),
-            "0" if self.sessions else None,
-        )
+        target = None
+        if preferred_database is not None:
+            preferred = preferred_database.resolve()
+            target = next(
+                (
+                    str(i)
+                    for i, session in enumerate(self.sessions)
+                    if session.database_path is not None
+                    and session.database_path.resolve() == preferred
+                ),
+                None,
+            )
+        if target is None:
+            target = next(
+                (
+                    str(i)
+                    for i, session in enumerate(self.sessions)
+                    if session.session_key == previous_key
+                ),
+                "0" if self.sessions else None,
+            )
         if target is not None:
             self.tree.selection_set(target)
             self.tree.focus(target)
@@ -340,6 +415,195 @@ class RaceEngineerApp:
             _open_path(target)
         except (OSError, RuntimeError) as exc:
             messagebox.showerror("Race Engineer", str(exc), parent=self.root)
+
+    def _choose_analysis_file(self):
+        from tkinter import filedialog, messagebox
+
+        if self.analysis_running:
+            messagebox.showinfo(
+                "Race Engineer",
+                "Ya hay un análisis en ejecución.",
+                parent=self.root,
+            )
+            return
+        lmu_dir = Path(
+            r"C:\Program Files (x86)\Steam\steamapps\common\Le Mans Ultimate\UserData\Telemetry"
+        )
+        initial = lmu_dir if lmu_dir.is_dir() else PROJECT_ROOT / "telemetria"
+        selected = filedialog.askopenfilename(
+            parent=self.root,
+            title="Seleccionar telemetría LMU",
+            initialdir=str(initial),
+            filetypes=(("Telemetría DuckDB", "*.duckdb"), ("Todos los archivos", "*.*")),
+        )
+        if not selected:
+            return
+        self._confirm_analysis(Path(selected))
+
+    def _on_session_double_click(self, event):
+        from tkinter import messagebox
+
+        if self.tree.identify_region(event.x, event.y) != "cell":
+            return
+        row = self.tree.identify_row(event.y)
+        if not row:
+            return
+        try:
+            record = self.sessions[int(row)]
+        except (IndexError, ValueError):
+            return
+        self.tree.selection_set(row)
+        self.tree.focus(row)
+        if record.database_path is None:
+            messagebox.showerror(
+                "Race Engineer",
+                "Esta sesión no registra la ruta de su DuckDB original.",
+                parent=self.root,
+            )
+            return
+        try:
+            database = validate_analysis_candidate(record.database_path)
+        except (FileNotFoundError, ValueError, OSError) as exc:
+            messagebox.showerror(
+                "Race Engineer",
+                "El DuckDB original de esta sesión ya no está disponible:\n\n"
+                f"{exc}",
+                parent=self.root,
+            )
+            return
+        self._confirm_analysis(database)
+
+    def _confirm_analysis(self, database: Path):
+        from tkinter import messagebox
+
+        if self.analysis_running:
+            messagebox.showinfo(
+                "Race Engineer",
+                "Ya hay un análisis en ejecución.",
+                parent=self.root,
+            )
+            return
+        backend_label = self.backend_var.get()
+        backend = BACKEND_LABELS[backend_label]
+        remote_note = (
+            "\n\nDeepSeek usa la API remota y puede generar un costo."
+            if backend == "deepseek"
+            else "\n\nEl servidor/modelo local debe estar iniciado."
+        )
+        if not messagebox.askyesno(
+            "Confirmar análisis",
+            f"Archivo:\n{database}\n\nBackend: {backend_label}{remote_note}\n\n"
+            "El launcher volverá a comprobar LMU, tamaño, estabilidad y vueltas válidas.\n"
+            "¿Continuar?",
+            parent=self.root,
+        ):
+            return
+        try:
+            plan = build_analysis_plan(
+                database,
+                backend=backend,
+                project_root=PROJECT_ROOT,
+            )
+        except (ValueError, FileNotFoundError, OSError) as exc:
+            messagebox.showerror("Race Engineer", str(exc), parent=self.root)
+            return
+        self._start_analysis(plan)
+
+    def _start_analysis(self, plan):
+        self.analysis_running = True
+        self.analysis_database = plan.database_path
+        self.analyze_button.configure(state="disabled")
+        self.backend_combo.configure(state="disabled")
+        self.refresh_button.configure(state="disabled")
+        self.progress.start(12)
+        self.execution_status.set(f"Analizando con {plan.backend}…")
+        self._set_text(
+            self.execution_text,
+            "RACE ENGINEER — EJECUCIÓN DESDE GUI\n"
+            f"Archivo: {plan.database_path}\nBackend: {plan.backend}\n",
+        )
+        self.notebook.select(self.execution_text.master)
+
+        def worker():
+            try:
+                code = stream_analysis(
+                    plan,
+                    lambda line: self.analysis_queue.put(("line", line)),
+                )
+                self.analysis_queue.put(("done", code))
+            except Exception as exc:
+                self.analysis_queue.put(("error", f"{type(exc).__name__}: {exc}"))
+
+        threading.Thread(target=worker, name="race-engineer-analysis", daemon=True).start()
+        self.root.after(100, self._poll_analysis_queue)
+
+    def _poll_analysis_queue(self):
+        finished = False
+        while True:
+            try:
+                kind, value = self.analysis_queue.get_nowait()
+            except queue.Empty:
+                break
+            if kind == "line":
+                self._append_execution_line(str(value))
+            elif kind == "done":
+                self._finish_analysis(int(value))
+                finished = True
+            elif kind == "error":
+                self._append_execution_line(f"GUI_LAUNCH_FAILED: {value}")
+                self._finish_analysis(1)
+                finished = True
+        if self.analysis_running and not finished:
+            self.root.after(100, self._poll_analysis_queue)
+
+    def _finish_analysis(self, return_code: int):
+        from tkinter import messagebox
+
+        self.analysis_running = False
+        self.progress.stop()
+        self.analyze_button.configure(state="normal")
+        self.backend_combo.configure(state="readonly")
+        self.refresh_button.configure(state="normal")
+        if return_code == 0:
+            self.execution_status.set("Análisis terminado correctamente")
+            self._append_execution_line("\nGUI RESULT: PASS")
+            database = self.analysis_database
+            self.refresh(preferred_database=database)
+            messagebox.showinfo(
+                "Race Engineer",
+                "El análisis terminó correctamente y la lista fue actualizada.",
+                parent=self.root,
+            )
+        elif return_code == 2:
+            self.execution_status.set("Análisis bloqueado de forma segura")
+            self._append_execution_line("\nGUI RESULT: BLOCKED")
+            messagebox.showwarning(
+                "Race Engineer",
+                "El launcher bloqueó el análisis. Revisá la pestaña Ejecución.",
+                parent=self.root,
+            )
+        else:
+            self.execution_status.set("El análisis terminó con un error")
+            self._append_execution_line("\nGUI RESULT: FAILED")
+            messagebox.showerror(
+                "Race Engineer",
+                "El análisis falló. Revisá la pestaña Ejecución.",
+                parent=self.root,
+            )
+        self.analysis_database = None
+
+    def _on_close(self):
+        from tkinter import messagebox
+
+        if self.analysis_running:
+            messagebox.showwarning(
+                "Race Engineer",
+                "Hay un análisis en ejecución. La ventana no se cerrará ni cancelará el proceso.\n\n"
+                "Esperá a que termine.",
+                parent=self.root,
+            )
+            return
+        self.root.destroy()
 
 
 def _print_sessions(runs_root: Path) -> int:

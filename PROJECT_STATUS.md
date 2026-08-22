@@ -284,7 +284,7 @@ LLM episode-prompt shadow checkpoint:
 See `docs/LLM_PROMPT_SHADOW_PROMOTION_GATE_V0_1.md`.
 
 Validation:
-- pytest: `941 PASS / 0 FAIL / 0 SKIP`
+- pytest: `946 PASS / 0 FAIL / 0 SKIP`
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP`
 - Objective recovery check: `READY`
 
@@ -317,6 +317,13 @@ Desktop interface v0.1 is available as `RaceEngineer.pyw` /
 validated debriefs, renders the next-stint plan and exposes pipeline status without
 calling an LLM or changing History. The first real catalogue smoke test loaded 46
 sessions successfully. See `docs/RACE_ENGINEER_GUI_V0_1.md`.
+
+GUI v0.2 adds explicit telemetry selection, DeepSeek/llama.cpp/Ollama backend
+selection and a live execution log. It invokes only `analyze_telemetry_file.py`,
+so LMU-running, authorized-root, 5 MiB, 10-minute stability and two-valid-lap
+gates remain authoritative. One process is allowed at a time, there is no cancel
+button and the window refuses to close while analysis is active. See
+`docs/RACE_ENGINEER_GUI_V0_2.md`.
 
 Calibration batch orchestrator `1.5` requires the current History schema 4 contract,
 reports its runtime version consistently and has a regression test against schema drift.

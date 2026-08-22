@@ -28,7 +28,7 @@ from extract_lmu_track_gps import (
 )
 
 
-TRACK_MAP_VERSION = "0.2"
+TRACK_MAP_VERSION = "0.3"
 
 
 @dataclass(frozen=True)
@@ -60,6 +60,15 @@ class TrackMapZone:
     start_distance_m: float
     end_distance_m: float
     delta_change_s: float | None
+
+
+@dataclass(frozen=True)
+class TrackMapPriority:
+    priority_id: str
+    label: str
+    start_distance_m: float
+    end_distance_m: float
+    cues: tuple[str, ...]
 
 
 def load_track_map(
@@ -314,9 +323,76 @@ def zone_for_distance(
     return None
 
 
+def load_track_priorities(path: Path | None) -> tuple[TrackMapPriority, ...]:
+    """Load validated next-stint plan intervals from an exact debrief artifact."""
+
+    if path is None:
+        return ()
+    source = Path(path).expanduser().resolve()
+    payload = json.loads(source.read_text(encoding="utf-8"))
+    if not isinstance(payload, dict):
+        raise ValueError("El debrief no contiene un objeto JSON.")
+    facts = payload.get("session_coaching_facts")
+    facts = facts if isinstance(facts, dict) else {}
+    values = facts.get("next_stint_plan")
+    if not isinstance(values, list):
+        return ()
+    priorities = []
+    for index, value in enumerate(values, start=1):
+        if not isinstance(value, dict):
+            continue
+        try:
+            start = float(value.get("start_distance_m"))
+            end = float(value.get("end_distance_m"))
+        except (TypeError, ValueError):
+            continue
+        if not math.isfinite(start) or not math.isfinite(end) or end <= start:
+            continue
+        location = value.get("track_location")
+        location = location if isinstance(location, dict) else {}
+        cue_values = value.get("driver_cues")
+        cue_values = cue_values if isinstance(cue_values, list) else []
+        cues = []
+        for cue in cue_values:
+            if isinstance(cue, str):
+                text = cue.strip()
+            elif isinstance(cue, dict):
+                text = str(cue.get("text") or cue.get("description") or "").strip()
+            else:
+                text = ""
+            if text:
+                cues.append(text)
+        priority_id = str(value.get("plan_label") or index)
+        priorities.append(
+            TrackMapPriority(
+                priority_id=priority_id,
+                label=str(location.get("label") or f"Zona {priority_id}"),
+                start_distance_m=start,
+                end_distance_m=end,
+                cues=tuple(cues),
+            )
+        )
+    priorities.sort(
+        key=lambda item: (item.start_distance_m, item.end_distance_m, item.priority_id)
+    )
+    return tuple(priorities)
+
+
+def priority_for_distance(
+    priorities: tuple[TrackMapPriority, ...],
+    distance_m: float | None,
+) -> TrackMapPriority | None:
+    if distance_m is None:
+        return None
+    for priority in priorities:
+        if priority.start_distance_m <= distance_m <= priority.end_distance_m:
+            return priority
+    return None
+
+
 def zone_point_ranges(
     points: tuple[TrackMapPoint, ...],
-    zone: TrackMapZone,
+    zone: TrackMapZone | TrackMapPriority,
 ) -> tuple[tuple[int, int], ...]:
     """Return contiguous point-index ranges covered by one distance zone."""
 

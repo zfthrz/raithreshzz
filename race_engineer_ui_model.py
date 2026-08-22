@@ -38,6 +38,13 @@ class SessionRecord:
     database_path: Path | None
     stages: tuple[tuple[str, str], ...]
 
+    @property
+    def has_validated_debrief(self) -> bool:
+        return (
+            self.debrief_path is not None
+            and dict(self.stages).get("llm_validator") in READY_STAGE_STATUSES
+        )
+
 
 @dataclass(frozen=True)
 class SessionDetail:

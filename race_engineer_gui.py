@@ -38,16 +38,19 @@ from race_engineer_ui_analysis import (
 )
 from race_engineer_track_map import (
     TrackMapData,
+    TrackMapPriority,
     TrackMapZone,
     fit_track_points,
     load_track_map,
+    load_track_priorities,
     load_track_zones,
+    priority_for_distance,
     zone_for_distance,
     zone_point_ranges,
 )
 
 
-GUI_VERSION = "0.9"
+GUI_VERSION = "1.0"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 PROJECT_ROOT = Path(__file__).resolve().parent
 BACKEND_LABELS = {
@@ -93,8 +96,9 @@ class RaceEngineerApp:
         self.track_map_loading = False
         self.current_track_map: TrackMapData | None = None
         self.current_track_zones: tuple[TrackMapZone, ...] = ()
+        self.current_track_priorities: tuple[TrackMapPriority, ...] = ()
         self.current_fitted_track_points: tuple[tuple[float, float], ...] = ()
-        self.selected_track_zone_id: str | None = None
+        self.selected_track_overlay: tuple[str, str] | None = None
         self.track_map_cache: dict[
             tuple[str, int, int | None, int | None], TrackMapData
         ] = {}
@@ -586,11 +590,12 @@ class RaceEngineerApp:
         self.track_map_loading = False
         self.current_track_map = None
         self.current_track_zones = ()
+        self.current_track_priorities = ()
         self.current_fitted_track_points = ()
-        self.selected_track_zone_id = None
+        self.selected_track_overlay = None
         self.track_map_canvas.delete("all")
         self.track_map_status.set("Seleccioná una sesión para reconstruir el mapa GPS.")
-        self.track_map_zone_status.set("Sin zonas H5.2 para esta sesión.")
+        self.track_map_zone_status.set("Sin capas de zonas para esta sesión.")
         self.open_button.configure(state="disabled")
 
     def _request_track_map(self, record: SessionRecord):
@@ -599,10 +604,11 @@ class RaceEngineerApp:
         self.track_map_loading = False
         self.current_track_map = None
         self.current_track_zones = ()
+        self.current_track_priorities = ()
         self.current_fitted_track_points = ()
-        self.selected_track_zone_id = None
+        self.selected_track_overlay = None
         self.track_map_canvas.delete("all")
-        self.track_map_zone_status.set("Buscando zonas H5.2…")
+        self.track_map_zone_status.set("Buscando zonas H5.2 y prioridades del debrief…")
         database = record.database_path
         if database is None:
             self.track_map_status.set("La sesión no registra su DuckDB original.")
@@ -624,13 +630,21 @@ class RaceEngineerApp:
         cached = self.track_map_cache.get(cache_key)
         if cached is not None:
             self.current_track_map = cached
+            layer_errors = []
             try:
                 self.current_track_zones = load_track_zones(record.cross_session_path)
             except (OSError, UnicodeDecodeError, ValueError) as exc:
                 self.current_track_zones = ()
-                self.track_map_zone_status.set(f"Zonas H5.2 no disponibles: {exc}")
-            else:
-                self._set_track_zone_summary()
+                layer_errors.append(f"H5.2: {exc}")
+            try:
+                priority_path = (
+                    record.debrief_path if record.has_validated_debrief else None
+                )
+                self.current_track_priorities = load_track_priorities(priority_path)
+            except (OSError, UnicodeDecodeError, ValueError) as exc:
+                self.current_track_priorities = ()
+                layer_errors.append(f"debrief: {exc}")
+            self._set_track_zone_summary(layer_errors=layer_errors)
             self.track_map_status.set(self._track_map_status_text(cached))
             self._render_track_map()
             return
@@ -647,12 +661,24 @@ class RaceEngineerApp:
                 )
                 try:
                     zones = load_track_zones(record.cross_session_path)
-                    zone_error = ""
+                    layer_errors = []
                 except (OSError, UnicodeDecodeError, ValueError) as exc:
                     zones = ()
-                    zone_error = str(exc)
+                    layer_errors = [f"H5.2: {exc}"]
+                try:
+                    priority_path = (
+                        record.debrief_path if record.has_validated_debrief else None
+                    )
+                    priorities = load_track_priorities(priority_path)
+                except (OSError, UnicodeDecodeError, ValueError) as exc:
+                    priorities = ()
+                    layer_errors.append(f"debrief: {exc}")
                 self.track_map_queue.put(
-                    (token, "done", (cache_key, data, zones, zone_error))
+                    (
+                        token,
+                        "done",
+                        (cache_key, data, zones, priorities, tuple(layer_errors)),
+                    )
                 )
             except Exception as exc:
                 self.track_map_queue.put(
@@ -674,21 +700,18 @@ class RaceEngineerApp:
             current_completed = True
             self.track_map_loading = False
             if kind == "done":
-                cache_key, data, zones, zone_error = value
+                cache_key, data, zones, priorities, layer_errors = value
                 self.track_map_cache[cache_key] = data
                 self.current_track_map = data
                 self.current_track_zones = zones
+                self.current_track_priorities = priorities
                 self.track_map_status.set(self._track_map_status_text(data))
-                if zone_error:
-                    self.track_map_zone_status.set(
-                        f"Zonas H5.2 no disponibles: {zone_error}"
-                    )
-                else:
-                    self._set_track_zone_summary()
+                self._set_track_zone_summary(layer_errors=list(layer_errors))
                 self._render_track_map()
             else:
                 self.current_track_map = None
                 self.current_track_zones = ()
+                self.current_track_priorities = ()
                 self.current_fitted_track_points = ()
                 self.track_map_canvas.delete("all")
                 self.track_map_status.set(f"Mapa GPS no disponible: {value}")
@@ -713,22 +736,32 @@ class RaceEngineerApp:
             f"{data.width_m:.0f} × {data.height_m:.0f} m"
         )
 
-    def _set_track_zone_summary(self):
+    def _set_track_zone_summary(self, *, layer_errors: list[str] | None = None):
         zones = self.current_track_zones
-        if not zones:
-            self.track_map_zone_status.set("Sin zonas H5.2 para esta sesión.")
+        priorities = self.current_track_priorities
+        errors = layer_errors or []
+        if not zones and not priorities:
+            suffix = f" · {'; '.join(errors)}" if errors else ""
+            self.track_map_zone_status.set(
+                "Sin zonas H5.2 ni prioridades validadas para esta sesión." + suffix
+            )
             return
         losses = sum(zone.kind == "loss" for zone in zones)
         gains = sum(zone.kind == "gain" for zone in zones)
-        self.track_map_zone_status.set(
+        text = (
             f"Zonas H5.2: {len(zones)} · pérdidas: {losses} · ganancias: {gains} · "
-            "hacé clic en un tramo para ver el detalle."
+            f"prioridades: {len(priorities)} · hacé clic en un tramo para ver el detalle."
         )
+        if errors:
+            text += " · " + "; ".join(errors)
+        self.track_map_zone_status.set(text)
 
     def _on_track_map_click(self, event):
         data = self.current_track_map
         fitted = self.current_fitted_track_points
-        if data is None or not fitted or not self.current_track_zones:
+        if data is None or not fitted or (
+            not self.current_track_zones and not self.current_track_priorities
+        ):
             return
         index, nearest = min(
             enumerate(fitted),
@@ -736,14 +769,27 @@ class RaceEngineerApp:
         )
         distance_sq = (nearest[0] - event.x) ** 2 + (nearest[1] - event.y) ** 2
         if distance_sq > 18.0**2:
-            self.selected_track_zone_id = None
+            self.selected_track_overlay = None
             self._set_track_zone_summary()
             self._render_track_map()
             return
         point = data.points[index]
+        priority = priority_for_distance(
+            self.current_track_priorities, point.lap_distance_m
+        )
+        if priority is not None:
+            self.selected_track_overlay = ("priority", priority.priority_id)
+            cue_text = "; ".join(priority.cues) or "sin cue textual disponible"
+            self.track_map_zone_status.set(
+                f"Prioridad {priority.priority_id} · {priority.label} · "
+                f"{priority.start_distance_m:.0f}-{priority.end_distance_m:.0f} m · "
+                f"{cue_text}"
+            )
+            self._render_track_map()
+            return
         zone = zone_for_distance(self.current_track_zones, point.lap_distance_m)
         if zone is None:
-            self.selected_track_zone_id = None
+            self.selected_track_overlay = None
             distance_text = (
                 "—" if point.lap_distance_m is None else f"{point.lap_distance_m:.0f} m"
             )
@@ -751,7 +797,7 @@ class RaceEngineerApp:
                 f"Punto {distance_text}: fuera de las zonas comparativas H5.2."
             )
         else:
-            self.selected_track_zone_id = zone.zone_id
+            self.selected_track_overlay = ("h5_2", zone.zone_id)
             delta_text = (
                 "—"
                 if zone.delta_change_s is None
@@ -782,7 +828,11 @@ class RaceEngineerApp:
         coordinates = [coordinate for point in fitted for coordinate in point]
         canvas.create_line(
             *coordinates,
-            fill="#59636d" if self.current_track_zones else "#57d9d0",
+            fill=(
+                "#59636d"
+                if self.current_track_zones or self.current_track_priorities
+                else "#57d9d0"
+            ),
             width=4,
             capstyle="round",
             joinstyle="round",
@@ -793,12 +843,13 @@ class RaceEngineerApp:
             "observation": "#d5a94f",
         }
         for zone in self.current_track_zones:
+            selected = self.selected_track_overlay == ("h5_2", zone.zone_id)
             color = (
                 "#ffd166"
-                if zone.zone_id == self.selected_track_zone_id
+                if selected
                 else zone_colors.get(zone.kind, "#d5a94f")
             )
-            line_width = 7 if zone.zone_id == self.selected_track_zone_id else 5
+            line_width = 7 if selected else 5
             for start_index, end_index in zone_point_ranges(data.points, zone):
                 segment = fitted[start_index : end_index + 1]
                 segment_coordinates = [value for point in segment for value in point]
@@ -806,6 +857,21 @@ class RaceEngineerApp:
                     *segment_coordinates,
                     fill=color,
                     width=line_width,
+                    capstyle="round",
+                    joinstyle="round",
+                )
+        for priority in self.current_track_priorities:
+            selected = self.selected_track_overlay == (
+                "priority",
+                priority.priority_id,
+            )
+            for start_index, end_index in zone_point_ranges(data.points, priority):
+                segment = fitted[start_index : end_index + 1]
+                segment_coordinates = [value for point in segment for value in point]
+                canvas.create_line(
+                    *segment_coordinates,
+                    fill="#f4f7fb" if selected else "#4da3ff",
+                    width=9 if selected else 7,
                     capstyle="round",
                     joinstyle="round",
                 )
@@ -835,16 +901,29 @@ class RaceEngineerApp:
             anchor="ne",
             font=("Segoe UI Semibold", 10),
         )
-        if self.current_track_zones:
-            canvas.create_rectangle(14, 13, 124, 63, fill="#151515", outline="#333333")
-            canvas.create_line(24, 29, 47, 29, fill="#e45a5a", width=5)
-            canvas.create_text(
-                55, 29, text="Pérdida", fill="#dce7ef", anchor="w", font=("Segoe UI", 9)
+        if self.current_track_zones or self.current_track_priorities:
+            legend_rows = []
+            if self.current_track_zones:
+                legend_rows.extend(
+                    (("#e45a5a", 5, "Pérdida"), ("#45c98c", 5, "Ganancia"))
+                )
+            if self.current_track_priorities:
+                legend_rows.append(("#4da3ff", 7, "Prioridad"))
+            legend_height = 20 + 19 * len(legend_rows)
+            canvas.create_rectangle(
+                14, 13, 130, legend_height, fill="#151515", outline="#333333"
             )
-            canvas.create_line(24, 48, 47, 48, fill="#45c98c", width=5)
-            canvas.create_text(
-                55, 48, text="Ganancia", fill="#dce7ef", anchor="w", font=("Segoe UI", 9)
-            )
+            for row_index, (color, line_width, label) in enumerate(legend_rows):
+                y = 29 + 19 * row_index
+                canvas.create_line(24, y, 47, y, fill=color, width=line_width)
+                canvas.create_text(
+                    55,
+                    y,
+                    text=label,
+                    fill="#dce7ef",
+                    anchor="w",
+                    font=("Segoe UI", 9),
+                )
 
     def _open_selected_folder(self):
         from tkinter import messagebox

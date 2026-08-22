@@ -96,6 +96,7 @@ def test_discovers_validated_debrief_and_reference_metadata(tmp_path: Path):
     assert session.reference_time_s == 90.94
     assert session.status == "DEBRIEF_READY"
     assert session.debrief_path is not None
+    assert session.has_validated_debrief is True
 
 
 def test_history_only_session_is_not_presented_as_debrief_ready(tmp_path: Path):
@@ -105,6 +106,20 @@ def test_history_only_session_is_not_presented_as_debrief_ready(tmp_path: Path):
 
     assert sessions[0].status == "HISTORY_READY"
     assert sessions[0].debrief_path is None
+    assert sessions[0].has_validated_debrief is False
+
+
+def test_late_pipeline_failure_does_not_hide_validated_debrief_artifact(tmp_path: Path):
+    state_path = make_session(tmp_path, "session-late-failure")
+    state = json.loads(state_path.read_text(encoding="utf-8"))
+    state["stages"]["h5_3"] = {"status": "FAILED"}
+    state["last_summary"]["h5_3"] = "FAILED"
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+
+    session = discover_sessions(tmp_path / "runs")[0][0]
+
+    assert session.status == "FAILED"
+    assert session.has_validated_debrief is True
 
 
 def test_detail_reads_debrief_and_authorized_plan(tmp_path: Path):
@@ -292,8 +307,8 @@ def test_gui_entry_points_and_documentation_are_present():
     assert (root / "launch_race_engineer_gui.cmd").is_file()
     for relative in ("AGENTS.md", "PROJECT_CONTEXT.md", "PROJECT_STATUS.md", "README.md"):
         source = (root / relative).read_text(encoding="utf-8")
-        assert "race_engineer_gui.py" in source or "RACE_ENGINEER_GUI_V0_9.md" in source
-    assert (root / "docs" / "RACE_ENGINEER_GUI_V0_9.md").is_file()
+        assert "race_engineer_gui.py" in source or "RACE_ENGINEER_GUI_V1_0.md" in source
+    assert (root / "docs" / "RACE_ENGINEER_GUI_V1_0.md").is_file()
     assert "analyze_telemetry_file.py" in (
-        root / "docs" / "RACE_ENGINEER_GUI_V0_9.md"
+        root / "docs" / "RACE_ENGINEER_GUI_V1_0.md"
     ).read_text(encoding="utf-8")

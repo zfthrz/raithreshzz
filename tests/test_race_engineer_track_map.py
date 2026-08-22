@@ -10,7 +10,9 @@ from race_engineer_track_map import (
     TrackMapPoint,
     fit_track_points,
     load_track_map,
+    load_track_priorities,
     load_track_zones,
+    priority_for_distance,
     zone_for_distance,
     zone_point_ranges,
 )
@@ -190,3 +192,46 @@ def test_invalid_h5_2_zone_boundaries_are_ignored(tmp_path: Path):
     )
 
     assert load_track_zones(source) == ()
+
+
+def test_validated_next_stint_priorities_map_to_gps_intervals(tmp_path: Path):
+    source = tmp_path / "debrief.json"
+    source.write_text(
+        json.dumps(
+            {
+                "session_coaching_facts": {
+                    "next_stint_plan": [
+                        {
+                            "plan_label": "B",
+                            "start_distance_m": 500,
+                            "end_distance_m": 560,
+                            "track_location": {"label": "T5"},
+                            "driver_cues": [{"text": "Sostené el acelerador"}],
+                        },
+                        {
+                            "plan_label": "A",
+                            "start_distance_m": 100,
+                            "end_distance_m": 180,
+                            "track_location": {"label": "T1"},
+                            "driver_cues": ["Frená hacia la referencia"],
+                        },
+                    ]
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    points = tuple(
+        TrackMapPoint(float(distance), 0.0, float(distance))
+        for distance in (0, 100, 140, 180, 300, 500, 530, 560, 700)
+    )
+
+    priorities = load_track_priorities(source)
+
+    assert [priority.priority_id for priority in priorities] == ["A", "B"]
+    assert priorities[0].label == "T1"
+    assert priorities[0].cues == ("Frená hacia la referencia",)
+    assert priority_for_distance(priorities, 530).priority_id == "B"
+    assert priority_for_distance(priorities, 400) is None
+    assert zone_point_ranges(points, priorities[0]) == ((1, 3),)
+    assert zone_point_ranges(points, priorities[1]) == ((5, 7),)

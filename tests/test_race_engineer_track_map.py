@@ -1,11 +1,19 @@
 from __future__ import annotations
 
+import json
 import math
 from pathlib import Path
 
 import duckdb
 
-from race_engineer_track_map import TrackMapPoint, fit_track_points, load_track_map
+from race_engineer_track_map import (
+    TrackMapPoint,
+    fit_track_points,
+    load_track_map,
+    load_track_zones,
+    zone_for_distance,
+    zone_point_ranges,
+)
 
 
 def make_gps_database(path: Path) -> Path:
@@ -118,3 +126,67 @@ def test_fit_track_points_preserves_aspect_ratio_and_north_orientation():
     assert fitted[0] == (25.0, 162.5)
     assert fitted[1] == (275.0, 162.5)
     assert fitted[2] == (275.0, 37.5)
+
+
+def test_h5_2_zones_are_loaded_in_track_order_and_mapped_by_lap_distance(
+    tmp_path: Path,
+):
+    source = tmp_path / "h5_2.json"
+    source.write_text(
+        json.dumps(
+            {
+                "spatial_comparison": {
+                    "zone_summaries": [
+                        {
+                            "type": "gain",
+                            "start_distance": 100,
+                            "end_distance": 180,
+                            "delta_change": -0.18,
+                            "location": {"label": "T2"},
+                        },
+                        {
+                            "type": "loss",
+                            "start_distance": 20,
+                            "end_distance": 80,
+                            "delta_change": 0.24,
+                            "location": {"label": "T1"},
+                        },
+                    ]
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    zones = load_track_zones(source)
+    points = tuple(
+        TrackMapPoint(float(distance), 0.0, float(distance))
+        for distance in (0, 20, 50, 80, 100, 140, 180, 220)
+    )
+
+    assert [zone.label for zone in zones] == ["T1", "T2"]
+    assert zones[0].kind == "loss"
+    assert zones[1].kind == "gain"
+    assert zone_for_distance(zones, 50).label == "T1"
+    assert zone_for_distance(zones, 90) is None
+    assert zone_point_ranges(points, zones[0]) == ((1, 3),)
+    assert zone_point_ranges(points, zones[1]) == ((4, 6),)
+
+
+def test_invalid_h5_2_zone_boundaries_are_ignored(tmp_path: Path):
+    source = tmp_path / "h5_2.json"
+    source.write_text(
+        json.dumps(
+            {
+                "spatial_comparison": {
+                    "zone_summaries": [
+                        {"start_distance": 100, "end_distance": 50},
+                        {"start_distance": "missing", "end_distance": 80},
+                    ]
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    assert load_track_zones(source) == ()

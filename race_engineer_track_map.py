@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import json
+import math
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable
@@ -26,7 +28,7 @@ from extract_lmu_track_gps import (
 )
 
 
-TRACK_MAP_VERSION = "0.1"
+TRACK_MAP_VERSION = "0.2"
 
 
 @dataclass(frozen=True)
@@ -48,6 +50,16 @@ class TrackMapData:
     points: tuple[TrackMapPoint, ...]
     width_m: float
     height_m: float
+
+
+@dataclass(frozen=True)
+class TrackMapZone:
+    zone_id: str
+    label: str
+    kind: str
+    start_distance_m: float
+    end_distance_m: float
+    delta_change_s: float | None
 
 
 def load_track_map(
@@ -239,3 +251,92 @@ def fit_track_points(
         )
         for point in points
     )
+
+
+def load_track_zones(path: Path | None) -> tuple[TrackMapZone, ...]:
+    """Load deterministic H5.2 distance zones without granting coaching authority."""
+
+    if path is None:
+        return ()
+    source = Path(path).expanduser().resolve()
+    payload = json.loads(source.read_text(encoding="utf-8"))
+    if not isinstance(payload, dict):
+        raise ValueError("El artefacto H5.2 no contiene un objeto JSON.")
+    spatial = payload.get("spatial_comparison")
+    if not isinstance(spatial, dict):
+        return ()
+    values = spatial.get("zone_summaries")
+    if not isinstance(values, list):
+        return ()
+    zones = []
+    for index, value in enumerate(values, start=1):
+        if not isinstance(value, dict):
+            continue
+        try:
+            start = float(value.get("start_distance"))
+            end = float(value.get("end_distance"))
+        except (TypeError, ValueError):
+            continue
+        if not math.isfinite(start) or not math.isfinite(end) or end <= start:
+            continue
+        location = value.get("location")
+        location = location if isinstance(location, dict) else {}
+        delta_value = value.get("delta_change")
+        try:
+            delta = float(delta_value)
+            if not math.isfinite(delta):
+                delta = None
+        except (TypeError, ValueError):
+            delta = None
+        zones.append(
+            TrackMapZone(
+                zone_id=str(value.get("zone_id") or f"zone_{index:03d}"),
+                label=str(location.get("label") or f"{start:.0f}-{end:.0f} m"),
+                kind=str(value.get("type") or "observation").casefold(),
+                start_distance_m=start,
+                end_distance_m=end,
+                delta_change_s=delta,
+            )
+        )
+    zones.sort(key=lambda zone: (zone.start_distance_m, zone.end_distance_m, zone.zone_id))
+    return tuple(zones)
+
+
+def zone_for_distance(
+    zones: tuple[TrackMapZone, ...],
+    distance_m: float | None,
+) -> TrackMapZone | None:
+    if distance_m is None:
+        return None
+    for zone in zones:
+        if zone.start_distance_m <= distance_m <= zone.end_distance_m:
+            return zone
+    return None
+
+
+def zone_point_ranges(
+    points: tuple[TrackMapPoint, ...],
+    zone: TrackMapZone,
+) -> tuple[tuple[int, int], ...]:
+    """Return contiguous point-index ranges covered by one distance zone."""
+
+    ranges = []
+    start_index = None
+    previous_index = None
+    for index, point in enumerate(points):
+        inside = (
+            point.lap_distance_m is not None
+            and zone.start_distance_m <= point.lap_distance_m <= zone.end_distance_m
+        )
+        if inside:
+            if start_index is None:
+                start_index = index
+            previous_index = index
+        elif start_index is not None:
+            if previous_index is not None and previous_index > start_index:
+                ranges.append((start_index, previous_index))
+            start_index = None
+            previous_index = None
+    if start_index is not None and previous_index is not None and previous_index > start_index:
+        ranges.append((start_index, previous_index))
+    return tuple(ranges)

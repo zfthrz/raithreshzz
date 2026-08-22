@@ -284,7 +284,7 @@ LLM episode-prompt shadow checkpoint:
 See `docs/LLM_PROMPT_SHADOW_PROMOTION_GATE_V0_1.md`.
 
 Validation:
-- pytest: `974 PASS / 0 FAIL / 0 SKIP`
+- pytest: `976 PASS / 0 FAIL / 0 SKIP`
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP`
 - Objective recovery check: `READY`
 
@@ -359,6 +359,12 @@ per point for later H5.2/track-profile zone overlays. Analysis reference laps ar
 matched to native GPS groups by duration; incomplete tails fail the completeness
 gate instead of being drawn as a circuit. No CSV/GeoJSON is written.
 See `docs/RACE_ENGINEER_GUI_V0_8.md`.
+
+GUI v0.9 overlays deterministic H5.2 `zone_summaries` on the GPS map by aligned
+LMU Lap Dist. Loss segments are red, gain segments green and the remaining circuit
+grey. Clicking within 18 px selects a zone and shows its localized label, zone ID,
+distance interval and deterministic delta change. This is read-only observational
+inspection and does not promote zones to coaching. See `docs/RACE_ENGINEER_GUI_V0_9.md`.
 
 Calibration batch orchestrator `1.5` requires the current History schema 4 contract,
 reports its runtime version consistently and has a regression test against schema drift.

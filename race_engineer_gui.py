@@ -36,10 +36,18 @@ from race_engineer_ui_analysis import (
     stream_analysis,
     validate_analysis_candidate,
 )
-from race_engineer_track_map import TrackMapData, fit_track_points, load_track_map
+from race_engineer_track_map import (
+    TrackMapData,
+    TrackMapZone,
+    fit_track_points,
+    load_track_map,
+    load_track_zones,
+    zone_for_distance,
+    zone_point_ranges,
+)
 
 
-GUI_VERSION = "0.8"
+GUI_VERSION = "0.9"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 PROJECT_ROOT = Path(__file__).resolve().parent
 BACKEND_LABELS = {
@@ -84,6 +92,9 @@ class RaceEngineerApp:
         self.track_map_token = 0
         self.track_map_loading = False
         self.current_track_map: TrackMapData | None = None
+        self.current_track_zones: tuple[TrackMapZone, ...] = ()
+        self.current_fitted_track_points: tuple[tuple[float, float], ...] = ()
+        self.selected_track_zone_id: str | None = None
         self.track_map_cache: dict[
             tuple[str, int, int | None, int | None], TrackMapData
         ] = {}
@@ -399,6 +410,15 @@ class RaceEngineerApp:
         )
         canvas.pack(fill="both", expand=True)
         canvas.bind("<Configure>", lambda _event: self._render_track_map())
+        canvas.bind("<Button-1>", self._on_track_map_click)
+        self.track_map_zone_status = self.tk.StringVar(
+            value="Sin zonas H5.2 para esta sesión."
+        )
+        self.ttk.Label(
+            frame,
+            textvariable=self.track_map_zone_status,
+            style="Muted.TLabel",
+        ).pack(fill="x", padx=8, pady=(8, 4))
         return canvas
 
     def _set_text(self, widget, value: str, *, markdown: bool = False):
@@ -565,8 +585,12 @@ class RaceEngineerApp:
         self.track_map_token += 1
         self.track_map_loading = False
         self.current_track_map = None
+        self.current_track_zones = ()
+        self.current_fitted_track_points = ()
+        self.selected_track_zone_id = None
         self.track_map_canvas.delete("all")
         self.track_map_status.set("Seleccioná una sesión para reconstruir el mapa GPS.")
+        self.track_map_zone_status.set("Sin zonas H5.2 para esta sesión.")
         self.open_button.configure(state="disabled")
 
     def _request_track_map(self, record: SessionRecord):
@@ -574,16 +598,22 @@ class RaceEngineerApp:
         token = self.track_map_token
         self.track_map_loading = False
         self.current_track_map = None
+        self.current_track_zones = ()
+        self.current_fitted_track_points = ()
+        self.selected_track_zone_id = None
         self.track_map_canvas.delete("all")
+        self.track_map_zone_status.set("Buscando zonas H5.2…")
         database = record.database_path
         if database is None:
             self.track_map_status.set("La sesión no registra su DuckDB original.")
+            self.track_map_zone_status.set("Sin mapa GPS para superponer zonas.")
             return
         try:
             resolved = database.expanduser().resolve()
             modified_ns = resolved.stat().st_mtime_ns
         except OSError as exc:
             self.track_map_status.set(f"No se puede abrir la telemetría GPS: {exc}")
+            self.track_map_zone_status.set("Sin mapa GPS para superponer zonas.")
             return
         duration_key = (
             None
@@ -594,6 +624,13 @@ class RaceEngineerApp:
         cached = self.track_map_cache.get(cache_key)
         if cached is not None:
             self.current_track_map = cached
+            try:
+                self.current_track_zones = load_track_zones(record.cross_session_path)
+            except (OSError, UnicodeDecodeError, ValueError) as exc:
+                self.current_track_zones = ()
+                self.track_map_zone_status.set(f"Zonas H5.2 no disponibles: {exc}")
+            else:
+                self._set_track_zone_summary()
             self.track_map_status.set(self._track_map_status_text(cached))
             self._render_track_map()
             return
@@ -608,7 +645,15 @@ class RaceEngineerApp:
                     preferred_lap=record.reference_lap,
                     preferred_duration_s=record.reference_time_s,
                 )
-                self.track_map_queue.put((token, "done", (cache_key, data)))
+                try:
+                    zones = load_track_zones(record.cross_session_path)
+                    zone_error = ""
+                except (OSError, UnicodeDecodeError, ValueError) as exc:
+                    zones = ()
+                    zone_error = str(exc)
+                self.track_map_queue.put(
+                    (token, "done", (cache_key, data, zones, zone_error))
+                )
             except Exception as exc:
                 self.track_map_queue.put(
                     (token, "error", f"{type(exc).__name__}: {exc}")
@@ -629,15 +674,25 @@ class RaceEngineerApp:
             current_completed = True
             self.track_map_loading = False
             if kind == "done":
-                cache_key, data = value
+                cache_key, data, zones, zone_error = value
                 self.track_map_cache[cache_key] = data
                 self.current_track_map = data
+                self.current_track_zones = zones
                 self.track_map_status.set(self._track_map_status_text(data))
+                if zone_error:
+                    self.track_map_zone_status.set(
+                        f"Zonas H5.2 no disponibles: {zone_error}"
+                    )
+                else:
+                    self._set_track_zone_summary()
                 self._render_track_map()
             else:
                 self.current_track_map = None
+                self.current_track_zones = ()
+                self.current_fitted_track_points = ()
                 self.track_map_canvas.delete("all")
                 self.track_map_status.set(f"Mapa GPS no disponible: {value}")
+                self.track_map_zone_status.set("Sin mapa GPS para superponer zonas.")
         if self.track_map_loading and not current_completed:
             self.root.after(100, self._poll_track_map_queue)
 
@@ -658,6 +713,60 @@ class RaceEngineerApp:
             f"{data.width_m:.0f} × {data.height_m:.0f} m"
         )
 
+    def _set_track_zone_summary(self):
+        zones = self.current_track_zones
+        if not zones:
+            self.track_map_zone_status.set("Sin zonas H5.2 para esta sesión.")
+            return
+        losses = sum(zone.kind == "loss" for zone in zones)
+        gains = sum(zone.kind == "gain" for zone in zones)
+        self.track_map_zone_status.set(
+            f"Zonas H5.2: {len(zones)} · pérdidas: {losses} · ganancias: {gains} · "
+            "hacé clic en un tramo para ver el detalle."
+        )
+
+    def _on_track_map_click(self, event):
+        data = self.current_track_map
+        fitted = self.current_fitted_track_points
+        if data is None or not fitted or not self.current_track_zones:
+            return
+        index, nearest = min(
+            enumerate(fitted),
+            key=lambda item: (item[1][0] - event.x) ** 2 + (item[1][1] - event.y) ** 2,
+        )
+        distance_sq = (nearest[0] - event.x) ** 2 + (nearest[1] - event.y) ** 2
+        if distance_sq > 18.0**2:
+            self.selected_track_zone_id = None
+            self._set_track_zone_summary()
+            self._render_track_map()
+            return
+        point = data.points[index]
+        zone = zone_for_distance(self.current_track_zones, point.lap_distance_m)
+        if zone is None:
+            self.selected_track_zone_id = None
+            distance_text = (
+                "—" if point.lap_distance_m is None else f"{point.lap_distance_m:.0f} m"
+            )
+            self.track_map_zone_status.set(
+                f"Punto {distance_text}: fuera de las zonas comparativas H5.2."
+            )
+        else:
+            self.selected_track_zone_id = zone.zone_id
+            delta_text = (
+                "—"
+                if zone.delta_change_s is None
+                else f"{zone.delta_change_s:+.3f} s"
+            )
+            kind = {"loss": "pérdida", "gain": "ganancia"}.get(
+                zone.kind, zone.kind
+            )
+            self.track_map_zone_status.set(
+                f"{zone.label} [{zone.zone_id}] · {kind} · "
+                f"{zone.start_distance_m:.0f}-{zone.end_distance_m:.0f} m · "
+                f"cambio {delta_text}"
+            )
+        self._render_track_map()
+
     def _render_track_map(self):
         canvas = self.track_map_canvas
         canvas.delete("all")
@@ -667,16 +776,39 @@ class RaceEngineerApp:
         width = max(canvas.winfo_width(), 100)
         height = max(canvas.winfo_height(), 100)
         fitted = fit_track_points(data.points, width_px=width, height_px=height)
+        self.current_fitted_track_points = fitted
         if len(fitted) < 2:
             return
         coordinates = [coordinate for point in fitted for coordinate in point]
         canvas.create_line(
             *coordinates,
-            fill="#57d9d0",
+            fill="#59636d" if self.current_track_zones else "#57d9d0",
             width=4,
             capstyle="round",
             joinstyle="round",
         )
+        zone_colors = {
+            "loss": "#e45a5a",
+            "gain": "#45c98c",
+            "observation": "#d5a94f",
+        }
+        for zone in self.current_track_zones:
+            color = (
+                "#ffd166"
+                if zone.zone_id == self.selected_track_zone_id
+                else zone_colors.get(zone.kind, "#d5a94f")
+            )
+            line_width = 7 if zone.zone_id == self.selected_track_zone_id else 5
+            for start_index, end_index in zone_point_ranges(data.points, zone):
+                segment = fitted[start_index : end_index + 1]
+                segment_coordinates = [value for point in segment for value in point]
+                canvas.create_line(
+                    *segment_coordinates,
+                    fill=color,
+                    width=line_width,
+                    capstyle="round",
+                    joinstyle="round",
+                )
         start_x, start_y = fitted[0]
         canvas.create_oval(
             start_x - 6,
@@ -703,6 +835,16 @@ class RaceEngineerApp:
             anchor="ne",
             font=("Segoe UI Semibold", 10),
         )
+        if self.current_track_zones:
+            canvas.create_rectangle(14, 13, 124, 63, fill="#151515", outline="#333333")
+            canvas.create_line(24, 29, 47, 29, fill="#e45a5a", width=5)
+            canvas.create_text(
+                55, 29, text="Pérdida", fill="#dce7ef", anchor="w", font=("Segoe UI", 9)
+            )
+            canvas.create_line(24, 48, 47, 48, fill="#45c98c", width=5)
+            canvas.create_text(
+                55, 48, text="Ganancia", fill="#dce7ef", anchor="w", font=("Segoe UI", 9)
+            )
 
     def _open_selected_folder(self):
         from tkinter import messagebox

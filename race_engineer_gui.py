@@ -36,9 +36,10 @@ from race_engineer_ui_analysis import (
     stream_analysis,
     validate_analysis_candidate,
 )
+from race_engineer_track_map import TrackMapData, fit_track_points, load_track_map
 
 
-GUI_VERSION = "0.6"
+GUI_VERSION = "0.8"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 PROJECT_ROOT = Path(__file__).resolve().parent
 BACKEND_LABELS = {
@@ -79,6 +80,13 @@ class RaceEngineerApp:
         self.all_sessions: list[SessionRecord] = []
         self.session_read_errors: list[str] = []
         self.analysis_queue: queue.Queue[tuple[str, object]] = queue.Queue()
+        self.track_map_queue: queue.Queue[tuple[int, str, object]] = queue.Queue()
+        self.track_map_token = 0
+        self.track_map_loading = False
+        self.current_track_map: TrackMapData | None = None
+        self.track_map_cache: dict[
+            tuple[str, int, int | None, int | None], TrackMapData
+        ] = {}
         self.analysis_running = False
         self.analysis_database: Path | None = None
         self.analysis_model: str | None = None
@@ -317,6 +325,8 @@ class RaceEngineerApp:
         self.plan_text = self._text_tab(self.notebook, "Próxima tanda")
         self.laps_text = self._text_tab(self.notebook, "Vueltas")
         self.historical_reference_text = self._text_tab(self.notebook, "Referencia histórica")
+        self.historical_comparison_text = self._text_tab(self.notebook, "Comparación histórica")
+        self.track_map_canvas = self._track_map_tab(self.notebook)
         self.pipeline_text = self._text_tab(self.notebook, "Pipeline")
         self.execution_text = self._text_tab(self.notebook, "Ejecución")
 
@@ -369,6 +379,27 @@ class RaceEngineerApp:
         text.pack(fill="both", expand=True)
         text.configure(state="disabled")
         return text
+
+    def _track_map_tab(self, notebook):
+        frame = self.ttk.Frame(notebook, style="Panel.TFrame", padding=8)
+        notebook.add(frame, text="Mapa")
+        self.track_map_status = self.tk.StringVar(
+            value="Seleccioná una sesión para reconstruir el mapa GPS."
+        )
+        self.ttk.Label(
+            frame,
+            textvariable=self.track_map_status,
+            style="Muted.TLabel",
+        ).pack(fill="x", padx=8, pady=(4, 8))
+        canvas = self.tk.Canvas(
+            frame,
+            background="#0d0d0d",
+            highlightthickness=1,
+            highlightbackground="#333333",
+        )
+        canvas.pack(fill="both", expand=True)
+        canvas.bind("<Configure>", lambda _event: self._render_track_map())
+        return canvas
 
     def _set_text(self, widget, value: str, *, markdown: bool = False):
         widget.configure(state="normal")
@@ -511,6 +542,8 @@ class RaceEngineerApp:
         self._set_text(self.plan_text, detail.plan_text)
         self._set_text(self.laps_text, detail.laps_text)
         self._set_text(self.historical_reference_text, detail.historical_reference_text)
+        self._set_text(self.historical_comparison_text, detail.historical_comparison_text)
+        self._request_track_map(record)
         pipeline = detail.pipeline_text
         if detail.warnings:
             pipeline += "\n\nAdvertencias:\n" + "\n".join(detail.warnings)
@@ -525,10 +558,151 @@ class RaceEngineerApp:
             self.plan_text,
             self.laps_text,
             self.historical_reference_text,
+            self.historical_comparison_text,
             self.pipeline_text,
         ):
             self._set_text(widget, "")
+        self.track_map_token += 1
+        self.track_map_loading = False
+        self.current_track_map = None
+        self.track_map_canvas.delete("all")
+        self.track_map_status.set("Seleccioná una sesión para reconstruir el mapa GPS.")
         self.open_button.configure(state="disabled")
+
+    def _request_track_map(self, record: SessionRecord):
+        self.track_map_token += 1
+        token = self.track_map_token
+        self.track_map_loading = False
+        self.current_track_map = None
+        self.track_map_canvas.delete("all")
+        database = record.database_path
+        if database is None:
+            self.track_map_status.set("La sesión no registra su DuckDB original.")
+            return
+        try:
+            resolved = database.expanduser().resolve()
+            modified_ns = resolved.stat().st_mtime_ns
+        except OSError as exc:
+            self.track_map_status.set(f"No se puede abrir la telemetría GPS: {exc}")
+            return
+        duration_key = (
+            None
+            if record.reference_time_s is None
+            else int(round(record.reference_time_s * 1000.0))
+        )
+        cache_key = (str(resolved), modified_ns, record.reference_lap, duration_key)
+        cached = self.track_map_cache.get(cache_key)
+        if cached is not None:
+            self.current_track_map = cached
+            self.track_map_status.set(self._track_map_status_text(cached))
+            self._render_track_map()
+            return
+
+        self.track_map_loading = True
+        self.track_map_status.set("Reconstruyendo vuelta GPS en segundo plano…")
+
+        def worker():
+            try:
+                data = load_track_map(
+                    resolved,
+                    preferred_lap=record.reference_lap,
+                    preferred_duration_s=record.reference_time_s,
+                )
+                self.track_map_queue.put((token, "done", (cache_key, data)))
+            except Exception as exc:
+                self.track_map_queue.put(
+                    (token, "error", f"{type(exc).__name__}: {exc}")
+                )
+
+        threading.Thread(target=worker, name="race-engineer-track-map", daemon=True).start()
+        self.root.after(100, self._poll_track_map_queue)
+
+    def _poll_track_map_queue(self):
+        current_completed = False
+        while True:
+            try:
+                token, kind, value = self.track_map_queue.get_nowait()
+            except queue.Empty:
+                break
+            if token != self.track_map_token:
+                continue
+            current_completed = True
+            self.track_map_loading = False
+            if kind == "done":
+                cache_key, data = value
+                self.track_map_cache[cache_key] = data
+                self.current_track_map = data
+                self.track_map_status.set(self._track_map_status_text(data))
+                self._render_track_map()
+            else:
+                self.current_track_map = None
+                self.track_map_canvas.delete("all")
+                self.track_map_status.set(f"Mapa GPS no disponible: {value}")
+        if self.track_map_loading and not current_completed:
+            self.root.after(100, self._poll_track_map_queue)
+
+    @staticmethod
+    def _track_map_status_text(data: TrackMapData) -> str:
+        if data.selection_reason == "REFERENCE_DURATION_MATCH":
+            requested = data.requested_lap if data.requested_lap is not None else data.lap
+            lap_text = (
+                f"referencia {requested} · grupo GPS {data.lap} "
+                f"alineado por duración {format_lap_time(data.duration_s)}"
+            )
+        elif data.selection_reason == "EXACT_GPS_LAP":
+            lap_text = f"vuelta GPS {data.lap} · trazado completo"
+        else:
+            lap_text = f"vuelta GPS completa {data.lap} · selección automática"
+        return (
+            f"{data.track} · {lap_text} · {len(data.points)} puntos · "
+            f"{data.width_m:.0f} × {data.height_m:.0f} m"
+        )
+
+    def _render_track_map(self):
+        canvas = self.track_map_canvas
+        canvas.delete("all")
+        data = self.current_track_map
+        if data is None:
+            return
+        width = max(canvas.winfo_width(), 100)
+        height = max(canvas.winfo_height(), 100)
+        fitted = fit_track_points(data.points, width_px=width, height_px=height)
+        if len(fitted) < 2:
+            return
+        coordinates = [coordinate for point in fitted for coordinate in point]
+        canvas.create_line(
+            *coordinates,
+            fill="#57d9d0",
+            width=4,
+            capstyle="round",
+            joinstyle="round",
+        )
+        start_x, start_y = fitted[0]
+        canvas.create_oval(
+            start_x - 6,
+            start_y - 6,
+            start_x + 6,
+            start_y + 6,
+            fill="#9b263d",
+            outline="#f4a6b4",
+            width=2,
+        )
+        canvas.create_text(
+            start_x + 10,
+            start_y - 10,
+            text="Inicio",
+            fill="#f2f7fb",
+            anchor="sw",
+            font=("Segoe UI", 9),
+        )
+        canvas.create_text(
+            width - 18,
+            16,
+            text="N ↑",
+            fill="#8fa5b8",
+            anchor="ne",
+            font=("Segoe UI Semibold", 10),
+        )
 
     def _open_selected_folder(self):
         from tkinter import messagebox

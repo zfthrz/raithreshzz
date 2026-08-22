@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any
 
 
-UI_MODEL_VERSION = "0.4"
+UI_MODEL_VERSION = "0.5"
 READY_STAGE_STATUSES = {"RUN", "REUSED"}
 FAILED_STAGE_STATUSES = {"FAILED"}
 SESSION_FILTERS = {"ALL", "DEBRIEF_READY", "HISTORY_READY", "FAILED"}
@@ -33,6 +33,8 @@ class SessionRecord:
     debrief_path: Path | None
     historical_path: Path | None
     reference_selection_path: Path | None
+    cross_session_path: Path | None
+    historical_llm_path: Path | None
     database_path: Path | None
     stages: tuple[tuple[str, str], ...]
 
@@ -45,6 +47,7 @@ class SessionDetail:
     laps_text: str
     pipeline_text: str
     historical_reference_text: str
+    historical_comparison_text: str
     warnings: tuple[str, ...]
 
 
@@ -155,6 +158,8 @@ def load_session_record(state_path: Path) -> SessionRecord:
     llm_stage = _dict(stages_payload.get("llm"))
     historical_stage = _dict(stages_payload.get("h5_3"))
     reference_selection_stage = _dict(stages_payload.get("h4"))
+    cross_session_stage = _dict(stages_payload.get("h5_2"))
+    historical_llm_stage = _dict(stages_payload.get("h5_2_llm"))
 
     analysis_path = _existing_path(analyze_stage.get("output"))
     analysis = _json(analysis_path) if analysis_path else {}
@@ -186,6 +191,8 @@ def load_session_record(state_path: Path) -> SessionRecord:
         debrief_path=_existing_path(llm_stage.get("output")),
         historical_path=_existing_path(historical_stage.get("output")),
         reference_selection_path=_existing_path(reference_selection_stage.get("output")),
+        cross_session_path=_existing_path(cross_session_stage.get("output")),
+        historical_llm_path=_existing_path(historical_llm_stage.get("output")),
         database_path=Path(database) if isinstance(database, str) and database else None,
         stages=stages,
     )
@@ -320,6 +327,8 @@ def _pipeline_text(record: SessionRecord) -> str:
         f"Debrief: {record.debrief_path or '—'}",
         f"Histórico H5.3: {record.historical_path or '—'}",
         f"Selección H4: {record.reference_selection_path or '—'}",
+        f"Comparación H5.2: {record.cross_session_path or '—'}",
+        f"Lectura H5.2 LLM: {record.historical_llm_path or '—'}",
         "",
         "Etapas:",
     ]
@@ -365,12 +374,101 @@ def _historical_reference_text(path: Path | None) -> str:
     return "\n".join(lines)
 
 
+def _historical_comparison_text(
+    raw: dict[str, Any],
+    historical_llm: dict[str, Any],
+    *,
+    stage_status: str,
+) -> str:
+    if not raw:
+        return (
+            "Esta sesión no tiene una comparación histórica H5.2 disponible.\n\n"
+            f"Estado de la etapa H5.2: {stage_status}.\n"
+            "Consultá Referencia histórica para ver si H4 encontró una vuelta compatible."
+        )
+
+    status = str(raw.get("status") or "UNKNOWN")
+    context = _dict(raw.get("context"))
+    historical = _dict(raw.get("historical_reference"))
+    current = _dict(raw.get("current_session_reference"))
+    temporal = _dict(raw.get("temporal_validation"))
+    spatial = _dict(raw.get("spatial_comparison"))
+    localization = _dict(spatial.get("localization"))
+    delta = _number(temporal.get("calculated_current_minus_historical_s"))
+    if delta is None:
+        current_time = _number(current.get("duration_s"))
+        historical_time = _number(historical.get("duration_s"))
+        if current_time is not None and historical_time is not None:
+            delta = current_time - historical_time
+    delta_text = f"{delta:+.3f} s" if delta is not None else "—"
+    lines = [
+        f"Estado H5.2: {status}",
+        f"Contexto: {context.get('track', '—')} / {context.get('vehicle_variant', '—')}",
+        "",
+        "Vueltas comparadas:",
+        f"  Histórica: History #{historical.get('session_id', '—')} · "
+        f"vuelta {historical.get('lap', '—')} · "
+        f"{format_lap_time(_number(historical.get('duration_s')))}",
+        f"  Sesión actual: History #{current.get('session_id', '—')} · "
+        f"vuelta {current.get('lap', '—')} · "
+        f"{format_lap_time(_number(current.get('duration_s')))}",
+        f"  Actual - histórica: {delta_text}",
+        "",
+        f"Localización: {localization.get('mode', 'sin perfil')} · "
+        f"{localization.get('profile_status', '—')}",
+    ]
+
+    rendered = str(historical_llm.get("rendered_analysis") or "").strip()
+    if rendered:
+        metadata = _dict(historical_llm.get("metadata"))
+        lines.extend(
+            (
+                "",
+                "Lectura histórica validada:",
+                f"  Backend/modelo: {metadata.get('backend', '—')} / "
+                f"{metadata.get('model', '—')}",
+                "",
+                rendered,
+            )
+        )
+    else:
+        zones = [_dict(value) for value in _list(spatial.get("zone_summaries"))]
+        zones.sort(key=lambda item: _number(item.get("start_distance")) or 0.0)
+        lines.extend(("", f"Zonas deterministas ({len(zones)}), en orden de pista:"))
+        for zone in zones:
+            location = _dict(zone.get("location"))
+            start = _number(zone.get("start_distance"))
+            end = _number(zone.get("end_distance"))
+            change = _number(zone.get("delta_change"))
+            distance_text = (
+                f"{start:.0f}-{end:.0f} m"
+                if start is not None and end is not None
+                else "distancia no disponible"
+            )
+            change_text = f"{change:+.3f} s" if change is not None else "—"
+            lines.append(
+                f"  • {location.get('label') or distance_text}: "
+                f"{zone.get('type', 'observación')} · cambio {change_text}"
+            )
+
+    lines.extend(
+        (
+            "",
+            "Autoridad: comparación observacional. No autoriza acciones y no reemplaza "
+            "la referencia de la sesión.",
+        )
+    )
+    return "\n".join(lines)
+
+
 def load_session_detail(record: SessionRecord) -> SessionDetail:
     warnings = []
     debrief = "Esta sesión todavía no tiene un debrief LLM validado."
     plan = "No hay un plan de próxima tanda disponible."
     laps = "No hay tiempos de vuelta disponibles en el análisis determinista."
     historical_reference = "Esta sesión todavía no tiene una selección H4 disponible."
+    historical_comparison_raw: dict[str, Any] = {}
+    historical_comparison_llm: dict[str, Any] = {}
     if record.debrief_path:
         try:
             payload = _json(record.debrief_path)
@@ -384,6 +482,22 @@ def load_session_detail(record: SessionRecord) -> SessionDetail:
         historical_reference = _historical_reference_text(record.reference_selection_path)
     except (OSError, UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
         warnings.append(f"No se pudo leer la selección H4: {exc}")
+    if record.cross_session_path:
+        try:
+            historical_comparison_raw = _json(record.cross_session_path)
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
+            warnings.append(f"No se pudo leer la comparación H5.2: {exc}")
+    if record.historical_llm_path:
+        try:
+            historical_comparison_llm = _json(record.historical_llm_path)
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
+            warnings.append(f"No se pudo leer la lectura H5.2 LLM: {exc}")
+    stage_status = dict(record.stages).get("h5_2", "NO_EJECUTADA")
+    historical_comparison = _historical_comparison_text(
+        historical_comparison_raw,
+        historical_comparison_llm,
+        stage_status=stage_status,
+    )
     return SessionDetail(
         record=record,
         debrief_markdown=debrief,
@@ -391,5 +505,6 @@ def load_session_detail(record: SessionRecord) -> SessionDetail:
         laps_text=laps,
         pipeline_text=_pipeline_text(record),
         historical_reference_text=historical_reference,
+        historical_comparison_text=historical_comparison,
         warnings=tuple(warnings),
     )

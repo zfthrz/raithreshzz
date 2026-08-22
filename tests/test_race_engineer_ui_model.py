@@ -164,6 +164,60 @@ def test_detail_renders_selected_h4_reference_as_observational(tmp_path: Path):
     assert "no reemplaza la referencia de la sesión" in detail.historical_reference_text
 
 
+def test_detail_renders_h5_2_comparison_and_validated_observation(tmp_path: Path):
+    state_path = make_session(tmp_path, "session-h5-2")
+    raw = write_json(
+        tmp_path / "h5_2" / "comparison.json",
+        {
+            "status": "RAW_CROSS_SESSION_COMPARISON_AVAILABLE",
+            "context": {"track": "Fuji Speedway", "vehicle_variant": "LMP2_ELMS"},
+            "historical_reference": {"session_id": 7, "lap": 8, "duration_s": 90.98},
+            "current_session_reference": {"session_id": 9, "lap": 1, "duration_s": 92.26},
+            "temporal_validation": {"calculated_current_minus_historical_s": 1.28},
+            "spatial_comparison": {
+                "localization": {
+                    "mode": "validated_track_profile",
+                    "profile_status": "VALIDATED_MULTI_SESSION",
+                },
+                "zone_summaries": [],
+            },
+        },
+    )
+    llm = write_json(
+        tmp_path / "h5_2_llm" / "observation.json",
+        {
+            "metadata": {"backend": "deepseek", "model": "deepseek-v4-pro"},
+            "rendered_analysis": "Observación histórica validada sin autoridad de coaching.",
+        },
+    )
+    state = json.loads(state_path.read_text(encoding="utf-8"))
+    state["stages"]["h5_2"] = {"status": "RUN", "output": str(raw)}
+    state["stages"]["h5_2_llm"] = {"status": "RUN", "output": str(llm)}
+    state["last_summary"]["h5_2"] = "RUN"
+    state["last_summary"]["h5_2_llm"] = "RUN"
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+
+    detail = load_session_detail(discover_sessions(tmp_path / "runs")[0][0])
+
+    assert "History #7 · vuelta 8 · 1:30.980" in detail.historical_comparison_text
+    assert "Actual - histórica: +1.280 s" in detail.historical_comparison_text
+    assert "deepseek / deepseek-v4-pro" in detail.historical_comparison_text
+    assert "Observación histórica validada" in detail.historical_comparison_text
+    assert "No autoriza acciones" in detail.historical_comparison_text
+    assert str(raw) in detail.pipeline_text
+    assert str(llm) in detail.pipeline_text
+
+
+def test_detail_explains_when_h5_2_is_not_available(tmp_path: Path):
+    make_session(tmp_path, "session-without-h5-2")
+
+    detail = load_session_detail(discover_sessions(tmp_path / "runs")[0][0])
+
+    assert "no tiene una comparación histórica H5.2" in detail.historical_comparison_text
+    assert "NO_EJECUTADA" in detail.historical_comparison_text
+    assert "Consultá Referencia histórica" in detail.historical_comparison_text
+
+
 def test_malformed_state_is_reported_without_hiding_valid_sessions(tmp_path: Path):
     make_session(tmp_path, "valid")
     broken = tmp_path / "runs" / "broken" / "state.json"
@@ -238,8 +292,8 @@ def test_gui_entry_points_and_documentation_are_present():
     assert (root / "launch_race_engineer_gui.cmd").is_file()
     for relative in ("AGENTS.md", "PROJECT_CONTEXT.md", "PROJECT_STATUS.md", "README.md"):
         source = (root / relative).read_text(encoding="utf-8")
-        assert "race_engineer_gui.py" in source or "RACE_ENGINEER_GUI_V0_6.md" in source
-    assert (root / "docs" / "RACE_ENGINEER_GUI_V0_6.md").is_file()
+        assert "race_engineer_gui.py" in source or "RACE_ENGINEER_GUI_V0_8.md" in source
+    assert (root / "docs" / "RACE_ENGINEER_GUI_V0_8.md").is_file()
     assert "analyze_telemetry_file.py" in (
-        root / "docs" / "RACE_ENGINEER_GUI_V0_6.md"
+        root / "docs" / "RACE_ENGINEER_GUI_V0_8.md"
     ).read_text(encoding="utf-8")

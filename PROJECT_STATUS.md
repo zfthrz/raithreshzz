@@ -284,7 +284,7 @@ LLM episode-prompt shadow checkpoint:
 See `docs/LLM_PROMPT_SHADOW_PROMOTION_GATE_V0_1.md`.
 
 Validation:
-- pytest: `968 PASS / 0 FAIL / 0 SKIP`
+- pytest: `974 PASS / 0 FAIL / 0 SKIP`
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP`
 - Objective recovery check: `READY`
 
@@ -345,6 +345,20 @@ file the user explicitly wants to analyze immediately. The flag skips only file
 age: LMU-running, authorized root, DuckDB/History, 5 MiB, History-first and two
 valid lap gates remain mandatory. Automatic ingest is unchanged. See
 `docs/RACE_ENGINEER_GUI_V0_6.md`.
+
+GUI v0.7 adds a read-only **Comparación histórica** tab. It renders the H5.2 raw
+lap identities, times, current-minus-historical delta and localization, then shows
+the validated H5.2 LLM observation when available. Missing/non-applicable sessions
+retain their exact stage status. The tab never authorizes historical actions or
+replaces the current-session reference. See `docs/RACE_ENGINEER_GUI_V0_7.md`.
+
+GUI v0.8 adds a read-only **Mapa** tab reconstructed from the selected session's
+native LMU GPS channels. Extraction runs in a background thread, prefers the current
+reference lap, caches by DuckDB mtime/lap and preserves local XY plus LMU Lap Dist
+per point for later H5.2/track-profile zone overlays. Analysis reference laps are
+matched to native GPS groups by duration; incomplete tails fail the completeness
+gate instead of being drawn as a circuit. No CSV/GeoJSON is written.
+See `docs/RACE_ENGINEER_GUI_V0_8.md`.
 
 Calibration batch orchestrator `1.5` requires the current History schema 4 contract,
 reports its runtime version consistently and has a regression test against schema drift.

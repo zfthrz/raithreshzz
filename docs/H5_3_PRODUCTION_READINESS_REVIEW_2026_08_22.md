@@ -26,7 +26,7 @@ show historical instructions to the driver as production coaching.
 - Deduplicated action-review queue: 15 review items from 18 source occurrences
   (13 authorized shadow-action shapes and 2 withheld shapes). These cover Imola,
   Fuji and Interlagos; the current runtime action artifacts do not cover Monza.
-- Full repository suite after the review-queue slice: 990 passed.
+- Full repository suite after the review-labeling slice: 995 passed.
 - Authority in every inspected action artifact remained false.
 
 No generated artifact was changed or regenerated during this review.
@@ -49,18 +49,20 @@ boolean validation flags recorded in a manifest. It does not measure whether the
 closed actions are consistently useful to a driver, nor does it require independent
 human review of each action direction and context.
 
-The documented human review contains nine candidates from one Imola session:
-eight accepted and one rejected. That rejection supports the specific rule that
-isolated `current_throttle_higher` is insufficient context. It does not support a
-general rule for every isolated throttle/brake direction. Documentation claiming
-the broader rule was corrected to match the implemented and reviewed contract.
+The first documented human review contains nine candidates from one Imola session:
+eight accepted and one rejected. Review round 2 then completed all 15 deduplicated
+runtime action items representing 18 occurrences across Imola, Interlagos and Fuji:
+13 `ACTION_USEFUL` and 2 `CORRECTLY_WITHHELD`, with no unsafe or ambiguous labels.
+The rejected/withheld evidence supports the specific rule that isolated
+`current_throttle_higher` is insufficient context. It does not support a general
+rule for every isolated throttle/brake direction. Documentation claiming the broader
+rule was corrected to match the implemented and reviewed contract.
 
 ## Remaining blockers
 
-1. Review the existing real action candidates from Fuji and Interlagos, not only
-   Imola, and obtain a valid Monza runtime action artifact before claiming four-track
+1. Obtain a valid Monza runtime action artifact before claiming four-track
    action-review coverage.
-2. Cover each isolated action direction and representative mixed-channel cases.
+2. Cover missing isolated action directions, especially brake-only cases.
 3. Record whether the proposed instruction is useful, merely observational,
    ambiguous or unsafe in its exact historical context.
 4. Upgrade the promotion assessment so it consumes current validated artifacts and
@@ -72,9 +74,12 @@ the broader rule was corrected to match the implemented and reviewed contract.
 
 The first part is now implemented by `prepare_h5_3_action_review_queue.py`: it builds
 a read-only queue from the existing validated shadow outputs, groups semantically
-equivalent candidates and preserves every source occurrence. Human labels remain a
-separate future artifact. Do not alter action policy thresholds or production
-rendering in this slice.
+equivalent candidates and preserves every source occurrence.
+`label_h5_3_action_review_queue.py` and
+`validate_h5_3_action_review_labels.py` add resumable, separately hashed human
+labels with decision-specific closed vocabularies. Review round 2 completed 15/15
+items and passed validation. These labels do not alter action policy thresholds or
+production rendering.
 
 Only after that review passes should the project revisit a narrowly scoped,
 explicit production integration decision.

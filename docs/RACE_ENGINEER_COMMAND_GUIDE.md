@@ -238,6 +238,39 @@ python race_engineer.py analyze "telemetria\ARCHIVO.duckdb"
 Remove-Item Env:\H5_3_SHADOW_ENABLED
 ```
 
+### Revisar acciones H5.3 en shadow
+
+Este flujo no llama a ningún LLM ni cambia el debrief. Primero prepara una cola
+deduplicada desde todos los `historical_actions.json` válidos:
+
+```powershell
+python prepare_h5_3_action_review_queue.py `
+  --input-root "data\generated\h5_3_shadow" `
+  --output "data\generated\h5_3\action_review_queue.json"
+```
+
+Después abre la revisión interactiva. Cada respuesta se guarda inmediatamente y el
+comando puede cerrarse con `q` y retomarse más adelante:
+
+```powershell
+python label_h5_3_action_review_queue.py `
+  "data\generated\h5_3\action_review_queue.json" `
+  --labels "data\generated\h5_3\action_review_labels.json" `
+  --reviewer "thres"
+```
+
+Al terminar —o para comprobar un avance parcial— validar los labels:
+
+```powershell
+python validate_h5_3_action_review_labels.py `
+  "data\generated\h5_3\action_review_queue.json" `
+  "data\generated\h5_3\action_review_labels.json"
+```
+
+Un `PASS` con advertencia de pendientes significa que el archivo es consistente,
+pero la revisión todavía no terminó. Estos labels siguen siendo evidencia humana
+shadow y nunca activan `historical_actions_authorized`.
+
 ### Auditar estructura de cues del plan sin cambiar prioridades
 
 ```powershell

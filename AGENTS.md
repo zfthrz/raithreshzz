@@ -51,6 +51,9 @@ python race_engineer.py analyze "telemetria\ARCHIVO.duckdb" --backend ollama
 - A throttle physical point remains a concise cue; its reference sequence is a separate
   secondary cue when capacity allows. Actionability audit counts are shadow evidence and
   cannot authorize a brake/throttle channel preference or complexity score.
+- H5.4 P10/P11 are presentation-only projections. They never mutate or re-authorize
+  `next_stint_plan`; a consumer may expose P11 focus only when its count and plan-label
+  subset are consistent, otherwise it must fall back to the complete validated plan.
 - H2 matcher v0.3 is provisional/context-limited, not a universal multi-track matcher.
 - H3 is calibration-derived and is not forced on every per-session run.
 - H5.3 remains ROADMAP_ONLY; H5.3a/b/c are implemented shadow-only and never
@@ -66,7 +69,7 @@ Checkpoint: 2026-08-18 automation + H5.3 shadow + local LLM backends.
 
 ```text
 race_engineer.py             orchestrator 0.3
-race_engineer_gui.py         desktop session hub 1.3 / zoomable 10 Hz telemetry chart
+race_engineer_gui.py         desktop session hub 1.4 / deterministic P11 driver focus
 analyze_telemetry.py         3.8 + Objective Python v6
 llm_analysis*.py             3.10.8.5.4
 llm_analysis_llamacpp.py     3.10.8.5.4 / llama.cpp local (default qwen3-14b)
@@ -87,7 +90,7 @@ historical_action_policy.py           H5.3 action candidates 0.2 / shadow only
 Validated integration checkpoint:
 
 ```text
-pytest:                         985 PASS / 0 FAIL / 0 SKIP
+pytest:                         987 PASS / 0 FAIL / 0 SKIP
 Objective Python regressions:  55 PASS / 0 FAIL / 0 SKIP
 ```
 

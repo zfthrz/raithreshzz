@@ -5,11 +5,61 @@ from dataclasses import replace
 from pathlib import Path
 
 from race_engineer_ui_model import (
+    _plan_text,
     discover_sessions,
     filter_sessions,
     format_lap_time,
     load_session_detail,
 )
+
+
+def test_driver_focus_precedes_complete_plan_when_p11_is_consistent():
+    items = [
+        {
+            "plan_label": label,
+            "track_location": {"label": f"T{index}"},
+            "driver_cues": [{"text": f"Cue {label}"}],
+        }
+        for index, label in enumerate(("A", "B", "C"), start=1)
+    ]
+    facts = {
+        "next_stint_plan": items,
+        "next_stint_focus": {
+            "status": "ACTIVE",
+            "focus_count": 2,
+            "items": [items[1], items[2]],
+        },
+    }
+
+    text = _plan_text(facts)
+    focus_text, complete_text = text.split("PLAN COMPLETO VALIDADO")
+
+    assert focus_text.startswith("FOCO DEL PILOTO")
+    assert focus_text.index("Zona B") < focus_text.index("Zona C")
+    assert "Zona A" not in focus_text
+    assert all(f"Zona {label}" in complete_text for label in ("A", "B", "C"))
+
+
+def test_inconsistent_driver_focus_falls_back_to_complete_plan():
+    item = {
+        "plan_label": "A",
+        "track_location": {"label": "T1"},
+        "driver_cues": [{"text": "Cue A"}],
+    }
+
+    text = _plan_text(
+        {
+            "next_stint_plan": [item],
+            "next_stint_focus": {
+                "status": "ACTIVE",
+                "focus_count": 2,
+                "items": [item],
+            },
+        }
+    )
+
+    assert "FOCO DEL PILOTO" not in text
+    assert "Zona A" in text
 
 
 def write_json(path: Path, payload: dict) -> Path:
@@ -307,8 +357,8 @@ def test_gui_entry_points_and_documentation_are_present():
     assert (root / "launch_race_engineer_gui.cmd").is_file()
     for relative in ("AGENTS.md", "PROJECT_CONTEXT.md", "PROJECT_STATUS.md", "README.md"):
         source = (root / relative).read_text(encoding="utf-8")
-        assert "race_engineer_gui.py" in source or "RACE_ENGINEER_GUI_V1_3.md" in source
-    assert (root / "docs" / "RACE_ENGINEER_GUI_V1_3.md").is_file()
+        assert "race_engineer_gui.py" in source or "RACE_ENGINEER_GUI_V1_4.md" in source
+    assert (root / "docs" / "RACE_ENGINEER_GUI_V1_4.md").is_file()
     assert (root / "docs" / "RACE_ENGINEER_GUI_V1_0.md").is_file()
     assert "analyze_telemetry_file.py" in (
         root / "docs" / "RACE_ENGINEER_GUI_V1_0.md"

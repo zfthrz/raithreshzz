@@ -536,6 +536,13 @@ authorize a channel preference or complexity score. The v1.7 Monza deterministic
 rerender preserved A/B/C order and moved the supported throttle sequence in zone B
 from the physical-point sentence into `Segundo cue`.
 
+H5.4 P10/P11 are deterministic presentation projections over the already authorized
+plan. P11 exposes at most two focus items from the P10 presentation order and never
+mutates, filters or re-authorizes `next_stint_plan`. GUI v1.4 presents that focus only
+when its count, unique labels and complete-plan subset are consistent; otherwise it
+falls back to the original three-zone plan. The complete validated plan always remains
+visible for traceability.
+
 This is an active product-quality topic, not a settled algorithmic rule.
 
 ---
@@ -1125,7 +1132,7 @@ do not need to be copied into the repository.
 The desktop entry point is `RaceEngineer.pyw` (implementation:
 `race_engineer_gui.py`). Its catalogue is owned by `race_engineer_ui_model.py` and
 uses orchestrator `state.json` rather than scanning result filenames heuristically.
-GUI v1.3 can search/filter sessions and inspect deterministic lap times, validated debriefs,
+GUI v1.4 can search/filter sessions and inspect deterministic lap times, validated debriefs,
 next-stint plans, pipeline statuses, schema-4 History and the exact H4
 historical-reference selection, plus the raw and validated observational H5.2
 historical comparison. It also reconstructs a read-only GPS circuit map from the
@@ -1148,7 +1155,9 @@ is shaded without changing the source evidence. The visual alignment runs at 10 
 the chart supports pointer-anchored wheel zoom, `Shift + wheel` pan, full-lap reset
 and automatic window following when the map marker leaves the visible span. All
 windows remain clamped to the selected complete lap. This inspection is
-read-only and cannot create or reprioritize coaching. A valid debrief remains available when a later
+read-only and cannot create or reprioritize coaching. The next-stint tab and GPS map
+also distinguish a consistent H5.4 P11 two-item driver focus from the preserved
+complete plan; inconsistent/legacy P11 data fails back to the complete plan. A valid debrief remains available when a later
 historical pipeline stage fails, as proven by `llm_validator` RUN/REUSED.
 History, telemetry and generated artifacts are opened
 read-only. Non-secret DeepSeek and
@@ -1159,7 +1168,7 @@ streaming progress. A per-run, opt-in override can omit only the 10-minute
 file-age wait; LMU-running, authorized-root, telemetry type, 5 MiB and two-valid-lap
 gates remain mandatory. The scheduled automatic ingest never uses this override.
 The launcher remains the sole safety authority and the GUI never offers
-cancellation. See `docs/RACE_ENGINEER_GUI_V1_3.md`.
+cancellation. See `docs/RACE_ENGINEER_GUI_V1_4.md`.
 
 The scheduled task must execute `hidden_history_ingest.py` through `pythonw.exe`.
 That wrapper preserves the same maintenance arguments, creates no console window and

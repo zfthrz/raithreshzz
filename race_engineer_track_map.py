@@ -28,7 +28,7 @@ from extract_lmu_track_gps import (
 )
 
 
-TRACK_MAP_VERSION = "0.6"
+TRACK_MAP_VERSION = "0.7"
 
 
 @dataclass(frozen=True)
@@ -72,6 +72,7 @@ class TrackMapPriority:
     start_distance_m: float
     end_distance_m: float
     cues: tuple[str, ...]
+    is_focus: bool = False
 
 
 @dataclass(frozen=True)
@@ -615,6 +616,21 @@ def load_track_priorities(path: Path | None) -> tuple[TrackMapPriority, ...]:
     values = facts.get("next_stint_plan")
     if not isinstance(values, list):
         return ()
+    focus = facts.get("next_stint_focus")
+    focus = focus if isinstance(focus, dict) else {}
+    focus_items = focus.get("items") if focus.get("status") == "ACTIVE" else []
+    focus_items = focus_items if isinstance(focus_items, list) else []
+    focus_ids = {
+        str(item.get("plan_label"))
+        for item in focus_items
+        if isinstance(item, dict) and item.get("plan_label") is not None
+    }
+    try:
+        focus_count = int(focus.get("focus_count"))
+    except (TypeError, ValueError):
+        focus_count = 0
+    if not (1 <= len(focus_items) <= 2 and focus_count == len(focus_items)):
+        focus_ids = set()
     priorities = []
     for index, value in enumerate(values, start=1):
         if not isinstance(value, dict):
@@ -648,6 +664,7 @@ def load_track_priorities(path: Path | None) -> tuple[TrackMapPriority, ...]:
                 start_distance_m=start,
                 end_distance_m=end,
                 cues=tuple(cues),
+                is_focus=priority_id in focus_ids,
             )
         )
     priorities.sort(

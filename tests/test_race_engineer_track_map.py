@@ -368,6 +368,11 @@ def test_validated_next_stint_priorities_map_to_gps_intervals(tmp_path: Path):
         json.dumps(
             {
                 "session_coaching_facts": {
+                    "next_stint_focus": {
+                        "status": "ACTIVE",
+                        "focus_count": 1,
+                        "items": [{"plan_label": "B"}],
+                    },
                     "next_stint_plan": [
                         {
                             "plan_label": "B",
@@ -399,6 +404,8 @@ def test_validated_next_stint_priorities_map_to_gps_intervals(tmp_path: Path):
     assert [priority.priority_id for priority in priorities] == ["A", "B"]
     assert priorities[0].label == "T1"
     assert priorities[0].cues == ("Frená hacia la referencia",)
+    assert priorities[0].is_focus is False
+    assert priorities[1].is_focus is True
     assert priority_for_distance(priorities, 530).priority_id == "B"
     assert priority_for_distance(priorities, 400) is None
     assert zone_point_ranges(points, priorities[0]) == ((1, 3),)

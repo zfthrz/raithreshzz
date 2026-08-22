@@ -284,7 +284,7 @@ LLM episode-prompt shadow checkpoint:
 See `docs/LLM_PROMPT_SHADOW_PROMOTION_GATE_V0_1.md`.
 
 Validation:
-- pytest: `985 PASS / 0 FAIL / 0 SKIP`
+- pytest: `987 PASS / 0 FAIL / 0 SKIP`
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP`
 - Objective recovery check: `READY`
 
@@ -396,6 +396,15 @@ window follows the draggable map marker when it exits the visible span. Zoom nev
 changes source samples, zones, priorities or coaching authority. The real Imola
 smoke test rendered 967 points and retained 194 samples per channel in a 20% window.
 See `docs/RACE_ENGINEER_GUI_V1_3.md`.
+
+GUI v1.4 surfaces the deterministic H5.4 P11 driver focus before the complete
+validated next-stint plan. It accepts only an `ACTIVE` one/two-item focus whose count,
+unique labels and plan subset are consistent; older or inconsistent artifacts fall
+back to the original plan. Focus intervals use bright heavy blue on the GPS map and
+non-focus plan intervals remain muted blue. Five recent real debriefs expose valid
+two-item focus; the latest Imola view rendered A/C focus over the preserved A/C/B
+plan. No ranking, cue or coaching authority changes. See
+`docs/RACE_ENGINEER_GUI_V1_4.md`.
 
 Calibration batch orchestrator `1.5` requires the current History schema 4 contract,
 reports its runtime version consistently and has a regression test against schema drift.

@@ -58,7 +58,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.3"
+GUI_VERSION = "1.4"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 PROJECT_ROOT = Path(__file__).resolve().parent
 BACKEND_LABELS = {
@@ -821,9 +821,11 @@ class RaceEngineerApp:
             return
         losses = sum(zone.kind == "loss" for zone in zones)
         gains = sum(zone.kind == "gain" for zone in zones)
+        focuses = sum(priority.is_focus for priority in priorities)
         text = (
             f"Zonas H5.2: {len(zones)} · pérdidas: {losses} · ganancias: {gains} · "
-            f"prioridades: {len(priorities)} · hacé clic en un tramo para ver el detalle."
+            f"focos: {focuses} · plan completo: {len(priorities)} · "
+            "hacé clic en un tramo para ver el detalle."
         )
         if errors:
             text += " · " + "; ".join(errors)
@@ -880,8 +882,9 @@ class RaceEngineerApp:
         if priority is not None:
             self.selected_track_overlay = ("priority", priority.priority_id)
             cue_text = "; ".join(priority.cues) or "sin cue textual disponible"
+            priority_kind = "Foco" if priority.is_focus else "Plan"
             self.track_map_zone_status.set(
-                f"Prioridad {priority.priority_id} · {priority.label} · "
+                f"{priority_kind} {priority.priority_id} · {priority.label} · "
                 f"{priority.start_distance_m:.0f}-{priority.end_distance_m:.0f} m · "
                 f"{cue_text}"
             )
@@ -1049,8 +1052,12 @@ class RaceEngineerApp:
                 segment_coordinates = [value for point in segment for value in point]
                 canvas.create_line(
                     *segment_coordinates,
-                    fill="#f4f7fb" if selected else "#4da3ff",
-                    width=9 if selected else 7,
+                    fill=(
+                        "#f4f7fb"
+                        if selected
+                        else "#62b6ff" if priority.is_focus else "#315f8f"
+                    ),
+                    width=9 if selected else 8 if priority.is_focus else 5,
                     capstyle="round",
                     joinstyle="round",
                 )
@@ -1087,7 +1094,10 @@ class RaceEngineerApp:
                     (("#e45a5a", 5, "Pérdida"), ("#45c98c", 5, "Ganancia"))
                 )
             if self.current_track_priorities:
-                legend_rows.append(("#4da3ff", 7, "Prioridad"))
+                if any(priority.is_focus for priority in self.current_track_priorities):
+                    legend_rows.append(("#62b6ff", 8, "Foco"))
+                if any(not priority.is_focus for priority in self.current_track_priorities):
+                    legend_rows.append(("#315f8f", 5, "Plan"))
             legend_height = 20 + 19 * len(legend_rows)
             canvas.create_rectangle(
                 14, 13, 130, legend_height, fill="#151515", outline="#333333"

@@ -263,8 +263,45 @@ def _plan_text(facts: dict[str, Any]) -> str:
     items = _list(facts.get("next_stint_plan"))
     if not items:
         return "No hay un plan de próxima tanda disponible."
+    focus = _dict(facts.get("next_stint_focus"))
+    focus_items = (
+        _list(focus.get("items"))
+        if focus.get("status") == "ACTIVE"
+        else []
+    )
+    plan_labels = {
+        str(_dict(item).get("plan_label"))
+        for item in items
+        if _dict(item).get("plan_label") is not None
+    }
+    focus_labels = [
+        str(_dict(item).get("plan_label"))
+        for item in focus_items
+        if _dict(item).get("plan_label") is not None
+    ]
+    focus_is_consistent = (
+        1 <= len(focus_items) <= 2
+        and _integer(focus.get("focus_count")) == len(focus_items)
+        and len(focus_labels) == len(focus_items)
+        and len(set(focus_labels)) == len(focus_labels)
+        and set(focus_labels).issubset(plan_labels)
+    )
+    if focus_is_consistent:
+        focus_text = _plan_items_text(focus_items[:2])
+        complete_text = _plan_items_text(items[:3])
+        return (
+            "FOCO DEL PILOTO\n"
+            "Trabajá primero estas dos zonas:\n\n"
+            f"{focus_text}\n\n"
+            "PLAN COMPLETO VALIDADO\n\n"
+            f"{complete_text}"
+        )
+    return _plan_items_text(items[:3])
+
+
+def _plan_items_text(items: list[Any]) -> str:
     sections = []
-    for index, value in enumerate(items[:3], start=1):
+    for index, value in enumerate(items, start=1):
         item = _dict(value)
         label = str(item.get("plan_label") or index)
         location = _dict(item.get("track_location"))

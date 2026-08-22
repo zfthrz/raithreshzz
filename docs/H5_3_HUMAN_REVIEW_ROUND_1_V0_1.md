@@ -65,14 +65,14 @@ Vocabulary closed: brake/throttle adjustments only (no speed, no time)
 Anti-regression: only current_slower generates actions
 Anti-regression: current_faster → WITHHELD (reason: "current_lap_faster_no_actions")
 New rule (Point 6): isolated current_throttle_higher → WITHHELD (reason: "insufficient_action_context")
-New rule (Point 6): isolated current_brake_lower → WITHHELD (reason: "insufficient_action_context")
 Observation classification: mappable / non_mappable / unknown
 Unknown observation codes → validation failure
 Duplicate candidate_id detection → validation failure
 ```
 
-**Isolated throttle/brake codes are not sufficient action context without
-a complementary code from the other channel.**
+**The reviewed isolated `current_throttle_higher` case is not sufficient action
+context without a complementary brake code.** Other isolated throttle/brake
+directions were not rejected by this review and remain unchanged pending evidence.
 
 ### Observation-to-action mapping (v0.2)
 
@@ -87,12 +87,12 @@ current_brake_lower     → increase_brake
 
 ```text
 Mappable codes = {"current_throttle_higher"} → WITHHELD (insufficient_action_context)
-Mappable codes = {"current_throttle_lower"}  → WITHHELD (insufficient_action_context)
-Mappable codes = {"current_brake_higher"}    → WITHHELD (insufficient_action_context)
-Mappable codes = {"current_brake_lower"}     → WITHHELD (insufficient_action_context)
 ```
 
-These are insufficient alone. Combined cases (e.g. `current_throttle_higher + current_brake_lower`) remain authorized.
+This reviewed direction is insufficient alone. Combined cases (e.g.
+`current_throttle_higher + current_brake_lower`) remain authorized. The other
+isolated directions remain authorized by v0.2 until human review provides a basis
+for a narrower rule.
 
 ### Code classification
 

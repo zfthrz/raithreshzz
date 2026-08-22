@@ -2,11 +2,12 @@
 
 ## Current integration checkpoint
 
-Checkpoint: **2026-08-22** / `main` commit `fb91b12`.
+Checkpoint: **2026-08-22** / published `main` commit `e8eccb4` plus the focused
+H5.3 readiness review described below.
 
 Validated baseline:
 
-- full pytest: `987 PASS / 0 FAIL / 0 SKIP`;
+- full pytest: `990 PASS / 0 FAIL / 0 SKIP`;
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP` (last analyzer-affecting checkpoint);
 - GUI: v1.4, deterministic H5.4 P11 focus over the preserved complete plan;
 - H5.3: shadow implementation complete, production historical actions still disabled.
@@ -43,10 +44,12 @@ Current: deterministic P1–P11 implemented in the canonical LLM backends.
 - five recent real debriefs exposed `ACTIVE / 2` focus, while older artifacts safely
   fall back to the complete plan.
 
-The next product decision is not another precision-policy patch. It is a controlled
-review of whether H5.3 historical coaching should move beyond shadow. Do not enable
-`historical_actions_authorized` merely because the existing promotion manifest says
-`PROMOTION_READY`.
+The controlled production-readiness review concluded **KEEP SHADOW**. The existing
+`PROMOTION_READY` manifest proves structural multitrack coverage, not enough reviewed
+action quality for driver-facing production. The current six action artifacts and
+seven historical sections validate, but human review still covers only nine
+candidates from one Imola session. Do not enable `historical_actions_authorized`.
+See `docs/H5_3_PRODUCTION_READINESS_REVIEW_2026_08_22.md`.
 
 ### history
 Current: `session_history v1.4 / schema 4`

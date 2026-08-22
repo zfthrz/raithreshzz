@@ -87,6 +87,21 @@ KNOWN_OBSERVATION_CODES = frozenset(
     OBSERVATION_TO_ACTION.keys()
 ) | KNOWN_NON_MAPPABLE_CODES
 
+# Closed vocabulary shared with validate_historical_actions.py.  Keeping the
+# reason contract beside the producer prevents a valid deterministic output
+# from being rejected because the validator retained an older local copy.
+ALLOWED_WITHHELD_REASON_CODES = frozenset({
+    "current_lap_faster_no_actions",
+    "no_mappable_actions",
+    "insufficient_action_context",
+    "missing_context",
+    "invalid_geometry",
+    "insignificant_delta",
+    "not_comparable",
+    "ambiguous_localization",
+    "ambiguous_human_label",
+})
+
 
 def sha256_file(path: Path) -> str:
     digest = hashlib.sha256()

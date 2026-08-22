@@ -35,6 +35,7 @@ from historical_action_policy import (
     ACTION_TEXT,
     KNOWN_OBSERVATION_CODES,
     KNOWN_NON_MAPPABLE_CODES,
+    ALLOWED_WITHHELD_REASON_CODES,
     build_action_candidates,
 )
 from validate_historical_actions import validate
@@ -513,6 +514,8 @@ def test_throttle_higher_alone_withheld_insufficient_action_context(tmp_path: Pa
     assert len(output["withheld"]) == 1
     assert output["withheld"][0]["candidate_id"] == "slow:cand_throttle_higher"
     assert output["withheld"][0]["reason"] == "insufficient_action_context"
+    assert "insufficient_action_context" in ALLOWED_WITHHELD_REASON_CODES
+    assert validate(output) == []
 
 
 def test_throttle_higher_plus_speed_time_still_withheld(tmp_path: Path):

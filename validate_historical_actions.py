@@ -31,21 +31,13 @@ from historical_action_policy_v0_2 import (
     ACTION_TEXT,
     KNOWN_OBSERVATION_CODES,
     KNOWN_NON_MAPPABLE_CODES,
+    ALLOWED_WITHHELD_REASON_CODES,
     build_action_candidates,
     sha256_file,
 )
 
 
-ALLOWED_REASON_CODES = frozenset({
-    "current_lap_faster_no_actions",
-    "no_mappable_actions",
-    "missing_context",
-    "invalid_geometry",
-    "insignificant_delta",
-    "not_comparable",
-    "ambiguous_localization",
-    "ambiguous_human_label",
-})
+ALLOWED_REASON_CODES = ALLOWED_WITHHELD_REASON_CODES
 
 ALLOWED_POLICIES = frozenset({
     "closed_action_vocabulary",

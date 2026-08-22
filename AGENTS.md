@@ -87,7 +87,7 @@ historical_action_policy.py           H5.3 action candidates 0.2 / shadow only
 Validated integration checkpoint:
 
 ```text
-pytest:                         946 PASS / 0 FAIL / 0 SKIP
+pytest:                         947 PASS / 0 FAIL / 0 SKIP
 Objective Python regressions:  55 PASS / 0 FAIL / 0 SKIP
 ```
 

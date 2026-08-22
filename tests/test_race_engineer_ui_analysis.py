@@ -7,6 +7,7 @@ import pytest
 
 from race_engineer_ui_analysis import (
     build_analysis_plan,
+    classify_analysis_completion,
     console_python_executable,
     stream_analysis,
     validate_analysis_candidate,
@@ -105,3 +106,13 @@ def test_gui_candidate_requires_an_existing_duckdb(tmp_path: Path):
     text.write_text("{}", encoding="utf-8")
     with pytest.raises(ValueError, match="DuckDB"):
         validate_analysis_candidate(text)
+
+
+def test_completion_preserves_a_valid_debrief_after_late_failure():
+    assert classify_analysis_completion(0) == "PASS"
+    assert classify_analysis_completion(2, validated_debrief_available=True) == "BLOCKED"
+    assert (
+        classify_analysis_completion(1, validated_debrief_available=True)
+        == "RECOVERED_VALID_DEBRIEF"
+    )
+    assert classify_analysis_completion(1) == "FAILED"

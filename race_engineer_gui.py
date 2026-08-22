@@ -20,6 +20,7 @@ from race_engineer_ui_model import (
 )
 from race_engineer_ui_analysis import (
     build_analysis_plan,
+    classify_analysis_completion,
     stream_analysis,
     validate_analysis_candidate,
 )
@@ -564,22 +565,46 @@ class RaceEngineerApp:
         self.analyze_button.configure(state="normal")
         self.backend_combo.configure(state="readonly")
         self.refresh_button.configure(state="normal")
-        if return_code == 0:
+        database = self.analysis_database
+        self.refresh(preferred_database=database)
+        selected = self.selected_record()
+        validated_debrief_available = bool(
+            database is not None
+            and selected is not None
+            and selected.database_path is not None
+            and selected.database_path.resolve() == database.resolve()
+            and selected.status == "DEBRIEF_READY"
+        )
+        outcome = classify_analysis_completion(
+            return_code,
+            validated_debrief_available=validated_debrief_available,
+        )
+        if outcome == "PASS":
             self.execution_status.set("Análisis terminado correctamente")
             self._append_execution_line("\nGUI RESULT: PASS")
-            database = self.analysis_database
-            self.refresh(preferred_database=database)
+            self.notebook.select(self.debrief_text.master)
             messagebox.showinfo(
                 "Race Engineer",
                 "El análisis terminó correctamente y la lista fue actualizada.",
                 parent=self.root,
             )
-        elif return_code == 2:
+        elif outcome == "BLOCKED":
             self.execution_status.set("Análisis bloqueado de forma segura")
             self._append_execution_line("\nGUI RESULT: BLOCKED")
             messagebox.showwarning(
                 "Race Engineer",
                 "El launcher bloqueó el análisis. Revisá la pestaña Ejecución.",
+                parent=self.root,
+            )
+        elif outcome == "RECOVERED_VALID_DEBRIEF":
+            self.execution_status.set("Debrief válido recuperado; pipeline incompleto")
+            self._append_execution_line("\nGUI RESULT: RECOVERED_VALID_DEBRIEF")
+            self.notebook.select(self.debrief_text.master)
+            messagebox.showwarning(
+                "Race Engineer",
+                "El proceso informó un error posterior, pero el debrief ya había sido "
+                "guardado y validado. Se muestra el resultado recuperado; revisá Pipeline "
+                "para comprobar si quedó alguna etapa posterior pendiente.",
                 parent=self.root,
             )
         else:

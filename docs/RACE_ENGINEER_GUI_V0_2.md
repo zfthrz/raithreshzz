@@ -51,6 +51,10 @@ reports that condition and does not guess another file with a similar name.
   accidental interruption or loss of visible progress.
 - Launcher exit `0` is shown as PASS, exit `2` as a safe BLOCKED result and any
   other exit as FAILED.
+- A PASS refreshes the selected session and opens its Debrief tab automatically.
+- If a process reports a late error after its debrief was already saved and
+  validated, the GUI exposes it as `RECOVERED_VALID_DEBRIEF` and keeps any
+  unfinished downstream pipeline stages visible for inspection.
 - Standard output and errors are merged into the visible execution log.
 - The GUI forces UTF-8 for the launcher and all descendant Python processes,
   preventing Windows CP1252 console errors on arrows and accented text after a

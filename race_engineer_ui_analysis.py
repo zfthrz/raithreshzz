@@ -77,6 +77,22 @@ def validate_analysis_candidate(database_path: Path) -> Path:
     return database
 
 
+def classify_analysis_completion(
+    return_code: int,
+    *,
+    validated_debrief_available: bool = False,
+) -> str:
+    """Classify completion without hiding a valid debrief saved before failure."""
+
+    if return_code == 0:
+        return "PASS"
+    if return_code == 2:
+        return "BLOCKED"
+    if validated_debrief_available:
+        return "RECOVERED_VALID_DEBRIEF"
+    return "FAILED"
+
+
 def stream_analysis(
     plan: AnalysisLaunchPlan,
     on_line: Callable[[str], None],

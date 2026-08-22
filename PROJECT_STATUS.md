@@ -284,7 +284,7 @@ LLM episode-prompt shadow checkpoint:
 See `docs/LLM_PROMPT_SHADOW_PROMOTION_GATE_V0_1.md`.
 
 Validation:
-- pytest: `946 PASS / 0 FAIL / 0 SKIP`
+- pytest: `947 PASS / 0 FAIL / 0 SKIP`
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP`
 - Objective recovery check: `READY`
 

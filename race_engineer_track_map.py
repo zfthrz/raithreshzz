@@ -28,7 +28,7 @@ from extract_lmu_track_gps import (
 )
 
 
-TRACK_MAP_VERSION = "0.5"
+TRACK_MAP_VERSION = "0.6"
 
 
 @dataclass(frozen=True)
@@ -103,7 +103,7 @@ def load_track_map(
     *,
     preferred_lap: int | None = None,
     preferred_duration_s: float | None = None,
-    target_hz: float = 5.0,
+    target_hz: float = 10.0,
     connect_factory: Callable = duckdb.connect,
 ) -> TrackMapData:
     """Extract one GPS lap without modifying or exporting the source DuckDB."""
@@ -406,6 +406,8 @@ def build_track_telemetry_chart(
     right_px: int = 18,
     top_px: int = 12,
     bottom_px: int = 12,
+    start_distance_m: float | None = None,
+    end_distance_m: float | None = None,
 ) -> TrackTelemetryChart | None:
     """Fit native channels into three deterministic distance-based chart lanes."""
 
@@ -416,8 +418,22 @@ def build_track_telemetry_chart(
     ]
     if not valid_distances or width_px <= left_px + right_px or height_px <= top_px + bottom_px:
         return None
-    distance_min = min(valid_distances)
-    distance_max = max(valid_distances)
+    full_distance_min = min(valid_distances)
+    full_distance_max = max(valid_distances)
+    if full_distance_max <= full_distance_min:
+        return None
+    distance_min = (
+        full_distance_min
+        if start_distance_m is None
+        else max(full_distance_min, float(start_distance_m))
+    )
+    distance_max = (
+        full_distance_max
+        if end_distance_m is None
+        else min(full_distance_max, float(end_distance_m))
+    )
+    if not math.isfinite(distance_min) or not math.isfinite(distance_max):
+        return None
     if distance_max <= distance_min:
         return None
     speeds = [
@@ -443,6 +459,8 @@ def build_track_telemetry_chart(
             if distance is None or value is None:
                 continue
             if not math.isfinite(distance) or not math.isfinite(value):
+                continue
+            if not distance_min <= float(distance) <= distance_max:
                 continue
             normalized = min(max(float(value) / maximum, 0.0), 1.0)
             result.append((x_for(float(distance)), lane_top + (1.0 - normalized) * lane_height))
@@ -475,6 +493,51 @@ def telemetry_chart_x_for_distance(
     return left_px + (clamped - chart.distance_min_m) / span * (
         width_px - left_px - right_px
     )
+
+
+def zoom_distance_window(
+    current_start_m: float,
+    current_end_m: float,
+    *,
+    full_start_m: float,
+    full_end_m: float,
+    anchor_m: float,
+    factor: float,
+    minimum_span_m: float = 100.0,
+) -> tuple[float, float]:
+    """Zoom a distance window around an anchor while staying inside the full lap."""
+
+    full_span = full_end_m - full_start_m
+    current_span = current_end_m - current_start_m
+    if full_span <= 0 or current_span <= 0 or factor <= 0:
+        raise ValueError("La ventana de telemetría no es válida.")
+    minimum_span = min(max(minimum_span_m, 1.0), full_span)
+    new_span = min(max(current_span * factor, minimum_span), full_span)
+    anchor = min(max(anchor_m, current_start_m), current_end_m)
+    anchor_ratio = (anchor - current_start_m) / current_span
+    new_start = anchor - anchor_ratio * new_span
+    new_start = min(max(new_start, full_start_m), full_end_m - new_span)
+    return new_start, new_start + new_span
+
+
+def pan_distance_window(
+    start_m: float,
+    end_m: float,
+    *,
+    full_start_m: float,
+    full_end_m: float,
+    delta_m: float,
+) -> tuple[float, float]:
+    """Move a zoom window without changing its span or leaving the full lap."""
+
+    span = end_m - start_m
+    full_span = full_end_m - full_start_m
+    if span <= 0 or full_span <= 0:
+        raise ValueError("La ventana de telemetría no es válida.")
+    if span >= full_span:
+        return full_start_m, full_end_m
+    new_start = min(max(start_m + delta_m, full_start_m), full_end_m - span)
+    return new_start, new_start + span
 
 
 def load_track_zones(path: Path | None) -> tuple[TrackMapZone, ...]:

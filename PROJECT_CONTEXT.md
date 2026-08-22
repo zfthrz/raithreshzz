@@ -1125,7 +1125,7 @@ do not need to be copied into the repository.
 The desktop entry point is `RaceEngineer.pyw` (implementation:
 `race_engineer_gui.py`). Its catalogue is owned by `race_engineer_ui_model.py` and
 uses orchestrator `state.json` rather than scanning result filenames heuristically.
-GUI v1.2 can search/filter sessions and inspect deterministic lap times, validated debriefs,
+GUI v1.3 can search/filter sessions and inspect deterministic lap times, validated debriefs,
 next-stint plans, pipeline statuses, schema-4 History and the exact H4
 historical-reference selection, plus the raw and validated observational H5.2
 historical comparison. It also reconstructs a read-only GPS circuit map from the
@@ -1144,7 +1144,10 @@ marker is a drag control snapped to the closest rendered GPS sample, so values u
 continuously while it moves along the circuit. A full-lap chart below the map renders
 speed, throttle and brake in three independently scaled lanes on the same `Lap Dist`
 axis. Its white cursor follows the map marker, and the selected H5.2/priority interval
-is shaded without changing the source evidence. This inspection is
+is shaded without changing the source evidence. The visual alignment runs at 10 Hz;
+the chart supports pointer-anchored wheel zoom, `Shift + wheel` pan, full-lap reset
+and automatic window following when the map marker leaves the visible span. All
+windows remain clamped to the selected complete lap. This inspection is
 read-only and cannot create or reprioritize coaching. A valid debrief remains available when a later
 historical pipeline stage fails, as proven by `llm_validator` RUN/REUSED.
 History, telemetry and generated artifacts are opened
@@ -1156,7 +1159,7 @@ streaming progress. A per-run, opt-in override can omit only the 10-minute
 file-age wait; LMU-running, authorized-root, telemetry type, 5 MiB and two-valid-lap
 gates remain mandatory. The scheduled automatic ingest never uses this override.
 The launcher remains the sole safety authority and the GUI never offers
-cancellation. See `docs/RACE_ENGINEER_GUI_V1_2.md`.
+cancellation. See `docs/RACE_ENGINEER_GUI_V1_3.md`.
 
 The scheduled task must execute `hidden_history_ingest.py` through `pythonw.exe`.
 That wrapper preserves the same maintenance arguments, creates no console window and

@@ -15,9 +15,11 @@ from race_engineer_track_map import (
     load_track_priorities,
     load_track_zones,
     nearest_fitted_point_index,
+    pan_distance_window,
     priority_for_distance,
     summarize_track_interval,
     telemetry_chart_x_for_distance,
+    zoom_distance_window,
     zone_for_distance,
     zone_point_ranges,
 )
@@ -247,6 +249,53 @@ def test_telemetry_chart_requires_distance_but_tolerates_missing_channels():
     assert build_track_telemetry_chart(
         (TrackMapPoint(0.0, 0.0, None),), width_px=200, height_px=132
     ) is None
+
+
+def test_telemetry_chart_can_render_only_a_zoomed_distance_window():
+    points = tuple(
+        TrackMapPoint(float(distance), 0.0, float(distance), float(distance + 100), 50, 10)
+        for distance in (0, 25, 50, 75, 100)
+    )
+
+    chart = build_track_telemetry_chart(
+        points,
+        width_px=200,
+        height_px=132,
+        start_distance_m=25,
+        end_distance_m=75,
+    )
+
+    assert chart is not None
+    assert chart.distance_min_m == 25
+    assert chart.distance_max_m == 75
+    assert len(chart.speed) == 3
+    assert chart.speed[0][0] == 74
+    assert chart.speed[-1][0] == 182
+
+
+def test_zoom_and_pan_distance_windows_remain_inside_complete_lap():
+    assert zoom_distance_window(
+        0,
+        1000,
+        full_start_m=0,
+        full_end_m=1000,
+        anchor_m=500,
+        factor=0.5,
+    ) == (250, 750)
+    assert pan_distance_window(
+        250,
+        750,
+        full_start_m=0,
+        full_end_m=1000,
+        delta_m=400,
+    ) == (500, 1000)
+    assert pan_distance_window(
+        250,
+        750,
+        full_start_m=0,
+        full_end_m=1000,
+        delta_m=-400,
+    ) == (0, 500)
 
 
 def test_h5_2_zones_are_loaded_in_track_order_and_mapped_by_lap_distance(

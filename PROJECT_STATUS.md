@@ -284,7 +284,7 @@ LLM episode-prompt shadow checkpoint:
 See `docs/LLM_PROMPT_SHADOW_PROMOTION_GATE_V0_1.md`.
 
 Validation:
-- pytest: `983 PASS / 0 FAIL / 0 SKIP`
+- pytest: `985 PASS / 0 FAIL / 0 SKIP`
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP`
 - Objective recovery check: `READY`
 
@@ -388,6 +388,14 @@ shared vertical chart cursor; selecting an H5.2 zone or validated priority shade
 its exact interval behind the traces. The chart consumes only the already aligned
 complete-lap native channels, remains read-only and changes no coaching or historical
 authority. See `docs/RACE_ENGINEER_GUI_V1_2.md`.
+
+GUI v1.3 raises the complete-lap visual alignment from 5 to 10 Hz and adds a bounded
+distance-window controller to the telemetry chart. Mouse wheel zooms around the
+pointer, `Shift + wheel` pans, **Restablecer gráfico** returns to the full lap and the
+window follows the draggable map marker when it exits the visible span. Zoom never
+changes source samples, zones, priorities or coaching authority. The real Imola
+smoke test rendered 967 points and retained 194 samples per channel in a 20% window.
+See `docs/RACE_ENGINEER_GUI_V1_3.md`.
 
 Calibration batch orchestrator `1.5` requires the current History schema 4 contract,
 reports its runtime version consistently and has a regression test against schema drift.

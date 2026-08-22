@@ -48,15 +48,17 @@ from race_engineer_track_map import (
     load_track_priorities,
     load_track_zones,
     nearest_fitted_point_index,
+    pan_distance_window,
     priority_for_distance,
     summarize_track_interval,
     telemetry_chart_x_for_distance,
+    zoom_distance_window,
     zone_for_distance,
     zone_point_ranges,
 )
 
 
-GUI_VERSION = "1.2"
+GUI_VERSION = "1.3"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 PROJECT_ROOT = Path(__file__).resolve().parent
 BACKEND_LABELS = {
@@ -107,6 +109,7 @@ class RaceEngineerApp:
         self.selected_track_overlay: tuple[str, str] | None = None
         self.selected_track_point_index: int | None = None
         self.track_map_dragging = False
+        self.telemetry_zoom_range: tuple[float, float] | None = None
         self.track_map_cache: dict[
             tuple[str, int, int | None, int | None], TrackMapData
         ] = {}
@@ -452,10 +455,29 @@ class RaceEngineerApp:
             highlightbackground="#333333",
         )
         telemetry_canvas.pack(fill="x", padx=0, pady=(4, 0))
+        telemetry_canvas.configure(cursor="crosshair")
         telemetry_canvas.bind(
             "<Configure>", lambda _event: self._render_track_telemetry_chart()
         )
+        telemetry_canvas.bind("<MouseWheel>", self._on_telemetry_mousewheel)
         self.track_telemetry_canvas = telemetry_canvas
+        zoom_controls = self.ttk.Frame(frame, style="Panel.TFrame")
+        zoom_controls.pack(fill="x", pady=(4, 0))
+        self.telemetry_zoom_status = self.tk.StringVar(
+            value="Gráfico completo · rueda: zoom · Shift+rueda: desplazar"
+        )
+        self.ttk.Label(
+            zoom_controls,
+            textvariable=self.telemetry_zoom_status,
+            style="Muted.TLabel",
+        ).pack(side="left")
+        self.telemetry_zoom_reset_button = self.ttk.Button(
+            zoom_controls,
+            text="Restablecer gráfico",
+            command=self._reset_telemetry_zoom,
+            state="disabled",
+        )
+        self.telemetry_zoom_reset_button.pack(side="right")
         return canvas
 
     def _set_text(self, widget, value: str, *, markdown: bool = False):
@@ -628,6 +650,7 @@ class RaceEngineerApp:
         self.selected_track_overlay = None
         self.selected_track_point_index = None
         self.track_map_dragging = False
+        self.telemetry_zoom_range = None
         self.track_map_canvas.delete("all")
         self.track_telemetry_canvas.delete("all")
         self.track_map_status.set("Seleccioná una sesión para reconstruir el mapa GPS.")
@@ -635,6 +658,7 @@ class RaceEngineerApp:
         self.track_map_telemetry_status.set(
             "Hacé clic en el trazado para inspeccionar velocidad, freno y acelerador."
         )
+        self._set_telemetry_zoom_status()
         self.open_button.configure(state="disabled")
 
     def _request_track_map(self, record: SessionRecord):
@@ -648,12 +672,14 @@ class RaceEngineerApp:
         self.selected_track_overlay = None
         self.selected_track_point_index = None
         self.track_map_dragging = False
+        self.telemetry_zoom_range = None
         self.track_map_canvas.delete("all")
         self.track_telemetry_canvas.delete("all")
         self.track_map_zone_status.set("Buscando zonas H5.2 y prioridades del debrief…")
         self.track_map_telemetry_status.set(
             "Hacé clic en el trazado para inspeccionar velocidad, freno y acelerador."
         )
+        self._set_telemetry_zoom_status()
         database = record.database_path
         if database is None:
             self.track_map_status.set("La sesión no registra su DuckDB original.")
@@ -847,6 +873,7 @@ class RaceEngineerApp:
             return False
         point = data.points[index]
         self.selected_track_point_index = index
+        self._ensure_telemetry_point_visible(point)
         priority = priority_for_distance(
             self.current_track_priorities, point.lap_distance_m
         )
@@ -1104,6 +1131,12 @@ class RaceEngineerApp:
             data.points,
             width_px=width,
             height_px=height,
+            start_distance_m=(
+                None if self.telemetry_zoom_range is None else self.telemetry_zoom_range[0]
+            ),
+            end_distance_m=(
+                None if self.telemetry_zoom_range is None else self.telemetry_zoom_range[1]
+            ),
         )
         if chart is None:
             canvas.create_text(
@@ -1191,6 +1224,97 @@ class RaceEngineerApp:
                     fill="#f2f7fb",
                     width=2,
                 )
+
+    def _track_distance_bounds(self) -> tuple[float, float] | None:
+        data = self.current_track_map
+        if data is None:
+            return None
+        distances = [
+            float(point.lap_distance_m)
+            for point in data.points
+            if point.lap_distance_m is not None
+        ]
+        if not distances:
+            return None
+        start, end = min(distances), max(distances)
+        return (start, end) if end > start else None
+
+    def _on_telemetry_mousewheel(self, event):
+        bounds = self._track_distance_bounds()
+        if bounds is None or event.delta == 0:
+            return "break"
+        full_start, full_end = bounds
+        start, end = self.telemetry_zoom_range or bounds
+        if event.state & 0x0001:
+            direction = -1.0 if event.delta > 0 else 1.0
+            self.telemetry_zoom_range = pan_distance_window(
+                start,
+                end,
+                full_start_m=full_start,
+                full_end_m=full_end,
+                delta_m=direction * (end - start) * 0.18,
+            )
+        else:
+            canvas_width = max(self.track_telemetry_canvas.winfo_width(), 180)
+            ratio = min(max((event.x - 74) / max(canvas_width - 92, 1), 0.0), 1.0)
+            anchor = start + ratio * (end - start)
+            self.telemetry_zoom_range = zoom_distance_window(
+                start,
+                end,
+                full_start_m=full_start,
+                full_end_m=full_end,
+                anchor_m=anchor,
+                factor=0.78 if event.delta > 0 else 1.28,
+            )
+            if (
+                self.telemetry_zoom_range[0] <= full_start + 0.5
+                and self.telemetry_zoom_range[1] >= full_end - 0.5
+            ):
+                self.telemetry_zoom_range = None
+        self._set_telemetry_zoom_status()
+        self._render_track_telemetry_chart()
+        return "break"
+
+    def _reset_telemetry_zoom(self):
+        self.telemetry_zoom_range = None
+        self._set_telemetry_zoom_status()
+        self._render_track_telemetry_chart()
+
+    def _set_telemetry_zoom_status(self):
+        if self.telemetry_zoom_range is None:
+            text = "Gráfico completo · rueda: zoom · Shift+rueda: desplazar"
+            state = "disabled"
+        else:
+            start, end = self.telemetry_zoom_range
+            text = (
+                f"Zoom del gráfico {start:.0f}-{end:.0f} m ({end - start:.0f} m) · "
+                "rueda: zoom · Shift+rueda: desplazar"
+            )
+            state = "normal"
+        if hasattr(self, "telemetry_zoom_status"):
+            self.telemetry_zoom_status.set(text)
+        if hasattr(self, "telemetry_zoom_reset_button"):
+            self.telemetry_zoom_reset_button.configure(state=state)
+
+    def _ensure_telemetry_point_visible(self, point: TrackMapPoint):
+        if self.telemetry_zoom_range is None or point.lap_distance_m is None:
+            return
+        start, end = self.telemetry_zoom_range
+        distance = point.lap_distance_m
+        if start <= distance <= end:
+            return
+        bounds = self._track_distance_bounds()
+        if bounds is None:
+            return
+        midpoint = (start + end) / 2.0
+        self.telemetry_zoom_range = pan_distance_window(
+            start,
+            end,
+            full_start_m=bounds[0],
+            full_end_m=bounds[1],
+            delta_m=distance - midpoint,
+        )
+        self._set_telemetry_zoom_status()
 
     def _selected_track_interval(self) -> tuple[float, float] | None:
         selected = self.selected_track_overlay

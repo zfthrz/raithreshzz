@@ -5,6 +5,7 @@ import math
 from pathlib import Path
 
 import duckdb
+import pytest
 
 from race_engineer_track_map import (
     TrackMapPoint,
@@ -12,7 +13,9 @@ from race_engineer_track_map import (
     load_track_map,
     load_track_priorities,
     load_track_zones,
+    nearest_fitted_point_index,
     priority_for_distance,
+    summarize_track_interval,
     zone_for_distance,
     zone_point_ranges,
 )
@@ -26,7 +29,15 @@ def make_gps_database(path: Path) -> Path:
             "INSERT INTO metadata VALUES (?, ?)",
             [("TrackName", "Test Circuit"), ("TrackLayout", "Grand Prix")],
         )
-        for table in ("GPS Time", "GPS Latitude", "GPS Longitude", "Lap Dist"):
+        for table in (
+            "GPS Time",
+            "GPS Latitude",
+            "GPS Longitude",
+            "Lap Dist",
+            "Ground Speed",
+            "Throttle Pos",
+            "Brake Pos",
+        ):
             connection.execute(f'CREATE TABLE "{table}"(ts DOUBLE, value DOUBLE)')
         rows = []
         for second in range(81):
@@ -55,6 +66,18 @@ def make_gps_database(path: Path) -> Path:
             'INSERT INTO "Lap Dist" VALUES (?, ?)',
             [(time, distance) for time, _, _, distance in rows],
         )
+        connection.executemany(
+            'INSERT INTO "Ground Speed" VALUES (?, ?)',
+            [(time, 100.0 + time) for time, *_ in rows],
+        )
+        connection.executemany(
+            'INSERT INTO "Throttle Pos" VALUES (?, ?)',
+            [(time, float(time % 101)) for time, *_ in rows],
+        )
+        connection.executemany(
+            'INSERT INTO "Brake Pos" VALUES (?, ?)',
+            [(time, 25.0 if 45.0 <= time <= 50.0 else 0.0) for time, *_ in rows],
+        )
         connection.execute('CREATE TABLE "Lap"(ts DOUBLE)')
         connection.executemany('INSERT INTO "Lap" VALUES (?)', [(0.0,), (40.0,), (80.0,)])
     finally:
@@ -78,7 +101,54 @@ def test_load_track_map_reconstructs_preferred_lap_read_only(tmp_path: Path):
     assert result.width_m > 100
     assert result.height_m > 100
     assert any(point.lap_distance_m is not None for point in result.points)
+    assert all(point.speed_kmh is not None for point in result.points)
+    assert all(point.throttle_percent is not None for point in result.points)
+    assert all(point.brake_percent is not None for point in result.points)
     assert database.stat().st_size == size_before
+
+
+def test_track_interval_summary_uses_only_aligned_samples_inside_zone():
+    points = tuple(
+        TrackMapPoint(
+            float(distance),
+            0.0,
+            float(distance),
+            speed_kmh=speed,
+            throttle_percent=throttle,
+            brake_percent=brake,
+        )
+        for distance, speed, throttle, brake in (
+            (0, 100, 100, 0),
+            (50, 120, 80, 10),
+            (100, 140, 40, 30),
+            (150, 160, 20, 50),
+            (200, 180, 100, 0),
+        )
+    )
+
+    summary = summarize_track_interval(points, 50, 150)
+
+    assert summary is not None
+    assert summary.sample_count == 3
+    assert summary.speed_min_kmh == 120
+    assert summary.speed_mean_kmh == 140
+    assert summary.speed_max_kmh == 160
+    assert summary.throttle_mean_percent == pytest.approx(140 / 3)
+    assert summary.throttle_max_percent == 80
+    assert summary.brake_mean_percent == 30
+    assert summary.brake_max_percent == 50
+
+
+def test_track_interval_summary_handles_missing_optional_channels():
+    points = (TrackMapPoint(0.0, 0.0, 10.0), TrackMapPoint(1.0, 0.0, 20.0))
+
+    summary = summarize_track_interval(points, 0, 30)
+
+    assert summary is not None
+    assert summary.sample_count == 2
+    assert summary.speed_mean_kmh is None
+    assert summary.throttle_mean_percent is None
+    assert summary.brake_mean_percent is None
 
 
 def test_incomplete_reference_group_is_replaced_by_complete_duration_match(
@@ -128,6 +198,20 @@ def test_fit_track_points_preserves_aspect_ratio_and_north_orientation():
     assert fitted[0] == (25.0, 162.5)
     assert fitted[1] == (275.0, 162.5)
     assert fitted[2] == (275.0, 37.5)
+
+
+def test_nearest_map_point_supports_hit_radius_and_unconstrained_drag():
+    fitted = ((10.0, 10.0), (40.0, 10.0), (80.0, 50.0))
+
+    assert nearest_fitted_point_index(
+        fitted, x_px=43.0, y_px=12.0, max_distance_px=18.0
+    ) == 1
+    assert nearest_fitted_point_index(
+        fitted, x_px=65.0, y_px=75.0, max_distance_px=18.0
+    ) is None
+    assert nearest_fitted_point_index(
+        fitted, x_px=65.0, y_px=75.0, max_distance_px=None
+    ) == 2
 
 
 def test_h5_2_zones_are_loaded_in_track_order_and_mapped_by_lap_distance(

@@ -1125,7 +1125,7 @@ do not need to be copied into the repository.
 The desktop entry point is `RaceEngineer.pyw` (implementation:
 `race_engineer_gui.py`). Its catalogue is owned by `race_engineer_ui_model.py` and
 uses orchestrator `state.json` rather than scanning result filenames heuristically.
-GUI v1.0 can search/filter sessions and inspect deterministic lap times, validated debriefs,
+GUI v1.1 can search/filter sessions and inspect deterministic lap times, validated debriefs,
 next-stint plans, pipeline statuses, schema-4 History and the exact H4
 historical-reference selection, plus the raw and validated observational H5.2
 historical comparison. It also reconstructs a read-only GPS circuit map from the
@@ -1135,7 +1135,14 @@ by reference duration, and incomplete/short groups are rejected before rendering
 Deterministic H5.2 distance zones are overlaid on the GPS polyline (loss/gain)
 and can be inspected by clicking without granting them coaching authority.
 Validated `next_stint_plan` intervals are a separate blue GPS layer; clicking a
-priority displays its driver cues. A valid debrief remains available when a later
+priority displays its driver cues. Native `Ground Speed`, `Brake Pos` and
+`Throttle Pos` are aligned to that same complete GPS lap. Clicking any trace point
+shows its instantaneous values, while an H5.2 zone or validated priority also shows
+descriptive channel summaries for the exact distance interval. Missing optional
+channels remain explicitly unavailable and never block the map. The white point
+marker is a drag control snapped to the closest rendered GPS sample, so values update
+continuously while it moves along the circuit. This inspection is
+read-only and cannot create or reprioritize coaching. A valid debrief remains available when a later
 historical pipeline stage fails, as proven by `llm_validator` RUN/REUSED.
 History, telemetry and generated artifacts are opened
 read-only. Non-secret DeepSeek and
@@ -1146,7 +1153,7 @@ streaming progress. A per-run, opt-in override can omit only the 10-minute
 file-age wait; LMU-running, authorized-root, telemetry type, 5 MiB and two-valid-lap
 gates remain mandatory. The scheduled automatic ingest never uses this override.
 The launcher remains the sole safety authority and the GUI never offers
-cancellation. See `docs/RACE_ENGINEER_GUI_V1_0.md`.
+cancellation. See `docs/RACE_ENGINEER_GUI_V1_1.md`.
 
 The scheduled task must execute `hidden_history_ingest.py` through `pythonw.exe`.
 That wrapper preserves the same maintenance arguments, creates no console window and

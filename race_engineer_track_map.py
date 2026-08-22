@@ -28,7 +28,7 @@ from extract_lmu_track_gps import (
 )
 
 
-TRACK_MAP_VERSION = "0.3"
+TRACK_MAP_VERSION = "0.4"
 
 
 @dataclass(frozen=True)
@@ -36,6 +36,9 @@ class TrackMapPoint:
     x_m: float
     y_m: float
     lap_distance_m: float | None
+    speed_kmh: float | None = None
+    throttle_percent: float | None = None
+    brake_percent: float | None = None
 
 
 @dataclass(frozen=True)
@@ -71,6 +74,20 @@ class TrackMapPriority:
     cues: tuple[str, ...]
 
 
+@dataclass(frozen=True)
+class TrackTelemetrySummary:
+    start_distance_m: float
+    end_distance_m: float
+    sample_count: int
+    speed_min_kmh: float | None
+    speed_mean_kmh: float | None
+    speed_max_kmh: float | None
+    throttle_mean_percent: float | None
+    throttle_max_percent: float | None
+    brake_mean_percent: float | None
+    brake_max_percent: float | None
+
+
 def load_track_map(
     database_path: Path,
     *,
@@ -94,9 +111,19 @@ def load_track_map(
         if missing:
             raise ValueError("Faltan canales GPS: " + ", ".join(missing))
 
+        channel_names = (
+            "GPS Time",
+            "GPS Latitude",
+            "GPS Longitude",
+            "Lap Dist",
+            "Ground Speed",
+            "GPS Speed",
+            "Throttle Pos",
+            "Brake Pos",
+        )
         channels = {
             name: read_value_table(connection, name)
-            for name in ("GPS Time", "GPS Latitude", "GPS Longitude", "Lap Dist")
+            for name in channel_names
             if name in tables
         }
         master_times, _ = build_master_times(channels, target_hz)
@@ -112,6 +139,14 @@ def load_track_map(
         )
         lap_distance = align_channel(
             channels.get("Lap Dist"), master_times, gps_time_reference
+        )
+        speed_channel = channels.get("Ground Speed") or channels.get("GPS Speed")
+        speed = align_channel(speed_channel, master_times, gps_time_reference)
+        throttle = align_channel(
+            channels.get("Throttle Pos"), master_times, gps_time_reference
+        )
+        brake = align_channel(
+            channels.get("Brake Pos"), master_times, gps_time_reference
         )
         boundaries = read_lap_event_times(connection, tables)
         laps = (
@@ -148,18 +183,25 @@ def load_track_map(
         )
         if len(rows) < 10:
             raise ValueError("La vuelta seleccionada tiene muy pocos puntos GPS válidos.")
-        points = tuple(
-            TrackMapPoint(
-                x_m=float(row["x_east_m"]),
-                y_m=float(row["y_north_m"]),
-                lap_distance_m=(
-                    None
-                    if row["lap_distance_m"] is None
-                    else float(row["lap_distance_m"])
-                ),
+        time_indices = {value: index for index, value in enumerate(master_times)}
+        points = []
+        for row in rows:
+            master_index = time_indices.get(float(row["session_time_s"]))
+            points.append(
+                TrackMapPoint(
+                    x_m=float(row["x_east_m"]),
+                    y_m=float(row["y_north_m"]),
+                    lap_distance_m=(
+                        None
+                        if row["lap_distance_m"] is None
+                        else float(row["lap_distance_m"])
+                    ),
+                    speed_kmh=_finite_at(speed, master_index),
+                    throttle_percent=_finite_at(throttle, master_index),
+                    brake_percent=_finite_at(brake, master_index),
+                )
             )
-            for row in rows
-        )
+        points = tuple(points)
         xs = [point.x_m for point in points]
         ys = [point.y_m for point in points]
         metadata = read_metadata(connection)
@@ -177,6 +219,65 @@ def load_track_map(
         )
     finally:
         connection.close()
+
+
+def _finite_at(values: list[float | None], index: int | None) -> float | None:
+    if index is None or index < 0 or index >= len(values):
+        return None
+    value = values[index]
+    if value is None:
+        return None
+    result = float(value)
+    return result if math.isfinite(result) else None
+
+
+def summarize_track_interval(
+    points: tuple[TrackMapPoint, ...],
+    start_distance_m: float,
+    end_distance_m: float,
+) -> TrackTelemetrySummary | None:
+    """Summarize aligned native channels inside one validated distance interval."""
+
+    if not math.isfinite(start_distance_m) or not math.isfinite(end_distance_m):
+        return None
+    if end_distance_m < start_distance_m:
+        return None
+    selected = tuple(
+        point
+        for point in points
+        if point.lap_distance_m is not None
+        and start_distance_m <= point.lap_distance_m <= end_distance_m
+    )
+    if not selected:
+        return None
+
+    def values(attribute: str) -> list[float]:
+        return [
+            float(value)
+            for point in selected
+            if (value := getattr(point, attribute)) is not None
+            and math.isfinite(float(value))
+        ]
+
+    speeds = values("speed_kmh")
+    throttles = values("throttle_percent")
+    brakes = values("brake_percent")
+
+    def mean(items: list[float]) -> float | None:
+        return sum(items) / len(items) if items else None
+
+    return TrackTelemetrySummary(
+        start_distance_m=float(start_distance_m),
+        end_distance_m=float(end_distance_m),
+        sample_count=len(selected),
+        speed_min_kmh=min(speeds) if speeds else None,
+        speed_mean_kmh=mean(speeds),
+        speed_max_kmh=max(speeds) if speeds else None,
+        throttle_mean_percent=mean(throttles),
+        throttle_max_percent=max(throttles) if throttles else None,
+        brake_mean_percent=mean(brakes),
+        brake_max_percent=max(brakes) if brakes else None,
+    )
 
 
 def _complete_lap_metrics(metrics: dict[int, dict]) -> dict[int, dict]:
@@ -260,6 +361,30 @@ def fit_track_points(
         )
         for point in points
     )
+
+
+def nearest_fitted_point_index(
+    fitted_points: tuple[tuple[float, float], ...],
+    *,
+    x_px: float,
+    y_px: float,
+    max_distance_px: float | None = None,
+) -> int | None:
+    """Return the nearest rendered GPS point, optionally constrained by hit radius."""
+
+    if not fitted_points:
+        return None
+    index, nearest = min(
+        enumerate(fitted_points),
+        key=lambda item: (item[1][0] - x_px) ** 2 + (item[1][1] - y_px) ** 2,
+    )
+    if max_distance_px is not None:
+        if max_distance_px < 0:
+            raise ValueError("La distancia máxima de selección no puede ser negativa.")
+        distance_sq = (nearest[0] - x_px) ** 2 + (nearest[1] - y_px) ** 2
+        if distance_sq > max_distance_px**2:
+            return None
+    return index
 
 
 def load_track_zones(path: Path | None) -> tuple[TrackMapZone, ...]:

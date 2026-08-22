@@ -39,18 +39,22 @@ from race_engineer_ui_analysis import (
 from race_engineer_track_map import (
     TrackMapData,
     TrackMapPriority,
+    TrackMapPoint,
+    TrackTelemetrySummary,
     TrackMapZone,
     fit_track_points,
     load_track_map,
     load_track_priorities,
     load_track_zones,
+    nearest_fitted_point_index,
     priority_for_distance,
+    summarize_track_interval,
     zone_for_distance,
     zone_point_ranges,
 )
 
 
-GUI_VERSION = "1.0"
+GUI_VERSION = "1.1"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 PROJECT_ROOT = Path(__file__).resolve().parent
 BACKEND_LABELS = {
@@ -99,6 +103,8 @@ class RaceEngineerApp:
         self.current_track_priorities: tuple[TrackMapPriority, ...] = ()
         self.current_fitted_track_points: tuple[tuple[float, float], ...] = ()
         self.selected_track_overlay: tuple[str, str] | None = None
+        self.selected_track_point_index: int | None = None
+        self.track_map_dragging = False
         self.track_map_cache: dict[
             tuple[str, int, int | None, int | None], TrackMapData
         ] = {}
@@ -414,7 +420,10 @@ class RaceEngineerApp:
         )
         canvas.pack(fill="both", expand=True)
         canvas.bind("<Configure>", lambda _event: self._render_track_map())
-        canvas.bind("<Button-1>", self._on_track_map_click)
+        canvas.configure(cursor="crosshair")
+        canvas.bind("<ButtonPress-1>", self._on_track_map_press)
+        canvas.bind("<B1-Motion>", self._on_track_map_drag)
+        canvas.bind("<ButtonRelease-1>", self._on_track_map_release)
         self.track_map_zone_status = self.tk.StringVar(
             value="Sin zonas H5.2 para esta sesión."
         )
@@ -423,6 +432,16 @@ class RaceEngineerApp:
             textvariable=self.track_map_zone_status,
             style="Muted.TLabel",
         ).pack(fill="x", padx=8, pady=(8, 4))
+        self.track_map_telemetry_status = self.tk.StringVar(
+            value="Hacé clic en el trazado para inspeccionar velocidad, freno y acelerador."
+        )
+        self.ttk.Label(
+            frame,
+            textvariable=self.track_map_telemetry_status,
+            style="Muted.TLabel",
+            wraplength=960,
+            justify="left",
+        ).pack(fill="x", padx=8, pady=(0, 4))
         return canvas
 
     def _set_text(self, widget, value: str, *, markdown: bool = False):
@@ -593,9 +612,14 @@ class RaceEngineerApp:
         self.current_track_priorities = ()
         self.current_fitted_track_points = ()
         self.selected_track_overlay = None
+        self.selected_track_point_index = None
+        self.track_map_dragging = False
         self.track_map_canvas.delete("all")
         self.track_map_status.set("Seleccioná una sesión para reconstruir el mapa GPS.")
         self.track_map_zone_status.set("Sin capas de zonas para esta sesión.")
+        self.track_map_telemetry_status.set(
+            "Hacé clic en el trazado para inspeccionar velocidad, freno y acelerador."
+        )
         self.open_button.configure(state="disabled")
 
     def _request_track_map(self, record: SessionRecord):
@@ -607,8 +631,13 @@ class RaceEngineerApp:
         self.current_track_priorities = ()
         self.current_fitted_track_points = ()
         self.selected_track_overlay = None
+        self.selected_track_point_index = None
+        self.track_map_dragging = False
         self.track_map_canvas.delete("all")
         self.track_map_zone_status.set("Buscando zonas H5.2 y prioridades del debrief…")
+        self.track_map_telemetry_status.set(
+            "Hacé clic en el trazado para inspeccionar velocidad, freno y acelerador."
+        )
         database = record.database_path
         if database is None:
             self.track_map_status.set("La sesión no registra su DuckDB original.")
@@ -713,6 +742,7 @@ class RaceEngineerApp:
                 self.current_track_zones = ()
                 self.current_track_priorities = ()
                 self.current_fitted_track_points = ()
+                self.selected_track_point_index = None
                 self.track_map_canvas.delete("all")
                 self.track_map_status.set(f"Mapa GPS no disponible: {value}")
                 self.track_map_zone_status.set("Sin mapa GPS para superponer zonas.")
@@ -756,24 +786,50 @@ class RaceEngineerApp:
             text += " · " + "; ".join(errors)
         self.track_map_zone_status.set(text)
 
-    def _on_track_map_click(self, event):
+    def _on_track_map_press(self, event):
+        self.track_map_dragging = self._select_track_map_point(
+            event.x,
+            event.y,
+            max_distance_px=18.0,
+        )
+
+    def _on_track_map_drag(self, event):
+        if self.track_map_dragging:
+            self._select_track_map_point(event.x, event.y, max_distance_px=None)
+
+    def _on_track_map_release(self, event):
+        if self.track_map_dragging:
+            self._select_track_map_point(event.x, event.y, max_distance_px=None)
+        self.track_map_dragging = False
+
+    def _select_track_map_point(
+        self,
+        x_px: float,
+        y_px: float,
+        *,
+        max_distance_px: float | None,
+    ) -> bool:
         data = self.current_track_map
         fitted = self.current_fitted_track_points
-        if data is None or not fitted or (
-            not self.current_track_zones and not self.current_track_priorities
-        ):
-            return
-        index, nearest = min(
-            enumerate(fitted),
-            key=lambda item: (item[1][0] - event.x) ** 2 + (item[1][1] - event.y) ** 2,
+        if data is None or not fitted:
+            return False
+        index = nearest_fitted_point_index(
+            fitted,
+            x_px=x_px,
+            y_px=y_px,
+            max_distance_px=max_distance_px,
         )
-        distance_sq = (nearest[0] - event.x) ** 2 + (nearest[1] - event.y) ** 2
-        if distance_sq > 18.0**2:
+        if index is None:
             self.selected_track_overlay = None
+            self.selected_track_point_index = None
             self._set_track_zone_summary()
+            self.track_map_telemetry_status.set(
+                "Hacé clic en el trazado para inspeccionar velocidad, freno y acelerador."
+            )
             self._render_track_map()
-            return
+            return False
         point = data.points[index]
+        self.selected_track_point_index = index
         priority = priority_for_distance(
             self.current_track_priorities, point.lap_distance_m
         )
@@ -785,8 +841,14 @@ class RaceEngineerApp:
                 f"{priority.start_distance_m:.0f}-{priority.end_distance_m:.0f} m · "
                 f"{cue_text}"
             )
+            self._set_interval_telemetry(
+                data,
+                priority.start_distance_m,
+                priority.end_distance_m,
+                point,
+            )
             self._render_track_map()
-            return
+            return True
         zone = zone_for_distance(self.current_track_zones, point.lap_distance_m)
         if zone is None:
             self.selected_track_overlay = None
@@ -796,6 +858,7 @@ class RaceEngineerApp:
             self.track_map_zone_status.set(
                 f"Punto {distance_text}: fuera de las zonas comparativas H5.2."
             )
+            self.track_map_telemetry_status.set(self._point_telemetry_text(point))
         else:
             self.selected_track_overlay = ("h5_2", zone.zone_id)
             delta_text = (
@@ -811,7 +874,78 @@ class RaceEngineerApp:
                 f"{zone.start_distance_m:.0f}-{zone.end_distance_m:.0f} m · "
                 f"cambio {delta_text}"
             )
+            self._set_interval_telemetry(
+                data,
+                zone.start_distance_m,
+                zone.end_distance_m,
+                point,
+            )
         self._render_track_map()
+        return True
+
+    def _set_interval_telemetry(
+        self,
+        data: TrackMapData,
+        start_distance_m: float,
+        end_distance_m: float,
+        selected_point: TrackMapPoint,
+    ) -> None:
+        summary = summarize_track_interval(
+            data.points,
+            start_distance_m,
+            end_distance_m,
+        )
+        if summary is None:
+            self.track_map_telemetry_status.set(
+                self._point_telemetry_text(selected_point)
+            )
+            return
+        self.track_map_telemetry_status.set(
+            self._interval_telemetry_text(summary)
+            + " · punto seleccionado: "
+            + self._point_telemetry_text(selected_point, prefix=False)
+        )
+
+    @staticmethod
+    def _point_telemetry_text(
+        point: TrackMapPoint,
+        *,
+        prefix: bool = True,
+    ) -> str:
+        distance = "—" if point.lap_distance_m is None else f"{point.lap_distance_m:.0f} m"
+        speed = "—" if point.speed_kmh is None else f"{point.speed_kmh:.0f} km/h"
+        brake = "—" if point.brake_percent is None else f"{point.brake_percent:.0f}%"
+        throttle = (
+            "—" if point.throttle_percent is None else f"{point.throttle_percent:.0f}%"
+        )
+        label = "Telemetría · " if prefix else ""
+        return (
+            f"{label}{distance} · velocidad {speed} · "
+            f"freno {brake} · acelerador {throttle}"
+        )
+
+    @staticmethod
+    def _interval_telemetry_text(summary: TrackTelemetrySummary) -> str:
+        def number(value: float | None, suffix: str) -> str:
+            return "—" if value is None else f"{value:.0f}{suffix}"
+
+        speed = (
+            "—"
+            if summary.speed_mean_kmh is None
+            else (
+                f"{number(summary.speed_min_kmh, '')}-"
+                f"{number(summary.speed_max_kmh, '')} km/h "
+                f"(media {number(summary.speed_mean_kmh, '')})"
+            )
+        )
+        return (
+            f"Telemetría de zona · {summary.start_distance_m:.0f}-"
+            f"{summary.end_distance_m:.0f} m · velocidad {speed} · "
+            f"freno medio/máx {number(summary.brake_mean_percent, '%')}/"
+            f"{number(summary.brake_max_percent, '%')} · acelerador medio/máx "
+            f"{number(summary.throttle_mean_percent, '%')}/"
+            f"{number(summary.throttle_max_percent, '%')}"
+        )
 
     def _render_track_map(self):
         canvas = self.track_map_canvas
@@ -924,6 +1058,20 @@ class RaceEngineerApp:
                     anchor="w",
                     font=("Segoe UI", 9),
                 )
+        if (
+            self.selected_track_point_index is not None
+            and 0 <= self.selected_track_point_index < len(fitted)
+        ):
+            point_x, point_y = fitted[self.selected_track_point_index]
+            canvas.create_oval(
+                point_x - 5,
+                point_y - 5,
+                point_x + 5,
+                point_y + 5,
+                fill="#f2f7fb",
+                outline="#101010",
+                width=2,
+            )
 
     def _open_selected_folder(self):
         from tkinter import messagebox

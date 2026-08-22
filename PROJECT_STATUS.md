@@ -284,7 +284,7 @@ LLM episode-prompt shadow checkpoint:
 See `docs/LLM_PROMPT_SHADOW_PROMOTION_GATE_V0_1.md`.
 
 Validation:
-- pytest: `978 PASS / 0 FAIL / 0 SKIP`
+- pytest: `981 PASS / 0 FAIL / 0 SKIP`
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP`
 - Objective recovery check: `READY`
 
@@ -371,6 +371,16 @@ layer. Priority clicks take precedence over overlapping H5.2 zones and show the
 plan label, localized track name, distance interval and existing driver cues. The
 layer requires an existing debrief plus `llm_validator = RUN/REUSED`; a failure in
 a later H5 stage does not hide that valid artifact. See `docs/RACE_ENGINEER_GUI_V1_0.md`.
+
+GUI v1.1 aligns native `Ground Speed`, `Brake Pos` and `Throttle Pos` to the same
+complete GPS lap. Clicking any circuit point shows its distance and instantaneous
+values; H5.2 zones and validated priorities additionally show descriptive min/mean/
+max channel summaries for their exact distance interval. Missing optional channels
+render as unavailable and never block the map. The white point marker can be dragged
+continuously along the circuit and remains snapped to the closest rendered GPS
+sample. The feature is read-only and changes
+no coaching authority, selection or pipeline artifact. See
+`docs/RACE_ENGINEER_GUI_V1_1.md`.
 
 Calibration batch orchestrator `1.5` requires the current History schema 4 contract,
 reports its runtime version consistently and has a regression test against schema drift.

@@ -357,8 +357,8 @@ def test_gui_entry_points_and_documentation_are_present():
     assert (root / "launch_race_engineer_gui.cmd").is_file()
     for relative in ("AGENTS.md", "PROJECT_CONTEXT.md", "PROJECT_STATUS.md", "README.md"):
         source = (root / relative).read_text(encoding="utf-8")
-        assert "race_engineer_gui.py" in source or "RACE_ENGINEER_GUI_V1_4.md" in source
-    assert (root / "docs" / "RACE_ENGINEER_GUI_V1_4.md").is_file()
+        assert "race_engineer_gui.py" in source or "RACE_ENGINEER_GUI_V1_5.md" in source
+    assert (root / "docs" / "RACE_ENGINEER_GUI_V1_5.md").is_file()
     assert (root / "docs" / "RACE_ENGINEER_GUI_V1_0.md").is_file()
     assert "analyze_telemetry_file.py" in (
         root / "docs" / "RACE_ENGINEER_GUI_V1_0.md"

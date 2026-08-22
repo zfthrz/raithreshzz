@@ -22,6 +22,16 @@ def test_orchestrator_declares_h5_3_observational_stage():
     assert 'section.get("rendered_section", "")' in source
 
 
+def test_h5_3_shadow_reuse_signature_tracks_imported_policy_modules():
+    source = (ROOT / "race_engineer.py").read_text(encoding="utf-8")
+
+    assert '"pipeline_dependencies_sha256"' in source
+    assert "_h5_3_shadow_pipeline.eligibility_module.__file__" in source
+    assert "_h5_3_shadow_pipeline.selection_module.__file__" in source
+    assert "_h5_3_shadow_pipeline.action_policy_module.__file__" in source
+    assert "_h5_3_shadow_pipeline.action_validator.__file__" in source
+
+
 def test_h5_3_runtime_paths_are_centralized(tmp_path, monkeypatch):
     monkeypatch.setenv("RACE_ENGINEER_GENERATED_DIR", str(tmp_path / "generated"))
 

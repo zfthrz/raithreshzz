@@ -51,7 +51,7 @@ from typing import Any
 
 # ── Policy constants ──────────────────────────────────────────────────────
 
-ELIGIBILITY_VERSION = "0.1"
+ELIGIBILITY_VERSION = "0.2"
 SCHEMA_VERSION = "1.0"
 SHADOW_STATUS = "SHADOW_ELIGIBILITY_ONLY"
 
@@ -175,20 +175,43 @@ def _has_nan_or_inf(value: Any) -> bool:
 _DELTA_SIGN_TOLERANCE_S = 0.05
 
 
-def _compute_delta_sign(delta_change_s: float) -> str:
-    """Derive delta_sign exclusively from delta_change_s using existing semantics.
+def _compute_delta_sign(delta_s: float, tolerance_s: float = _DELTA_SIGN_TOLERANCE_S) -> str:
+    """Derive a delta sign from a Python-owned delta and tolerance.
 
-    delta_change_s >  tolerance → "current_slower"
-    delta_change_s < -tolerance → "current_faster"
-    else                        → "equivalent_within_tolerance"
+    delta_s >  tolerance → "current_slower"
+    delta_s < -tolerance → "current_faster"
+    else                 → "equivalent_within_tolerance"
 
     NO abs(). NO human label involvement.
     """
-    if delta_change_s > _DELTA_SIGN_TOLERANCE_S:
+    if delta_s > tolerance_s:
         return "current_slower"
-    if delta_change_s < -_DELTA_SIGN_TOLERANCE_S:
+    if delta_s < -tolerance_s:
         return "current_faster"
     return "equivalent_within_tolerance"
+
+
+def _session_delta_sign(payload: dict[str, Any]) -> str:
+    """Validate the whole-lap sign carried by H5.3a.
+
+    Zone ``delta_change_s`` remains local ranking evidence. It must never replace
+    the whole-lap sign used by the historical-action anti-regression guard.
+    """
+    total_delta = payload.get("total_delta")
+    if not isinstance(total_delta, dict):
+        raise ValueError("normalize_h5_3a_candidates: total_delta ausente o inválido")
+    delta_s = total_delta.get("current_minus_historical_s")
+    tolerance_s = total_delta.get("tolerance_s", _DELTA_SIGN_TOLERANCE_S)
+    if not _is_numeric(delta_s) or _has_nan_or_inf(delta_s):
+        raise ValueError("normalize_h5_3a_candidates: delta global inválido")
+    if not _is_numeric(tolerance_s) or _has_nan_or_inf(tolerance_s) or tolerance_s < 0:
+        raise ValueError("normalize_h5_3a_candidates: tolerancia global inválida")
+    computed = _compute_delta_sign(float(delta_s), float(tolerance_s))
+    if _known(total_delta.get("sign")) != computed:
+        raise ValueError(
+            "normalize_h5_3a_candidates: total_delta sign no coincide con el delta global"
+        )
+    return computed
 
 
 def _extract_location_label(location: Any) -> str | None:
@@ -212,6 +235,8 @@ def normalize_h5_3a_candidate_for_eligibility(
     raw_candidate: dict[str, Any],
     source_artifact_path: Path,
     session_context: dict[str, Any] | None = None,
+    *,
+    session_delta_sign: str | None = None,
 ) -> dict[str, Any]:
     """Normalizar un raw H5.3a candidate al canonical eligibility schema.
 
@@ -252,8 +277,12 @@ def normalize_h5_3a_candidate_for_eligibility(
     source_sha = _sha256_file(source_artifact_path)
     audit_id = f"{source_sha}:{raw_candidate_id}"
 
-    # delta_sign: derived from delta_change_s using existing semantics (no abs)
-    delta_sign = _compute_delta_sign(float(delta_change_s))
+    if session_delta_sign not in {
+        "current_slower",
+        "current_faster",
+        "equivalent_within_tolerance",
+    }:
+        raise ValueError("normalize_h5_3a_candidate: session_delta_sign ausente o inválido")
 
     # context: from session_context (top-level of H5.3a JSON)
     ctx = session_context or {}
@@ -281,7 +310,7 @@ def normalize_h5_3a_candidate_for_eligibility(
         "audit_id": audit_id,
         "candidate_id": raw_candidate_id,
         "context": context,
-        "delta_sign": delta_sign,
+        "delta_sign": session_delta_sign,
         "evidence": evidence,
         "observational_channel_evidence": dict(channel_evidence),
         "label": None,
@@ -310,11 +339,17 @@ def normalize_h5_3a_candidates_for_eligibility(
 
     # Extract session context from top-level (same structure as H5.3a JSON)
     session_context = payload.get("context", {})
+    session_delta_sign = _session_delta_sign(payload)
 
     normalized: list[dict[str, Any]] = []
     for idx, raw in enumerate(candidates):
         try:
-            norm = normalize_h5_3a_candidate_for_eligibility(raw, candidates_path, session_context)
+            norm = normalize_h5_3a_candidate_for_eligibility(
+                raw,
+                candidates_path,
+                session_context,
+                session_delta_sign=session_delta_sign,
+            )
         except ValueError:
             # Fail closed: malformed candidate stops the pipeline.
             raise

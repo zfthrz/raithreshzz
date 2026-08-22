@@ -905,6 +905,26 @@ def analyze_command(args: argparse.Namespace) -> int:
                             "pipeline_sha256": sha256_file(
                                 Path(_h5_3_shadow_pipeline.__file__)
                             ),
+                            "pipeline_dependencies_sha256": {
+                                "eligibility": sha256_file(Path(
+                                    _h5_3_shadow_pipeline.eligibility_module.__file__
+                                )),
+                                "selection": sha256_file(Path(
+                                    _h5_3_shadow_pipeline.selection_module.__file__
+                                )),
+                                "action_policy": sha256_file(Path(
+                                    _h5_3_shadow_pipeline.action_policy_module.__file__
+                                )),
+                                "eligibility_validator": sha256_file(Path(
+                                    _h5_3_shadow_pipeline.eligibility_validator.__file__
+                                )),
+                                "selection_validator": sha256_file(Path(
+                                    _h5_3_shadow_pipeline.selection_validator.__file__
+                                )),
+                                "action_validator": sha256_file(Path(
+                                    _h5_3_shadow_pipeline.action_validator.__file__
+                                )),
+                            },
                         }
                         reuse_h5_3_shadow = (
                             not args.force

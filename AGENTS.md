@@ -65,11 +65,11 @@ python race_engineer.py analyze "telemetria\ARCHIVO.duckdb" --backend ollama
 
 ## Current baseline
 
-Checkpoint: 2026-08-22 GUI v1.4 + H5.4 P1–P11 + H5.3 production gate review pending.
+Checkpoint: 2026-08-22 GUI v1.5 + H5.4 P1–P11 + H5.3 production gate review pending.
 
 ```text
 race_engineer.py             orchestrator 0.3
-race_engineer_gui.py         desktop session hub 1.4 / deterministic P11 driver focus
+race_engineer_gui.py         desktop session hub 1.5 / H6.5 visual polish + deterministic P11 driver focus
 analyze_telemetry.py         3.8 + Objective Python v6
 llm_analysis*.py             3.10.8.5.4
 llm_analysis_llamacpp.py     3.10.8.5.4 / llama.cpp local (default qwen3-14b)
@@ -82,6 +82,7 @@ build_cross_session_comparison.py H5.2 0.2 / profile-localized raw comparison
 historical_llm_analysis.py   H5.2 LLM 0.1 / validated observational narrative
 build_historical_coaching_candidates.py H5.3a 0.1 / shadow candidates
 prepare_h5_3_audit_dataset.py + label/validate H5.3b 0.1 / audit + human review
+historical_candidate_eligibility.py H5.3 runtime eligibility 0.2 / whole-lap delta authority
 historical_candidate_selection.py    H5.3c 0.1 / controlled LLM selection
 historical_candidate_selection_runtime.py H5.3 runtime 0.2 / deterministic default
 historical_action_policy.py           H5.3 action candidates 0.2 / shadow only

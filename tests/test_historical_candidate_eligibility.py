@@ -155,7 +155,7 @@ class TestPolicyConstants:
         assert hce.SHADOW_STATUS == "SHADOW_ELIGIBILITY_ONLY"
 
     def test_eligibility_version(self):
-        assert hce.ELIGIBILITY_VERSION == "0.1"
+        assert hce.ELIGIBILITY_VERSION == "0.2"
 
 
 # ── unit tests ──────────────────────────────────────────────────────────────
@@ -408,7 +408,7 @@ class TestEvaluateCandidate:
         r1 = hce.evaluate_candidate(c1)
         r2 = hce.evaluate_candidate(c2)
         output = {
-            "metadata": {"schema_version": "1.0", "eligibility_version": "0.1", "status": "SHADOW_ELIGIBILITY_ONLY"},
+            "metadata": {"schema_version": "1.0", "eligibility_version": "0.2", "status": "SHADOW_ELIGIBILITY_ONLY"},
             "policy": {"min_significant_delta_s": 0.08, "status": "SHADOW_ELIGIBILITY_ONLY",
                        "historical_actions_authorized": False, "historical_coaching_authorized": False,
                        "session_reference_remains_authority": True},
@@ -425,7 +425,7 @@ class TestEvaluateCandidate:
         r1 = hce.evaluate_candidate(c1)
         r2 = hce.evaluate_candidate(c2)
         output = {
-            "metadata": {"schema_version": "1.0", "eligibility_version": "0.1", "status": "SHADOW_ELIGIBILITY_ONLY"},
+            "metadata": {"schema_version": "1.0", "eligibility_version": "0.2", "status": "SHADOW_ELIGIBILITY_ONLY"},
             "policy": {"min_significant_delta_s": 0.08, "status": "SHADOW_ELIGIBILITY_ONLY",
                        "historical_actions_authorized": False, "historical_coaching_authorized": False,
                        "session_reference_remains_authority": True},
@@ -440,7 +440,7 @@ class TestEvaluateCandidate:
         c1 = _candidate("cand_001", "a1", delta_change_s=0.10)
         r1 = hce.evaluate_candidate(c1)
         output = {
-            "metadata": {"schema_version": "1.0", "eligibility_version": "0.1", "status": "SHADOW_ELIGIBILITY_ONLY"},
+            "metadata": {"schema_version": "1.0", "eligibility_version": "0.2", "status": "SHADOW_ELIGIBILITY_ONLY"},
             "policy": {"min_significant_delta_s": 0.08, "status": "SHADOW_ELIGIBILITY_ONLY",
                        "historical_actions_authorized": True, "historical_coaching_authorized": True,
                        "session_reference_remains_authority": True},
@@ -455,7 +455,7 @@ class TestEvaluateCandidate:
         c1 = _candidate("cand_001", "a1", delta_change_s=0.10)
         r1 = hce.evaluate_candidate(c1)
         output = {
-            "metadata": {"schema_version": "1.0", "eligibility_version": "0.1", "status": "SHADOW_ELIGIBILITY_ONLY"},
+            "metadata": {"schema_version": "1.0", "eligibility_version": "0.2", "status": "SHADOW_ELIGIBILITY_ONLY"},
             "policy": {"min_significant_delta_s": 0.08, "status": "SHADOW_ELIGIBILITY_ONLY",
                        "historical_actions_authorized": True, "historical_coaching_authorized": False,
                        "session_reference_remains_authority": True},
@@ -496,7 +496,7 @@ class TestEvaluateCandidates:
         candidate = _candidate("c1", "a1", delta_change_s=0.10)
         # For the validator, we need a batch-level output
         batch = {
-            "metadata": {"schema_version": "1.0", "eligibility_version": "0.1", "status": "SHADOW_ELIGIBILITY_ONLY"},
+            "metadata": {"schema_version": "1.0", "eligibility_version": "0.2", "status": "SHADOW_ELIGIBILITY_ONLY"},
             "policy": {"min_significant_delta_s": 0.08, "status": "SHADOW_ELIGIBILITY_ONLY",
                        "historical_actions_authorized": False, "historical_coaching_authorized": False,
                        "session_reference_remains_authority": True},
@@ -674,7 +674,9 @@ class TestNormalizeH53aRawCandidate:
             tmp_path = Path(tmp)
             src_path = tmp_path / "h53a_source.json"
             src_path.write_text(json.dumps(raw, ensure_ascii=False) + "\n")
-            norm = hce.normalize_h5_3a_candidate_for_eligibility(raw, src_path, ctx)
+            norm = hce.normalize_h5_3a_candidate_for_eligibility(
+                raw, src_path, ctx, session_delta_sign="current_slower"
+            )
             # Verify normalizer output structure
             assert norm["audit_id"] == f"{hce._sha256_file(src_path)}:cand_001"
             assert norm["candidate_id"] == "cand_001"
@@ -699,7 +701,9 @@ class TestNormalizeH53aRawCandidate:
             tmp_path = Path(tmp)
             src_path = tmp_path / "h53a_source.json"
             src_path.write_text(json.dumps(raw, ensure_ascii=False) + "\n")
-            norm = hce.normalize_h5_3a_candidate_for_eligibility(raw, src_path, ctx)
+            norm = hce.normalize_h5_3a_candidate_for_eligibility(
+                raw, src_path, ctx, session_delta_sign="current_slower"
+            )
             assert norm["evidence"]["delta_change_s"] == 0.076
             dataset = {"context": ctx, "candidates": [norm]}
             ds_path = tmp_path / "dataset.json"
@@ -716,7 +720,9 @@ class TestNormalizeH53aRawCandidate:
             tmp_path = Path(tmp)
             src_path = tmp_path / "h53a_source.json"
             src_path.write_text(json.dumps(raw, ensure_ascii=False) + "\n")
-            norm = hce.normalize_h5_3a_candidate_for_eligibility(raw, src_path, ctx)
+            norm = hce.normalize_h5_3a_candidate_for_eligibility(
+                raw, src_path, ctx, session_delta_sign="current_faster"
+            )
             assert norm["delta_sign"] == "current_faster"
             dataset = {"context": ctx, "candidates": [norm]}
             ds_path = tmp_path / "dataset.json"
@@ -754,8 +760,12 @@ class TestNormalizeH53aRawCandidate:
             tmp_path = Path(tmp)
             src_path = tmp_path / "source.json"
             src_path.write_text(json.dumps(raw1, ensure_ascii=False) + "\n")
-            norm1 = hce.normalize_h5_3a_candidate_for_eligibility(raw1, src_path, ctx)
-            norm2 = hce.normalize_h5_3a_candidate_for_eligibility(raw2, src_path, ctx)
+            norm1 = hce.normalize_h5_3a_candidate_for_eligibility(
+                raw1, src_path, ctx, session_delta_sign="current_slower"
+            )
+            norm2 = hce.normalize_h5_3a_candidate_for_eligibility(
+                raw2, src_path, ctx, session_delta_sign="current_slower"
+            )
             assert norm1["audit_id"] == norm2["audit_id"]
             expected_sha = hce._sha256_file(src_path)
             assert norm1["audit_id"] == f"{expected_sha}:cand_det"
@@ -768,7 +778,9 @@ class TestNormalizeH53aRawCandidate:
             tmp_path = Path(tmp)
             src_path = tmp_path / "source.json"
             src_path.write_text(json.dumps(raw, ensure_ascii=False) + "\n")
-            norm = hce.normalize_h5_3a_candidate_for_eligibility(raw, src_path, ctx)
+            norm = hce.normalize_h5_3a_candidate_for_eligibility(
+                raw, src_path, ctx, session_delta_sign="current_slower"
+            )
             assert norm["source_artifact_sha256"] == hce._sha256_file(src_path)
 
 
@@ -839,7 +851,15 @@ class TestNormalizeH53aBatch:
                 "authorization": {"action_authorized": False, "observational_only": True},
                 "limitations": ["test_limitation"],
             })
-        return {"context": context, "candidates": candidates}
+        return {
+            "context": context,
+            "total_delta": {
+                "current_minus_historical_s": 1.0,
+                "sign": "current_slower",
+                "tolerance_s": 0.05,
+            },
+            "candidates": candidates,
+        }
 
     def test_9_significant_candidates_all_eligible(self):
         """Test 4: 9 significant candidates (delta > 0.08) → 9 ELIGIBLE."""
@@ -880,6 +900,36 @@ class TestNormalizeH53aBatch:
         assert by_status.get("WITHHELD", 0) == 3, \
             f"Expected 3 WITHHELD, got {by_status}"
 
+    def test_global_current_faster_sign_is_not_replaced_by_local_zone_loss(self):
+        batch = self._make_h53a_batch([0.16, 0.11])
+        batch["total_delta"] = {
+            "current_minus_historical_s": -0.18,
+            "sign": "current_faster",
+            "tolerance_s": 0.05,
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            src_path = Path(tmp) / "current_faster.json"
+            src_path.write_text(json.dumps(batch, ensure_ascii=False) + "\n")
+            normalized = hce.normalize_h5_3a_candidates_for_eligibility(src_path)
+
+        assert [item["delta_sign"] for item in normalized] == [
+            "current_faster",
+            "current_faster",
+        ]
+        assert [item["evidence"]["delta_change_s"] for item in normalized] == [
+            0.16,
+            0.11,
+        ]
+
+    def test_global_delta_sign_mismatch_fails_closed(self):
+        batch = self._make_h53a_batch([0.16])
+        batch["total_delta"]["sign"] = "current_faster"
+        with tempfile.TemporaryDirectory() as tmp:
+            src_path = Path(tmp) / "mismatch.json"
+            src_path.write_text(json.dumps(batch, ensure_ascii=False) + "\n")
+            with pytest.raises(ValueError, match="no coincide"):
+                hce.normalize_h5_3a_candidates_for_eligibility(src_path)
+
     def test_malformed_batch_raises(self):
         """Test 7: malformed H5.3a batch → ValueError (fail closed)."""
         batch = {"context": {"track": "X"}, "candidates": [
@@ -900,7 +950,9 @@ class TestNormalizeH53aBatch:
             tmp_path = Path(tmp)
             src_path = tmp_path / "source.json"
             src_path.write_text(json.dumps(raw, ensure_ascii=False) + "\n")
-            norm = hce.normalize_h5_3a_candidate_for_eligibility(raw, src_path, ctx)
+            norm = hce.normalize_h5_3a_candidate_for_eligibility(
+                raw, src_path, ctx, session_delta_sign="current_slower"
+            )
             assert norm["label"] is None
             dataset = {"context": ctx, "candidates": [norm]}
             ds_path = tmp_path / "dataset.json"
@@ -930,7 +982,9 @@ class TestNormalizeH53aBatch:
             tmp_path = Path(tmp)
             src_path = tmp_path / "source.json"
             src_path.write_text(json.dumps(raw, ensure_ascii=False) + "\n")
-            norm = hce.normalize_h5_3a_candidate_for_eligibility(raw, src_path, ctx)
+            norm = hce.normalize_h5_3a_candidate_for_eligibility(
+                raw, src_path, ctx, session_delta_sign="current_slower"
+            )
         assert norm["location_label"] == "UNKNOWN"
 
     def test_empty_channels_no_action_invented(self):
@@ -941,7 +995,9 @@ class TestNormalizeH53aBatch:
             tmp_path = Path(tmp)
             src_path = tmp_path / "source.json"
             src_path.write_text(json.dumps(raw, ensure_ascii=False) + "\n")
-            norm = hce.normalize_h5_3a_candidate_for_eligibility(raw, src_path, ctx)
+            norm = hce.normalize_h5_3a_candidate_for_eligibility(
+                raw, src_path, ctx, session_delta_sign="current_slower"
+            )
             dataset = {"context": ctx, "candidates": [norm]}
             ds_path = tmp_path / "dataset.json"
             ds_path.write_text(json.dumps(dataset, ensure_ascii=False) + "\n")

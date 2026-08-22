@@ -10,7 +10,7 @@ Este README documenta el flujo operativo actual del proyecto: análisis de una s
 
 > Automatización de History: [`docs/AUTOMATIC_TELEMETRY_INGEST_V0_1.md`](docs/AUTOMATIC_TELEMETRY_INGEST_V0_1.md). Menú contextual seguro: [`docs/RACE_ENGINEER_CONTEXT_MENU.md`](docs/RACE_ENGINEER_CONTEXT_MENU.md).
 
-> Interfaz de escritorio: [`docs/RACE_ENGINEER_GUI_V1_4.md`](docs/RACE_ENGINEER_GUI_V1_4.md).
+> Interfaz de escritorio: [`docs/RACE_ENGINEER_GUI_V1_5.md`](docs/RACE_ENGINEER_GUI_V1_5.md).
 
 > Traspaso para continuar en ChatGPT actualizado al 22/08/2026: [`docs/CHATGPT_HANDOFF_2026_08_22.md`](docs/CHATGPT_HANDOFF_2026_08_22.md).
 
@@ -1284,6 +1284,9 @@ Nivel 2: `historical_action_policy.py` construye candidatos de acción cerrados 
 freno/acelerador solamente para comparaciones seleccionadas de vueltas actuales más
 lentas; la velocidad y el tiempo nunca se convierten en acciones, las vueltas más
 rápidas quedan retenidas y `historical_actions_authorized` permanece en `false`.
+La elegibilidad runtime v0.2 conserva el signo global de la comparación separado de
+los deltas locales de zona, de modo que una vuelta globalmente `current_faster` queda
+retenida aunque contenga zonas locales con pérdida.
 El pipeline runtime adicional usa selección determinista por defecto y no llama a
 ningún modelo salvo que `H5_3_BACKEND` se configure explícitamente como `deepseek`,
 `ollama` o `llamacpp`. Sus artefactos reutilizables quedan bajo

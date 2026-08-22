@@ -58,7 +58,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.4"
+GUI_VERSION = "1.5"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 PROJECT_ROOT = Path(__file__).resolve().parent
 BACKEND_LABELS = {
@@ -138,8 +138,13 @@ class RaceEngineerApp:
         style = self.ttk.Style(self.root)
         if "clam" in style.theme_names():
             style.theme_use("clam")
+        self.root.option_add("*TCombobox*Listbox.background", "#15181c")
+        self.root.option_add("*TCombobox*Listbox.foreground", "#dce7ef")
+        self.root.option_add("*TCombobox*Listbox.selectBackground", "#315b60")
+        self.root.option_add("*TCombobox*Listbox.selectForeground", "#f4fbff")
         style.configure("App.TFrame", background="#101010")
         style.configure("Panel.TFrame", background="#1c1c1c")
+        style.configure("TPanedwindow", background="#101010", sashwidth=6)
         style.configure(
             "Title.TLabel",
             background="#101010",
@@ -165,13 +170,28 @@ class RaceEngineerApp:
             font=("Segoe UI", 9),
         )
         style.configure(
+            "DialogTitle.TLabel",
+            background="#1c1c1c",
+            foreground="#f2f7fb",
+            font=("Segoe UI Semibold", 16),
+        )
+        style.configure(
+            "TSeparator",
+            background="#343b42",
+            bordercolor="#343b42",
+        )
+        style.configure(
             "Accent.TButton",
             font=("Segoe UI Semibold", 10),
             foreground="#061014",
             background="#45d4c2",
             padding=(12, 7),
         )
-        style.map("Accent.TButton", background=[("active", "#67e5d5")])
+        style.map(
+            "Accent.TButton",
+            background=[("pressed", "#2aa999"), ("active", "#67e5d5"), ("disabled", "#31504f")],
+            foreground=[("disabled", "#809390")],
+        )
         style.configure(
             "Analyze.TButton",
             font=("Segoe UI Semibold", 10),
@@ -179,22 +199,103 @@ class RaceEngineerApp:
             background="#7d2938",
             padding=(12, 7),
         )
-        style.map("Analyze.TButton", background=[("active", "#9b3548")])
+        style.map(
+            "Analyze.TButton",
+            background=[("pressed", "#66212e"), ("active", "#9b3548"), ("disabled", "#42262d")],
+            foreground=[("disabled", "#8e777c")],
+        )
         style.configure(
             "TCheckbutton",
             background="#101010",
             foreground="#c9c9c9",
             font=("Segoe UI", 9),
         )
-        style.map("TCheckbutton", background=[("active", "#101010")])
-        style.configure("TButton", font=("Segoe UI", 10), padding=(10, 7))
+        style.map(
+            "TCheckbutton",
+            background=[("active", "#101010")],
+            foreground=[("disabled", "#666f77")],
+            indicatorcolor=[("selected", "#45d4c2"), ("!selected", "#30363c")],
+        )
+        style.configure(
+            "TButton",
+            background="#252a2f",
+            foreground="#dce7ef",
+            borderwidth=0,
+            focusthickness=1,
+            focuscolor="#45d4c2",
+            padding=(10, 7),
+            relief="flat",
+            font=("Segoe UI", 10),
+        )
+        style.map(
+            "TButton",
+            background=[("pressed", "#202429"), ("active", "#343b42"), ("disabled", "#1f2225")],
+            foreground=[("disabled", "#69747d")],
+        )
+        style.configure(
+            "TEntry",
+            fieldbackground="#15181c",
+            foreground="#e4edf3",
+            bordercolor="#343b42",
+            lightcolor="#343b42",
+            darkcolor="#343b42",
+            insertcolor="#55decf",
+            padding=(8, 7),
+            relief="flat",
+        )
+        style.map(
+            "TEntry",
+            bordercolor=[("focus", "#45d4c2"), ("disabled", "#252a2f")],
+            fieldbackground=[("disabled", "#202327")],
+            foreground=[("disabled", "#69747d")],
+        )
+        style.configure(
+            "TCombobox",
+            fieldbackground="#15181c",
+            background="#252a2f",
+            foreground="#e4edf3",
+            arrowcolor="#9fb2c1",
+            bordercolor="#343b42",
+            lightcolor="#343b42",
+            darkcolor="#343b42",
+            borderwidth=0,
+            padding=(8, 6),
+            relief="flat",
+        )
+        style.map(
+            "TCombobox",
+            fieldbackground=[("readonly", "#15181c"), ("disabled", "#202327")],
+            background=[("active", "#343b42"), ("readonly", "#252a2f"), ("disabled", "#202327")],
+            foreground=[("readonly", "#e4edf3"), ("disabled", "#69747d")],
+            arrowcolor=[("active", "#55decf"), ("disabled", "#69747d")],
+            bordercolor=[("focus", "#45d4c2")],
+        )
+        scrollbar_options = {
+            "background": "#39434b",
+            "troughcolor": "#15181c",
+            "bordercolor": "#15181c",
+            "lightcolor": "#39434b",
+            "darkcolor": "#39434b",
+            "arrowcolor": "#91a6b8",
+            "borderwidth": 0,
+            "width": 10,
+            "relief": "flat",
+        }
+        for scrollbar_style in ("Vertical.TScrollbar", "Horizontal.TScrollbar"):
+            style.configure(scrollbar_style, **scrollbar_options)
+            style.map(
+                scrollbar_style,
+                background=[("pressed", "#55decf"), ("active", "#53616b")],
+                arrowcolor=[("active", "#e4edf3")],
+            )
         style.configure(
             "Treeview",
             background="#171717",
             fieldbackground="#171717",
             foreground="#dce7ef",
-            rowheight=29,
+            rowheight=30,
             borderwidth=0,
+            relief="flat",
             font=("Segoe UI", 9),
         )
         style.configure(
@@ -203,20 +304,43 @@ class RaceEngineerApp:
             foreground="#dce7ef",
             font=("Segoe UI Semibold", 9),
             padding=(5, 8),
+            borderwidth=0,
+            relief="flat",
         )
-        style.map("Treeview", background=[("selected", "#3b3b3b")])
+        style.map(
+            "Treeview",
+            background=[("selected", "#315b60")],
+            foreground=[("selected", "#f4fbff")],
+        )
+        style.map(
+            "Treeview.Heading",
+            background=[("active", "#343b42")],
+            foreground=[("active", "#55decf")],
+        )
         style.configure("TNotebook", background="#1c1c1c", borderwidth=0)
         style.configure(
             "TNotebook.Tab",
             background="#2a2a2a",
             foreground="#b8c7d3",
-            padding=(14, 8),
+            padding=(14, 9),
             font=("Segoe UI Semibold", 9),
+            borderwidth=0,
+            focuscolor="#1c1c1c",
         )
         style.map(
             "TNotebook.Tab",
-            background=[("selected", "#1c1c1c")],
-            foreground=[("selected", "#55decf")],
+            background=[("selected", "#1c1c1c"), ("active", "#343b42"), ("disabled", "#202327")],
+            foreground=[("selected", "#55decf"), ("active", "#e4edf3"), ("disabled", "#69747d")],
+        )
+        style.configure(
+            "Horizontal.TProgressbar",
+            background="#45d4c2",
+            troughcolor="#252a2f",
+            bordercolor="#252a2f",
+            lightcolor="#45d4c2",
+            darkcolor="#45d4c2",
+            borderwidth=0,
+            thickness=5,
         )
 
     def _build_layout(self):
@@ -384,11 +508,14 @@ class RaceEngineerApp:
         text = self.tk.Text(
             frame,
             wrap="word",
-            background="#151515",
+            background="#15181c",
             foreground="#dce7ef",
-            insertbackground="#dce7ef",
-            selectbackground="#3b3b3b",
+            insertbackground="#55decf",
+            selectbackground="#315b60",
+            selectforeground="#f4fbff",
             relief="flat",
+            borderwidth=0,
+            highlightthickness=0,
             padx=18,
             pady=16,
             font=("Segoe UI", 10),
@@ -419,9 +546,9 @@ class RaceEngineerApp:
         ).pack(fill="x", padx=8, pady=(4, 8))
         canvas = self.tk.Canvas(
             frame,
-            background="#0d0d0d",
+            background="#0b0e10",
             highlightthickness=1,
-            highlightbackground="#333333",
+            highlightbackground="#2d343a",
         )
         canvas.pack(fill="both", expand=True)
         canvas.bind("<Configure>", lambda _event: self._render_track_map())
@@ -450,9 +577,9 @@ class RaceEngineerApp:
         telemetry_canvas = self.tk.Canvas(
             frame,
             height=180,
-            background="#111111",
+            background="#111418",
             highlightthickness=1,
-            highlightbackground="#333333",
+            highlightbackground="#2d343a",
         )
         telemetry_canvas.pack(fill="x", padx=0, pady=(4, 0))
         telemetry_canvas.configure(cursor="crosshair")
@@ -552,8 +679,10 @@ class RaceEngineerApp:
                     format_lap_time(session.reference_time_s),
                     session.status_detail,
                 ),
-                tags=(session.status,),
+                tags=("row_even" if index % 2 == 0 else "row_odd", session.status),
             )
+        self.tree.tag_configure("row_even", background="#171717")
+        self.tree.tag_configure("row_odd", background="#1b1f23")
         self.tree.tag_configure("DEBRIEF_READY", foreground="#67e5d5")
         self.tree.tag_configure("HISTORY_READY", foreground="#f0c674")
         self.tree.tag_configure("FAILED", foreground="#ff7b72")

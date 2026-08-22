@@ -1,7 +1,7 @@
 # Race Engineer — PROJECT_CONTEXT v1.0
 
 > Canonical end-to-end onboarding context for coding agents and LLMs working on the Race Engineer repository.
-> Baseline represented here: GUI v1.4, H5.4 P1–P11 and historical-shadow checkpoint 2026-08-22.
+> Baseline represented here: GUI v1.5, H5.4 P1–P11 and historical-shadow checkpoint 2026-08-22.
 >
 > This is the detailed mental model of the project. `AGENTS.md` should instruct coding agents to read this file before non-trivial work.
 
@@ -147,12 +147,12 @@ DeepSeek pseudo-labels/reviews are assistance and must never be silently mixed w
 
 # 4. Current operational baseline
 
-Checkpoint: **2026-08-22 GUI v1.4, H5.4 presentation and historical shadow**.
+Checkpoint: **2026-08-22 GUI v1.5, H5.4 presentation and historical shadow**.
 
 | Component | Current operational baseline |
 |---|---|
 | `race_engineer.py` | orchestrator v0.3 |
-| `race_engineer_gui.py` | v1.4 / P11 focus + GPS map + 10 Hz telemetry chart |
+| `race_engineer_gui.py` | v1.5 / H6.5 visual polish + P11 focus + GPS map + 10 Hz telemetry chart |
 | `analyze_telemetry.py` | v3.8 + Objective Python v6 |
 | Brake point | 2.1 / schema 2.1 |
 | Throttle point | 1.2.1 / schema 1.2 |
@@ -540,7 +540,7 @@ from the physical-point sentence into `Segundo cue`.
 
 H5.4 P10/P11 are deterministic presentation projections over the already authorized
 plan. P11 exposes at most two focus items from the P10 presentation order and never
-mutates, filters or re-authorizes `next_stint_plan`. GUI v1.4 presents that focus only
+mutates, filters or re-authorizes `next_stint_plan`. GUI v1.5 presents that focus only
 when its count, unique labels and complete-plan subset are consistent; otherwise it
 falls back to the original three-zone plan. The complete validated plan always remains
 visible for traceability.
@@ -908,6 +908,16 @@ deduplicated items across Imola, Interlagos and Fuji (13 `ACTION_USEFUL`, 2
 coverage is absent. Even its strongest possible verdict only permits an explicit
 product decision; it cannot authorize historical actions automatically.
 
+H5.3 runtime eligibility v0.2 preserves the whole-lap `total_delta.sign` separately
+from each zone's local `delta_change_s`. Local losses remain eligible for shadow
+selection, but the action-policy anti-regression guard uses only the validated
+whole-lap sign. A real Interlagos replay (`-0.180 s` current minus historical)
+therefore yields zero actions and three `current_lap_faster_no_actions` withheld
+candidates. The orchestrator reuse signature includes every imported H5.3 shadow
+policy/validator module, preventing stale pre-fix action artifacts from being reused.
+This runtime evidence still requires explicit human review before it can close the
+H5.3f `current_faster` coverage gap.
+
 ---
 
 # 21. Track profiles and nomenclature
@@ -1142,7 +1152,7 @@ do not need to be copied into the repository.
 The desktop entry point is `RaceEngineer.pyw` (implementation:
 `race_engineer_gui.py`). Its catalogue is owned by `race_engineer_ui_model.py` and
 uses orchestrator `state.json` rather than scanning result filenames heuristically.
-GUI v1.4 can search/filter sessions and inspect deterministic lap times, validated debriefs,
+GUI v1.5 can search/filter sessions and inspect deterministic lap times, validated debriefs,
 next-stint plans, pipeline statuses, schema-4 History and the exact H4
 historical-reference selection, plus the raw and validated observational H5.2
 historical comparison. It also reconstructs a read-only GPS circuit map from the
@@ -1178,7 +1188,9 @@ streaming progress. A per-run, opt-in override can omit only the 10-minute
 file-age wait; LMU-running, authorized-root, telemetry type, 5 MiB and two-valid-lap
 gates remain mandatory. The scheduled automatic ingest never uses this override.
 The launcher remains the sole safety authority and the GUI never offers
-cancellation. See `docs/RACE_ENGINEER_GUI_V1_4.md`.
+cancellation. GUI v1.5 adds presentation-only H6.5 control chrome: flat dark entries
+and comboboxes, thin scrollbars, modernized Treeview selection/headings, cleaner tabs
+and a compact progress bar. See `docs/RACE_ENGINEER_GUI_V1_5.md`.
 
 The scheduled task must execute `hidden_history_ingest.py` through `pythonw.exe`.
 That wrapper preserves the same maintenance arguments, creates no console window and

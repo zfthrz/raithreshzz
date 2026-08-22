@@ -622,6 +622,57 @@ def test_pipeline_writes_reusable_named_artifacts(tmp_path: Path) -> None:
     assert (output_dir / "historical_actions.json").is_file()
     assert (output_dir / "shadow_pipeline.json").is_file()
 
+
+def test_raw_h5_3a_current_faster_with_local_losses_is_withheld(tmp_path: Path) -> None:
+    candidates = []
+    for index, local_delta in enumerate((0.16, 0.11), start=1):
+        candidates.append({
+            "candidate_id": f"cand_{index:03d}",
+            "source_trend_zone_id": f"trend_{index:03d}",
+            "source_zone_index": index - 1,
+            "location": {"segment_name": f"T{index}"},
+            "current_minus_historical": {
+                "delta_change_s": local_delta,
+                "start_distance_m": 100.0 * index,
+                "end_distance_m": 100.0 * index + 60.0,
+                "distance_m": 60.0,
+            },
+            "observational_channel_evidence": {
+                "speed_delta_avg": -3.0,
+                "throttle_delta_avg": 2.0,
+                "brake_delta_avg": -2.0,
+            },
+            "authorization": {"action_authorized": False, "observational_only": True},
+            "limitations": ["test_current_faster"],
+        })
+    raw_h5_3a = {
+        "context": {
+            "track": "Autódromo José Carlos Pace",
+            "track_layout": "Autódromo José Carlos Pace",
+            "vehicle_variant": "LMP2_ELMS",
+            "car_name_raw": "IDEC Sport #18:ELMS25",
+        },
+        "total_delta": {
+            "current_minus_historical_s": -0.18,
+            "sign": "current_faster",
+            "tolerance_s": 0.05,
+        },
+        "candidates": candidates,
+    }
+    source = _write_candidates_json(tmp_path / "raw_current_faster.json", raw_h5_3a)
+
+    result = pipeline.run_pipeline(source, output_dir=tmp_path / "shadow")
+
+    assert result["status"] == "SUCCESS"
+    actions = result["pipeline_artifacts"]["action_policy"]
+    assert actions["actions"] == []
+    assert len(actions["withheld"]) == 2
+    assert {item["delta_sign"] for item in actions["withheld"]} == {"current_faster"}
+    assert {item["reason"] for item in actions["withheld"]} == {
+        "current_lap_faster_no_actions"
+    }
+    assert actions["coaching_authority"]["historical_actions_authorized"] is False
+
     def test_system_prompt_enforces_per_candidate(self):
         """system_prompt debe mencionar authorized_observations por candidato."""
         from historical_candidate_selection import system_prompt

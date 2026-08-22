@@ -81,8 +81,11 @@ class HistoryBrowser:
         self.title = tk.StringVar(value="Seleccioná una sesión histórica")
         ttk.Label(right, textvariable=self.title, style="Metric.TLabel").pack(anchor="w", pady=(0, 8))
         self.detail = tk.Text(
-            right, wrap="word", background="#151515", foreground="#dce7ef",
-            relief="flat", padx=16, pady=14, font=("Segoe UI", 10),
+            right, wrap="word", background="#15181c", foreground="#dce7ef",
+            insertbackground="#55decf", selectbackground="#315b60",
+            selectforeground="#f4fbff", relief="flat", borderwidth=0,
+            highlightthickness=0, padx=16, pady=14, font=("Segoe UI", 10),
+            spacing1=2, spacing3=4,
         )
         detail_scroll = ttk.Scrollbar(right, orient="vertical", command=self.detail.yview)
         self.detail.configure(yscrollcommand=detail_scroll.set)
@@ -129,7 +132,10 @@ class HistoryBrowser:
                     session.valid_lap_count,
                     format_lap_time(session.reference_time_s),
                 ),
+                tags=("row_even" if index % 2 == 0 else "row_odd",),
             )
+        self.tree.tag_configure("row_even", background="#171717")
+        self.tree.tag_configure("row_odd", background="#1b1f23")
         self.count.set(f"{len(self.filtered)} de {len(self.sessions)} sesiones")
         target = self._preferred_index()
         if target is None and self.filtered:

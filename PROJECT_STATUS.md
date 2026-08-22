@@ -9,7 +9,7 @@ Validated baseline:
 
 - full pytest: `1000 PASS / 0 FAIL / 0 SKIP`;
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP` (last analyzer-affecting checkpoint);
-- GUI: v1.4, deterministic H5.4 P11 focus over the preserved complete plan;
+- GUI: v1.5, H6.5 visual polish + deterministic H5.4 P11 focus over the preserved complete plan;
 - H5.3: shadow implementation complete, production historical actions still disabled.
 
 ### analyze_telemetry
@@ -40,7 +40,7 @@ Current: deterministic P1–P11 implemented in the canonical LLM backends.
 - P10 creates a presentation-only plan projection;
 - P11 takes at most two items from that projection as driver focus;
 - P10/P11 never mutate or re-authorize `next_stint_plan`;
-- GUI v1.4 shows a consistent P11 focus first and preserves the complete plan below;
+- GUI v1.5 shows a consistent P11 focus first and preserves the complete plan below;
 - five recent real debriefs exposed `ACTIVE / 2` focus, while older artifacts safely
   fall back to the complete plan.
 
@@ -58,6 +58,12 @@ absent, so production authority remains disabled. See
 H5.3f v0.2 consumes that real review and returns `EVIDENCE_INCOMPLETE`: Monza,
 `current_faster`, isolated `increase_brake` and isolated `reduce_brake` review
 branches are missing. This is an expected evidence verdict, not a pipeline failure.
+
+H5.3 runtime eligibility v0.2 now keeps whole-lap delta authority separate from
+zone-local losses. The real Interlagos `-0.180 s` current-faster replay validates
+with zero actions and three `current_lap_faster_no_actions` withheld candidates.
+The runtime artifact is ready for human review but does not yet satisfy the H5.3f
+reviewed-evidence requirement. Shadow authority remains false.
 
 ### history
 Current: `session_history v1.4 / schema 4`
@@ -178,6 +184,9 @@ Implemented H5.3 slice:
   actions and faster-lap candidates are withheld. The validator reconstructs the
   deterministic result from its hashed selection source. Production authority stays
   false (`historical_actions_authorized=false`).
+- H5.3 runtime eligibility `0.2` carries the validated whole-lap delta sign through
+  selection/action policy while retaining zone-local delta only as ranking evidence;
+  imported policy and validator hashes now participate in orchestrator reuse.
 - the additional runtime shadow pipeline uses one selection contract for its
   deterministic and optional LLM backends. Deterministic is the default, so normal
   orchestration performs no hidden API/local-model call. Stable artifacts are written
@@ -444,6 +453,12 @@ non-focus plan intervals remain muted blue. Five recent real debriefs expose val
 two-item focus; the latest Imola view rendered A/C focus over the preserved A/C/B
 plan. No ranking, cue or coaching authority changes. See
 `docs/RACE_ENGINEER_GUI_V1_4.md`.
+
+GUI v1.5 implements the H6.5 presentation-only polish while retaining Tkinter/ttk:
+flat dark entries and comboboxes, 10 px scrollbars, consistent button states,
+modernized Treeview headings/selection, cleaner notebook tabs and a compact flat
+progress bar. No session logic, map/telemetry interaction, ranking or coaching
+authority changed. See `docs/RACE_ENGINEER_GUI_V1_5.md`.
 
 Calibration batch orchestrator `1.5` requires the current History schema 4 contract,
 reports its runtime version consistently and has a regression test against schema drift.

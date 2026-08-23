@@ -466,6 +466,42 @@ def pan_track_canvas_view(
     )
 
 
+def focus_track_canvas_view(
+    fitted_interval_points: tuple[tuple[float, float], ...],
+    *,
+    width_px: float,
+    height_px: float,
+    padding_px: float = 55.0,
+    max_scale: float = 8.0,
+) -> tuple[float, float, float]:
+    """Center and enlarge one validated distance interval on the GPS canvas."""
+    if not fitted_interval_points:
+        return 1.0, 0.0, 0.0
+    if width_px <= 0 or height_px <= 0 or padding_px < 0 or max_scale < 1.0:
+        raise ValueError("Parámetros de enfoque del mapa inválidos.")
+    min_x = min(point[0] for point in fitted_interval_points)
+    max_x = max(point[0] for point in fitted_interval_points)
+    min_y = min(point[1] for point in fitted_interval_points)
+    max_y = max(point[1] for point in fitted_interval_points)
+    available_width = max(width_px - 2.0 * padding_px, 1.0)
+    available_height = max(height_px - 2.0 * padding_px, 1.0)
+    interval_width = max_x - min_x
+    interval_height = max_y - min_y
+    scale_candidates = [max_scale]
+    if interval_width > 1e-9:
+        scale_candidates.append(available_width / interval_width)
+    if interval_height > 1e-9:
+        scale_candidates.append(available_height / interval_height)
+    scale = min(max(min(scale_candidates), 1.0), max_scale)
+    center_x = (min_x + max_x) / 2.0
+    center_y = (min_y + max_y) / 2.0
+    return (
+        scale,
+        width_px / 2.0 - center_x * scale,
+        height_px / 2.0 - center_y * scale,
+    )
+
+
 def nearest_fitted_point_index(
     fitted_points: tuple[tuple[float, float], ...],
     *,
@@ -761,6 +797,16 @@ def point_index_for_distance(
         if point.lap_distance_m is not None
     )
     return min(candidates, default=(math.inf, None))[1]
+
+
+def turn_for_number(
+    turns: tuple[TrackMapTurn, ...],
+    turn_number: int,
+) -> TrackMapTurn | None:
+    for turn in turns:
+        if turn.turn == turn_number:
+            return turn
+    return None
 
 
 def zone_for_distance(

@@ -46,6 +46,7 @@ from race_engineer_track_map import (
     TrackMapZone,
     build_track_telemetry_chart,
     fit_track_points,
+    focus_track_canvas_view,
     load_track_map,
     load_track_profile,
     load_track_priorities,
@@ -60,6 +61,7 @@ from race_engineer_track_map import (
     summarize_track_interval,
     telemetry_chart_x_for_distance,
     transform_fitted_track_points,
+    turn_for_number,
     zoom_distance_window,
     zoom_track_canvas_view,
     zone_for_distance,
@@ -67,7 +69,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.10"
+GUI_VERSION = "1.11"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 PROJECT_ROOT = Path(__file__).resolve().parent
 BACKEND_LABELS = {
@@ -630,15 +632,34 @@ class RaceEngineerApp:
             state="disabled",
         )
         self.track_map_zoom_reset_button.pack(side="right")
+        turn_controls = self.ttk.Frame(frame, style="Panel.TFrame")
+        turn_controls.pack(fill="x", pady=(4, 0))
+        self.ttk.Label(
+            turn_controls,
+            text="Navegación por curva:",
+            style="Muted.TLabel",
+        ).pack(side="left")
         self.show_track_profile_var = self.tk.BooleanVar(value=False)
         self.track_profile_layer_check = self.ttk.Checkbutton(
-            map_zoom_controls,
-            text="Curvas",
+            turn_controls,
+            text="Mostrar curvas",
             variable=self.show_track_profile_var,
             command=self._render_track_map,
             state="disabled",
         )
-        self.track_profile_layer_check.pack(side="right", padx=(0, 12))
+        self.track_profile_layer_check.pack(side="right")
+        self.track_turn_selector_var = self.tk.StringVar(value="Elegir curva…")
+        self.track_turn_selector = self.ttk.Combobox(
+            turn_controls,
+            textvariable=self.track_turn_selector_var,
+            state="disabled",
+            width=28,
+        )
+        self.track_turn_selector.pack(side="left", padx=(8, 12))
+        self.track_turn_selector.bind(
+            "<<ComboboxSelected>>",
+            self._on_track_turn_selected,
+        )
         self.track_map_zone_status = self.tk.StringVar(
             value="Sin zonas H5.2 para esta sesión."
         )
@@ -881,7 +902,7 @@ class RaceEngineerApp:
         self.current_track_priorities = ()
         self.current_track_profile = None
         self.current_track_turns = ()
-        self.track_profile_layer_check.configure(state="disabled")
+        self._update_track_turn_controls()
         self.current_fitted_track_points = ()
         self.selected_track_overlay = None
         self.selected_track_point_index = None
@@ -910,7 +931,7 @@ class RaceEngineerApp:
         self.current_track_priorities = ()
         self.current_track_profile = None
         self.current_track_turns = ()
-        self.track_profile_layer_check.configure(state="disabled")
+        self._update_track_turn_controls()
         self.current_fitted_track_points = ()
         self.selected_track_overlay = None
         self.selected_track_point_index = None
@@ -960,9 +981,7 @@ class RaceEngineerApp:
                 self.current_track_profile = None
                 self.current_track_turns = ()
                 layer_errors.append(f"perfil: {exc}")
-            self.track_profile_layer_check.configure(
-                state="normal" if self.current_track_turns else "disabled"
-            )
+            self._update_track_turn_controls()
             try:
                 self.current_track_zones = load_track_zones(record.cross_session_path)
             except (OSError, UnicodeDecodeError, ValueError) as exc:
@@ -1048,9 +1067,7 @@ class RaceEngineerApp:
                 self.current_track_priorities = priorities
                 self.current_track_profile = profile
                 self.current_track_turns = profile_turns(profile)
-                self.track_profile_layer_check.configure(
-                    state="normal" if self.current_track_turns else "disabled"
-                )
+                self._update_track_turn_controls()
                 self.track_map_status.set(self._track_map_status_text(data))
                 self._set_track_zone_summary(layer_errors=list(layer_errors))
                 self._render_track_map()
@@ -1060,7 +1077,7 @@ class RaceEngineerApp:
                 self.current_track_priorities = ()
                 self.current_track_profile = None
                 self.current_track_turns = ()
-                self.track_profile_layer_check.configure(state="disabled")
+                self._update_track_turn_controls()
                 self.current_fitted_track_points = ()
                 self.selected_track_point_index = None
                 self.track_map_canvas.delete("all")
@@ -1116,6 +1133,75 @@ class RaceEngineerApp:
         if errors:
             text += " · " + "; ".join(errors)
         self.track_map_zone_status.set(text)
+
+    def _update_track_turn_controls(self):
+        if not hasattr(self, "track_turn_selector"):
+            return
+        values = tuple(
+            f"T{turn.turn} — {turn.name}" for turn in self.current_track_turns
+        )
+        self.track_turn_selector.configure(
+            values=values,
+            state="readonly" if values else "disabled",
+        )
+        self.track_profile_layer_check.configure(
+            state="normal" if values else "disabled"
+        )
+        self.track_turn_selector_var.set("Elegir curva…")
+
+    def _on_track_turn_selected(self, _event=None):
+        raw = self.track_turn_selector_var.get().strip()
+        if not raw.startswith("T") or " — " not in raw:
+            return
+        try:
+            turn_number = int(raw[1:].split(" — ", 1)[0])
+        except ValueError:
+            return
+        turn = turn_for_number(self.current_track_turns, turn_number)
+        data = self.current_track_map
+        if turn is None or data is None:
+            return
+        self.show_track_profile_var.set(True)
+        self.selected_track_overlay = ("profile_turn", str(turn.turn))
+        self.telemetry_zoom_range = (
+            turn.start_distance_m,
+            turn.end_distance_m,
+        )
+        apex_index = point_index_for_distance(data.points, turn.apex_distance_m)
+        self.selected_track_point_index = apex_index
+        width = max(self.track_map_canvas.winfo_width(), 100)
+        height = max(self.track_map_canvas.winfo_height(), 100)
+        base_fitted = fit_track_points(data.points, width_px=width, height_px=height)
+        interval_points = tuple(
+            base_fitted[index]
+            for start_index, end_index in zone_point_ranges(data.points, turn)
+            for index in range(start_index, end_index + 1)
+        )
+        (
+            self.track_map_zoom_scale,
+            offset_x,
+            offset_y,
+        ) = focus_track_canvas_view(
+            interval_points,
+            width_px=width,
+            height_px=height,
+        )
+        self.track_map_zoom_offset = (offset_x, offset_y)
+        self._set_track_map_zoom_status()
+        self._set_telemetry_zoom_status()
+        if apex_index is not None:
+            self._set_interval_telemetry(
+                data,
+                turn.start_distance_m,
+                turn.end_distance_m,
+                data.points[apex_index],
+            )
+        self.track_map_zone_status.set(
+            f"T{turn.turn} — {turn.name} · curva validada · "
+            f"{turn.start_distance_m:.0f}-{turn.end_distance_m:.0f} m · "
+            f"ápice {turn.apex_distance_m:.0f} m"
+        )
+        self._render_track_map()
 
     def _on_track_map_press(self, event):
         self.track_map_dragging = self._select_track_map_point(
@@ -1321,13 +1407,17 @@ class RaceEngineerApp:
         )
         if self.show_track_profile_var.get():
             for turn in self.current_track_turns:
+                selected = self.selected_track_overlay == (
+                    "profile_turn",
+                    str(turn.turn),
+                )
                 for start_index, end_index in zone_point_ranges(data.points, turn):
                     segment = fitted[start_index : end_index + 1]
                     segment_coordinates = [value for point in segment for value in point]
                     canvas.create_line(
                         *segment_coordinates,
-                        fill="#527d83",
-                        width=5,
+                        fill="#9be7ef" if selected else "#527d83",
+                        width=7 if selected else 5,
                         capstyle="round",
                         joinstyle="round",
                     )
@@ -1343,7 +1433,7 @@ class RaceEngineerApp:
                     apex_y - 3,
                     apex_x + 3,
                     apex_y + 3,
-                    fill="#8bd3dd",
+                    fill="#ffffff" if selected else "#8bd3dd",
                     outline="#101010",
                     width=1,
                 )
@@ -1351,7 +1441,7 @@ class RaceEngineerApp:
                     apex_x + 6,
                     apex_y - 6,
                     text=f"T{turn.turn} · {turn.name}",
-                    fill="#b8dfe4",
+                    fill="#ffffff" if selected else "#b8dfe4",
                     anchor="sw",
                     width=130,
                     font=("Segoe UI", 8),
@@ -1750,12 +1840,16 @@ class RaceEngineerApp:
         values = (
             self.current_track_priorities
             if kind == "priority"
+            else self.current_track_turns
+            if kind == "profile_turn"
             else self.current_track_zones
         )
         for value in values:
             value_id = (
                 value.priority_id
                 if isinstance(value, TrackMapPriority)
+                else str(value.turn)
+                if isinstance(value, TrackMapTurn)
                 else value.zone_id
             )
             if value_id == identifier:

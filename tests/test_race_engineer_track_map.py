@@ -11,6 +11,7 @@ from race_engineer_track_map import (
     TrackMapPoint,
     build_track_telemetry_chart,
     fit_track_points,
+    focus_track_canvas_view,
     transform_fitted_track_points,
     load_track_map,
     load_track_profile,
@@ -25,6 +26,7 @@ from race_engineer_track_map import (
     priority_for_distance,
     summarize_track_interval,
     telemetry_chart_x_for_distance,
+    turn_for_number,
     zoom_distance_window,
     zoom_track_canvas_view,
     zone_for_distance,
@@ -285,6 +287,32 @@ def test_map_pan_is_disabled_at_full_view():
     ) == (0.0, 0.0)
 
 
+def test_map_interval_focus_centers_curve_and_respects_scale_limit():
+    scale, offset_x, offset_y = focus_track_canvas_view(
+        ((100.0, 80.0), (140.0, 120.0)),
+        width_px=400.0,
+        height_px=300.0,
+    )
+    assert scale == pytest.approx(4.75)
+    assert 120.0 * scale + offset_x == pytest.approx(200.0)
+    assert 100.0 * scale + offset_y == pytest.approx(150.0)
+
+    scale, _, _ = focus_track_canvas_view(
+        ((100.0, 100.0), (101.0, 101.0)),
+        width_px=400.0,
+        height_px=300.0,
+    )
+    assert scale == 8.0
+
+
+def test_map_interval_focus_falls_back_to_full_view_without_points():
+    assert focus_track_canvas_view((), width_px=400.0, height_px=300.0) == (
+        1.0,
+        0.0,
+        0.0,
+    )
+
+
 def test_telemetry_chart_uses_shared_distance_axis_and_three_fixed_lanes():
     points = (
         TrackMapPoint(0.0, 0.0, 0.0, 0.0, 0.0, 100.0),
@@ -510,6 +538,31 @@ def test_apex_marker_uses_nearest_aligned_lap_distance_sample():
     )
     assert point_index_for_distance(points, 151) == 2
     assert point_index_for_distance((), 151) is None
+
+
+def test_turn_selector_resolves_exact_profile_turn_number():
+    turns = profile_turns(
+        {
+            "turns": [
+                {
+                    "turn": 1,
+                    "name": "Primera",
+                    "start_m": 100,
+                    "apex_m": 150,
+                    "end_m": 190,
+                },
+                {
+                    "turn": 2,
+                    "name": "Segunda",
+                    "start_m": 200,
+                    "apex_m": 240,
+                    "end_m": 280,
+                },
+            ]
+        }
+    )
+    assert turn_for_number(turns, 2).name == "Segunda"
+    assert turn_for_number(turns, 99) is None
 
 
 def test_validated_next_stint_priorities_map_to_gps_intervals(tmp_path: Path):

@@ -7,9 +7,9 @@ llama.cpp recovery and H5.3 review work described below.
 
 Validated baseline:
 
-- full pytest: `1041 PASS / 0 FAIL / 0 SKIP`;
+- full pytest: `1044 PASS / 0 FAIL / 0 SKIP`;
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP` (last analyzer-affecting checkpoint);
-- GUI: v1.10, optional validated turn/apex overlay + GPS zoom/pan + H5.3 presentation;
+- GUI: v1.11, synchronized turn navigation + GPS zoom/pan + H5.3 presentation;
 - H5.3: shadow implementation complete, production historical actions still disabled.
 - H5.3g: deterministic faster-lap withholding audit implemented; policy unchanged.
 - H5.3h: conservative local-loss hypothesis implemented in shadow; 1 unauthorized
@@ -544,6 +544,12 @@ GUI v1.10 adds a disabled-by-default `Curvas` layer. When enabled, calibrated tu
 intervals use a muted overlay, each apex receives a marker and the profile-owned turn
 name is rendered beside it. H5.2 and plan/focus overlays remain above this contextual
 layer. Zoom and pan keep every item aligned. See `docs/RACE_ENGINEER_GUI_V1_10.md`.
+
+GUI v1.11 adds a curve selector backed by the exact validated profile. Selection
+centers and fits the complete turn on the GPS canvas, places the white point at its
+calibrated apex and applies the same start/end interval to the telemetry chart. The
+map and chart can then be adjusted independently. Navigation controls occupy their
+own row to preserve normal-window readability. See `docs/RACE_ENGINEER_GUI_V1_11.md`.
 
 Calibration batch orchestrator `1.5` requires the current History schema 4 contract,
 reports its runtime version consistently and has a regression test against schema drift.

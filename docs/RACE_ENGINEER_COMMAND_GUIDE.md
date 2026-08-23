@@ -395,6 +395,12 @@ calibrados, marca cada ápice y muestra el nombre conservado por el perfil valid
 La capa comienza desactivada para mantener legible el mapa y se desplaza/amplía con
 él. Las zonas H5.2 y las prioridades permanecen por encima.
 
+GUI v1.11 agrega `Navegación por curva`. Elegir una curva activa su capa, centra y
+amplía el intervalo completo en el mapa, coloca el punto blanco en el ápice y enfoca
+el gráfico inferior entre la entrada y la salida calibradas. Luego ambos zooms pueden
+ajustarse de forma independiente o restablecerse. Los controles usan una fila propia
+para conservar la legibilidad en ventanas normales.
+
 El gate H5.3f v0.2 combina el gate estructural anterior con la cola y los labels
 reales. Su mejor resultado exige igualmente una decisión explícita y no activa
 producción:

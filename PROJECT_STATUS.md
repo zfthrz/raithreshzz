@@ -7,7 +7,7 @@ llama.cpp recovery and H5.3 review work described below.
 
 Validated baseline:
 
-- full pytest: `1022 PASS / 0 FAIL / 0 SKIP`;
+- full pytest: `1026 PASS / 0 FAIL / 0 SKIP`;
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP` (last analyzer-affecting checkpoint);
 - GUI: v1.5, H6.5 visual polish + deterministic H5.4 P11 focus over the preserved complete plan;
 - H5.3: shadow implementation complete, production historical actions still disabled.
@@ -17,6 +17,8 @@ Validated baseline:
   6 withheld after two new Interlagos sessions.
 - H5.3i: recurrence audit implemented; initial result is 0 exact-zone recurrences
   and 1 cross-zone contextual pattern.
+- H5.3 review maintenance: hidden, deterministic queue expansion enabled; first real
+  checkpoint is `UP_TO_DATE`, 8 artifacts, v5 and 0 pending.
 
 ### analyze_telemetry
 Current: `3.8`
@@ -242,6 +244,10 @@ Implemented H5.3 slice:
   `validate_h5_3_local_loss_recurrence.py`) requires distinct source identities for
   exact-zone recurrence. The real v5 result found none; T8 and T12 share one
   cross-zone channel pattern that remains contextual and unauthorized.
+- Automatic H5.3 review maintenance (`maintain_h5_3_action_review.py`) runs after
+  successful hidden History maintenance. It never calls an LLM, overwrites an
+  existing revision or creates a human label; exact unchanged labels are the only
+  records migrated. Its failure is logged without blocking History.
 
 Promotion status: all H5.3 slices are implemented in shadow; production promotion
 gate verdict is `PROMOTION_READY`, but production historical coaching remains

@@ -136,6 +136,23 @@ data\local\telemetry_auto_ingest_task.log
 data\local\telemetry_auto_ingest_task.log.1
 ```
 
+Después de un mantenimiento de History exitoso, el mismo runner oculto ejecuta
+`maintain_h5_3_action_review.py`. Esta segunda etapa busca nuevos
+`historical_actions.json` ya producidos por análisis completos, pero no ejecuta el
+LLM. Si la cola cambió, crea el siguiente par numerado `action_review_queue_vN.json`
+y `action_review_labels_vN.json`, migrando solo labels con identidad y snapshot
+exactamente iguales. Nunca sobrescribe una revisión existente ni decide labels.
+
+El estado se consulta en:
+
+```powershell
+Get-Content .\data\local\h5_3_review_maintenance.json
+```
+
+`NEW_REVIEW_REQUIRED` indica que `pending_review_count` contiene casos nuevos para
+revisión manual. Un fallo H5.3 queda en el log y en ese estado, pero no bloquea la
+ingestión de History.
+
 El log rota al alcanzar 2 MiB y conserva una copia anterior. Ambos archivos están
 dentro de `data/local/` y no se versionan.
 

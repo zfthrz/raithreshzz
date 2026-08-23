@@ -44,6 +44,15 @@ def build_maintenance_command(
     ]
 
 
+def build_h5_3_review_command(
+    *, python_executable: Path | None = None,
+) -> list[str]:
+    return [
+        str(console_python_executable(python_executable)),
+        str(PROJECT_ROOT / "maintain_h5_3_action_review.py"),
+    ]
+
+
 def rotate_log(path: Path, *, max_bytes: int = DEFAULT_MAX_LOG_BYTES) -> None:
     if max_bytes < 1 or not path.is_file() or path.stat().st_size < max_bytes:
         return
@@ -57,12 +66,18 @@ def run_hidden_maintenance(
     *,
     log_path: Path = DEFAULT_LOG_PATH,
     command: Sequence[str] | None = None,
+    review_command: Sequence[str] | None = None,
     runner: Callable[..., object] = subprocess.run,
     max_log_bytes: int = DEFAULT_MAX_LOG_BYTES,
 ) -> int:
     log_path.parent.mkdir(parents=True, exist_ok=True)
     rotate_log(log_path, max_bytes=max_log_bytes)
     selected_command = list(command) if command is not None else build_maintenance_command()
+    selected_review_command = (
+        list(review_command)
+        if review_command is not None
+        else (build_h5_3_review_command() if command is None else None)
+    )
     creationflags = getattr(subprocess, "CREATE_NO_WINDOW", 0) if os.name == "nt" else 0
 
     with log_path.open("a", encoding="utf-8", errors="replace") as log:
@@ -79,6 +94,23 @@ def run_hidden_maintenance(
                 creationflags=creationflags,
             )
             return_code = int(getattr(completed, "returncode", 1))
+            if return_code == 0 and selected_review_command is not None:
+                log.write("H5.3 review maintenance\n")
+                log.flush()
+                review_completed = runner(
+                    selected_review_command,
+                    cwd=str(PROJECT_ROOT),
+                    stdout=log,
+                    stderr=subprocess.STDOUT,
+                    check=False,
+                    creationflags=creationflags,
+                )
+                review_return_code = int(getattr(review_completed, "returncode", 1))
+                if review_return_code != 0:
+                    log.write(
+                        "H5.3 REVIEW WARNING: "
+                        f"maintenance exit_code={review_return_code}; History remains successful.\n"
+                    )
         except Exception:
             traceback.print_exc(file=log)
             return_code = 1

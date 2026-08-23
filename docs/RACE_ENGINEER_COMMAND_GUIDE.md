@@ -344,6 +344,26 @@ Solo `EXACT_ZONE_RECURRENCE_OBSERVED` representa repetición independiente de la
 misma zona y patrón. `CROSS_ZONE_PATTERN_ONLY` es contexto general y nunca confirma
 una curva ni autoriza coaching.
 
+### Mantenimiento automático de la revisión H5.3
+
+La tarea oculta de History ejecuta automáticamente este comando después de un ciclo
+exitoso:
+
+```powershell
+python maintain_h5_3_action_review.py
+```
+
+También puede ejecutarse manualmente. Si no aparecieron artifacts nuevos devuelve
+`UP_TO_DATE` y no crea archivos. Si cambió la evidencia, crea la siguiente revisión
+numerada, conserva únicamente labels exactos y registra cuántos quedaron pendientes:
+
+```powershell
+Get-Content .\data\local\h5_3_review_maintenance.json
+```
+
+La automatización prepara la revisión, pero no abre el labeler, no contesta casos,
+no llama al LLM y mantiene `historical_actions_authorized=false`.
+
 El gate H5.3f v0.2 combina el gate estructural anterior con la cola y los labels
 reales. Su mejor resultado exige igualmente una decisión explícita y no activa
 producción:

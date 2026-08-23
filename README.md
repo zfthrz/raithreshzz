@@ -1306,6 +1306,10 @@ pasó a tres candidatos no autorizados. H5.3i separa recurrencia exacta por curv
 patrones entre curvas: el resultado inicial es 0 recurrencias exactas y 1 patrón
 contextual compartido por T8 y T12. Ese patrón no confirma ninguna curva ni autoriza
 una instrucción.
+La preparación de nuevas revisiones queda automatizada por
+`maintain_h5_3_action_review.py`: detecta nuevos artifacts shadow, crea una revisión
+numerada solo si cambió la cola y migra exclusivamente labels idénticos. El ejecutor
+oculto de History lo invoca sin consola; nunca llama al LLM ni responde la revisión.
 Contrato:
 [`docs/H5_3_HISTORICAL_COACHING_ROADMAP_V0_1.md`](docs/H5_3_HISTORICAL_COACHING_ROADMAP_V0_1.md).
 

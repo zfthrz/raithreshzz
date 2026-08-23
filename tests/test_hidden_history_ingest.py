@@ -39,6 +39,37 @@ def test_build_maintenance_command_preserves_history_first_contract(tmp_path: Pa
     ]
 
 
+def test_build_h5_3_review_command_uses_hidden_runner_python(tmp_path: Path):
+    python = tmp_path / "python.exe"
+    assert hidden.build_h5_3_review_command(python_executable=python) == [
+        str(python.resolve()),
+        str(hidden.PROJECT_ROOT / "maintain_h5_3_action_review.py"),
+    ]
+
+
+def test_hidden_maintenance_runs_nonblocking_review_maintenance_after_success(
+    tmp_path: Path,
+):
+    calls = []
+
+    def runner(command, **kwargs):
+        calls.append(command)
+        return SimpleNamespace(returncode=0 if len(calls) == 1 else 9)
+
+    result = hidden.run_hidden_maintenance(
+        log_path=tmp_path / "task.log",
+        command=["python.exe", "history.py"],
+        review_command=["python.exe", "review.py"],
+        runner=runner,
+    )
+    assert result == 0
+    assert calls == [
+        ["python.exe", "history.py"],
+        ["python.exe", "review.py"],
+    ]
+    assert "H5.3 REVIEW WARNING" in (tmp_path / "task.log").read_text(encoding="utf-8")
+
+
 def test_rotate_log_keeps_one_previous_copy(tmp_path: Path):
     log = tmp_path / "task.log"
     backup = tmp_path / "task.log.1"

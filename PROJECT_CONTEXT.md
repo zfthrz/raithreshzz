@@ -178,7 +178,7 @@ Checkpoint: **2026-08-22 GUI v1.5, H5.4 presentation and historical shadow**.
 Validated checkpoints relevant to the current working tree:
 
 ```text
-full pytest (current working tree):  1022 PASS / 0 FAIL / 0 SKIP
+full pytest (current working tree):  1026 PASS / 0 FAIL / 0 SKIP
 Objective Python regressions:         55 PASS / 0 FAIL / 0 SKIP
 Objective recovery check:             READY
 ```
@@ -954,6 +954,16 @@ real audit found zero exact-zone recurrence and one cross-zone pattern: Interlag
 T8 Pinheirinho and T12 Junção both showed lower speed, lower throttle and higher
 brake across two independent sources. Cross-zone repetition is context only and must
 not be treated as confirmation of either corner or as action authority.
+
+`maintain_h5_3_action_review.py` now automates the mechanical review preparation.
+It validates every generated `historical_actions.json`, compares the deterministic
+queue with the latest numbered queue/labels pair, and creates the next revision only
+when the reviewed snapshot changed. Unchanged labels migrate only by exact
+`review_id + item_snapshot`; no label is invented. `hidden_history_ingest.py` runs
+this maintenance after successful History maintenance without opening a console.
+Failures are logged as non-blocking H5.3 warnings, while state and pending count are
+written to `data/local/h5_3_review_maintenance.json`. The first real run detected all
+8 artifacts and correctly returned `UP_TO_DATE`, revision v5, pending 0.
 
 ---
 

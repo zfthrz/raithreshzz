@@ -156,8 +156,13 @@ def maintain(
     current_queue = _load_json(current_queue_path)
     fingerprint = _artifact_fingerprint(artifacts)
     if proposed_queue.get("review_items") == current_queue.get("review_items"):
+        pending_review_count = current_summary["unreviewed"]
         result = {
-            "status": "UP_TO_DATE",
+            "status": (
+                "NEW_REVIEW_REQUIRED"
+                if pending_review_count
+                else "UP_TO_DATE"
+            ),
             "updated_at_utc": _utc_now(),
             "source_artifact_count": len(artifacts),
             "source_artifacts": fingerprint,
@@ -165,7 +170,7 @@ def maintain(
             "current_queue_json": str(current_queue_path),
             "current_labels_json": str(current_labels_path),
             "review_item_count": current_summary["queue_items"],
-            "pending_review_count": current_summary["unreviewed"],
+            "pending_review_count": pending_review_count,
             "historical_actions_authorized": False,
         }
         result.update(_rebuild_downstream(
@@ -173,7 +178,7 @@ def maintain(
             labels_path=current_labels_path,
             output_root=output_root,
             revision=revision,
-            pending_review_count=current_summary["unreviewed"],
+            pending_review_count=pending_review_count,
         ))
         _write_json(state_path, result)
         return result

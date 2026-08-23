@@ -31,7 +31,10 @@ def test_no_source_artifacts_is_safe_without_existing_review(tmp_path: Path):
     }
 
 
-def test_up_to_date_queue_does_not_create_revision(tmp_path: Path, monkeypatch):
+def test_unchanged_queue_with_pending_labels_remains_review_required(
+    tmp_path: Path,
+    monkeypatch,
+):
     input_root = tmp_path / "shadow"
     output_root = tmp_path / "h5_3"
     input_root.mkdir()
@@ -52,7 +55,8 @@ def test_up_to_date_queue_does_not_create_revision(tmp_path: Path, monkeypatch):
         output_root=output_root,
         state_path=state,
     )
-    assert result["status"] == "UP_TO_DATE"
+    assert result["status"] == "NEW_REVIEW_REQUIRED"
+    assert result["pending_review_count"] == 1
     assert result["current_revision"] == 5
     assert not (output_root / "action_review_queue_v6.json").exists()
     assert result["downstream_status"] == "WAITING_FOR_HUMAN_REVIEW"

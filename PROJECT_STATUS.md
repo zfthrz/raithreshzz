@@ -7,11 +7,13 @@ llama.cpp recovery and H5.3 review work described below.
 
 Validated baseline:
 
-- full pytest: `1015 PASS / 0 FAIL / 0 SKIP`;
+- full pytest: `1018 PASS / 0 FAIL / 0 SKIP`;
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP` (last analyzer-affecting checkpoint);
 - GUI: v1.5, H6.5 visual polish + deterministic H5.4 P11 focus over the preserved complete plan;
 - H5.3: shadow implementation complete, production historical actions still disabled.
 - H5.3g: deterministic faster-lap withholding audit implemented; policy unchanged.
+- H5.3h: conservative local-loss hypothesis implemented in shadow; 1 unauthorized
+  candidate and 5 withheld on real evidence.
 
 ### analyze_telemetry
 Current: `3.8`
@@ -225,6 +227,10 @@ Implemented H5.3 slice:
   `validate_h5_3_faster_lap_withholding.py`) reconstructs local temporal and channel
   evidence for reviewed globally faster laps. It is read-only, source-hashed and
   keeps both automatic and historical action authorization false.
+- H5.3h local-loss policy experiment
+  (`evaluate_h5_3_local_loss_policy.py`, `validate_h5_3_local_loss_policy.py`) applies
+  closed quantitative and human-review gates without generating actions. The initial
+  real result retains Junção as one unauthorized hypothesis and withholds five cases.
 
 Promotion status: all H5.3 slices are implemented in shadow; production promotion
 gate verdict is `PROMOTION_READY`, but production historical coaching remains

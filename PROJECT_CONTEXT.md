@@ -178,7 +178,7 @@ Checkpoint: **2026-08-22 GUI v1.5, H5.4 presentation and historical shadow**.
 Validated checkpoints relevant to the current working tree:
 
 ```text
-full pytest (current working tree):  1015 PASS / 0 FAIL / 0 SKIP
+full pytest (current working tree):  1018 PASS / 0 FAIL / 0 SKIP
 Objective Python regressions:         55 PASS / 0 FAIL / 0 SKIP
 Objective recovery check:             READY
 ```
@@ -933,6 +933,16 @@ quantitative evidence: 1 `CORRECTLY_WITHHELD`, 1 `WITHHELD_BUT_ACTIONABLE` and 4
 `+0.294 s` loss despite a globally faster lap. This is evidence that the whole-lap
 guard may be over-broad, not permission to remove it: the next policy experiment
 must remain shadow, local, independently reviewed and fail closed.
+
+H5.3h (`evaluate_h5_3_local_loss_policy.py`) evaluates the first deliberately
+conservative local-policy hypothesis without modifying `historical_action_policy.py`.
+A case becomes `LOCAL_POLICY_CANDIDATE` only when its human label is
+`WITHHELD_BUT_ACTIONABLE`, every occurrence has spatial and throttle/brake evidence,
+and every local loss is at least `0.20 s`. Candidates remain explicitly unauthorized
+and no action wording or channel direction is generated. The real v0.1 evaluation
+produced one candidate (Interlagos T12 Junção) and retained the other five cases.
+Its exact-reconstruction validator passed; independent confirming cases are required
+before testing any action mapping.
 
 ---
 

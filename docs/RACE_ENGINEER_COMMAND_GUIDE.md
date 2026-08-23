@@ -313,6 +313,21 @@ El validator reconstruye todo desde la cola, los labels y las selecciones con ha
 El resultado es diagnóstico shadow: no cambia la política, no autoriza acciones y no
 activa `historical_actions_authorized`.
 
+Para evaluar la primera hipótesis de política local H5.3h, todavía sin producir
+acciones:
+
+```powershell
+python evaluate_h5_3_local_loss_policy.py `
+  "data\generated\h5_3\faster_lap_withholding_audit_v0_1.json" `
+  --output "data\generated\h5_3\local_loss_policy_experiment_v0_1.json"
+
+python validate_h5_3_local_loss_policy.py `
+  "data\generated\h5_3\local_loss_policy_experiment_v0_1.json"
+```
+
+`LOCAL_POLICY_CANDIDATE` significa solamente que el caso merece evidencia
+independiente adicional. Su bloque `authorization.authorized` continúa en `false`.
+
 El gate H5.3f v0.2 combina el gate estructural anterior con la cola y los labels
 reales. Su mejor resultado exige igualmente una decisión explícita y no activa
 producción:

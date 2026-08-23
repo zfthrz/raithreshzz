@@ -1297,6 +1297,10 @@ H5.3g reconstruye además los casos `current_faster + WITHHELD` desde fuentes co
 hash. La primera ejecución real encontró seis casos: uno correctamente retenido,
 uno retenido pero accionable y cuatro ambiguos. Es evidencia para diseñar una futura
 política local en shadow; no elimina la protección global ni habilita coaching.
+H5.3h prueba esa política local como una hipótesis separada y conservadora: exige
+label `WITHHELD_BUT_ACTIONABLE`, pérdida local mínima de `0,20 s` y evidencia de
+ambos controles. El resultado inicial conserva un único candidato no autorizado y
+retiene los otros cinco; todavía no genera instrucciones para el piloto.
 Contrato:
 [`docs/H5_3_HISTORICAL_COACHING_ROADMAP_V0_1.md`](docs/H5_3_HISTORICAL_COACHING_ROADMAP_V0_1.md).
 

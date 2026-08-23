@@ -13,11 +13,13 @@ from race_engineer_track_map import (
     fit_track_points,
     transform_fitted_track_points,
     load_track_map,
+    load_track_profile,
     load_track_priorities,
     load_track_zones,
     nearest_fitted_point_index,
     pan_distance_window,
     pan_track_canvas_view,
+    profile_location_for_distance,
     priority_for_distance,
     summarize_track_interval,
     telemetry_chart_x_for_distance,
@@ -423,6 +425,51 @@ def test_invalid_h5_2_zone_boundaries_are_ignored(tmp_path: Path):
     )
 
     assert load_track_zones(source) == ()
+
+
+def test_exact_validated_profile_resolves_point_to_named_corner(tmp_path: Path):
+    profile_path = tmp_path / "test_profile_v0_1.json"
+    profile_path.write_text(
+        json.dumps(
+            {
+                "profile_id": "test-track-v0.1",
+                "status": "VALIDATED_MULTI_SESSION",
+                "track": "Test Circuit",
+                "layout": "Grand Prix",
+                "turns": [
+                    {
+                        "turn": 1,
+                        "name": "Primera",
+                        "start_m": 100.0,
+                        "apex_m": 150.0,
+                        "end_m": 200.0,
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    profile = load_track_profile(
+        tmp_path,
+        track="Test Circuit",
+        layout="Grand Prix",
+    )
+    location = profile_location_for_distance(profile, 150.0)
+
+    assert location is not None
+    assert location.label == "T1 — Primera"
+    assert location.location_type == "corner"
+    assert location.profile_id == "test-track-v0.1"
+
+
+def test_profile_location_fails_closed_without_exact_profile(tmp_path: Path):
+    assert load_track_profile(
+        tmp_path,
+        track="Unknown",
+        layout="Unknown",
+    ) is None
+    assert profile_location_for_distance(None, 150.0) is None
 
 
 def test_validated_next_stint_priorities_map_to_gps_intervals(tmp_path: Path):

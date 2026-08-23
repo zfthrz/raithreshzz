@@ -10,7 +10,7 @@ Este README documenta el flujo operativo actual del proyecto: análisis de una s
 
 > Automatización de History: [`docs/AUTOMATIC_TELEMETRY_INGEST_V0_1.md`](docs/AUTOMATIC_TELEMETRY_INGEST_V0_1.md). Menú contextual seguro: [`docs/RACE_ENGINEER_CONTEXT_MENU.md`](docs/RACE_ENGINEER_CONTEXT_MENU.md).
 
-> Interfaz de escritorio: [`docs/RACE_ENGINEER_GUI_V1_8.md`](docs/RACE_ENGINEER_GUI_V1_8.md).
+> Interfaz de escritorio: [`docs/RACE_ENGINEER_GUI_V1_9.md`](docs/RACE_ENGINEER_GUI_V1_9.md).
 
 > Traspaso para continuar en ChatGPT actualizado al 22/08/2026: [`docs/CHATGPT_HANDOFF_2026_08_22.md`](docs/CHATGPT_HANDOFF_2026_08_22.md).
 

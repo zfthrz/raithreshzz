@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from race_engineer_gui import GUI_VERSION, RaceEngineerApp
+from race_engineer_gui import GUI_VERSION, RaceEngineerApp, status_wraplength
 
 
 class FakeStyle:
@@ -38,7 +38,7 @@ class FakeTtk:
         return self.style
 
 
-def test_gui_v1_8_applies_flat_dark_control_chrome_without_opening_window():
+def test_gui_v1_9_applies_flat_dark_control_chrome_without_opening_window():
     style = FakeStyle()
     app = RaceEngineerApp.__new__(RaceEngineerApp)
     app.root = FakeRoot()
@@ -46,7 +46,7 @@ def test_gui_v1_8_applies_flat_dark_control_chrome_without_opening_window():
 
     app._configure_style()
 
-    assert GUI_VERSION == "1.8"
+    assert GUI_VERSION == "1.9"
     assert style.theme == "clam"
     assert style.configurations["TEntry"]["fieldbackground"] == "#15181c"
     assert style.configurations["TCombobox"]["borderwidth"] == 0
@@ -63,3 +63,9 @@ def test_gui_v1_8_applies_flat_dark_control_chrome_without_opening_window():
     assert ("selected", "#315b60") in style.maps["Treeview"]["background"]
     assert ("selected", "#55decf") in style.maps["TNotebook.Tab"]["foreground"]
     assert app.root.options["*TCombobox*Listbox.background"] == "#15181c"
+
+
+def test_map_status_wraplength_tracks_panel_width_with_safe_minimum():
+    assert status_wraplength(1000) == 976
+    assert status_wraplength(500) == 476
+    assert status_wraplength(120) == 240

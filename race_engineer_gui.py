@@ -46,11 +46,13 @@ from race_engineer_track_map import (
     build_track_telemetry_chart,
     fit_track_points,
     load_track_map,
+    load_track_profile,
     load_track_priorities,
     load_track_zones,
     nearest_fitted_point_index,
     pan_distance_window,
     pan_track_canvas_view,
+    profile_location_for_distance,
     priority_for_distance,
     summarize_track_interval,
     telemetry_chart_x_for_distance,
@@ -62,7 +64,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.8"
+GUI_VERSION = "1.9"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 PROJECT_ROOT = Path(__file__).resolve().parent
 BACKEND_LABELS = {
@@ -90,6 +92,11 @@ def _clean_markdown_line(line: str) -> str:
     return line.replace("**", "").replace("_", "")
 
 
+def status_wraplength(container_width_px: int) -> int:
+    """Keep map status text inside its current panel without clipping it."""
+    return max(240, int(container_width_px) - 24)
+
+
 class RaceEngineerApp:
     def __init__(self, root, runs_root: Path):
         import tkinter as tk
@@ -109,6 +116,7 @@ class RaceEngineerApp:
         self.current_track_map: TrackMapData | None = None
         self.current_track_zones: tuple[TrackMapZone, ...] = ()
         self.current_track_priorities: tuple[TrackMapPriority, ...] = ()
+        self.current_track_profile: dict | None = None
         self.current_fitted_track_points: tuple[tuple[float, float], ...] = ()
         self.selected_track_overlay: tuple[str, str] | None = None
         self.selected_track_point_index: int | None = None
@@ -621,21 +629,26 @@ class RaceEngineerApp:
         self.track_map_zone_status = self.tk.StringVar(
             value="Sin zonas H5.2 para esta sesión."
         )
-        self.ttk.Label(
+        self.track_map_zone_label = self.ttk.Label(
             frame,
             textvariable=self.track_map_zone_status,
             style="Muted.TLabel",
-        ).pack(fill="x", padx=8, pady=(8, 4))
+            wraplength=960,
+            justify="left",
+        )
+        self.track_map_zone_label.pack(fill="x", padx=8, pady=(8, 4))
         self.track_map_telemetry_status = self.tk.StringVar(
             value="Hacé clic en el trazado para inspeccionar velocidad, freno y acelerador."
         )
-        self.ttk.Label(
+        self.track_map_telemetry_label = self.ttk.Label(
             frame,
             textvariable=self.track_map_telemetry_status,
             style="Muted.TLabel",
             wraplength=960,
             justify="left",
-        ).pack(fill="x", padx=8, pady=(0, 4))
+        )
+        self.track_map_telemetry_label.pack(fill="x", padx=8, pady=(0, 4))
+        frame.bind("<Configure>", self._on_track_detail_resize, add="+")
         telemetry_canvas = self.tk.Canvas(
             frame,
             height=180,
@@ -668,6 +681,11 @@ class RaceEngineerApp:
         )
         self.telemetry_zoom_reset_button.pack(side="right")
         return canvas
+
+    def _on_track_detail_resize(self, event):
+        wraplength = status_wraplength(event.width)
+        self.track_map_zone_label.configure(wraplength=wraplength)
+        self.track_map_telemetry_label.configure(wraplength=wraplength)
 
     def _set_text(self, widget, value: str, *, markdown: bool = False):
         widget.configure(state="normal")
@@ -848,6 +866,7 @@ class RaceEngineerApp:
         self.current_track_map = None
         self.current_track_zones = ()
         self.current_track_priorities = ()
+        self.current_track_profile = None
         self.current_fitted_track_points = ()
         self.selected_track_overlay = None
         self.selected_track_point_index = None
@@ -874,6 +893,7 @@ class RaceEngineerApp:
         self.current_track_map = None
         self.current_track_zones = ()
         self.current_track_priorities = ()
+        self.current_track_profile = None
         self.current_fitted_track_points = ()
         self.selected_track_overlay = None
         self.selected_track_point_index = None
@@ -912,6 +932,15 @@ class RaceEngineerApp:
         if cached is not None:
             self.current_track_map = cached
             layer_errors = []
+            try:
+                self.current_track_profile = load_track_profile(
+                    PROJECT_ROOT / "track_profiles",
+                    track=cached.track,
+                    layout=cached.layout,
+                )
+            except (OSError, UnicodeDecodeError, ValueError) as exc:
+                self.current_track_profile = None
+                layer_errors.append(f"perfil: {exc}")
             try:
                 self.current_track_zones = load_track_zones(record.cross_session_path)
             except (OSError, UnicodeDecodeError, ValueError) as exc:
@@ -954,11 +983,20 @@ class RaceEngineerApp:
                 except (OSError, UnicodeDecodeError, ValueError) as exc:
                     priorities = ()
                     layer_errors.append(f"debrief: {exc}")
+                try:
+                    profile = load_track_profile(
+                        PROJECT_ROOT / "track_profiles",
+                        track=data.track,
+                        layout=data.layout,
+                    )
+                except (OSError, UnicodeDecodeError, ValueError) as exc:
+                    profile = None
+                    layer_errors.append(f"perfil: {exc}")
                 self.track_map_queue.put(
                     (
                         token,
                         "done",
-                        (cache_key, data, zones, priorities, tuple(layer_errors)),
+                        (cache_key, data, zones, priorities, profile, tuple(layer_errors)),
                     )
                 )
             except Exception as exc:
@@ -981,11 +1019,12 @@ class RaceEngineerApp:
             current_completed = True
             self.track_map_loading = False
             if kind == "done":
-                cache_key, data, zones, priorities, layer_errors = value
+                cache_key, data, zones, priorities, profile, layer_errors = value
                 self.track_map_cache[cache_key] = data
                 self.current_track_map = data
                 self.current_track_zones = zones
                 self.current_track_priorities = priorities
+                self.current_track_profile = profile
                 self.track_map_status.set(self._track_map_status_text(data))
                 self._set_track_zone_summary(layer_errors=list(layer_errors))
                 self._render_track_map()
@@ -993,6 +1032,7 @@ class RaceEngineerApp:
                 self.current_track_map = None
                 self.current_track_zones = ()
                 self.current_track_priorities = ()
+                self.current_track_profile = None
                 self.current_fitted_track_points = ()
                 self.selected_track_point_index = None
                 self.track_map_canvas.delete("all")
@@ -1022,12 +1062,20 @@ class RaceEngineerApp:
     def _set_track_zone_summary(self, *, layer_errors: list[str] | None = None):
         zones = self.current_track_zones
         priorities = self.current_track_priorities
+        profile = self.current_track_profile
         errors = layer_errors or []
         if not zones and not priorities:
             suffix = f" · {'; '.join(errors)}" if errors else ""
-            self.track_map_zone_status.set(
-                "Sin zonas H5.2 ni prioridades validadas para esta sesión." + suffix
-            )
+            if profile is not None:
+                self.track_map_zone_status.set(
+                    f"Perfil validado {profile.get('profile_id', 'disponible')} · "
+                    "hacé clic en el trazado para identificar la curva." + suffix
+                )
+            else:
+                self.track_map_zone_status.set(
+                    "Sin zonas H5.2, prioridades ni perfil exacto para esta sesión."
+                    + suffix
+                )
             return
         losses = sum(zone.kind == "loss" for zone in zones)
         gains = sum(zone.kind == "gain" for zone in zones)
@@ -1112,8 +1160,16 @@ class RaceEngineerApp:
             distance_text = (
                 "—" if point.lap_distance_m is None else f"{point.lap_distance_m:.0f} m"
             )
+            location = profile_location_for_distance(
+                self.current_track_profile,
+                point.lap_distance_m,
+            )
+            location_text = (
+                f"{location.label} · " if location is not None else ""
+            )
             self.track_map_zone_status.set(
-                f"Punto {distance_text}: fuera de las zonas comparativas H5.2."
+                f"{location_text}punto {distance_text} · fuera de las zonas "
+                "comparativas H5.2."
             )
             self.track_map_telemetry_status.set(self._point_telemetry_text(point))
         else:

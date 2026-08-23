@@ -6,9 +6,11 @@ import json
 import math
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable
+from typing import Any, Callable
 
 import duckdb
+
+from cross_session_zone_localization import find_validated_track_profile
 
 from extract_lmu_track_gps import (
     REQUIRED_GPS_TABLES,
@@ -73,6 +75,13 @@ class TrackMapPriority:
     end_distance_m: float
     cues: tuple[str, ...]
     is_focus: bool = False
+
+
+@dataclass(frozen=True)
+class TrackMapLocation:
+    label: str
+    location_type: str
+    profile_id: str
 
 
 @dataclass(frozen=True)
@@ -662,6 +671,46 @@ def load_track_zones(path: Path | None) -> tuple[TrackMapZone, ...]:
         )
     zones.sort(key=lambda zone: (zone.start_distance_m, zone.end_distance_m, zone.zone_id))
     return tuple(zones)
+
+
+def load_track_profile(
+    profile_dir: Path,
+    *,
+    track: str,
+    layout: str,
+) -> dict[str, Any] | None:
+    """Load only the exact validated production profile for one GPS map."""
+    profile, _path = find_validated_track_profile(
+        Path(profile_dir),
+        track=track,
+        layout=layout,
+    )
+    return profile
+
+
+def profile_location_for_distance(
+    profile: dict[str, Any] | None,
+    distance_m: float | None,
+) -> TrackMapLocation | None:
+    """Resolve a point without inventing a name outside a validated profile."""
+    if profile is None or distance_m is None or not math.isfinite(distance_m):
+        return None
+    from track_location import resolve_interval
+
+    # The canonical resolver requires a meaningful overlap (8 m) before naming
+    # a turn. A local 20 m inspection window satisfies that gate without turning
+    # the single cursor position into a broad telemetry zone.
+    result = resolve_interval(
+        profile,
+        max(0.0, distance_m - 10.0),
+        distance_m + 10.0,
+    )
+    label = str(result.get("label") or "").strip()
+    profile_id = str(result.get("profile_id") or "").strip()
+    location_type = str(result.get("location_type") or "").strip()
+    if not label or not profile_id or not location_type:
+        return None
+    return TrackMapLocation(label, location_type, profile_id)
 
 
 def zone_for_distance(

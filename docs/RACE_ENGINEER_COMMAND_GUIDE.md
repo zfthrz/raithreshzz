@@ -384,6 +384,12 @@ El trazado, las zonas, las prioridades y el punto blanco se mueven juntos. El bo
 izquierdo continúa reservado para seleccionar el punto de telemetría y el circuito
 no puede desplazarse por completo fuera del área visible.
 
+GUI v1.9 identifica la posición del punto blanco mediante el perfil de circuito
+validado que coincida exactamente con circuito y layout. Fuera de una zona H5.2
+muestra la curva o transición calibrada junto con la distancia. Si no existe ese
+perfil, conserva únicamente la distancia y no inventa nombres. Los textos largos del
+mapa se ajustan automáticamente en varias filas según el ancho de la ventana.
+
 El gate H5.3f v0.2 combina el gate estructural anterior con la cola y los labels
 reales. Su mejor resultado exige igualmente una decisión explícita y no activa
 producción:

@@ -374,6 +374,11 @@ La GUI v1.6 muestra este mismo estado junto al contador de sesiones. Verde indic
 inválido o fallido. Al pulsar el indicador, el detalle o path de labels aparece en
 el pie de la ventana. Es una proyección de solo lectura.
 
+GUI v1.7 permite ampliar directamente el mapa GPS con la rueda cuando el cursor está
+sobre el circuito. Conserva el punto bajo el cursor, mantiene alineadas todas las
+capas y llega hasta `8x`. `Restablecer mapa` vuelve a la vista completa. Esta
+interacción es independiente del zoom del gráfico inferior.
+
 El gate H5.3f v0.2 combina el gate estructural anterior con la cola y los labels
 reales. Su mejor resultado exige igualmente una decisión explícita y no activa
 producción:

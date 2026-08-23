@@ -374,6 +374,47 @@ def fit_track_points(
     )
 
 
+def transform_fitted_track_points(
+    points: tuple[tuple[float, float], ...],
+    *,
+    scale: float,
+    offset_x_px: float,
+    offset_y_px: float,
+) -> tuple[tuple[float, float], ...]:
+    """Apply a read-only canvas view transform to already fitted GPS points."""
+    if scale < 1.0:
+        raise ValueError("El zoom del mapa no puede ser menor que 1.")
+    return tuple(
+        (x * scale + offset_x_px, y * scale + offset_y_px)
+        for x, y in points
+    )
+
+
+def zoom_track_canvas_view(
+    scale: float,
+    offset_x_px: float,
+    offset_y_px: float,
+    *,
+    anchor_x_px: float,
+    anchor_y_px: float,
+    factor: float,
+    min_scale: float = 1.0,
+    max_scale: float = 8.0,
+) -> tuple[float, float, float]:
+    """Zoom around a canvas pointer while keeping its map position stationary."""
+    if factor <= 0 or min_scale <= 0 or max_scale < min_scale:
+        raise ValueError("Parámetros de zoom del mapa inválidos.")
+    new_scale = min(max(scale * factor, min_scale), max_scale)
+    if new_scale == min_scale:
+        return min_scale, 0.0, 0.0
+    applied = new_scale / scale
+    return (
+        new_scale,
+        anchor_x_px - (anchor_x_px - offset_x_px) * applied,
+        anchor_y_px - (anchor_y_px - offset_y_px) * applied,
+    )
+
+
 def nearest_fitted_point_index(
     fitted_points: tuple[tuple[float, float], ...],
     *,

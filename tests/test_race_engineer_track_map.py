@@ -11,6 +11,7 @@ from race_engineer_track_map import (
     TrackMapPoint,
     build_track_telemetry_chart,
     fit_track_points,
+    transform_fitted_track_points,
     load_track_map,
     load_track_priorities,
     load_track_zones,
@@ -20,6 +21,7 @@ from race_engineer_track_map import (
     summarize_track_interval,
     telemetry_chart_x_for_distance,
     zoom_distance_window,
+    zoom_track_canvas_view,
     zone_for_distance,
     zone_point_ranges,
 )
@@ -216,6 +218,38 @@ def test_nearest_map_point_supports_hit_radius_and_unconstrained_drag():
     assert nearest_fitted_point_index(
         fitted, x_px=65.0, y_px=75.0, max_distance_px=None
     ) == 2
+
+
+def test_map_zoom_keeps_pointer_anchor_and_transforms_selection_geometry():
+    scale, offset_x, offset_y = zoom_track_canvas_view(
+        1.0, 0.0, 0.0,
+        anchor_x_px=100.0,
+        anchor_y_px=50.0,
+        factor=2.0,
+    )
+    assert (scale, offset_x, offset_y) == (2.0, -100.0, -50.0)
+    transformed = transform_fitted_track_points(
+        ((100.0, 50.0), (150.0, 75.0)),
+        scale=scale,
+        offset_x_px=offset_x,
+        offset_y_px=offset_y,
+    )
+    assert transformed == ((100.0, 50.0), (200.0, 100.0))
+
+
+def test_map_zoom_clamps_and_full_reset_removes_offsets():
+    assert zoom_track_canvas_view(
+        1.0, -10.0, -20.0,
+        anchor_x_px=40.0,
+        anchor_y_px=30.0,
+        factor=0.5,
+    ) == (1.0, 0.0, 0.0)
+    assert zoom_track_canvas_view(
+        8.0, -100.0, -100.0,
+        anchor_x_px=40.0,
+        anchor_y_px=30.0,
+        factor=2.0,
+    )[0] == 8.0
 
 
 def test_telemetry_chart_uses_shared_distance_axis_and_three_fixed_lanes():

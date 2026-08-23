@@ -53,13 +53,15 @@ from race_engineer_track_map import (
     priority_for_distance,
     summarize_track_interval,
     telemetry_chart_x_for_distance,
+    transform_fitted_track_points,
     zoom_distance_window,
+    zoom_track_canvas_view,
     zone_for_distance,
     zone_point_ranges,
 )
 
 
-GUI_VERSION = "1.6"
+GUI_VERSION = "1.7"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 PROJECT_ROOT = Path(__file__).resolve().parent
 BACKEND_LABELS = {
@@ -111,6 +113,8 @@ class RaceEngineerApp:
         self.selected_track_point_index: int | None = None
         self.track_map_dragging = False
         self.telemetry_zoom_range: tuple[float, float] | None = None
+        self.track_map_zoom_scale = 1.0
+        self.track_map_zoom_offset = (0.0, 0.0)
         self.track_map_cache: dict[
             tuple[str, int, int | None, int | None], TrackMapData
         ] = {}
@@ -591,6 +595,24 @@ class RaceEngineerApp:
         canvas.bind("<ButtonPress-1>", self._on_track_map_press)
         canvas.bind("<B1-Motion>", self._on_track_map_drag)
         canvas.bind("<ButtonRelease-1>", self._on_track_map_release)
+        canvas.bind("<MouseWheel>", self._on_track_map_mousewheel)
+        map_zoom_controls = self.ttk.Frame(frame, style="Panel.TFrame")
+        map_zoom_controls.pack(fill="x", pady=(4, 0))
+        self.track_map_zoom_status = self.tk.StringVar(
+            value="Mapa completo · rueda: zoom"
+        )
+        self.ttk.Label(
+            map_zoom_controls,
+            textvariable=self.track_map_zoom_status,
+            style="Muted.TLabel",
+        ).pack(side="left")
+        self.track_map_zoom_reset_button = self.ttk.Button(
+            map_zoom_controls,
+            text="Restablecer mapa",
+            command=self._reset_track_map_zoom,
+            state="disabled",
+        )
+        self.track_map_zoom_reset_button.pack(side="right")
         self.track_map_zone_status = self.tk.StringVar(
             value="Sin zonas H5.2 para esta sesión."
         )
@@ -826,6 +848,8 @@ class RaceEngineerApp:
         self.selected_track_point_index = None
         self.track_map_dragging = False
         self.telemetry_zoom_range = None
+        self.track_map_zoom_scale = 1.0
+        self.track_map_zoom_offset = (0.0, 0.0)
         self.track_map_canvas.delete("all")
         self.track_telemetry_canvas.delete("all")
         self.track_map_status.set("Seleccioná una sesión para reconstruir el mapa GPS.")
@@ -834,6 +858,7 @@ class RaceEngineerApp:
             "Hacé clic en el trazado para inspeccionar velocidad, freno y acelerador."
         )
         self._set_telemetry_zoom_status()
+        self._set_track_map_zoom_status()
         self.open_button.configure(state="disabled")
 
     def _request_track_map(self, record: SessionRecord):
@@ -848,6 +873,8 @@ class RaceEngineerApp:
         self.selected_track_point_index = None
         self.track_map_dragging = False
         self.telemetry_zoom_range = None
+        self.track_map_zoom_scale = 1.0
+        self.track_map_zoom_offset = (0.0, 0.0)
         self.track_map_canvas.delete("all")
         self.track_telemetry_canvas.delete("all")
         self.track_map_zone_status.set("Buscando zonas H5.2 y prioridades del debrief…")
@@ -855,6 +882,7 @@ class RaceEngineerApp:
             "Hacé clic en el trazado para inspeccionar velocidad, freno y acelerador."
         )
         self._set_telemetry_zoom_status()
+        self._set_track_map_zoom_status()
         database = record.database_path
         if database is None:
             self.track_map_status.set("La sesión no registra su DuckDB original.")
@@ -1178,7 +1206,13 @@ class RaceEngineerApp:
             return
         width = max(canvas.winfo_width(), 100)
         height = max(canvas.winfo_height(), 100)
-        fitted = fit_track_points(data.points, width_px=width, height_px=height)
+        base_fitted = fit_track_points(data.points, width_px=width, height_px=height)
+        fitted = transform_fitted_track_points(
+            base_fitted,
+            scale=self.track_map_zoom_scale,
+            offset_x_px=self.track_map_zoom_offset[0],
+            offset_y_px=self.track_map_zoom_offset[1],
+        )
         self.current_fitted_track_points = fitted
         if len(fitted) < 2:
             return
@@ -1303,6 +1337,44 @@ class RaceEngineerApp:
                 width=2,
             )
         self._render_track_telemetry_chart()
+
+    def _on_track_map_mousewheel(self, event):
+        if self.current_track_map is None or not getattr(event, "delta", 0):
+            return "break"
+        factor = 1.25 if event.delta > 0 else 0.8
+        scale, offset_x, offset_y = zoom_track_canvas_view(
+            self.track_map_zoom_scale,
+            self.track_map_zoom_offset[0],
+            self.track_map_zoom_offset[1],
+            anchor_x_px=float(event.x),
+            anchor_y_px=float(event.y),
+            factor=factor,
+        )
+        self.track_map_zoom_scale = scale
+        self.track_map_zoom_offset = (offset_x, offset_y)
+        self._set_track_map_zoom_status()
+        self._render_track_map()
+        return "break"
+
+    def _reset_track_map_zoom(self):
+        self.track_map_zoom_scale = 1.0
+        self.track_map_zoom_offset = (0.0, 0.0)
+        self._set_track_map_zoom_status()
+        self._render_track_map()
+
+    def _set_track_map_zoom_status(self):
+        active = self.track_map_zoom_scale > 1.001
+        text = (
+            f"Mapa ampliado · {self.track_map_zoom_scale:.2f}× · rueda: zoom"
+            if active
+            else "Mapa completo · rueda: zoom"
+        )
+        if hasattr(self, "track_map_zoom_status"):
+            self.track_map_zoom_status.set(text)
+        if hasattr(self, "track_map_zoom_reset_button"):
+            self.track_map_zoom_reset_button.configure(
+                state="normal" if active else "disabled"
+            )
 
     def _render_track_telemetry_chart(self):
         canvas = self.track_telemetry_canvas

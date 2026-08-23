@@ -38,7 +38,7 @@ class FakeTtk:
         return self.style
 
 
-def test_gui_v1_5_applies_flat_dark_control_chrome_without_opening_window():
+def test_gui_v1_6_applies_flat_dark_control_chrome_without_opening_window():
     style = FakeStyle()
     app = RaceEngineerApp.__new__(RaceEngineerApp)
     app.root = FakeRoot()
@@ -46,7 +46,7 @@ def test_gui_v1_5_applies_flat_dark_control_chrome_without_opening_window():
 
     app._configure_style()
 
-    assert GUI_VERSION == "1.5"
+    assert GUI_VERSION == "1.6"
     assert style.theme == "clam"
     assert style.configurations["TEntry"]["fieldbackground"] == "#15181c"
     assert style.configurations["TCombobox"]["borderwidth"] == 0
@@ -57,6 +57,9 @@ def test_gui_v1_5_applies_flat_dark_control_chrome_without_opening_window():
     assert style.configurations["Treeview"]["rowheight"] == 30
     assert style.configurations["Treeview.Heading"]["relief"] == "flat"
     assert style.configurations["Horizontal.TProgressbar"]["thickness"] == 5
+    assert style.configurations["H53Ready.TLabel"]["foreground"] == "#67e5d5"
+    assert style.configurations["H53Pending.TLabel"]["foreground"] == "#f0c674"
+    assert style.configurations["H53Error.TLabel"]["foreground"] == "#ff7b72"
     assert ("selected", "#315b60") in style.maps["Treeview"]["background"]
     assert ("selected", "#55decf") in style.maps["TNotebook.Tab"]["foreground"]
     assert app.root.options["*TCombobox*Listbox.background"] == "#15181c"

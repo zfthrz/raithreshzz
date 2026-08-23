@@ -20,6 +20,7 @@ from race_engineer_gui_settings import (
 )
 from race_engineer_settings_gui import edit_settings
 from runtime_paths import history_db_default_path
+from race_engineer_h5_3_review_status import load_status as load_h5_3_review_status
 
 from race_engineer_ui_model import (
     SessionDetail,
@@ -58,7 +59,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.5"
+GUI_VERSION = "1.6"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 PROJECT_ROOT = Path(__file__).resolve().parent
 BACKEND_LABELS = {
@@ -165,6 +166,30 @@ class RaceEngineerApp:
         )
         style.configure(
             "Muted.TLabel",
+            background="#1c1c1c",
+            foreground="#91a6b8",
+            font=("Segoe UI", 9),
+        )
+        style.configure(
+            "H53Ready.TLabel",
+            background="#1c1c1c",
+            foreground="#67e5d5",
+            font=("Segoe UI Semibold", 9),
+        )
+        style.configure(
+            "H53Pending.TLabel",
+            background="#1c1c1c",
+            foreground="#f0c674",
+            font=("Segoe UI Semibold", 9),
+        )
+        style.configure(
+            "H53Error.TLabel",
+            background="#1c1c1c",
+            foreground="#ff7b72",
+            font=("Segoe UI Semibold", 9),
+        )
+        style.configure(
+            "H53Muted.TLabel",
             background="#1c1c1c",
             foreground="#91a6b8",
             font=("Segoe UI", 9),
@@ -403,6 +428,16 @@ class RaceEngineerApp:
         ttk.Label(session_tools, textvariable=self.count_var, style="Metric.TLabel").pack(
             side="left"
         )
+        self.h5_3_review_state_path = (
+            PROJECT_ROOT / "data" / "local" / "h5_3_review_maintenance.json"
+        )
+        self.h5_3_review_var = tk.StringVar(value="H5.3 shadow · cargando…")
+        self.h5_3_review_label = ttk.Label(
+            session_tools,
+            textvariable=self.h5_3_review_var,
+            style="H53Muted.TLabel",
+        )
+        self.h5_3_review_label.pack(side="left", padx=(16, 0))
         self.session_filter_var = tk.StringVar(value="Todas")
         self.session_filter_combo = ttk.Combobox(
             session_tools,
@@ -634,6 +669,7 @@ class RaceEngineerApp:
         self.execution_text.configure(state="disabled")
 
     def refresh(self, *, preferred_database: Path | None = None):
+        self._refresh_h5_3_review_status()
         previous = self.selected_record()
         previous_key = previous.session_key if previous else None
         self.all_sessions, errors = discover_sessions(self.runs_root)
@@ -642,6 +678,16 @@ class RaceEngineerApp:
             errors=errors,
             preferred_database=preferred_database,
             previous_key=previous_key,
+        )
+
+    def _refresh_h5_3_review_status(self):
+        status = load_h5_3_review_status(self.h5_3_review_state_path)
+        self.h5_3_review_var.set(status.text)
+        self.h5_3_review_label.configure(style=status.style)
+        self.h5_3_review_label.configure(cursor="hand2" if "json" in status.detail else "")
+        self.h5_3_review_label.bind(
+            "<Button-1>",
+            lambda _event, detail=status.detail: self.footer_var.set(detail),
         )
 
     def _apply_session_filters(self, _event=None):

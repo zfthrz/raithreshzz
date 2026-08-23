@@ -364,6 +364,11 @@ Get-Content .\data\local\h5_3_review_maintenance.json
 La automatización prepara la revisión, pero no abre el labeler, no contesta casos,
 no llama al LLM y mantiene `historical_actions_authorized=false`.
 
+La GUI v1.6 muestra este mismo estado junto al contador de sesiones. Verde indica
+`UP_TO_DATE`; ámbar muestra la cantidad de casos pendientes; rojo indica un estado
+inválido o fallido. Al pulsar el indicador, el detalle o path de labels aparece en
+el pie de la ventana. Es una proyección de solo lectura.
+
 El gate H5.3f v0.2 combina el gate estructural anterior con la cola y los labels
 reales. Su mejor resultado exige igualmente una decisión explícita y no activa
 producción:

@@ -7,9 +7,9 @@ llama.cpp recovery and H5.3 review work described below.
 
 Validated baseline:
 
-- full pytest: `1026 PASS / 0 FAIL / 0 SKIP`;
+- full pytest: `1030 PASS / 0 FAIL / 0 SKIP`;
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP` (last analyzer-affecting checkpoint);
-- GUI: v1.5, H6.5 visual polish + deterministic H5.4 P11 focus over the preserved complete plan;
+- GUI: v1.6, H5.3 shadow review-state indicator + H6.5/P11 presentation;
 - H5.3: shadow implementation complete, production historical actions still disabled.
 - H5.3g: deterministic faster-lap withholding audit implemented; policy unchanged.
 - H5.3h: conservative local-loss hypothesis implemented in shadow; 1 unauthorized
@@ -512,6 +512,12 @@ flat dark entries and comboboxes, 10 px scrollbars, consistent button states,
 modernized Treeview headings/selection, cleaner notebook tabs and a compact flat
 progress bar. No session logic, map/telemetry interaction, ranking or coaching
 authority changed. See `docs/RACE_ENGINEER_GUI_V1_5.md`.
+
+GUI v1.6 adds a compact H5.3 shadow-maintenance indicator above the session list.
+Green means the latest numbered review is current, amber reports the exact pending
+count, red reports invalid/failed local state and muted text covers missing evidence.
+The projection rejects any state claiming historical action authority and remains
+read-only. See `docs/RACE_ENGINEER_GUI_V1_6.md`.
 
 Calibration batch orchestrator `1.5` requires the current History schema 4 contract,
 reports its runtime version consistently and has a regression test against schema drift.

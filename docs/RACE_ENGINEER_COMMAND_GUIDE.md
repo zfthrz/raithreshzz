@@ -390,6 +390,11 @@ muestra la curva o transición calibrada junto con la distancia. Si no existe es
 perfil, conserva únicamente la distancia y no inventa nombres. Los textos largos del
 mapa se ajustan automáticamente en varias filas según el ancho de la ventana.
 
+GUI v1.10 agrega la casilla `Curvas`. Al activarla, el mapa dibuja los intervalos
+calibrados, marca cada ápice y muestra el nombre conservado por el perfil validado.
+La capa comienza desactivada para mantener legible el mapa y se desplaza/amplía con
+él. Las zonas H5.2 y las prioridades permanecen por encima.
+
 El gate H5.3f v0.2 combina el gate estructural anterior con la cola y los labels
 reales. Su mejor resultado exige igualmente una decisión explícita y no activa
 producción:

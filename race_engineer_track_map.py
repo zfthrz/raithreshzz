@@ -85,6 +85,15 @@ class TrackMapLocation:
 
 
 @dataclass(frozen=True)
+class TrackMapTurn:
+    turn: int
+    name: str
+    start_distance_m: float
+    apex_distance_m: float
+    end_distance_m: float
+
+
+@dataclass(frozen=True)
 class TrackTelemetrySummary:
     start_distance_m: float
     end_distance_m: float
@@ -713,6 +722,47 @@ def profile_location_for_distance(
     return TrackMapLocation(label, location_type, profile_id)
 
 
+def profile_turns(profile: dict[str, Any] | None) -> tuple[TrackMapTurn, ...]:
+    """Project validated profile turns into a small read-only map layer."""
+    if profile is None:
+        return ()
+    result = []
+    for value in profile.get("turns") or []:
+        if not isinstance(value, dict):
+            continue
+        try:
+            turn = int(value["turn"])
+            name = str(value["name"]).strip()
+            start = float(value["start_m"])
+            apex = float(value["apex_m"])
+            end = float(value["end_m"])
+        except (KeyError, TypeError, ValueError):
+            continue
+        if (
+            turn <= 0
+            or not name
+            or not all(math.isfinite(item) for item in (start, apex, end))
+            or not start <= apex <= end
+            or end <= start
+        ):
+            continue
+        result.append(TrackMapTurn(turn, name, start, apex, end))
+    result.sort(key=lambda item: (item.start_distance_m, item.turn))
+    return tuple(result)
+
+
+def point_index_for_distance(
+    points: tuple[TrackMapPoint, ...],
+    distance_m: float,
+) -> int | None:
+    candidates = (
+        (abs(point.lap_distance_m - distance_m), index)
+        for index, point in enumerate(points)
+        if point.lap_distance_m is not None
+    )
+    return min(candidates, default=(math.inf, None))[1]
+
+
 def zone_for_distance(
     zones: tuple[TrackMapZone, ...],
     distance_m: float | None,
@@ -810,7 +860,7 @@ def priority_for_distance(
 
 def zone_point_ranges(
     points: tuple[TrackMapPoint, ...],
-    zone: TrackMapZone | TrackMapPriority,
+    zone: TrackMapZone | TrackMapPriority | TrackMapTurn,
 ) -> tuple[tuple[int, int], ...]:
     """Return contiguous point-index ranges covered by one distance zone."""
 

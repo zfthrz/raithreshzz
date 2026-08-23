@@ -1,7 +1,7 @@
 # Race Engineer — PROJECT_CONTEXT v1.0
 
 > Canonical end-to-end onboarding context for coding agents and LLMs working on the Race Engineer repository.
-> Baseline represented here: GUI v1.9, H5.4 P1–P11 and historical-shadow checkpoint 2026-08-23.
+> Baseline represented here: GUI v1.10, H5.4 P1–P11 and historical-shadow checkpoint 2026-08-23.
 >
 > This is the detailed mental model of the project. `AGENTS.md` should instruct coding agents to read this file before non-trivial work.
 
@@ -147,12 +147,12 @@ DeepSeek pseudo-labels/reviews are assistance and must never be silently mixed w
 
 # 4. Current operational baseline
 
-Checkpoint: **2026-08-23 GUI v1.9, H5.4 presentation and historical shadow**.
+Checkpoint: **2026-08-23 GUI v1.10, H5.4 presentation and historical shadow**.
 
 | Component | Current operational baseline |
 |---|---|
 | `race_engineer.py` | orchestrator v0.3 |
-| `race_engineer_gui.py` | v1.9 / GPS map zoom/pan + validated turn location + 10 Hz telemetry chart |
+| `race_engineer_gui.py` | v1.10 / GPS map + optional validated turn/apex overlay + telemetry chart |
 | `analyze_telemetry.py` | v3.8 + Objective Python v6 |
 | Brake point | 2.1 / schema 2.1 |
 | Throttle point | 1.2.1 / schema 1.2 |
@@ -178,7 +178,7 @@ Checkpoint: **2026-08-23 GUI v1.9, H5.4 presentation and historical shadow**.
 Validated checkpoints relevant to the current working tree:
 
 ```text
-full pytest (current working tree):  1039 PASS / 0 FAIL / 0 SKIP
+full pytest (current working tree):  1041 PASS / 0 FAIL / 0 SKIP
 Objective Python regressions:         55 PASS / 0 FAIL / 0 SKIP
 Objective recovery check:             READY
 ```
@@ -1204,7 +1204,7 @@ do not need to be copied into the repository.
 The desktop entry point is `RaceEngineer.pyw` (implementation:
 `race_engineer_gui.py`). Its catalogue is owned by `race_engineer_ui_model.py` and
 uses orchestrator `state.json` rather than scanning result filenames heuristically.
-GUI v1.9 can search/filter sessions and inspect deterministic lap times, validated debriefs,
+GUI v1.10 can search/filter sessions and inspect deterministic lap times, validated debriefs,
 next-stint plans, pipeline statuses, schema-4 History and the exact H4
 historical-reference selection, plus the raw and validated observational H5.2
 historical comparison. It also reconstructs a read-only GPS circuit map from the
@@ -1271,6 +1271,12 @@ outside H5.2 overlays and fails closed to distance-only output when no exact pro
 exists. Map status and telemetry labels wrap dynamically with the available panel
 width. No track name is inferred by the GUI and no coaching authority changes. See
 `docs/RACE_ENGINEER_GUI_V1_9.md`.
+
+GUI v1.10 adds an opt-in `Curvas` overlay derived from that same exact validated
+profile. It draws calibrated turn intervals, apex markers and profile-owned names;
+H5.2 zones and validated priorities remain visually above it. The complete layer
+shares zoom/pan transforms and starts disabled to avoid clutter. It is read-only and
+does not create spatial evidence or coaching. See `docs/RACE_ENGINEER_GUI_V1_10.md`.
 
 The scheduled task must execute `hidden_history_ingest.py` through `pythonw.exe`.
 That wrapper preserves the same maintenance arguments, creates no console window and

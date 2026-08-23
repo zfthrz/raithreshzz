@@ -19,7 +19,9 @@ from race_engineer_track_map import (
     nearest_fitted_point_index,
     pan_distance_window,
     pan_track_canvas_view,
+    point_index_for_distance,
     profile_location_for_distance,
+    profile_turns,
     priority_for_distance,
     summarize_track_interval,
     telemetry_chart_x_for_distance,
@@ -470,6 +472,44 @@ def test_profile_location_fails_closed_without_exact_profile(tmp_path: Path):
         layout="Unknown",
     ) is None
     assert profile_location_for_distance(None, 150.0) is None
+
+
+def test_profile_turn_layer_preserves_names_and_validated_distance_ranges():
+    turns = profile_turns(
+        {
+            "turns": [
+                {
+                    "turn": 2,
+                    "name": "Segunda",
+                    "start_m": 200,
+                    "apex_m": 240,
+                    "end_m": 280,
+                },
+                {
+                    "turn": 1,
+                    "name": "Primera",
+                    "start_m": 100,
+                    "apex_m": 150,
+                    "end_m": 190,
+                },
+                {"turn": 3, "name": "Inválida", "start_m": 400, "end_m": 350},
+            ]
+        }
+    )
+
+    assert [turn.name for turn in turns] == ["Primera", "Segunda"]
+    assert turns[0].start_distance_m == 100
+    assert turns[0].apex_distance_m == 150
+    assert turns[0].end_distance_m == 190
+
+
+def test_apex_marker_uses_nearest_aligned_lap_distance_sample():
+    points = tuple(
+        TrackMapPoint(float(distance), 0.0, float(distance))
+        for distance in (100, 140, 160, 200)
+    )
+    assert point_index_for_distance(points, 151) == 2
+    assert point_index_for_distance((), 151) is None
 
 
 def test_validated_next_stint_priorities_map_to_gps_intervals(tmp_path: Path):

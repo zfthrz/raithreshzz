@@ -41,6 +41,7 @@ from race_engineer_track_map import (
     TrackMapData,
     TrackMapPriority,
     TrackMapPoint,
+    TrackMapTurn,
     TrackTelemetrySummary,
     TrackMapZone,
     build_track_telemetry_chart,
@@ -52,7 +53,9 @@ from race_engineer_track_map import (
     nearest_fitted_point_index,
     pan_distance_window,
     pan_track_canvas_view,
+    point_index_for_distance,
     profile_location_for_distance,
+    profile_turns,
     priority_for_distance,
     summarize_track_interval,
     telemetry_chart_x_for_distance,
@@ -64,7 +67,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.9"
+GUI_VERSION = "1.10"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 PROJECT_ROOT = Path(__file__).resolve().parent
 BACKEND_LABELS = {
@@ -117,6 +120,7 @@ class RaceEngineerApp:
         self.current_track_zones: tuple[TrackMapZone, ...] = ()
         self.current_track_priorities: tuple[TrackMapPriority, ...] = ()
         self.current_track_profile: dict | None = None
+        self.current_track_turns: tuple[TrackMapTurn, ...] = ()
         self.current_fitted_track_points: tuple[tuple[float, float], ...] = ()
         self.selected_track_overlay: tuple[str, str] | None = None
         self.selected_track_point_index: int | None = None
@@ -626,6 +630,15 @@ class RaceEngineerApp:
             state="disabled",
         )
         self.track_map_zoom_reset_button.pack(side="right")
+        self.show_track_profile_var = self.tk.BooleanVar(value=False)
+        self.track_profile_layer_check = self.ttk.Checkbutton(
+            map_zoom_controls,
+            text="Curvas",
+            variable=self.show_track_profile_var,
+            command=self._render_track_map,
+            state="disabled",
+        )
+        self.track_profile_layer_check.pack(side="right", padx=(0, 12))
         self.track_map_zone_status = self.tk.StringVar(
             value="Sin zonas H5.2 para esta sesión."
         )
@@ -867,6 +880,8 @@ class RaceEngineerApp:
         self.current_track_zones = ()
         self.current_track_priorities = ()
         self.current_track_profile = None
+        self.current_track_turns = ()
+        self.track_profile_layer_check.configure(state="disabled")
         self.current_fitted_track_points = ()
         self.selected_track_overlay = None
         self.selected_track_point_index = None
@@ -894,6 +909,8 @@ class RaceEngineerApp:
         self.current_track_zones = ()
         self.current_track_priorities = ()
         self.current_track_profile = None
+        self.current_track_turns = ()
+        self.track_profile_layer_check.configure(state="disabled")
         self.current_fitted_track_points = ()
         self.selected_track_overlay = None
         self.selected_track_point_index = None
@@ -938,9 +955,14 @@ class RaceEngineerApp:
                     track=cached.track,
                     layout=cached.layout,
                 )
+                self.current_track_turns = profile_turns(self.current_track_profile)
             except (OSError, UnicodeDecodeError, ValueError) as exc:
                 self.current_track_profile = None
+                self.current_track_turns = ()
                 layer_errors.append(f"perfil: {exc}")
+            self.track_profile_layer_check.configure(
+                state="normal" if self.current_track_turns else "disabled"
+            )
             try:
                 self.current_track_zones = load_track_zones(record.cross_session_path)
             except (OSError, UnicodeDecodeError, ValueError) as exc:
@@ -1025,6 +1047,10 @@ class RaceEngineerApp:
                 self.current_track_zones = zones
                 self.current_track_priorities = priorities
                 self.current_track_profile = profile
+                self.current_track_turns = profile_turns(profile)
+                self.track_profile_layer_check.configure(
+                    state="normal" if self.current_track_turns else "disabled"
+                )
                 self.track_map_status.set(self._track_map_status_text(data))
                 self._set_track_zone_summary(layer_errors=list(layer_errors))
                 self._render_track_map()
@@ -1033,6 +1059,8 @@ class RaceEngineerApp:
                 self.current_track_zones = ()
                 self.current_track_priorities = ()
                 self.current_track_profile = None
+                self.current_track_turns = ()
+                self.track_profile_layer_check.configure(state="disabled")
                 self.current_fitted_track_points = ()
                 self.selected_track_point_index = None
                 self.track_map_canvas.delete("all")
@@ -1291,6 +1319,43 @@ class RaceEngineerApp:
             capstyle="round",
             joinstyle="round",
         )
+        if self.show_track_profile_var.get():
+            for turn in self.current_track_turns:
+                for start_index, end_index in zone_point_ranges(data.points, turn):
+                    segment = fitted[start_index : end_index + 1]
+                    segment_coordinates = [value for point in segment for value in point]
+                    canvas.create_line(
+                        *segment_coordinates,
+                        fill="#527d83",
+                        width=5,
+                        capstyle="round",
+                        joinstyle="round",
+                    )
+                apex_index = point_index_for_distance(
+                    data.points,
+                    turn.apex_distance_m,
+                )
+                if apex_index is None:
+                    continue
+                apex_x, apex_y = fitted[apex_index]
+                canvas.create_oval(
+                    apex_x - 3,
+                    apex_y - 3,
+                    apex_x + 3,
+                    apex_y + 3,
+                    fill="#8bd3dd",
+                    outline="#101010",
+                    width=1,
+                )
+                canvas.create_text(
+                    apex_x + 6,
+                    apex_y - 6,
+                    text=f"T{turn.turn} · {turn.name}",
+                    fill="#b8dfe4",
+                    anchor="sw",
+                    width=130,
+                    font=("Segoe UI", 8),
+                )
         zone_colors = {
             "loss": "#e45a5a",
             "gain": "#45c98c",

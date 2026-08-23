@@ -328,6 +328,22 @@ python validate_h5_3_local_loss_policy.py `
 `LOCAL_POLICY_CANDIDATE` significa solamente que el caso merece evidencia
 independiente adicional. Su bloque `authorization.authorized` continúa en `false`.
 
+Para distinguir recurrencia de la misma curva de patrones repetidos en curvas
+distintas:
+
+```powershell
+python audit_h5_3_local_loss_recurrence.py `
+  "data\generated\h5_3\local_loss_policy_experiment_v0_1_v5.json" `
+  --output "data\generated\h5_3\local_loss_recurrence_audit_v0_1_v5.json"
+
+python validate_h5_3_local_loss_recurrence.py `
+  "data\generated\h5_3\local_loss_recurrence_audit_v0_1_v5.json"
+```
+
+Solo `EXACT_ZONE_RECURRENCE_OBSERVED` representa repetición independiente de la
+misma zona y patrón. `CROSS_ZONE_PATTERN_ONLY` es contexto general y nunca confirma
+una curva ni autoriza coaching.
+
 El gate H5.3f v0.2 combina el gate estructural anterior con la cola y los labels
 reales. Su mejor resultado exige igualmente una decisión explícita y no activa
 producción:

@@ -178,7 +178,7 @@ Checkpoint: **2026-08-22 GUI v1.5, H5.4 presentation and historical shadow**.
 Validated checkpoints relevant to the current working tree:
 
 ```text
-full pytest (current working tree):  1018 PASS / 0 FAIL / 0 SKIP
+full pytest (current working tree):  1022 PASS / 0 FAIL / 0 SKIP
 Objective Python regressions:         55 PASS / 0 FAIL / 0 SKIP
 Objective recovery check:             READY
 ```
@@ -943,6 +943,17 @@ and no action wording or channel direction is generated. The real v0.1 evaluatio
 produced one candidate (Interlagos T12 Junção) and retained the other five cases.
 Its exact-reconstruction validator passed; independent confirming cases are required
 before testing any action mapping.
+
+Two additional Interlagos LMP2_ELMS sessions expanded the exact review queue to v5:
+23/23 items representing 24 source occurrences. The three new globally faster-lap
+cases were reviewed as 2 `WITHHELD_BUT_ACTIONABLE` and 1 `AMBIGUOUS`. H5.3h now
+retains three unauthorized local-policy candidates and withholds six cases.
+H5.3i (`audit_h5_3_local_loss_recurrence.py`) groups those candidates by validated
+track/layout/vehicle context, exact location and numeric channel direction. Its first
+real audit found zero exact-zone recurrence and one cross-zone pattern: Interlagos
+T8 Pinheirinho and T12 Junção both showed lower speed, lower throttle and higher
+brake across two independent sources. Cross-zone repetition is context only and must
+not be treated as confirmation of either corner or as action authority.
 
 ---
 

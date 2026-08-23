@@ -1301,6 +1301,11 @@ H5.3h prueba esa política local como una hipótesis separada y conservadora: ex
 label `WITHHELD_BUT_ACTIONABLE`, pérdida local mínima de `0,20 s` y evidencia de
 ambos controles. El resultado inicial conserva un único candidato no autorizado y
 retiene los otros cinco; todavía no genera instrucciones para el piloto.
+Con dos sesiones nuevas de Interlagos, la cola v5 quedó completa en 23/23 y H5.3h
+pasó a tres candidatos no autorizados. H5.3i separa recurrencia exacta por curva de
+patrones entre curvas: el resultado inicial es 0 recurrencias exactas y 1 patrón
+contextual compartido por T8 y T12. Ese patrón no confirma ninguna curva ni autoriza
+una instrucción.
 Contrato:
 [`docs/H5_3_HISTORICAL_COACHING_ROADMAP_V0_1.md`](docs/H5_3_HISTORICAL_COACHING_ROADMAP_V0_1.md).
 

@@ -92,12 +92,13 @@ historical_candidate_selection_runtime.py H5.3 runtime 0.2 / deterministic defau
 historical_action_policy.py           H5.3 action candidates 0.2 / shadow only
 audit_h5_3_faster_lap_withholding.py   H5.3g 0.1 / local-loss diagnostic audit
 evaluate_h5_3_local_loss_policy.py     H5.3h 0.1 / unauthorized local-policy hypothesis
+audit_h5_3_local_loss_recurrence.py    H5.3i 0.1 / exact-zone vs cross-zone recurrence
 ```
 
 Validated integration checkpoint:
 
 ```text
-pytest:                         1018 PASS / 0 FAIL / 0 SKIP
+pytest:                         1022 PASS / 0 FAIL / 0 SKIP
 Objective Python regressions:  55 PASS / 0 FAIL / 0 SKIP
 ```
 

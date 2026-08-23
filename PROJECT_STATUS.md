@@ -7,13 +7,16 @@ llama.cpp recovery and H5.3 review work described below.
 
 Validated baseline:
 
-- full pytest: `1018 PASS / 0 FAIL / 0 SKIP`;
+- full pytest: `1022 PASS / 0 FAIL / 0 SKIP`;
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP` (last analyzer-affecting checkpoint);
 - GUI: v1.5, H6.5 visual polish + deterministic H5.4 P11 focus over the preserved complete plan;
 - H5.3: shadow implementation complete, production historical actions still disabled.
 - H5.3g: deterministic faster-lap withholding audit implemented; policy unchanged.
 - H5.3h: conservative local-loss hypothesis implemented in shadow; 1 unauthorized
-  candidate and 5 withheld on real evidence.
+  candidate and 5 withheld on the v4 evidence; v5 expands this to 3 candidates and
+  6 withheld after two new Interlagos sessions.
+- H5.3i: recurrence audit implemented; initial result is 0 exact-zone recurrences
+  and 1 cross-zone contextual pattern.
 
 ### analyze_telemetry
 Current: `3.8`
@@ -231,6 +234,14 @@ Implemented H5.3 slice:
   (`evaluate_h5_3_local_loss_policy.py`, `validate_h5_3_local_loss_policy.py`) applies
   closed quantitative and human-review gates without generating actions. The initial
   real result retains Junção as one unauthorized hypothesis and withholds five cases.
+- Review queue v5 incorporates the new Interlagos sessions with exact migration of
+  all 20 prior labels. It is complete at 23/23 items and adds two actionable-withheld
+  cases plus one ambiguous case.
+- H5.3i recurrence audit
+  (`audit_h5_3_local_loss_recurrence.py`,
+  `validate_h5_3_local_loss_recurrence.py`) requires distinct source identities for
+  exact-zone recurrence. The real v5 result found none; T8 and T12 share one
+  cross-zone channel pattern that remains contextual and unauthorized.
 
 Promotion status: all H5.3 slices are implemented in shadow; production promotion
 gate verdict is `PROMOTION_READY`, but production historical coaching remains

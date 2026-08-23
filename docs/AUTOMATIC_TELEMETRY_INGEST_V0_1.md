@@ -153,6 +153,11 @@ Get-Content .\data\local\h5_3_review_maintenance.json
 revisión manual. Un fallo H5.3 queda en el log y en ese estado, pero no bloquea la
 ingestión de History.
 
+Cuando `pending_review_count` llega a cero, el mantenimiento reconstruye y valida en
+orden H5.3g, H5.3h y H5.3i. Los paths y conteos quedan en el mismo estado local bajo
+`downstream_status: AUDITS_CURRENT`. Con casos pendientes devuelve
+`WAITING_FOR_HUMAN_REVIEW` y no intenta inferir labels.
+
 El log rota al alcanzar 2 MiB y conserva una copia anterior. Ambos archivos están
 dentro de `data/local/` y no se versionan.
 

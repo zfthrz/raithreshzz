@@ -14,6 +14,23 @@ def _write_pair(root: Path, revision: int, queue: dict, labels: dict) -> tuple[P
     return queue_path, labels_path
 
 
+def test_no_source_artifacts_is_safe_without_existing_review(tmp_path: Path):
+    input_root = tmp_path / "shadow"
+    input_root.mkdir()
+    result = maintenance.maintain(
+        input_root=input_root,
+        output_root=tmp_path / "h5_3",
+        state_path=tmp_path / "state.json",
+    )
+    assert result == {
+        "status": "NO_SOURCE_ARTIFACTS",
+        "updated_at_utc": result["updated_at_utc"],
+        "source_artifact_count": 0,
+        "pending_review_count": 0,
+        "historical_actions_authorized": False,
+    }
+
+
 def test_up_to_date_queue_does_not_create_revision(tmp_path: Path, monkeypatch):
     input_root = tmp_path / "shadow"
     output_root = tmp_path / "h5_3"
@@ -38,6 +55,7 @@ def test_up_to_date_queue_does_not_create_revision(tmp_path: Path, monkeypatch):
     assert result["status"] == "UP_TO_DATE"
     assert result["current_revision"] == 5
     assert not (output_root / "action_review_queue_v6.json").exists()
+    assert result["downstream_status"] == "WAITING_FOR_HUMAN_REVIEW"
 
 
 def test_changed_queue_creates_next_revision_and_migrates_exact_labels(
@@ -83,3 +101,38 @@ def test_changed_queue_creates_next_revision_and_migrates_exact_labels(
     assert result["pending_review_count"] == 1
     assert (output_root / "action_review_queue_v6.json").is_file()
     assert (output_root / "action_review_labels_v6.json").is_file()
+    assert result["downstream_status"] == "WAITING_FOR_HUMAN_REVIEW"
+
+
+def test_complete_review_rebuilds_downstream_audits(tmp_path: Path, monkeypatch):
+    input_root = tmp_path / "shadow"
+    output_root = tmp_path / "h5_3"
+    input_root.mkdir()
+    output_root.mkdir()
+    (input_root / "historical_actions.json").write_text("{}", encoding="utf-8")
+    queue = {"review_items": [{"review_id": "one"}]}
+    _write_pair(output_root, 5, queue, {"labels": [{"review_id": "one"}]})
+    monkeypatch.setattr(maintenance, "build_queue", lambda paths, input_root: queue)
+    monkeypatch.setattr(
+        maintenance,
+        "validate_labels",
+        lambda queue_path, labels_path: ([], [], {"queue_items": 1, "unreviewed": 0}),
+    )
+    calls = []
+
+    def rebuild(**kwargs):
+        calls.append(kwargs)
+        return {
+            "downstream_status": "AUDITS_CURRENT",
+            "downstream_revision": kwargs["revision"],
+        }
+
+    monkeypatch.setattr(maintenance, "_rebuild_downstream", rebuild)
+    result = maintenance.maintain(
+        input_root=input_root,
+        output_root=output_root,
+        state_path=tmp_path / "state.json",
+    )
+    assert result["downstream_status"] == "AUDITS_CURRENT"
+    assert calls[0]["revision"] == 5
+    assert calls[0]["pending_review_count"] == 0

@@ -8,9 +8,15 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from audit_h5_3_faster_lap_withholding import build_audit as build_withholding_audit
+from audit_h5_3_local_loss_recurrence import build_audit as build_recurrence_audit
+from evaluate_h5_3_local_loss_policy import build_evaluation as build_local_policy
 from migrate_h5_3_action_review_labels import migrate_labels
 from prepare_h5_3_action_review_queue import build_queue, file_sha256
 from validate_h5_3_action_review_labels import validate as validate_labels
+from validate_h5_3_faster_lap_withholding import validate as validate_withholding_audit
+from validate_h5_3_local_loss_policy import validate as validate_local_policy
+from validate_h5_3_local_loss_recurrence import validate as validate_recurrence_audit
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -59,6 +65,64 @@ def _artifact_fingerprint(paths: list[Path]) -> list[dict[str, str]]:
     ]
 
 
+def _rebuild_downstream(
+    *,
+    queue_path: Path,
+    labels_path: Path,
+    output_root: Path,
+    revision: int,
+    pending_review_count: int,
+) -> dict[str, Any]:
+    if pending_review_count:
+        return {
+            "downstream_status": "WAITING_FOR_HUMAN_REVIEW",
+            "downstream_revision": revision,
+        }
+    withholding_path = (
+        output_root / f"faster_lap_withholding_audit_v0_1_review_v{revision}.json"
+    )
+    local_policy_path = (
+        output_root / f"local_loss_policy_experiment_v0_1_review_v{revision}.json"
+    )
+    recurrence_path = (
+        output_root / f"local_loss_recurrence_audit_v0_1_review_v{revision}.json"
+    )
+    withholding = build_withholding_audit(queue_path, labels_path)
+    _write_json(withholding_path, withholding)
+    errors = validate_withholding_audit(withholding)
+    if errors:
+        raise ValueError("H5.3g automatic validation failed: " + "; ".join(errors))
+    local_policy = build_local_policy(withholding_path)
+    _write_json(local_policy_path, local_policy)
+    errors = validate_local_policy(local_policy)
+    if errors:
+        raise ValueError("H5.3h automatic validation failed: " + "; ".join(errors))
+    recurrence = build_recurrence_audit(local_policy_path)
+    _write_json(recurrence_path, recurrence)
+    errors = validate_recurrence_audit(recurrence)
+    if errors:
+        raise ValueError("H5.3i automatic validation failed: " + "; ".join(errors))
+    return {
+        "downstream_status": "AUDITS_CURRENT",
+        "downstream_revision": revision,
+        "withholding_audit_json": str(withholding_path.resolve()),
+        "withholding_case_count": withholding["summary"][
+            "reviewed_current_faster_withheld_count"
+        ],
+        "local_policy_evaluation_json": str(local_policy_path.resolve()),
+        "local_policy_candidate_count": local_policy["summary"][
+            "local_policy_candidate_count"
+        ],
+        "recurrence_audit_json": str(recurrence_path.resolve()),
+        "exact_zone_recurrence_count": recurrence["summary"][
+            "exact_zone_recurrence_count"
+        ],
+        "cross_zone_pattern_count": recurrence["summary"][
+            "cross_zone_pattern_count"
+        ],
+    }
+
+
 def maintain(
     *,
     input_root: Path = DEFAULT_INPUT_ROOT,
@@ -104,6 +168,13 @@ def maintain(
             "pending_review_count": current_summary["unreviewed"],
             "historical_actions_authorized": False,
         }
+        result.update(_rebuild_downstream(
+            queue_path=current_queue_path,
+            labels_path=current_labels_path,
+            output_root=output_root,
+            revision=revision,
+            pending_review_count=current_summary["unreviewed"],
+        ))
         _write_json(state_path, result)
         return result
 
@@ -135,6 +206,13 @@ def maintain(
         "warnings": warnings,
         "historical_actions_authorized": False,
     }
+    result.update(_rebuild_downstream(
+        queue_path=new_queue_path,
+        labels_path=new_labels_path,
+        output_root=output_root,
+        revision=new_revision,
+        pending_review_count=summary["unreviewed"],
+    ))
     _write_json(state_path, result)
     return result
 

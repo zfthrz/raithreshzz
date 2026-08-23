@@ -7,7 +7,7 @@ llama.cpp recovery and H5.3 review work described below.
 
 Validated baseline:
 
-- full pytest: `1030 PASS / 0 FAIL / 0 SKIP`;
+- full pytest: `1032 PASS / 0 FAIL / 0 SKIP`;
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP` (last analyzer-affecting checkpoint);
 - GUI: v1.6, H5.3 shadow review-state indicator + H6.5/P11 presentation;
 - H5.3: shadow implementation complete, production historical actions still disabled.
@@ -248,6 +248,10 @@ Implemented H5.3 slice:
   successful hidden History maintenance. It never calls an LLM, overwrites an
   existing revision or creates a human label; exact unchanged labels are the only
   records migrated. Its failure is logged without blocking History.
+- Once the numbered review has zero pending labels, maintenance automatically rebuilds
+  and validates H5.3g/h/i. Real v5 status is `AUDITS_CURRENT` (9 withholding cases,
+  3 local candidates, 0 exact recurrence, 1 cross-zone pattern). Pending labels stop
+  the chain without inference.
 
 Promotion status: all H5.3 slices are implemented in shadow; production promotion
 gate verdict is `PROMOTION_READY`, but production historical coaching remains

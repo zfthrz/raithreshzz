@@ -178,7 +178,7 @@ Checkpoint: **2026-08-22 GUI v1.6, H5.4 presentation and historical shadow**.
 Validated checkpoints relevant to the current working tree:
 
 ```text
-full pytest (current working tree):  1030 PASS / 0 FAIL / 0 SKIP
+full pytest (current working tree):  1032 PASS / 0 FAIL / 0 SKIP
 Objective Python regressions:         55 PASS / 0 FAIL / 0 SKIP
 Objective recovery check:             READY
 ```
@@ -964,6 +964,11 @@ this maintenance after successful History maintenance without opening a console.
 Failures are logged as non-blocking H5.3 warnings, while state and pending count are
 written to `data/local/h5_3_review_maintenance.json`. The first real run detected all
 8 artifacts and correctly returned `UP_TO_DATE`, revision v5, pending 0.
+When pending reaches zero, the same maintenance now reconstructs and validates H5.3g,
+H5.3h and H5.3i in sequence. Any pending human case stops this chain at
+`WAITING_FOR_HUMAN_REVIEW`; no inference is attempted. The real v5 automatic chain
+returned `AUDITS_CURRENT` with 9 faster-lap withheld cases, 3 unauthorized local
+policy candidates, 0 exact-zone recurrences and 1 cross-zone pattern.
 
 ---
 

@@ -364,6 +364,11 @@ Get-Content .\data\local\h5_3_review_maintenance.json
 La automatización prepara la revisión, pero no abre el labeler, no contesta casos,
 no llama al LLM y mantiene `historical_actions_authorized=false`.
 
+Después de completar todos los labels, el siguiente ciclo reconstruye automáticamente
+los auditores H5.3g/h/i. El estado `AUDITS_CURRENT` incluye sus paths y los conteos de
+casos, candidatos y recurrencias. Mientras haya pendientes, informa
+`WAITING_FOR_HUMAN_REVIEW` y no ejecuta esa cadena.
+
 La GUI v1.6 muestra este mismo estado junto al contador de sesiones. Verde indica
 `UP_TO_DATE`; ámbar muestra la cantidad de casos pendientes; rojo indica un estado
 inválido o fallido. Al pulsar el indicador, el detalle o path de labels aparece en

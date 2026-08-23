@@ -1310,6 +1310,9 @@ La preparación de nuevas revisiones queda automatizada por
 `maintain_h5_3_action_review.py`: detecta nuevos artifacts shadow, crea una revisión
 numerada solo si cambió la cola y migra exclusivamente labels idénticos. El ejecutor
 oculto de History lo invoca sin consola; nunca llama al LLM ni responde la revisión.
+Cuando no quedan labels pendientes también reconstruye y valida automáticamente los
+auditores H5.3g/h/i. Si falta una decisión humana, la cadena se detiene de forma
+segura en `WAITING_FOR_HUMAN_REVIEW`.
 Contrato:
 [`docs/H5_3_HISTORICAL_COACHING_ROADMAP_V0_1.md`](docs/H5_3_HISTORICAL_COACHING_ROADMAP_V0_1.md).
 

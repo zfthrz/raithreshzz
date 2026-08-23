@@ -7,9 +7,9 @@ llama.cpp recovery and H5.3 review work described below.
 
 Validated baseline:
 
-- full pytest: `1044 PASS / 0 FAIL / 0 SKIP`;
+- full pytest: `1047 PASS / 0 FAIL / 0 SKIP`;
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP` (last analyzer-affecting checkpoint);
-- GUI: v1.11, synchronized turn navigation + GPS zoom/pan + H5.3 presentation;
+- GUI: v1.12, section navigation + telemetry paned area + GPS zoom/pan + H5.3 presentation;
 - H5.3: shadow implementation complete, production historical actions still disabled.
 - H5.3g: deterministic faster-lap withholding audit implemented; policy unchanged.
 - H5.3h: conservative local-loss hypothesis implemented in shadow; 1 unauthorized
@@ -389,7 +389,7 @@ LLM episode-prompt shadow checkpoint:
 See `docs/LLM_PROMPT_SHADOW_PROMOTION_GATE_V0_1.md`.
 
 Validation:
-- pytest: `987 PASS / 0 FAIL / 0 SKIP`
+- pytest: `1047 PASS / 0 FAIL / 0 SKIP`
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP`
 - Objective recovery check: `READY`
 
@@ -550,6 +550,13 @@ centers and fits the complete turn on the GPS canvas, places the white point at 
 calibrated apex and applies the same start/end interval to the telemetry chart. The
 map and chart can then be adjusted independently. Navigation controls occupy their
 own row to preserve normal-window readability. See `docs/RACE_ENGINEER_GUI_V1_11.md`.
+
+GUI v1.12 reorganiza la navegación principal en Resumen / Telemetría / Historial /
+Diagnóstico con sub-vistas, agrega tarjetas compactas de sesión y coloca el mapa y
+los canales en un `Panedwindow` vertical con separador arrastrable. El gráfico de
+canales usa tres carriles, se expande con el panel y no dibuja líneas ficticias por
+debajo de 180×120 px (muestra `Ampliá el panel de canales...`). See
+`docs/RACE_ENGINEER_GUI_V1_12.md`.
 
 Calibration batch orchestrator `1.5` requires the current History schema 4 contract,
 reports its runtime version consistently and has a regression test against schema drift.

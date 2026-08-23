@@ -69,7 +69,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.11"
+GUI_VERSION = "1.12"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 PROJECT_ROOT = Path(__file__).resolve().parent
 BACKEND_LABELS = {
@@ -82,6 +82,21 @@ SESSION_FILTER_LABELS = {
     "Con debrief": "DEBRIEF_READY",
     "Sólo History": "HISTORY_READY",
     "Fallidas": "FAILED",
+}
+PRIMARY_SECTIONS = ("Resumen", "Telemetría", "Historial", "Diagnóstico")
+SECTION_VIEWS = {
+    "Resumen": ("Debrief", "Próxima tanda", "Vueltas"),
+    "Telemetría": ("Mapa y canales",),
+    "Historial": ("Referencia", "Comparación"),
+    "Diagnóstico": ("Pipeline", "Ejecución"),
+}
+SESSION_STATUS_SUMMARY = {
+    "DEBRIEF_READY": "Debrief listo",
+    "DEBRIEF_UNVALIDATED": "Sin validar",
+    "HISTORY_READY": "History listo",
+    "ANALYZED": "Analizada",
+    "FAILED": "Fallida",
+    "INCOMPLETE": "Incompleta",
 }
 
 
@@ -100,6 +115,34 @@ def _clean_markdown_line(line: str) -> str:
 def status_wraplength(container_width_px: int) -> int:
     """Keep map status text inside its current panel without clipping it."""
     return max(240, int(container_width_px) - 24)
+
+
+def telemetry_canvas_ready(width_px: int, height_px: int) -> bool:
+    """Only render three telemetry lanes when the real canvas can contain them."""
+    return int(width_px) >= 180 and int(height_px) >= 120
+
+
+def session_summary_values(
+    *,
+    reference_time_s: float | None,
+    valid_lap_count: int,
+    has_historical_reference: bool,
+    has_historical_comparison: bool,
+    status: str,
+) -> tuple[str, str, str, str]:
+    historical = (
+        "Comparación lista"
+        if has_historical_comparison
+        else "Referencia disponible"
+        if has_historical_reference
+        else "Sin compatible"
+    )
+    return (
+        format_lap_time(reference_time_s),
+        str(max(valid_lap_count, 0)),
+        historical,
+        SESSION_STATUS_SUMMARY.get(status, "Estado desconocido"),
+    )
 
 
 class RaceEngineerApp:
@@ -387,6 +430,24 @@ class RaceEngineerApp:
             borderwidth=0,
             thickness=5,
         )
+        style.configure(
+            "MetricCard.TFrame",
+            background="#171a1d",
+            borderwidth=1,
+            relief="solid",
+        )
+        style.configure(
+            "CardLabel.TLabel",
+            background="#171a1d",
+            foreground="#7f929f",
+            font=("Segoe UI Semibold", 8),
+        )
+        style.configure(
+            "CardValue.TLabel",
+            background="#171a1d",
+            foreground="#edf6fa",
+            font=("Segoe UI Semibold", 11),
+        )
 
     def _build_layout(self):
         ttk = self.ttk
@@ -524,16 +585,59 @@ class RaceEngineerApp:
         )
         self.open_button.pack(side="right")
 
+        summary_strip = ttk.Frame(right, style="Panel.TFrame")
+        summary_strip.pack(fill="x", pady=(0, 10))
+        self.summary_reference_var = tk.StringVar(value="—")
+        self.summary_laps_var = tk.StringVar(value="—")
+        self.summary_history_var = tk.StringVar(value="—")
+        self.summary_status_var = tk.StringVar(value="—")
+        for index, (label, variable) in enumerate(
+            (
+                ("REFERENCIA", self.summary_reference_var),
+                ("VUELTAS VÁLIDAS", self.summary_laps_var),
+                ("HISTORIAL", self.summary_history_var),
+                ("ESTADO", self.summary_status_var),
+            )
+        ):
+            card = ttk.Frame(summary_strip, style="MetricCard.TFrame", padding=(12, 8))
+            card.pack(
+                side="left",
+                fill="x",
+                expand=True,
+                padx=(0, 7) if index < 3 else 0,
+            )
+            ttk.Label(card, text=label, style="CardLabel.TLabel").pack(anchor="w")
+            ttk.Label(
+                card,
+                textvariable=variable,
+                style="CardValue.TLabel",
+            ).pack(anchor="w", pady=(2, 0))
+
         self.notebook = ttk.Notebook(right)
         self.notebook.pack(fill="both", expand=True)
-        self.debrief_text = self._text_tab(self.notebook, "Debrief")
-        self.plan_text = self._text_tab(self.notebook, "Próxima tanda")
-        self.laps_text = self._text_tab(self.notebook, "Vueltas")
-        self.historical_reference_text = self._text_tab(self.notebook, "Referencia histórica")
-        self.historical_comparison_text = self._text_tab(self.notebook, "Comparación histórica")
-        self.track_map_canvas = self._track_map_tab(self.notebook)
-        self.pipeline_text = self._text_tab(self.notebook, "Pipeline")
-        self.execution_text = self._text_tab(self.notebook, "Ejecución")
+        summary_notebook = self._section_tab(self.notebook, "Resumen")
+        self.debrief_text = self._text_tab(summary_notebook, "Debrief")
+        self.plan_text = self._text_tab(summary_notebook, "Próxima tanda")
+        self.laps_text = self._text_tab(summary_notebook, "Vueltas")
+
+        self.track_map_canvas = self._track_map_tab(
+            self.notebook,
+            label="Telemetría",
+        )
+
+        history_notebook = self._section_tab(self.notebook, "Historial")
+        self.historical_reference_text = self._text_tab(
+            history_notebook,
+            "Referencia",
+        )
+        self.historical_comparison_text = self._text_tab(
+            history_notebook,
+            "Comparación",
+        )
+
+        diagnostics_notebook = self._section_tab(self.notebook, "Diagnóstico")
+        self.pipeline_text = self._text_tab(diagnostics_notebook, "Pipeline")
+        self.execution_text = self._text_tab(diagnostics_notebook, "Ejecución")
 
         execution_bar = ttk.Frame(right, style="Panel.TFrame")
         execution_bar.pack(fill="x", pady=(10, 0))
@@ -556,6 +660,13 @@ class RaceEngineerApp:
             style="Subtitle.TLabel",
             anchor="w",
         ).pack(fill="x", padx=22, pady=(0, 10))
+
+    def _section_tab(self, notebook, label):
+        frame = self.ttk.Frame(notebook, style="Panel.TFrame", padding=(0, 6, 0, 0))
+        notebook.add(frame, text=label)
+        nested = self.ttk.Notebook(frame)
+        nested.pack(fill="both", expand=True)
+        return nested
 
     def _text_tab(self, notebook, label):
         frame = self.ttk.Frame(notebook, style="Panel.TFrame", padding=5)
@@ -588,9 +699,9 @@ class RaceEngineerApp:
         text.configure(state="disabled")
         return text
 
-    def _track_map_tab(self, notebook):
+    def _track_map_tab(self, notebook, *, label="Mapa"):
         frame = self.ttk.Frame(notebook, style="Panel.TFrame", padding=8)
-        notebook.add(frame, text="Mapa")
+        notebook.add(frame, text=label)
         self.track_map_status = self.tk.StringVar(
             value="Seleccioná una sesión para reconstruir el mapa GPS."
         )
@@ -599,8 +710,16 @@ class RaceEngineerApp:
             textvariable=self.track_map_status,
             style="Muted.TLabel",
         ).pack(fill="x", padx=8, pady=(4, 8))
+        telemetry_split = self.ttk.Panedwindow(frame, orient="vertical")
+        telemetry_split.pack(fill="both", expand=True)
+        self.track_telemetry_split = telemetry_split
+        map_panel = self.ttk.Frame(telemetry_split, style="Panel.TFrame")
+        channels_panel = self.ttk.Frame(telemetry_split, style="Panel.TFrame")
+        telemetry_split.add(map_panel, weight=3)
+        telemetry_split.add(channels_panel, weight=2)
+
         canvas = self.tk.Canvas(
-            frame,
+            map_panel,
             background="#0b0e10",
             highlightthickness=1,
             highlightbackground="#2d343a",
@@ -615,7 +734,7 @@ class RaceEngineerApp:
         canvas.bind("<ButtonPress-3>", self._on_track_map_pan_press)
         canvas.bind("<B3-Motion>", self._on_track_map_pan_drag)
         canvas.bind("<ButtonRelease-3>", self._on_track_map_pan_release)
-        map_zoom_controls = self.ttk.Frame(frame, style="Panel.TFrame")
+        map_zoom_controls = self.ttk.Frame(map_panel, style="Panel.TFrame")
         map_zoom_controls.pack(fill="x", pady=(4, 0))
         self.track_map_zoom_status = self.tk.StringVar(
             value="Mapa completo · rueda: zoom · botón derecho: desplazar"
@@ -632,7 +751,7 @@ class RaceEngineerApp:
             state="disabled",
         )
         self.track_map_zoom_reset_button.pack(side="right")
-        turn_controls = self.ttk.Frame(frame, style="Panel.TFrame")
+        turn_controls = self.ttk.Frame(map_panel, style="Panel.TFrame")
         turn_controls.pack(fill="x", pady=(4, 0))
         self.ttk.Label(
             turn_controls,
@@ -664,7 +783,7 @@ class RaceEngineerApp:
             value="Sin zonas H5.2 para esta sesión."
         )
         self.track_map_zone_label = self.ttk.Label(
-            frame,
+            channels_panel,
             textvariable=self.track_map_zone_status,
             style="Muted.TLabel",
             wraplength=960,
@@ -675,7 +794,7 @@ class RaceEngineerApp:
             value="Hacé clic en el trazado para inspeccionar velocidad, freno y acelerador."
         )
         self.track_map_telemetry_label = self.ttk.Label(
-            frame,
+            channels_panel,
             textvariable=self.track_map_telemetry_status,
             style="Muted.TLabel",
             wraplength=960,
@@ -684,20 +803,20 @@ class RaceEngineerApp:
         self.track_map_telemetry_label.pack(fill="x", padx=8, pady=(0, 4))
         frame.bind("<Configure>", self._on_track_detail_resize, add="+")
         telemetry_canvas = self.tk.Canvas(
-            frame,
-            height=180,
+            channels_panel,
+            height=210,
             background="#111418",
             highlightthickness=1,
             highlightbackground="#2d343a",
         )
-        telemetry_canvas.pack(fill="x", padx=0, pady=(4, 0))
+        telemetry_canvas.pack(fill="both", expand=True, padx=0, pady=(4, 0))
         telemetry_canvas.configure(cursor="crosshair")
         telemetry_canvas.bind(
             "<Configure>", lambda _event: self._render_track_telemetry_chart()
         )
         telemetry_canvas.bind("<MouseWheel>", self._on_telemetry_mousewheel)
         self.track_telemetry_canvas = telemetry_canvas
-        zoom_controls = self.ttk.Frame(frame, style="Panel.TFrame")
+        zoom_controls = self.ttk.Frame(channels_panel, style="Panel.TFrame")
         zoom_controls.pack(fill="x", pady=(4, 0))
         self.telemetry_zoom_status = self.tk.StringVar(
             value="Gráfico completo · rueda: zoom · Shift+rueda: desplazar"
@@ -871,6 +990,22 @@ class RaceEngineerApp:
         self.detail_subtitle.set(
             f"{record.vehicle} · {record.valid_lap_count} vueltas válidas · {record.status_detail}"
         )
+        (
+            reference_value,
+            laps_value,
+            history_value,
+            status_value,
+        ) = session_summary_values(
+            reference_time_s=record.reference_time_s,
+            valid_lap_count=record.valid_lap_count,
+            has_historical_reference=record.reference_selection_path is not None,
+            has_historical_comparison=record.cross_session_path is not None,
+            status=record.status,
+        )
+        self.summary_reference_var.set(reference_value)
+        self.summary_laps_var.set(laps_value)
+        self.summary_history_var.set(history_value)
+        self.summary_status_var.set(status_value)
         self._set_text(self.debrief_text, detail.debrief_markdown, markdown=True)
         self._set_text(self.plan_text, detail.plan_text)
         self._set_text(self.laps_text, detail.laps_text)
@@ -886,6 +1021,10 @@ class RaceEngineerApp:
     def _clear_detail(self):
         self.detail_title.set("No hay sesiones disponibles")
         self.detail_subtitle.set("Ejecutá un análisis o verificá el directorio configurado.")
+        self.summary_reference_var.set("—")
+        self.summary_laps_var.set("—")
+        self.summary_history_var.set("—")
+        self.summary_status_var.set("—")
         for widget in (
             self.debrief_text,
             self.plan_text,
@@ -1641,8 +1780,19 @@ class RaceEngineerApp:
         data = self.current_track_map
         if data is None:
             return
-        width = max(canvas.winfo_width(), 180)
-        height = max(canvas.winfo_height(), 120)
+        width = canvas.winfo_width()
+        height = canvas.winfo_height()
+        if not telemetry_canvas_ready(width, height):
+            canvas.create_text(
+                max(width // 2, 8),
+                max(height // 2, 8),
+                text="Ampliá el panel de canales para ver velocidad, acelerador y freno.",
+                fill="#8fa5b8",
+                anchor="center",
+                width=max(width - 24, 80),
+                font=("Segoe UI", 9),
+            )
+            return
         chart = build_track_telemetry_chart(
             data.points,
             width_px=width,

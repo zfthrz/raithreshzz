@@ -68,6 +68,69 @@ def test_race_engineer_resolves_llamacpp_backend(monkeypatch):
     assert race_engineer.llm_model_name("llamacpp") == "qwen3-14b"
 
 
+def test_race_engineer_resolves_exact_llamacpp_output_name(tmp_path, monkeypatch):
+    monkeypatch.setattr(
+        race_engineer,
+        "llm_result_dir",
+        lambda analysis_json: tmp_path / "generated" / "llm_results" / analysis_json.stem,
+    )
+    monkeypatch.setenv("LLAMACPP_MODEL", "qwen3-14b")
+    analysis_json = tmp_path / "Autodromo Nazionale Monza_P_2026-08-15T19_52_08Z.json"
+
+    output = race_engineer.llm_output_path(analysis_json, "llamacpp")
+
+    assert output.name == (
+        "Autodromo Nazionale Monza_P_2026-08-15T19_52_08Z_"
+        "llm_analysis_v3_10_8_5_4_llamacpp_qwen3-14b.json"
+    )
+
+
+def test_existing_llamacpp_artifact_can_be_recovered_without_rerun(tmp_path, monkeypatch):
+    monkeypatch.setenv("LLAMACPP_MODEL", "qwen3-14b")
+    analysis_json = tmp_path / "analysis.json"
+    analysis_json.write_text("{}", encoding="utf-8")
+    artifact_path = tmp_path / "result.json"
+    artifact_path.write_text(
+        json.dumps({
+            "metadata": {
+                "source_json": str(analysis_json.resolve()),
+                "llm_analysis_version": "3.10.8.5.4",
+                "model": "qwen3-14b",
+                "structured_validation": "PASS",
+                "factual_grounding_validation": "PASS",
+            }
+        }),
+        encoding="utf-8",
+    )
+
+    assert race_engineer.llm_artifact_matches_run(
+        artifact_path, analysis_json, "llamacpp"
+    ) is True
+
+
+def test_existing_llamacpp_artifact_recovery_rejects_wrong_model(tmp_path, monkeypatch):
+    monkeypatch.setenv("LLAMACPP_MODEL", "qwen3-14b")
+    analysis_json = tmp_path / "analysis.json"
+    analysis_json.write_text("{}", encoding="utf-8")
+    artifact_path = tmp_path / "result.json"
+    artifact_path.write_text(
+        json.dumps({
+            "metadata": {
+                "source_json": str(analysis_json.resolve()),
+                "llm_analysis_version": "3.10.8.5.4",
+                "model": "different-model",
+                "structured_validation": "PASS",
+                "factual_grounding_validation": "PASS",
+            }
+        }),
+        encoding="utf-8",
+    )
+
+    assert race_engineer.llm_artifact_matches_run(
+        artifact_path, analysis_json, "llamacpp"
+    ) is False
+
+
 def test_llamacpp_backend_is_exposed_in_entry_points():
     source = (ROOT / "race_engineer.py").read_text(encoding="utf-8")
     assert '"llamacpp"' in source

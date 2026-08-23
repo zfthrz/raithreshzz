@@ -271,6 +271,31 @@ Un `PASS` con advertencia de pendientes significa que el archivo es consistente,
 pero la revisión todavía no terminó. Estos labels siguen siendo evidencia humana
 shadow y nunca activan `historical_actions_authorized`.
 
+Si aparecen nuevos artifacts, generar una cola con otro nombre y migrar únicamente
+los labels cuya identidad y snapshot continúan exactamente iguales:
+
+```powershell
+python migrate_h5_3_action_review_labels.py `
+  "data\generated\h5_3\action_review_queue.json" `
+  "data\generated\h5_3\action_review_labels.json" `
+  "data\generated\h5_3\action_review_queue_v2.json" `
+  --output "data\generated\h5_3\action_review_labels_v2.json"
+```
+
+La migración nunca copia un label si cambió el caso revisado; ese caso vuelve a
+quedar pendiente.
+
+Desde eligibility v0.2, el delta positivo local de zona decide significancia, pero
+`delta_sign` proviene exclusivamente del delta validado de la vuelta completa. Una
+vuelta globalmente `current_faster` puede contener pérdidas locales seleccionables;
+la política actual las deja en `WITHHELD` para que la protección anti-regresión pueda
+revisarse con evidencia real.
+
+Las colas nuevas conservan por ocurrencia el delta temporal local y los promedios
+disponibles de velocidad, acelerador y freno. El labeler los muestra también para
+casos `WITHHELD`. Son diferencias `current - historical`; aportan contexto humano,
+pero no constituyen por sí solas una acción ni modifican la política.
+
 El gate H5.3f v0.2 combina el gate estructural anterior con la cola y los labels
 reales. Su mejor resultado exige igualmente una decisión explícita y no activa
 producción:

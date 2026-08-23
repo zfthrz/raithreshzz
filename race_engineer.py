@@ -189,11 +189,40 @@ def llm_output_path(analysis_json: Path, backend: str) -> Path:
             f"{stem}_llm_analysis_v{LLM_ANALYSIS_VERSION_FILE}"
             f"_deepseek_v2_{model}.json"
         )
+    elif backend == "llamacpp":
+        filename = (
+            f"{stem}_llm_analysis_v{LLM_ANALYSIS_VERSION_FILE}"
+            f"_llamacpp_{model}.json"
+        )
     else:
         filename = (
             f"{stem}_llm_analysis_v{LLM_ANALYSIS_VERSION_FILE}_{model}.json"
         )
     return llm_result_dir(analysis_json) / filename
+
+
+def llm_artifact_matches_run(
+    artifact_path: Path,
+    analysis_json: Path,
+    backend: str,
+) -> bool:
+    """Return true only for a complete artifact matching this exact LLM run."""
+    if not artifact_path.is_file():
+        return False
+    try:
+        document = json.loads(artifact_path.read_text(encoding="utf-8"))
+        metadata = document.get("metadata") or {}
+        source_json = Path(str(metadata.get("source_json"))).resolve()
+    except (OSError, ValueError, TypeError, json.JSONDecodeError):
+        return False
+    return (
+        source_json == analysis_json.resolve()
+        and metadata.get("llm_analysis_version")
+        == LLM_ANALYSIS_VERSION_FILE.replace("_", ".")
+        and metadata.get("model") == llm_model_name(backend)
+        and metadata.get("structured_validation") == "PASS"
+        and metadata.get("factual_grounding_validation") == "PASS"
+    )
 
 
 def import_history(analysis_json: Path, db_path: Path) -> dict[str, Any]:
@@ -359,7 +388,7 @@ def analyze_command(args: argparse.Namespace) -> int:
                 "model": llm_model_name(args.backend),
                 "llm_script": script_signature(llm),
             }
-            reuse_llm = (
+            reusable_from_state = (
                 not args.force
                 and not args.force_llm
                 and stage_is_reusable(
@@ -369,9 +398,38 @@ def analyze_command(args: argparse.Namespace) -> int:
                     required_paths=(llm_json,),
                 )
             )
+            recover_existing_llm = (
+                not args.force
+                and not args.force_llm
+                and not reusable_from_state
+                and llm_artifact_matches_run(
+                    llm_json,
+                    analysis_json,
+                    args.backend,
+                )
+            )
+            reuse_llm = reusable_from_state or recover_existing_llm
             if reuse_llm:
                 stage_results["llm"] = STATUS_REUSED
-                print_stage("llm", STATUS_REUSED, str(llm_json))
+                detail = (
+                    "recovered existing validated artifact"
+                    if recover_existing_llm
+                    else str(llm_json)
+                )
+                print_stage("llm", STATUS_REUSED, detail)
+                if recover_existing_llm:
+                    record_stage(
+                        state,
+                        "llm",
+                        signature=llm_signature,
+                        status=STATUS_REUSED,
+                        output=str(llm_json),
+                        details={
+                            "llm_sha256": sha256_file(llm_json),
+                            "recovered_existing_artifact": True,
+                        },
+                    )
+                    save_state(state_path, state)
             else:
                 try:
                     run_checked([

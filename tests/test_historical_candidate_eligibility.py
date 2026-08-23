@@ -487,7 +487,7 @@ class TestEvaluateCandidates:
         assert len(output["results"]) == 3
         summary = output["summary"]
         by_status = summary.get("by_status", {})
-        # c1 (delta +0.10) is ELIGIBLE; c2 (delta +0.05) and c3 (delta -0.10) are WITHHELD
+        # c1 (delta +0.10) is ELIGIBLE; c2 (+0.05) and c3 (-0.10) are WITHHELD.
         assert by_status.get("ELIGIBLE_FOR_SELECTION", 0) == 1
         assert by_status.get("WITHHELD", 0) == 2
 

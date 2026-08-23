@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 
 from historical_action_policy import build_action_candidates
+from label_h5_3_action_review_queue import print_item
 from prepare_h5_3_action_review_queue import build_queue
 
 
@@ -84,6 +85,42 @@ def test_queue_includes_withheld_context_from_selection(tmp_path: Path):
     assert item["reason"] == "insufficient_action_context"
     assert item["context"]["track"] == "Test Track"
     assert item["actions"] == []
+    occurrence = item["occurrences"][0]
+    assert occurrence["delta_change_s"] == 0.25
+
+
+def test_withheld_review_prints_available_quantitative_evidence(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+):
+    artifact = _write_artifact(
+        tmp_path,
+        "session_a",
+        "session-a:withheld",
+        ["time_loss", "current_throttle_higher"],
+    )
+    selection_path = artifact.parent / "candidate_selection.json"
+    selection = json.loads(selection_path.read_text(encoding="utf-8"))
+    candidate = selection["authorized_candidates"][0]
+    candidate.update({
+        "speed_delta_avg": -4.5,
+        "throttle_delta_avg": 7.25,
+        "brake_delta_avg": 1.5,
+    })
+    selection_path.write_text(json.dumps(selection), encoding="utf-8")
+    artifact.write_text(
+        json.dumps(build_action_candidates(selection_path)),
+        encoding="utf-8",
+    )
+
+    item = build_queue([artifact], input_root=tmp_path)["review_items"][0]
+    print_item(item, 1, 1)
+    output = capsys.readouterr().out
+
+    assert "Observed zone deltas: +0.250 s" in output
+    assert "speed=-4.500" in output
+    assert "throttle=+7.250" in output
+    assert "brake=+1.500" in output
 
 
 def test_queue_rejects_invalid_or_authorized_artifact(tmp_path: Path):

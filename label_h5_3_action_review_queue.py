@@ -178,6 +178,22 @@ def print_item(item: dict[str, Any], position: int, total: int) -> None:
     available_deltas = [value for value in deltas if isinstance(value, (int, float))]
     if available_deltas:
         print("Observed zone deltas: " + ", ".join(f"{value:+.3f} s" for value in available_deltas))
+    quantitative_keys = (
+        ("speed_delta_avg", "speed"),
+        ("throttle_delta_avg", "throttle"),
+        ("brake_delta_avg", "brake"),
+    )
+    for occurrence_index, occurrence in enumerate(item.get("occurrences", []), start=1):
+        values = [
+            f"{label}={occurrence.get(key):+.3f}"
+            for key, label in quantitative_keys
+            if isinstance(occurrence.get(key), (int, float))
+        ]
+        if values:
+            prefix = "Observed channel mean deltas (current - historical)"
+            if item.get("occurrence_count", 0) > 1:
+                prefix += f" #{occurrence_index}"
+            print(prefix + ": " + ", ".join(values))
 
     print("\nLabel semantics:")
     if item["decision"] == "AUTHORIZED_SHADOW_ACTION":

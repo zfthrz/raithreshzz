@@ -60,12 +60,11 @@ rule was corrected to match the implemented and reviewed contract.
 
 ## Remaining blockers
 
-1. Obtain a valid Monza runtime action artifact before claiming four-track
-   action-review coverage.
-2. Cover missing isolated action directions, especially brake-only cases.
-3. Record whether the proposed instruction is useful, merely observational,
+1. Cover missing isolated action directions, specifically `increase_brake` and
+   `reduce_brake` without a simultaneous throttle instruction.
+2. Continue recording whether the proposed instruction is useful, merely observational,
    ambiguous or unsafe in its exact historical context.
-4. Upgrade the promotion assessment so it consumes current validated artifacts and
+3. Upgrade the promotion assessment so it consumes current validated artifacts and
    explicit review-coverage counts rather than trusting manifest booleans alone.
 5. Define the additive user-facing presentation and fallback before any authority
    flag changes. The current-session H5.1 debrief must remain visible and primary.
@@ -80,6 +79,23 @@ equivalent candidates and preserves every source occurrence.
 labels with decision-specific closed vocabularies. Review round 2 completed 15/15
 items and passed validation. These labels do not alter action policy thresholds or
 production rendering.
+
+Round 3 added a valid Monza HYPER runtime artifact. Exact-snapshot migration preserved
+all 15 prior labels and the reviewer completed the three new items. Queue v2 now has
+18/18 reviewed items across all four tracks, while the v0.2 gate still correctly
+reports missing `current_faster` and isolated brake-only branches.
+
+Round 4 incorporated the whole-lap sign correction. Local positive
+`delta_change_s` remains the significance/ranking evidence, while the validated
+whole-lap sign controls anti-regression. Seven artifacts were replayed without an
+LLM. Queue v4 contains 20 reviewed items from 21 occurrences; exact-snapshot
+migration preserved 11 labels and required nine new reviews. Results are 12
+`ACTION_USEFUL`, 3 `CORRECTLY_WITHHELD`, 1 `WITHHELD_BUT_ACTIONABLE` and 4
+`AMBIGUOUS`. The v0.2 gate remains `EVIDENCE_INCOMPLETE` because five reviews are
+non-affirmative and isolated `increase_brake`/`reduce_brake` are absent. This is
+evidence that the current whole-lap guard may hide a real local opportunity and that
+the review UI needs quantitative evidence; it is not authorization to weaken the
+guard automatically.
 
 Only after that review passes should the project revisit a narrowly scoped,
 explicit production integration decision.

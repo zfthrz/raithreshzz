@@ -13,6 +13,7 @@ from validate_cross_session_comparison import validate as validate_cross_session
 HISTORICAL_LLM_VERSION = "0.1"
 SCHEMA_VERSION = "1.0"
 MAX_VALIDATION_ATTEMPTS = 3
+BACKEND_CHOICES = ("deepseek", "ollama", "llamacpp")
 ALLOWED_SIGNIFICANCE = {"primary", "secondary", "context"}
 ALLOWED_LIMITATIONS = {
     "single_lap_pair",
@@ -441,7 +442,7 @@ def main() -> int:
         description="Selección LLM observacional para comparación raw H5.2"
     )
     parser.add_argument("comparison_json")
-    parser.add_argument("--backend", choices=("deepseek", "ollama"), required=True)
+    parser.add_argument("--backend", choices=BACKEND_CHOICES, required=True)
     parser.add_argument("--output", required=True)
     parser.add_argument("--debug-dir", required=True)
     args = parser.parse_args()

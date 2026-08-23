@@ -2,12 +2,12 @@
 
 ## Current integration checkpoint
 
-Checkpoint: **2026-08-22** / published `main` commit `e8eccb4` plus the focused
-H5.3 readiness review described below.
+Checkpoint: **2026-08-22** / published `main` commit `b9b75a5` plus the integrated
+llama.cpp recovery and H5.3 review work described below.
 
 Validated baseline:
 
-- full pytest: `1000 PASS / 0 FAIL / 0 SKIP`;
+- full pytest: `1012 PASS / 0 FAIL / 0 SKIP`;
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP` (last analyzer-affecting checkpoint);
 - GUI: v1.5, H6.5 visual polish + deterministic H5.4 P11 focus over the preserved complete plan;
 - H5.3: shadow implementation complete, production historical actions still disabled.
@@ -55,9 +55,29 @@ occurrences: 13 `ACTION_USEFUL`, 2 `CORRECTLY_WITHHELD`, zero unsafe/ambiguous a
 zero pending across Imola, Interlagos and Fuji. Monza action-review coverage is still
 absent, so production authority remains disabled. See
 `docs/H5_3_ACTION_REVIEW_ROUND_2_2026_08_22.md`.
-H5.3f v0.2 consumes that real review and returns `EVIDENCE_INCOMPLETE`: Monza,
-`current_faster`, isolated `increase_brake` and isolated `reduce_brake` review
-branches are missing. This is an expected evidence verdict, not a pipeline failure.
+H5.3f v0.2 consumes that real review and returns `EVIDENCE_INCOMPLETE`. The
+subsequent Monza HYPER llama.cpp run completed H5.2/H5.3 and added three shadow
+action items. Queue v2 represents 21 source occurrences, preserved all 15 prior
+labels by exact snapshot migration and completed the three new Monza items. Final
+review: 18/18, 16 `ACTION_USEFUL`, 2 `CORRECTLY_WITHHELD`, zero non-affirmative.
+The subsequent whole-lap sign correction invalidated candidate snapshots whose
+anti-regression context had previously been derived from local zone deltas. All seven
+real artifacts were replayed deterministically. Queue v4 contains 20/20 reviewed
+items representing 21 occurrences; exact-snapshot migration preserved 11 labels and
+required nine new decisions. Final labels: 12 `ACTION_USEFUL`, 3
+`CORRECTLY_WITHHELD`, 1 `WITHHELD_BUT_ACTIONABLE` and 4 `AMBIGUOUS`. H5.3f v0.2
+remains `EVIDENCE_INCOMPLETE` due to five non-affirmative labels plus missing isolated
+`increase_brake` and `reduce_brake`. Historical action authority remains false. See
+`docs/H5_3_ACTION_REVIEW_ROUND_4_CURRENT_FASTER_2026_08_22.md`.
+
+### llama.cpp orchestration recovery
+
+`race_engineer.py` now resolves the canonical llama.cpp artifact name including the
+`_llamacpp_` backend segment and can recover an already completed artifact only when
+source analysis, version, model and internal validation statuses match exactly.
+`historical_llm_analysis.py` exposes its already implemented llama.cpp backend in the
+CLI parser. The recovered Monza main debrief passed validation with zero warnings,
+and the historical H5.2 llama.cpp output also passed its dedicated validator.
 
 H5.3 runtime eligibility v0.2 now keeps whole-lap delta authority separate from
 zone-local losses. The real Interlagos `-0.180 s` current-faster replay validates

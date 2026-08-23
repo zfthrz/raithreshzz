@@ -178,7 +178,7 @@ Checkpoint: **2026-08-22 GUI v1.5, H5.4 presentation and historical shadow**.
 Validated checkpoints relevant to the current working tree:
 
 ```text
-full pytest (current working tree):   987 PASS / 0 FAIL / 0 SKIP
+full pytest (current working tree):  1012 PASS / 0 FAIL / 0 SKIP
 Objective Python regressions:         55 PASS / 0 FAIL / 0 SKIP
 Objective recovery check:             READY
 ```
@@ -901,12 +901,16 @@ become actions, faster-lap candidates are withheld, `session_reference` remains 
 coaching authority and `historical_actions_authorized` remains false.
 
 H5.3f v0.2 (`assess_h5_3_promotion_v0_2.py`) adds a reviewed-action evidence gate
-without replacing the v0.1 structural gate. The 2026-08-22 real review completed 15
-deduplicated items across Imola, Interlagos and Fuji (13 `ACTION_USEFUL`, 2
-`CORRECTLY_WITHHELD`). Its real verdict is `EVIDENCE_INCOMPLETE` because Monza,
-`current_faster`, isolated `increase_brake` and isolated `reduce_brake` review
-coverage is absent. Even its strongest possible verdict only permits an explicit
-product decision; it cannot authorize historical actions automatically.
+without replacing the v0.1 structural gate. After the whole-lap sign correction,
+all seven real shadow artifacts were replayed deterministically and their review
+queue was rebuilt. Exact-snapshot migration preserved only 11 unchanged labels and
+correctly required nine new reviews. Queue v4 contains 20/20 reviewed items
+representing 21 occurrences across all four required tracks: 12 `ACTION_USEFUL`,
+3 `CORRECTLY_WITHHELD`, 1 `WITHHELD_BUT_ACTIONABLE` and 4 `AMBIGUOUS`. The real gate
+remains `EVIDENCE_INCOMPLETE` because five labels are non-affirmative and isolated
+`increase_brake`/`reduce_brake` coverage is absent. The review shows that whole-lap
+anti-regression is safe but potentially over-broad for locally actionable losses;
+it must be revised separately rather than weakened automatically.
 
 H5.3 runtime eligibility v0.2 preserves the whole-lap `total_delta.sign` separately
 from each zone's local `delta_change_s`. Local losses remain eligible for shadow
@@ -915,8 +919,9 @@ whole-lap sign. A real Interlagos replay (`-0.180 s` current minus historical)
 therefore yields zero actions and three `current_lap_faster_no_actions` withheld
 candidates. The orchestrator reuse signature includes every imported H5.3 shadow
 policy/validator module, preventing stale pre-fix action artifacts from being reused.
-This runtime evidence still requires explicit human review before it can close the
-H5.3f `current_faster` coverage gap.
+This runtime evidence has now received explicit human review. It closes structural
+coverage of `current_faster`, but the `WITHHELD_BUT_ACTIONABLE` and `AMBIGUOUS`
+results prevent production promotion and motivate richer quantitative review output.
 
 ---
 

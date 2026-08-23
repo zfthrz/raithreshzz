@@ -35,7 +35,7 @@ def _load_object(path: Path) -> dict[str, Any]:
     return payload
 
 
-def _selection_contexts(document: dict[str, Any], artifact_path: Path) -> dict[str, dict[str, Any]]:
+def _selection_candidates(document: dict[str, Any], artifact_path: Path) -> dict[str, dict[str, Any]]:
     source_value = (document.get("metadata") or {}).get("source_selection_json")
     if not isinstance(source_value, str) or not source_value:
         raise ValueError(f"{artifact_path}: missing source_selection_json")
@@ -48,10 +48,21 @@ def _selection_contexts(document: dict[str, Any], artifact_path: Path) -> dict[s
         if not isinstance(candidate, dict):
             continue
         candidate_id = candidate.get("candidate_id")
-        context = candidate.get("context")
-        if isinstance(candidate_id, str) and isinstance(context, dict):
-            result[candidate_id] = context
+        if isinstance(candidate_id, str):
+            result[candidate_id] = candidate
     return result
+
+
+def _occurrence_evidence(candidate: dict[str, Any]) -> dict[str, Any]:
+    """Preserve Python-owned quantitative evidence for human review."""
+    return {
+        "delta_change_s": candidate.get("delta_change_s"),
+        "speed_delta_avg": candidate.get("speed_delta_avg"),
+        "throttle_delta_avg": candidate.get("throttle_delta_avg"),
+        "brake_delta_avg": candidate.get("brake_delta_avg"),
+        "start_distance_m": candidate.get("start_distance_m"),
+        "end_distance_m": candidate.get("end_distance_m"),
+    }
 
 
 def _review_signature(entry: dict[str, Any]) -> str:
@@ -80,7 +91,7 @@ def _entries_from_artifact(path: Path) -> tuple[list[dict[str, Any]], dict[str, 
     if authority.get("session_reference_remains_authority") is not True:
         raise ValueError(f"{path}: session reference authority was not preserved")
 
-    contexts = _selection_contexts(document, path)
+    candidates = _selection_candidates(document, path)
     occurrence_base = {
         "source_artifact": str(path),
         "source_artifact_sha256": file_sha256(path),
@@ -88,10 +99,11 @@ def _entries_from_artifact(path: Path) -> tuple[list[dict[str, Any]], dict[str, 
     entries: list[dict[str, Any]] = []
     for item in document.get("actions", []):
         candidate_id = item["candidate_id"]
+        candidate = candidates.get(candidate_id) or {}
         authorization = item.get("authorization") or {}
         entry = {
             "decision": "AUTHORIZED_SHADOW_ACTION",
-            "context": item.get("context") or contexts.get(candidate_id) or {},
+            "context": item.get("context") or candidate.get("context") or {},
             "location_label": item.get("location_label"),
             "delta_sign": item.get("delta_sign"),
             "actions": sorted(item.get("actions", [])),
@@ -101,7 +113,8 @@ def _entries_from_artifact(path: Path) -> tuple[list[dict[str, Any]], dict[str, 
             "occurrence": {
                 **occurrence_base,
                 "candidate_id": candidate_id,
-                "delta_change_s": item.get("delta_change_s"),
+                **_occurrence_evidence(candidate),
+                "delta_change_s": item.get("delta_change_s", candidate.get("delta_change_s")),
             },
         }
         entry["review_id"] = _review_signature(entry)
@@ -109,9 +122,10 @@ def _entries_from_artifact(path: Path) -> tuple[list[dict[str, Any]], dict[str, 
 
     for item in document.get("withheld", []):
         candidate_id = item["candidate_id"]
+        candidate = candidates.get(candidate_id) or {}
         entry = {
             "decision": "WITHHELD",
-            "context": contexts.get(candidate_id) or {},
+            "context": candidate.get("context") or {},
             "location_label": item.get("location_label"),
             "delta_sign": item.get("delta_sign"),
             "actions": [],
@@ -121,7 +135,7 @@ def _entries_from_artifact(path: Path) -> tuple[list[dict[str, Any]], dict[str, 
             "occurrence": {
                 **occurrence_base,
                 "candidate_id": candidate_id,
-                "delta_change_s": None,
+                **_occurrence_evidence(candidate),
             },
         }
         entry["review_id"] = _review_signature(entry)

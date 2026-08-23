@@ -10,12 +10,17 @@ import pytest
 from audit_h5_2_zone_selection import audit_paths, build_zone_metrics
 
 from historical_llm_analysis import (
+    BACKEND_CHOICES,
     build_authorized_evidence,
     build_output,
     validate_response,
 )
 from runtime_paths import historical_llm_debug_dir, historical_llm_output_path
 from validate_historical_llm_analysis import validate
+
+
+def test_historical_llm_cli_exposes_all_implemented_backends():
+    assert BACKEND_CHOICES == ("deepseek", "ollama", "llamacpp")
 
 
 def write_source(tmp_path: Path) -> tuple[Path, dict]:

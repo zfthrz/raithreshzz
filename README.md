@@ -1293,6 +1293,10 @@ ningún modelo salvo que `H5_3_BACKEND` se configure explícitamente como `deeps
 `data/generated/h5_3_shadow/<session>/` y no modifican el debrief visible.
 Una auditoría shadow (`audit_historical_actions_actionability.py`) clasifica las
 acciones en freno/acelerador/mixtas sin promover ninguna preferencia de canal.
+H5.3g reconstruye además los casos `current_faster + WITHHELD` desde fuentes con
+hash. La primera ejecución real encontró seis casos: uno correctamente retenido,
+uno retenido pero accionable y cuatro ambiguos. Es evidencia para diseñar una futura
+política local en shadow; no elimina la protección global ni habilita coaching.
 Contrato:
 [`docs/H5_3_HISTORICAL_COACHING_ROADMAP_V0_1.md`](docs/H5_3_HISTORICAL_COACHING_ROADMAP_V0_1.md).
 

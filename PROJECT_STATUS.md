@@ -7,10 +7,11 @@ llama.cpp recovery and H5.3 review work described below.
 
 Validated baseline:
 
-- full pytest: `1012 PASS / 0 FAIL / 0 SKIP`;
+- full pytest: `1015 PASS / 0 FAIL / 0 SKIP`;
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP` (last analyzer-affecting checkpoint);
 - GUI: v1.5, H6.5 visual polish + deterministic H5.4 P11 focus over the preserved complete plan;
 - H5.3: shadow implementation complete, production historical actions still disabled.
+- H5.3g: deterministic faster-lap withholding audit implemented; policy unchanged.
 
 ### analyze_telemetry
 Current: `3.8`
@@ -67,8 +68,12 @@ items representing 21 occurrences; exact-snapshot migration preserved 11 labels 
 required nine new decisions. Final labels: 12 `ACTION_USEFUL`, 3
 `CORRECTLY_WITHHELD`, 1 `WITHHELD_BUT_ACTIONABLE` and 4 `AMBIGUOUS`. H5.3f v0.2
 remains `EVIDENCE_INCOMPLETE` due to five non-affirmative labels plus missing isolated
-`increase_brake` and `reduce_brake`. Historical action authority remains false. See
-`docs/H5_3_ACTION_REVIEW_ROUND_4_CURRENT_FASTER_2026_08_22.md`.
+  `increase_brake` and `reduce_brake`. Historical action authority remains false. See
+  `docs/H5_3_ACTION_REVIEW_ROUND_4_CURRENT_FASTER_2026_08_22.md`.
+  H5.3g then reconstructed the six `current_faster + WITHHELD` cases from hashed
+  quantitative sources: 1 `CORRECTLY_WITHHELD`, 1 `WITHHELD_BUT_ACTIONABLE` and 4
+  `AMBIGUOUS`. The dedicated validator passed. This supports a future local-policy
+  shadow experiment but does not change the whole-lap guard or production authority.
 
 ### llama.cpp orchestration recovery
 
@@ -215,6 +220,11 @@ Implemented H5.3 slice:
   (`audit_historical_actions_actionability.py`) classifies authorized historical
   actions as brake/throttle/mixed; the real artifact showed 2 mixed-cue candidates
   and promotes no channel preference or ranking formula.
+- H5.3g faster-lap withholding audit
+  (`audit_h5_3_faster_lap_withholding.py`,
+  `validate_h5_3_faster_lap_withholding.py`) reconstructs local temporal and channel
+  evidence for reviewed globally faster laps. It is read-only, source-hashed and
+  keeps both automatic and historical action authorization false.
 
 Promotion status: all H5.3 slices are implemented in shadow; production promotion
 gate verdict is `PROMOTION_READY`, but production historical coaching remains

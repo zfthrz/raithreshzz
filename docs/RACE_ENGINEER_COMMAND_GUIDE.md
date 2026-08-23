@@ -296,6 +296,23 @@ disponibles de velocidad, acelerador y freno. El labeler los muestra también pa
 casos `WITHHELD`. Son diferencias `current - historical`; aportan contexto humano,
 pero no constituyen por sí solas una acción ni modifican la política.
 
+Para reconstruir exclusivamente los casos revisados donde la vuelta actual era
+globalmente más rápida pero existía pérdida local, ejecutar el auditor H5.3g:
+
+```powershell
+python audit_h5_3_faster_lap_withholding.py `
+  "data\generated\h5_3\action_review_queue_v4.json" `
+  "data\generated\h5_3\action_review_labels_v4.json" `
+  --output "data\generated\h5_3\faster_lap_withholding_audit_v0_1.json"
+
+python validate_h5_3_faster_lap_withholding.py `
+  "data\generated\h5_3\faster_lap_withholding_audit_v0_1.json"
+```
+
+El validator reconstruye todo desde la cola, los labels y las selecciones con hash.
+El resultado es diagnóstico shadow: no cambia la política, no autoriza acciones y no
+activa `historical_actions_authorized`.
+
 El gate H5.3f v0.2 combina el gate estructural anterior con la cola y los labels
 reales. Su mejor resultado exige igualmente una decisión explícita y no activa
 producción:

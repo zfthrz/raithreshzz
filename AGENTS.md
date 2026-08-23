@@ -62,6 +62,10 @@ python race_engineer.py analyze "telemetria\ARCHIVO.duckdb" --backend ollama
   absent. `historical_action_policy.py` may construct shadow action candidates only
   (closed throttle/brake vocabulary, current-slower candidates only, speed and time
   never become actions); `historical_actions_authorized` remains false.
+- H5.3g reconstructs reviewed `current_faster + WITHHELD` cases from hashed
+  selection artifacts. Its local deltas are diagnostic evidence only: it must not
+  weaken the whole-lap guard or authorize a local action without a separately
+  reviewed shadow policy and broader independent evidence.
 
 ## Current baseline
 
@@ -86,12 +90,13 @@ historical_candidate_eligibility.py H5.3 runtime eligibility 0.2 / whole-lap del
 historical_candidate_selection.py    H5.3c 0.1 / controlled LLM selection
 historical_candidate_selection_runtime.py H5.3 runtime 0.2 / deterministic default
 historical_action_policy.py           H5.3 action candidates 0.2 / shadow only
+audit_h5_3_faster_lap_withholding.py   H5.3g 0.1 / local-loss diagnostic audit
 ```
 
 Validated integration checkpoint:
 
 ```text
-pytest:                         987 PASS / 0 FAIL / 0 SKIP
+pytest:                         1015 PASS / 0 FAIL / 0 SKIP
 Objective Python regressions:  55 PASS / 0 FAIL / 0 SKIP
 ```
 

@@ -178,7 +178,7 @@ Checkpoint: **2026-08-22 GUI v1.5, H5.4 presentation and historical shadow**.
 Validated checkpoints relevant to the current working tree:
 
 ```text
-full pytest (current working tree):  1012 PASS / 0 FAIL / 0 SKIP
+full pytest (current working tree):  1015 PASS / 0 FAIL / 0 SKIP
 Objective Python regressions:         55 PASS / 0 FAIL / 0 SKIP
 Objective recovery check:             READY
 ```
@@ -922,6 +922,17 @@ policy/validator module, preventing stale pre-fix action artifacts from being re
 This runtime evidence has now received explicit human review. It closes structural
 coverage of `current_faster`, but the `WITHHELD_BUT_ACTIONABLE` and `AMBIGUOUS`
 results prevent production promotion and motivate richer quantitative review output.
+
+H5.3g adds that richer output without changing policy. The deterministic auditor
+`audit_h5_3_faster_lap_withholding.py` reconstructs every reviewed
+`current_faster + WITHHELD` occurrence from its hashed action and selection sources;
+`validate_h5_3_faster_lap_withholding.py` rebuilds the complete document and rejects
+tampering or an authority change. On queue v4 it found six reviewed cases with full
+quantitative evidence: 1 `CORRECTLY_WITHHELD`, 1 `WITHHELD_BUT_ACTIONABLE` and 4
+`AMBIGUOUS`. The actionable exception was Interlagos T12 Junção with a local
+`+0.294 s` loss despite a globally faster lap. This is evidence that the whole-lap
+guard may be over-broad, not permission to remove it: the next policy experiment
+must remain shadow, local, independently reviewed and fail closed.
 
 ---
 

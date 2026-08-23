@@ -17,6 +17,7 @@ from race_engineer_track_map import (
     load_track_zones,
     nearest_fitted_point_index,
     pan_distance_window,
+    pan_track_canvas_view,
     priority_for_distance,
     summarize_track_interval,
     telemetry_chart_x_for_distance,
@@ -250,6 +251,34 @@ def test_map_zoom_clamps_and_full_reset_removes_offsets():
         anchor_y_px=30.0,
         factor=2.0,
     )[0] == 8.0
+
+
+def test_map_pan_moves_zoomed_view_and_keeps_track_partially_visible():
+    fitted = ((25.0, 25.0), (275.0, 175.0))
+    assert pan_track_canvas_view(
+        fitted, 2.0, -100.0, -50.0,
+        delta_x_px=30.0,
+        delta_y_px=-20.0,
+        width_px=300.0,
+        height_px=200.0,
+    ) == (-70.0, -70.0)
+    assert pan_track_canvas_view(
+        fitted, 2.0, 0.0, 0.0,
+        delta_x_px=10000.0,
+        delta_y_px=10000.0,
+        width_px=300.0,
+        height_px=200.0,
+    ) == (210.0, 110.0)
+
+
+def test_map_pan_is_disabled_at_full_view():
+    assert pan_track_canvas_view(
+        ((25.0, 25.0), (275.0, 175.0)), 1.0, -10.0, -20.0,
+        delta_x_px=50.0,
+        delta_y_px=50.0,
+        width_px=300.0,
+        height_px=200.0,
+    ) == (0.0, 0.0)
 
 
 def test_telemetry_chart_uses_shared_distance_axis_and_three_fixed_lanes():

@@ -379,6 +379,11 @@ sobre el circuito. Conserva el punto bajo el cursor, mantiene alineadas todas la
 capas y llega hasta `8x`. `Restablecer mapa` vuelve a la vista completa. Esta
 interacción es independiente del zoom del gráfico inferior.
 
+GUI v1.8 permite desplazar ese mapa ampliado manteniendo presionado el botón derecho.
+El trazado, las zonas, las prioridades y el punto blanco se mueven juntos. El botón
+izquierdo continúa reservado para seleccionar el punto de telemetría y el circuito
+no puede desplazarse por completo fuera del área visible.
+
 El gate H5.3f v0.2 combina el gate estructural anterior con la cola y los labels
 reales. Su mejor resultado exige igualmente una decisión explícita y no activa
 producción:

@@ -7,9 +7,9 @@ llama.cpp recovery and H5.3 review work described below.
 
 Validated baseline:
 
-- full pytest: `1034 PASS / 0 FAIL / 0 SKIP`;
+- full pytest: `1036 PASS / 0 FAIL / 0 SKIP`;
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP` (last analyzer-affecting checkpoint);
-- GUI: v1.7, pointer-anchored GPS map zoom + H5.3/H6.5/P11 presentation;
+- GUI: v1.8, pointer-anchored GPS map zoom/right-drag pan + H5.3/H6.5/P11 presentation;
 - H5.3: shadow implementation complete, production historical actions still disabled.
 - H5.3g: deterministic faster-lap withholding audit implemented; policy unchanged.
 - H5.3h: conservative local-loss hypothesis implemented in shadow; 1 unauthorized
@@ -527,6 +527,12 @@ GUI v1.7 adds pointer-anchored map zoom independently from telemetry-chart zoom.
 All circuit overlays and the draggable point share the transform; zoom is bounded to
 8x and resets on demand or session change. Visual smoke testing confirmed the
 interaction. See `docs/RACE_ENGINEER_GUI_V1_7.md`.
+
+GUI v1.8 adds clamped right-button drag panning to the zoomed GPS map. All overlays
+and the white telemetry point share the same translation, while left-button dragging
+continues to select telemetry. At least part of the circuit remains visible and the
+view resets on demand or session change. This is presentation-only. See
+`docs/RACE_ENGINEER_GUI_V1_8.md`.
 
 Calibration batch orchestrator `1.5` requires the current History schema 4 contract,
 reports its runtime version consistently and has a regression test against schema drift.

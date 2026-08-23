@@ -415,6 +415,39 @@ def zoom_track_canvas_view(
     )
 
 
+def pan_track_canvas_view(
+    fitted_points: tuple[tuple[float, float], ...],
+    scale: float,
+    offset_x_px: float,
+    offset_y_px: float,
+    *,
+    delta_x_px: float,
+    delta_y_px: float,
+    width_px: float,
+    height_px: float,
+    visible_margin_px: float = 40.0,
+) -> tuple[float, float]:
+    """Pan a zoomed map while keeping part of the circuit inside the viewport."""
+    if scale <= 1.0 or not fitted_points:
+        return 0.0, 0.0
+    if width_px <= 0 or height_px <= 0 or visible_margin_px < 0:
+        raise ValueError("Parámetros de desplazamiento del mapa inválidos.")
+    min_x = min(point[0] for point in fitted_points)
+    max_x = max(point[0] for point in fitted_points)
+    min_y = min(point[1] for point in fitted_points)
+    max_y = max(point[1] for point in fitted_points)
+    proposed_x = offset_x_px + delta_x_px
+    proposed_y = offset_y_px + delta_y_px
+    lower_x = visible_margin_px - max_x * scale
+    upper_x = width_px - visible_margin_px - min_x * scale
+    lower_y = visible_margin_px - max_y * scale
+    upper_y = height_px - visible_margin_px - min_y * scale
+    return (
+        min(max(proposed_x, lower_x), upper_x),
+        min(max(proposed_y, lower_y), upper_y),
+    )
+
+
 def nearest_fitted_point_index(
     fitted_points: tuple[tuple[float, float], ...],
     *,

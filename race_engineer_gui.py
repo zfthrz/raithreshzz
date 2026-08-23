@@ -50,6 +50,7 @@ from race_engineer_track_map import (
     load_track_zones,
     nearest_fitted_point_index,
     pan_distance_window,
+    pan_track_canvas_view,
     priority_for_distance,
     summarize_track_interval,
     telemetry_chart_x_for_distance,
@@ -61,7 +62,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.7"
+GUI_VERSION = "1.8"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 PROJECT_ROOT = Path(__file__).resolve().parent
 BACKEND_LABELS = {
@@ -115,6 +116,7 @@ class RaceEngineerApp:
         self.telemetry_zoom_range: tuple[float, float] | None = None
         self.track_map_zoom_scale = 1.0
         self.track_map_zoom_offset = (0.0, 0.0)
+        self.track_map_pan_anchor: tuple[float, float] | None = None
         self.track_map_cache: dict[
             tuple[str, int, int | None, int | None], TrackMapData
         ] = {}
@@ -596,10 +598,13 @@ class RaceEngineerApp:
         canvas.bind("<B1-Motion>", self._on_track_map_drag)
         canvas.bind("<ButtonRelease-1>", self._on_track_map_release)
         canvas.bind("<MouseWheel>", self._on_track_map_mousewheel)
+        canvas.bind("<ButtonPress-3>", self._on_track_map_pan_press)
+        canvas.bind("<B3-Motion>", self._on_track_map_pan_drag)
+        canvas.bind("<ButtonRelease-3>", self._on_track_map_pan_release)
         map_zoom_controls = self.ttk.Frame(frame, style="Panel.TFrame")
         map_zoom_controls.pack(fill="x", pady=(4, 0))
         self.track_map_zoom_status = self.tk.StringVar(
-            value="Mapa completo · rueda: zoom"
+            value="Mapa completo · rueda: zoom · botón derecho: desplazar"
         )
         self.ttk.Label(
             map_zoom_controls,
@@ -850,6 +855,7 @@ class RaceEngineerApp:
         self.telemetry_zoom_range = None
         self.track_map_zoom_scale = 1.0
         self.track_map_zoom_offset = (0.0, 0.0)
+        self.track_map_pan_anchor = None
         self.track_map_canvas.delete("all")
         self.track_telemetry_canvas.delete("all")
         self.track_map_status.set("Seleccioná una sesión para reconstruir el mapa GPS.")
@@ -875,6 +881,7 @@ class RaceEngineerApp:
         self.telemetry_zoom_range = None
         self.track_map_zoom_scale = 1.0
         self.track_map_zoom_offset = (0.0, 0.0)
+        self.track_map_pan_anchor = None
         self.track_map_canvas.delete("all")
         self.track_telemetry_canvas.delete("all")
         self.track_map_zone_status.set("Buscando zonas H5.2 y prioridades del debrief…")
@@ -1356,18 +1363,59 @@ class RaceEngineerApp:
         self._render_track_map()
         return "break"
 
+    def _on_track_map_pan_press(self, event):
+        if self.current_track_map is None or self.track_map_zoom_scale <= 1.001:
+            self.track_map_pan_anchor = None
+            return "break"
+        self.track_map_pan_anchor = (float(event.x), float(event.y))
+        self.track_map_canvas.configure(cursor="fleur")
+        return "break"
+
+    def _on_track_map_pan_drag(self, event):
+        if self.track_map_pan_anchor is None or self.current_track_map is None:
+            return "break"
+        x = float(event.x)
+        y = float(event.y)
+        previous_x, previous_y = self.track_map_pan_anchor
+        width = max(self.track_map_canvas.winfo_width(), 100)
+        height = max(self.track_map_canvas.winfo_height(), 100)
+        base_fitted = fit_track_points(
+            self.current_track_map.points,
+            width_px=width,
+            height_px=height,
+        )
+        self.track_map_zoom_offset = pan_track_canvas_view(
+            base_fitted,
+            self.track_map_zoom_scale,
+            self.track_map_zoom_offset[0],
+            self.track_map_zoom_offset[1],
+            delta_x_px=x - previous_x,
+            delta_y_px=y - previous_y,
+            width_px=width,
+            height_px=height,
+        )
+        self.track_map_pan_anchor = (x, y)
+        self._render_track_map()
+        return "break"
+
+    def _on_track_map_pan_release(self, _event=None):
+        self.track_map_pan_anchor = None
+        self.track_map_canvas.configure(cursor="crosshair")
+        return "break"
+
     def _reset_track_map_zoom(self):
         self.track_map_zoom_scale = 1.0
         self.track_map_zoom_offset = (0.0, 0.0)
+        self.track_map_pan_anchor = None
         self._set_track_map_zoom_status()
         self._render_track_map()
 
     def _set_track_map_zoom_status(self):
         active = self.track_map_zoom_scale > 1.001
         text = (
-            f"Mapa ampliado · {self.track_map_zoom_scale:.2f}× · rueda: zoom"
+            f"Mapa ampliado · {self.track_map_zoom_scale:.2f}× · rueda: zoom · botón derecho: desplazar"
             if active
-            else "Mapa completo · rueda: zoom"
+            else "Mapa completo · rueda: zoom · botón derecho: desplazar"
         )
         if hasattr(self, "track_map_zoom_status"):
             self.track_map_zoom_status.set(text)

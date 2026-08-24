@@ -323,8 +323,8 @@ class RaceEngineerApp:
             self.settings_warning = f"Configuración local inválida; se usan defaults: {exc}"
 
         root.title(f"Race Engineer — Session Hub v{GUI_VERSION}")
-        root.geometry("1320x820")
-        root.minsize(1020, 650)
+        root.geometry("1480x880")
+        root.minsize(1120, 700)
         root.configure(background="#101010")
         root.protocol("WM_DELETE_WINDOW", self._on_close)
 
@@ -1121,24 +1121,24 @@ class RaceEngineerApp:
         turn_controls.pack(fill="x", pady=(4, 0))
         self.ttk.Label(
             turn_controls,
-            text="Navegación por curva:",
+            text="Navegación:",
             style="Muted.TLabel",
         ).pack(side="left")
         self.show_track_profile_var = self.tk.BooleanVar(value=False)
         self.track_profile_layer_check = self.ttk.Checkbutton(
             turn_controls,
-            text="Mostrar curvas",
+            text="Curvas",
             variable=self.show_track_profile_var,
             command=self._render_track_map,
             state="disabled",
         )
-        self.track_profile_layer_check.pack(side="right")
+        self.track_profile_layer_check.pack(side="left", padx=(10, 0))
         self.track_turn_selector_var = self.tk.StringVar(value="Elegir curva…")
         self.track_turn_selector = self.ttk.Combobox(
             turn_controls,
             textvariable=self.track_turn_selector_var,
             state="disabled",
-            width=28,
+            width=24,
         )
         self.track_turn_selector.pack(side="left", padx=(8, 12))
         self.track_turn_selector.bind(
@@ -1152,9 +1152,9 @@ class RaceEngineerApp:
             turn_controls,
             textvariable=self.track_plan_selector_var,
             state="disabled",
-            width=36,
+            width=28,
         )
-        self.track_plan_selector.pack(side="left", padx=(0, 12))
+        self.track_plan_selector.pack(side="left", padx=(0, 8))
         self.track_plan_selector.bind(
             "<<ComboboxSelected>>",
             self._on_track_plan_selected,

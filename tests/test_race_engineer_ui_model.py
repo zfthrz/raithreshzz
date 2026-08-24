@@ -586,6 +586,7 @@ def test_gui_entry_points_and_documentation_are_present():
         source = (root / relative).read_text(encoding="utf-8")
         assert "race_engineer_gui.py" in source or "RACE_ENGINEER_GUI_V1_11.md" in source
     assert (root / "docs" / "RACE_ENGINEER_GUI_V1_11.md").is_file()
+    assert (root / "docs" / "RACE_ENGINEER_GUI_V1_16.md").is_file()
     assert (root / "docs" / "RACE_ENGINEER_GUI_V1_15.md").is_file()
     assert (root / "docs" / "RACE_ENGINEER_GUI_V1_14.md").is_file()
     assert (root / "docs" / "RACE_ENGINEER_GUI_V1_13.md").is_file()

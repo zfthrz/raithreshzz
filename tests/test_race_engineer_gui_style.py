@@ -60,7 +60,7 @@ def test_gui_v1_11_applies_flat_dark_control_chrome_without_opening_window():
 
     app._configure_style()
 
-    assert GUI_VERSION == "1.15"
+    assert GUI_VERSION == "1.16"
     assert style.theme == "clam"
     assert style.configurations["TEntry"]["fieldbackground"] == "#15181c"
     assert style.configurations["TCombobox"]["borderwidth"] == 0
@@ -70,12 +70,14 @@ def test_gui_v1_11_applies_flat_dark_control_chrome_without_opening_window():
     assert style.configurations["Horizontal.TScrollbar"]["width"] == 10
     assert style.configurations["Treeview"]["rowheight"] == 30
     assert style.configurations["Treeview.Heading"]["relief"] == "flat"
+    assert style.configurations["Treeview.Heading"]["foreground"] == "#9fb3c8"
     assert style.configurations["Horizontal.TProgressbar"]["thickness"] == 5
     assert style.configurations["H53Ready.TLabel"]["foreground"] == "#67e5d5"
     assert style.configurations["H53Pending.TLabel"]["foreground"] == "#f0c674"
     assert style.configurations["H53Error.TLabel"]["foreground"] == "#ff7b72"
     assert ("selected", "#315b60") in style.maps["Treeview"]["background"]
     assert ("selected", "#55decf") in style.maps["TNotebook.Tab"]["foreground"]
+    assert ("selected", "#22282e") in style.maps["TNotebook.Tab"]["background"]
     assert app.root.options["*TCombobox*Listbox.background"] == "#15181c"
 
 

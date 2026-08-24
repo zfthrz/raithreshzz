@@ -70,7 +70,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.15"
+GUI_VERSION = "1.16"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 PROJECT_ROOT = Path(__file__).resolve().parent
 BACKEND_LABELS = {
@@ -288,6 +288,8 @@ class RaceEngineerApp:
         self.all_sessions: list[SessionRecord] = []
         self.session_read_errors: list[str] = []
         self._row_tooltip = None
+        self.track_playback_active = False
+        self.track_playback_after_id = None
         self.analysis_queue: queue.Queue[tuple[str, object]] = queue.Queue()
         self.track_map_queue: queue.Queue[tuple[int, str, object]] = queue.Queue()
         self.track_map_token = 0
@@ -520,7 +522,7 @@ class RaceEngineerApp:
         style.configure(
             "Treeview.Heading",
             background="#2a2a2a",
-            foreground="#dce7ef",
+            foreground="#9fb3c8",
             font=("Segoe UI Semibold", 9),
             padding=(5, 8),
             borderwidth=0,
@@ -548,7 +550,7 @@ class RaceEngineerApp:
         )
         style.map(
             "TNotebook.Tab",
-            background=[("selected", "#1c1c1c"), ("active", "#343b42"), ("disabled", "#202327")],
+            background=[("selected", "#22282e"), ("active", "#2c363b"), ("disabled", "#202327")],
             foreground=[("selected", "#55decf"), ("active", "#e4edf3"), ("disabled", "#69747d")],
         )
         style.configure(
@@ -586,6 +588,8 @@ class RaceEngineerApp:
 
         header = ttk.Frame(self.root, style="App.TFrame", padding=(22, 18, 22, 12))
         header.pack(fill="x")
+        accent_bar = tk.Frame(self.root, background="#45d4c2", height=2)
+        accent_bar.pack(fill="x")
         title_box = ttk.Frame(header, style="App.TFrame")
         title_box.pack(side="left", fill="x", expand=True)
         ttk.Label(title_box, text="RACE ENGINEER", style="Title.TLabel").pack(anchor="w")
@@ -1154,6 +1158,20 @@ class RaceEngineerApp:
             "<<ComboboxSelected>>",
             self._on_track_plan_selected,
         )
+        self.track_rewind_button = self.ttk.Button(
+            turn_controls,
+            text="⏮ Inicio",
+            command=self._on_track_rewind,
+            state="disabled",
+        )
+        self.track_rewind_button.pack(side="left", padx=(0, 6))
+        self.track_play_button = self.ttk.Button(
+            turn_controls,
+            text="▶ Play",
+            command=self._on_track_play_toggle,
+            state="disabled",
+        )
+        self.track_play_button.pack(side="left", padx=(0, 12))
         self.track_map_zone_status = self.tk.StringVar(
             value="Sin zonas H5.2 para esta sesión."
         )
@@ -1423,6 +1441,7 @@ class RaceEngineerApp:
         self.current_track_turns = ()
         self._update_track_turn_controls()
         self._update_track_plan_controls()
+        self._set_track_playback_controls(False)
         self.current_fitted_track_points = ()
         self.selected_track_overlay = None
         self.selected_track_point_index = None
@@ -1453,6 +1472,7 @@ class RaceEngineerApp:
         self.current_track_turns = ()
         self._update_track_turn_controls()
         self._update_track_plan_controls()
+        self._set_track_playback_controls(False)
         self.current_fitted_track_points = ()
         self.selected_track_overlay = None
         self.selected_track_point_index = None
@@ -1504,6 +1524,7 @@ class RaceEngineerApp:
                 layer_errors.append(f"perfil: {exc}")
             self._update_track_turn_controls()
             self._update_track_plan_controls()
+            self._set_track_playback_controls(True)
             try:
                 self.current_track_zones = load_track_zones(record.cross_session_path)
             except (OSError, UnicodeDecodeError, ValueError) as exc:
@@ -1591,6 +1612,7 @@ class RaceEngineerApp:
                 self.current_track_turns = profile_turns(profile)
                 self._update_track_turn_controls()
                 self._update_track_plan_controls()
+                self._set_track_playback_controls(True)
                 self.track_map_status.set(self._track_map_status_text(data))
                 self._set_track_zone_summary(layer_errors=list(layer_errors))
                 self._render_track_map()
@@ -1602,6 +1624,7 @@ class RaceEngineerApp:
                 self.current_track_turns = ()
                 self._update_track_turn_controls()
                 self._update_track_plan_controls()
+                self._set_track_playback_controls(False)
                 self.current_fitted_track_points = ()
                 self.selected_track_point_index = None
                 self.track_map_canvas.delete("all")
@@ -1691,6 +1714,7 @@ class RaceEngineerApp:
         self.track_plan_selector_var.set("Elegir zona del plan…")
 
     def _on_track_turn_selected(self, _event=None):
+        self._stop_track_playback()
         raw = self.track_turn_selector_var.get().strip()
         if not raw.startswith("T") or " — " not in raw:
             return
@@ -1745,6 +1769,7 @@ class RaceEngineerApp:
         self._render_track_map()
 
     def _on_track_plan_selected(self, _event=None):
+        self._stop_track_playback()
         raw = self.track_plan_selector_var.get().strip()
         data = self.current_track_map
         if not raw or data is None:
@@ -1806,7 +1831,74 @@ class RaceEngineerApp:
         )
         self._render_track_map()
 
+    def _on_track_play_toggle(self):
+        if self.track_playback_active:
+            self._stop_track_playback()
+            return
+        data = self.current_track_map
+        if data is None or not data.points:
+            return
+        self.track_playback_active = True
+        self.track_play_button.configure(text="⏸ Pausa")
+        self._schedule_track_playback()
+
+    def _schedule_track_playback(self):
+        if not self.track_playback_active:
+            return
+        self.track_playback_after_id = self.root.after(
+            100,
+            self._tick_track_playback,
+        )
+
+    def _tick_track_playback(self):
+        self.track_playback_after_id = None
+        if not self.track_playback_active:
+            return
+        data = self.current_track_map
+        if data is None or not data.points:
+            self._stop_track_playback()
+            return
+        index = (self.selected_track_point_index or 0) + 1
+        if index >= len(data.points):
+            self._stop_track_playback()
+            return
+        self._apply_track_point_selection(index)
+        self._schedule_track_playback()
+
+    def _stop_track_playback(self):
+        self.track_playback_active = False
+        if self.track_playback_after_id is not None:
+            try:
+                self.root.after_cancel(self.track_playback_after_id)
+            except Exception:
+                pass
+            self.track_playback_after_id = None
+        if hasattr(self, "track_play_button"):
+            self.track_play_button.configure(text="▶ Play")
+
+    def _on_track_rewind(self):
+        data = self.current_track_map
+        if data is None or not data.points:
+            return
+        self._stop_track_playback()
+        self._apply_track_point_selection(0)
+        point = data.points[0]
+        distance = (
+            "—" if point.lap_distance_m is None else f"{point.lap_distance_m:.0f} m"
+        )
+        self.track_map_zone_status.set(f"Inicio de la vuelta · {distance}")
+
+    def _set_track_playback_controls(self, enabled: bool):
+        if not hasattr(self, "track_play_button"):
+            return
+        if not enabled:
+            self._stop_track_playback()
+        state = "normal" if enabled else "disabled"
+        self.track_play_button.configure(state=state)
+        self.track_rewind_button.configure(state=state)
+
     def _on_track_map_press(self, event):
+        self._stop_track_playback()
         self.track_map_dragging = self._select_track_map_point(
             event.x,
             event.y,
@@ -1848,6 +1940,14 @@ class RaceEngineerApp:
             )
             self._render_track_map()
             return False
+        self._apply_track_point_selection(index)
+        return True
+
+    def _apply_track_point_selection(self, index: int) -> None:
+        """Aplica un índice de punto del lap (drag, selector o playback)."""
+        data = self.current_track_map
+        if data is None or not (0 <= index < len(data.points)):
+            return
         point = data.points[index]
         self.selected_track_point_index = index
         self._ensure_telemetry_point_visible(point)
@@ -1870,7 +1970,7 @@ class RaceEngineerApp:
                 point,
             )
             self._render_track_map()
-            return True
+            return
         zone = zone_for_distance(self.current_track_zones, point.lap_distance_m)
         if zone is None:
             self.selected_track_overlay = None
@@ -1911,7 +2011,6 @@ class RaceEngineerApp:
                 point,
             )
         self._render_track_map()
-        return True
 
     def _set_interval_telemetry(
         self,

@@ -1,6 +1,6 @@
 {
   "orchestrator_version": "1.5",
-  "updated_at_utc": "2026-08-24T00:34:06.273202+00:00",
+  "updated_at_utc": "2026-08-24T00:42:24.259407+00:00",
   "project_root": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz",
   "input_dir": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\data\\generated\\analysis",
   "history_db": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\data\\local\\race_engineer_history.duckdb",
@@ -130,7 +130,18 @@
   },
   "next_action": "Inspect calibration_feature_report.json. Do not select matcher thresholds from evaluation data.",
   "matcher": {
-    "status": "NO_CALIBRATION_FOR_CONTEXT",
-    "reason": "No hay thresholds calibrados para este contexto exacto; labelar el batch para calibrar."
+    "status": "CALIBRATED_PROVISIONAL_LOW_EVIDENCE",
+    "reason": "Thresholds provisionales disponibles para este contexto; requieren más datos independientes antes de evaluar.",
+    "human_labels": 24,
+    "provenance": {
+      "batch_id": "40c70a4dd3",
+      "calibration_pairs": 4,
+      "evaluation_pairs": 5,
+      "labels": {
+        "SAME": 1,
+        "DIFFERENT": 2,
+        "AMBIGUOUS": 1
+      }
+    }
   }
 }

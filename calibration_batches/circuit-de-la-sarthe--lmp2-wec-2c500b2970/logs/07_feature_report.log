@@ -1,0 +1,18 @@
+$ 'C:\Users\thres\Documents\GitHub\raithreshzz\.venv\Scripts\python.exe' 'C:\Users\thres\Documents\GitHub\raithreshzz\calibration_feature_report.py' 'C:\Users\thres\Documents\GitHub\raithreshzz\calibration_batches\circuit-de-la-sarthe--lmp2-wec-2c500b2970\calibration_dataset.json' --output 'C:\Users\thres\Documents\GitHub\raithreshzz\calibration_batches\circuit-de-la-sarthe--lmp2-wec-2c500b2970\calibration_feature_report.json'
+
+--- STDOUT ---
+
+========================================================================
+RACE ENGINEER - CALIBRATION FEATURE REPORT v1.0
+========================================================================
+
+calibration: pairs=13 labels={'SAME': 8, 'DIFFERENT': 5, 'AMBIGUOUS': 0}
+evaluation: pairs=0 labels={'SAME': 0, 'DIFFERENT': 0, 'AMBIGUOUS': 0}
+
+Output: C:\Users\thres\Documents\GitHub\raithreshzz\calibration_batches\circuit-de-la-sarthe--lmp2-wec-2c500b2970\calibration_feature_report.json
+No thresholds, weights, probabilities, or automatic match decisions were created.
+
+--- STDERR ---
+
+--- RETURN CODE ---
+0

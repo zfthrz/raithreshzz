@@ -13,6 +13,11 @@ IMOLA = {
     "track_layout": "Autodromo Enzo e Dino Ferrari",
     "vehicle_variant": "LMP2_ELMS",
 }
+INTERLAGOS = {
+    "track": "Autódromo José Carlos Pace",
+    "track_layout": "Autódromo José Carlos Pace",
+    "vehicle_variant": "LMP2_ELMS",
+}
 
 
 def pair(context: dict, *, center: float, overlap_union: float, overlap_shorter: float, shared: int = 1, jaccard: float | None = 1.0) -> dict:
@@ -75,3 +80,26 @@ def test_uncalibrated_context_fails_closed_to_ambiguous():
     assert result["decision"] == "AMBIGUOUS"
     assert result["rule_id"] == "NO_CALIBRATION_FOR_CONTEXT"
     assert resolve_calibration(pair(fuji, center=0.0, overlap_union=1.0, overlap_shorter=1.0)) is None
+
+
+def test_interlagos_calibration_is_provisional_low_evidence():
+    calibration = resolve_calibration(
+        pair(INTERLAGOS, center=5.0, overlap_union=0.85, overlap_shorter=1.0)
+    )
+    assert calibration["status"] == "CALIBRATED_PROVISIONAL_LOW_EVIDENCE"
+    assert calibration["provenance"]["batch_id"] == "40c70a4dd3"
+    assert calibration["provenance"]["evaluation_pairs"] == 5
+
+
+def test_interlagos_match_reject_ambiguous():
+    assert classify_pair(
+        pair(INTERLAGOS, center=5.0, overlap_union=0.85, overlap_shorter=1.0)
+    )["decision"] == "MATCH"
+    # AMBIGUOUS humano a 378 m sin overlap: queda AMBIGUOUS (borde conservador)
+    assert classify_pair(
+        pair(INTERLAGOS, center=378.0, overlap_union=0.0, overlap_shorter=0.0)
+    )["decision"] == "AMBIGUOUS"
+    # DIFFERENT lejanos sin overlap: REJECT
+    assert classify_pair(
+        pair(INTERLAGOS, center=1941.0, overlap_union=0.0, overlap_shorter=0.0)
+    )["decision"] == "REJECT"

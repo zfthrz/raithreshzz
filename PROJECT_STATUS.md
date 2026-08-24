@@ -9,9 +9,10 @@ Validated baseline:
 
 - full pytest: `1047 PASS / 0 FAIL / 0 SKIP`;
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP` (last analyzer-affecting checkpoint);
-- GUI: v1.16, section navigation + telemetry paned area + GPS zoom/pan + H5.3
+- GUI: v1.17, section navigation + telemetry paned area + GPS zoom/pan + H5.3
   presentation + status badges and side-by-side historical comparison +
-  calibration status panel + plan-map-telemetry sync + telemetry playback;
+  calibration status panel + plan-map-telemetry sync + telemetry playback +
+  telemetry resolution (20 Hz default, 10-50 Hz);
 - H5.3: shadow implementation complete, production historical actions still disabled.
 - H5.3g: deterministic faster-lap withholding audit implemented; policy unchanged.
 - H5.3h: conservative local-loss hypothesis implemented in shadow; 1 unauthorized
@@ -625,6 +626,10 @@ mapa GPS, hace fit al intervalo y enfoca los canales en el tramo. Presentación
 GUI v1.16 agrega playback de telemetría (`▶ Play / ⏸ Pausa` y `⏮ Inicio`):
 avance automático del punto a 10 Hz por la vuelta con auto-stop al final y al
 interactuar. Presentación únicamente. See `docs/RACE_ENGINEER_GUI_V1_16.md`.
+
+GUI v1.17 mejora la resolución de telemetría: alineación a 20 Hz por default
+(nativa ~100 Hz) con selector 10/20/50 Hz; el playback ajusta el paso para
+velocidad 1×. Presentación read-only. See `docs/RACE_ENGINEER_GUI_V1_17.md`.
 
 Calibration batch orchestrator `1.5` requires the current History schema 4 contract,
 reports its runtime version consistently and has a regression test against schema drift.

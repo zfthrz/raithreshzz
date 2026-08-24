@@ -70,7 +70,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.16"
+GUI_VERSION = "1.17"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 PROJECT_ROOT = Path(__file__).resolve().parent
 BACKEND_LABELS = {
@@ -290,6 +290,7 @@ class RaceEngineerApp:
         self._row_tooltip = None
         self.track_playback_active = False
         self.track_playback_after_id = None
+        self.track_resolution_hz = 20.0
         self.analysis_queue: queue.Queue[tuple[str, object]] = queue.Queue()
         self.track_map_queue: queue.Queue[tuple[int, str, object]] = queue.Queue()
         self.track_map_token = 0
@@ -1180,6 +1181,24 @@ class RaceEngineerApp:
             style="Accent.TButton",
         )
         self.track_play_button.pack(side="left", padx=(0, 12))
+        self.ttk.Label(
+            playback_controls,
+            text="Resolución:",
+            style="Muted.TLabel",
+        ).pack(side="left", padx=(18, 6))
+        self.track_resolution_var = self.tk.StringVar(value="20 Hz")
+        self.track_resolution_selector = self.ttk.Combobox(
+            playback_controls,
+            textvariable=self.track_resolution_var,
+            values=("20 Hz", "10 Hz", "50 Hz"),
+            state="readonly",
+            width=7,
+        )
+        self.track_resolution_selector.pack(side="left")
+        self.track_resolution_selector.bind(
+            "<<ComboboxSelected>>",
+            self._on_track_resolution_changed,
+        )
         self.track_map_zone_status = self.tk.StringVar(
             value="Sin zonas H5.2 para esta sesión."
         )
@@ -1514,7 +1533,13 @@ class RaceEngineerApp:
             if record.reference_time_s is None
             else int(round(record.reference_time_s * 1000.0))
         )
-        cache_key = (str(resolved), modified_ns, record.reference_lap, duration_key)
+        cache_key = (
+            str(resolved),
+            modified_ns,
+            record.reference_lap,
+            duration_key,
+            self.track_resolution_hz,
+        )
         cached = self.track_map_cache.get(cache_key)
         if cached is not None:
             self.current_track_map = cached
@@ -1560,6 +1585,7 @@ class RaceEngineerApp:
                     resolved,
                     preferred_lap=record.reference_lap,
                     preferred_duration_s=record.reference_time_s,
+                    target_hz=self.track_resolution_hz,
                 )
                 try:
                     zones = load_track_zones(record.cross_session_path)
@@ -1866,7 +1892,8 @@ class RaceEngineerApp:
         if data is None or not data.points:
             self._stop_track_playback()
             return
-        index = (self.selected_track_point_index or 0) + 1
+        step = max(1, int(round(self.track_resolution_hz / 10.0)))
+        index = (self.selected_track_point_index or 0) + step
         if index >= len(data.points):
             self._stop_track_playback()
             return
@@ -1895,6 +1922,21 @@ class RaceEngineerApp:
             "—" if point.lap_distance_m is None else f"{point.lap_distance_m:.0f} m"
         )
         self.track_map_zone_status.set(f"Inicio de la vuelta · {distance}")
+
+    def _on_track_resolution_changed(self, _event=None):
+        raw = self.track_resolution_var.get().strip()
+        if not raw.endswith("Hz"):
+            return
+        try:
+            hz = float(raw[:-2].strip())
+        except ValueError:
+            return
+        if hz == self.track_resolution_hz:
+            return
+        self.track_resolution_hz = hz
+        record = self.selected_record()
+        if record is not None:
+            self._request_track_map(record)
 
     def _set_track_playback_controls(self, enabled: bool):
         if not hasattr(self, "track_play_button"):

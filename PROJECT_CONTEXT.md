@@ -1,7 +1,7 @@
 # Race Engineer — PROJECT_CONTEXT v1.0
 
 > Canonical end-to-end onboarding context for coding agents and LLMs working on the Race Engineer repository.
-> Baseline represented here: GUI v1.16, H5.4 P1–P11 and historical-shadow checkpoint 2026-08-23.
+> Baseline represented here: GUI v1.17, H5.4 P1–P11 and historical-shadow checkpoint 2026-08-23.
 >
 > This is the detailed mental model of the project. `AGENTS.md` should instruct coding agents to read this file before non-trivial work.
 
@@ -147,12 +147,12 @@ DeepSeek pseudo-labels/reviews are assistance and must never be silently mixed w
 
 # 4. Current operational baseline
 
-Checkpoint: **2026-08-23 GUI v1.16, H5.4 presentation and historical shadow**.
+Checkpoint: **2026-08-23 GUI v1.17, H5.4 presentation and historical shadow**.
 
 | Component | Current operational baseline |
 |---|---|
 | `race_engineer.py` | orchestrator v0.3 |
-| `race_engineer_gui.py` | v1.16 / telemetry playback |
+| `race_engineer_gui.py` | v1.17 / telemetry resolution |
 | `analyze_telemetry.py` | v3.8 + Objective Python v6 |
 | Brake point | 2.1 / schema 2.1 |
 | Throttle point | 1.2.1 / schema 1.2 |
@@ -1316,6 +1316,11 @@ GUI v1.16 agrega playback de telemetría: `▶ Play / ⏸ Pausa` y `⏮ Inicio`
 avanzan el punto blanco a 10 Hz por la vuelta (mapa + gráfico + lecturas),
 con auto-stop al final y al arrastrar/elegir curva o zona. Presentación
 únicamente. See `docs/RACE_ENGINEER_GUI_V1_16.md`.
+
+GUI v1.17 mejora la resolución: alineación a 20 Hz por default (la nativa es
+~100 Hz) con selector 10/20/50 Hz en la fila de playback; el paso del playback
+se ajusta para mantener velocidad 1×. Presentación read-only. See
+`docs/RACE_ENGINEER_GUI_V1_17.md`.
 
 The scheduled task must execute `hidden_history_ingest.py` through `pythonw.exe`.
 That wrapper preserves the same maintenance arguments, creates no console window and

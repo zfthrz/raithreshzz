@@ -122,7 +122,7 @@ def load_track_map(
     *,
     preferred_lap: int | None = None,
     preferred_duration_s: float | None = None,
-    target_hz: float = 10.0,
+    target_hz: float = 20.0,
     connect_factory: Callable = duckdb.connect,
 ) -> TrackMapData:
     """Extract one GPS lap without modifying or exporting the source DuckDB."""
@@ -130,8 +130,8 @@ def load_track_map(
     database = Path(database_path).expanduser().resolve()
     if not database.is_file():
         raise FileNotFoundError(database)
-    if target_hz <= 0 or target_hz > 20:
-        raise ValueError("La frecuencia del mapa debe estar entre 0 y 20 Hz.")
+    if target_hz <= 0 or target_hz > 50:
+        raise ValueError("La frecuencia del mapa debe estar entre 0 y 50 Hz.")
 
     connection = connect_factory(str(database), read_only=True)
     try:

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import inspect
 import math
 from pathlib import Path
 
@@ -32,6 +33,17 @@ from race_engineer_track_map import (
     zone_for_distance,
     zone_point_ranges,
 )
+
+
+def test_load_track_map_defaults_to_20hz():
+    default = inspect.signature(load_track_map).parameters["target_hz"].default
+    assert default == 20.0
+
+
+def test_load_track_map_rejects_above_50hz(tmp_path: Path):
+    database = make_gps_database(tmp_path / "session.duckdb")
+    with pytest.raises(ValueError, match="0 y 50 Hz"):
+        load_track_map(database, target_hz=60.0)
 
 
 def make_gps_database(path: Path) -> Path:

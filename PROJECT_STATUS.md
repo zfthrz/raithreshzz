@@ -64,6 +64,11 @@ Validated baseline:
   9) and imported into History (runs 3-4). Orchestrator `h3` stage now reports
   `SKIPPED_NOT_APPLICABLE` with a context-aware reason (calibrated + pattern
   runs / calibrated / uncalibrated). H3 is never forced per session.
+- Phase J golden set (2026-08-23): `golden_set_semantic_regression.py` +
+  `golden_set/golden_set_v0_1.json` with 6 SEED records (Imola, Monza,
+  Interlagos, Fuji, Spa, Sarthe). Semantic regression (region, action families,
+  P10/P11 structure, forbidden actions, authorized evidence), not prose.
+  Evaluation 6/6 PASS. No ranking change authorized without human review.
 
 ### analyze_telemetry
 Current: `3.8`

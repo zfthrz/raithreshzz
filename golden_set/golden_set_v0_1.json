@@ -1,0 +1,215 @@
+{
+  "version": "0.1",
+  "generated_at_utc": "2026-08-24T01:40:24.373583+00:00",
+  "policy": {
+    "semantic_not_prose": true,
+    "no_ranking_change_authorized": true,
+    "human_review_required_before_promotion": true
+  },
+  "records": [
+    {
+      "golden_id": "Autodromo Enzo e Dino Ferrari_P_2026-08-19",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "vehicle_variant": "UNKNOWN",
+      "session_key": "Autodromo Enzo e Dino Ferrari_P_2026-08-19T19_25_42Z",
+      "status": "SEED",
+      "derived_from": "debrief 2026-08-24T01:40:24.309814+00:00",
+      "expected_regions": [
+        "T11 — Acque Minerali",
+        "T5 — Variante Villeneuve",
+        "T6 — Variante Villeneuve → T7 — Tosa"
+      ],
+      "expected_action_families": [
+        "brake",
+        "throttle"
+      ],
+      "expected_cue_sources": [
+        "authorized_brake_onset_release",
+        "deterministic_coaching_sequence",
+        "deterministic_observed_level_to_reference",
+        "reference_action_profile"
+      ],
+      "expected_p11": {
+        "status": "ACTIVE",
+        "max_items": 2
+      },
+      "forbidden_cue_tokens": [
+        "velocidad",
+        "segundo",
+        "km/h",
+        "tiempo de vuelta"
+      ],
+      "usefulness_score": null,
+      "notes": "Seed derivado de un debrief validado; refinar con revisión humana."
+    },
+    {
+      "golden_id": "Autodromo Nazionale Monza_P_2026-08-15T19_",
+      "track": "Autodromo Nazionale Monza",
+      "vehicle_variant": "UNKNOWN",
+      "session_key": "Autodromo Nazionale Monza_P_2026-08-15T19_52_08Z",
+      "status": "SEED",
+      "derived_from": "debrief 2026-08-24T01:40:24.320338+00:00",
+      "expected_regions": [
+        "T11 — Curva Alboreto",
+        "T2 — Variante del Rettifilo",
+        "T8–T9 — Variante Ascari"
+      ],
+      "expected_action_families": [
+        "throttle"
+      ],
+      "expected_cue_sources": [
+        "authorized_throttle_onset_release",
+        "reference_action_profile"
+      ],
+      "expected_p11": {
+        "status": "ACTIVE",
+        "max_items": 2
+      },
+      "forbidden_cue_tokens": [
+        "velocidad",
+        "segundo",
+        "km/h",
+        "tiempo de vuelta"
+      ],
+      "usefulness_score": null,
+      "notes": "Seed derivado de un debrief validado; refinar con revisión humana."
+    },
+    {
+      "golden_id": "Autódromo José Carlos Pace_P_2026-08-23T01",
+      "track": "Autódromo José Carlos Pace",
+      "vehicle_variant": "UNKNOWN",
+      "session_key": "Autódromo José Carlos Pace_P_2026-08-23T01_59_28Z",
+      "status": "SEED",
+      "derived_from": "debrief 2026-08-24T01:40:24.333346+00:00",
+      "expected_regions": [
+        "T7 — Curva do Laranjinha → entrada de T8 — Pinheirinho",
+        "T9 — Pinheirinho → entrada de T10 — Bico de Pato",
+        "entrada de T1 — 'S' do Senna"
+      ],
+      "expected_action_families": [
+        "brake",
+        "steering",
+        "throttle"
+      ],
+      "expected_cue_sources": [
+        "authorized_brake_onset_release",
+        "deterministic_coaching_sequence",
+        "reference_action_profile",
+        "validated_llm_recommendation+python_direction"
+      ],
+      "expected_p11": {
+        "status": "ACTIVE",
+        "max_items": 2
+      },
+      "forbidden_cue_tokens": [
+        "velocidad",
+        "segundo",
+        "km/h",
+        "tiempo de vuelta"
+      ],
+      "usefulness_score": null,
+      "notes": "Seed derivado de un debrief validado; refinar con revisión humana."
+    },
+    {
+      "golden_id": "Fuji Speedway_P_2026-08-19T19_38_36Z",
+      "track": "Fuji Speedway",
+      "vehicle_variant": "UNKNOWN",
+      "session_key": "Fuji Speedway_P_2026-08-19T19_38_36Z",
+      "status": "SEED",
+      "derived_from": "debrief 2026-08-24T01:40:24.343875+00:00",
+      "expected_regions": [
+        "T1 — TGR Corner",
+        "T10–T11 — Dunlop",
+        "T6 — Hairpin"
+      ],
+      "expected_action_families": [
+        "throttle"
+      ],
+      "expected_cue_sources": [
+        "authorized_throttle_onset_release",
+        "reference_action_profile"
+      ],
+      "expected_p11": {
+        "status": "ACTIVE",
+        "max_items": 2
+      },
+      "forbidden_cue_tokens": [
+        "velocidad",
+        "segundo",
+        "km/h",
+        "tiempo de vuelta"
+      ],
+      "usefulness_score": null,
+      "notes": "Seed derivado de un debrief validado; refinar con revisión humana."
+    },
+    {
+      "golden_id": "Circuit de Spa-Francorchamps_P_2026-08-20T",
+      "track": "Circuit de Spa-Francorchamps",
+      "vehicle_variant": "UNKNOWN",
+      "session_key": "Circuit de Spa-Francorchamps_P_2026-08-20T05_49_39Z",
+      "status": "SEED",
+      "derived_from": "debrief 2026-08-24T01:40:24.365555+00:00",
+      "expected_regions": [
+        "T12–T13 — Fagnes",
+        "T9 — Jacky Ickx Curve",
+        "entrada de T1 — La Source"
+      ],
+      "expected_action_families": [
+        "brake",
+        "throttle"
+      ],
+      "expected_cue_sources": [
+        "authorized_brake_onset_release",
+        "authorized_throttle_onset_release",
+        "deterministic_coaching_sequence",
+        "reference_action_profile"
+      ],
+      "expected_p11": {
+        "status": "ACTIVE",
+        "max_items": 2
+      },
+      "forbidden_cue_tokens": [
+        "velocidad",
+        "segundo",
+        "km/h",
+        "tiempo de vuelta"
+      ],
+      "usefulness_score": null,
+      "notes": "Seed derivado de un debrief validado; refinar con revisión humana."
+    },
+    {
+      "golden_id": "Circuit de la Sarthe_P_2026-08-17T21_28_06",
+      "track": "Circuit de la Sarthe",
+      "vehicle_variant": "UNKNOWN",
+      "session_key": "Circuit de la Sarthe_P_2026-08-17T21_28_06Z",
+      "status": "SEED",
+      "derived_from": "debrief 2026-08-24T01:40:24.373583+00:00",
+      "expected_regions": [
+        "T1 — Dunlop Curve",
+        "T4 — Tertre Rouge Corner → entrada de T5 — Daytona Chicane",
+        "salida de T15 — Karting Esses 2 → T16 — Ford Chicanes 1"
+      ],
+      "expected_action_families": [
+        "steering",
+        "throttle"
+      ],
+      "expected_cue_sources": [
+        "authorized_throttle_onset_release",
+        "reference_action_profile",
+        "validated_llm_recommendation+python_direction"
+      ],
+      "expected_p11": {
+        "status": "INACTIVE",
+        "max_items": 2
+      },
+      "forbidden_cue_tokens": [
+        "velocidad",
+        "segundo",
+        "km/h",
+        "tiempo de vuelta"
+      ],
+      "usefulness_score": null,
+      "notes": "Seed derivado de un debrief validado; refinar con revisión humana."
+    }
+  ]
+}

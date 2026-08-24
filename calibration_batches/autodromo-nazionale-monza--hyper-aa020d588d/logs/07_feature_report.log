@@ -1,0 +1,18 @@
+$ 'C:\Users\thres\Documents\GitHub\raithreshzz\.venv\Scripts\python.exe' 'C:\Users\thres\Documents\GitHub\raithreshzz\calibration_feature_report.py' 'C:\Users\thres\Documents\GitHub\raithreshzz\calibration_batches\autodromo-nazionale-monza--hyper-aa020d588d\calibration_dataset.json' --output 'C:\Users\thres\Documents\GitHub\raithreshzz\calibration_batches\autodromo-nazionale-monza--hyper-aa020d588d\calibration_feature_report.json'
+
+--- STDOUT ---
+
+========================================================================
+RACE ENGINEER - CALIBRATION FEATURE REPORT v1.0
+========================================================================
+
+calibration: pairs=7 labels={'SAME': 0, 'DIFFERENT': 7, 'AMBIGUOUS': 0}
+evaluation: pairs=0 labels={'SAME': 0, 'DIFFERENT': 0, 'AMBIGUOUS': 0}
+
+Output: C:\Users\thres\Documents\GitHub\raithreshzz\calibration_batches\autodromo-nazionale-monza--hyper-aa020d588d\calibration_feature_report.json
+No thresholds, weights, probabilities, or automatic match decisions were created.
+
+--- STDERR ---
+
+--- RETURN CODE ---
+0

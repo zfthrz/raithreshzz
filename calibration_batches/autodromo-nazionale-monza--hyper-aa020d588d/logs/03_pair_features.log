@@ -1,0 +1,25 @@
+$ 'C:\Users\thres\Documents\GitHub\raithreshzz\.venv\Scripts\python.exe' 'C:\Users\thres\Documents\GitHub\raithreshzz\episode_pair_features.py' --db 'C:\Users\thres\Documents\GitHub\raithreshzz\data\local\race_engineer_history.duckdb' --track 'Autodromo Nazionale Monza' --track-layout 'Autodromo Nazionale Monza' --vehicle-variant HYPER --format json --output 'C:\Users\thres\Documents\GitHub\raithreshzz\calibration_batches\autodromo-nazionale-monza--hyper-aa020d588d\episode_pair_features.json'
+
+--- STDOUT ---
+
+======================================================================
+RACE ENGINEER - EPISODE PAIR FEATURES v1.2
+======================================================================
+
+Episodes loaded: 74
+Cross-session pairs: 2236
+Track filter: Autodromo Nazionale Monza
+Vehicle variant filter: HYPER
+Track layout filter: Autodromo Nazionale Monza
+Pair hard gate: same track + same explicit layout + same known supported vehicle variant
+Source eligibility gate: recommended_for_driver_analysis = true
+
+Output: C:\Users\thres\Documents\GitHub\raithreshzz\calibration_batches\autodromo-nazionale-monza--hyper-aa020d588d\episode_pair_features.json
+
+No matching decision was made.
+These are calibration features only.
+
+--- STDERR ---
+
+--- RETURN CODE ---
+0

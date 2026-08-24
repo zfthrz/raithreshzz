@@ -1,6 +1,6 @@
 {
   "orchestrator_version": "1.5",
-  "updated_at_utc": "2026-08-24T00:22:30.560425+00:00",
+  "updated_at_utc": "2026-08-24T01:09:29.589201+00:00",
   "project_root": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz",
   "input_dir": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\data\\generated\\analysis",
   "history_db": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\data\\local\\race_engineer_history.duckdb",
@@ -80,8 +80,7 @@
       }
     },
     "pair_features": {
-      "status": "PASS",
-      "command": "'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\.venv\\Scripts\\python.exe' 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\episode_pair_features.py' --db 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\data\\local\\race_engineer_history.duckdb' --track 'Circuit de la Sarthe' --track-layout 'Circuit de la Sarthe' --vehicle-variant HYPER --format json --output 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\circuit-de-la-sarthe--hyper-4687173702\\episode_pair_features.json'",
+      "status": "REUSED",
       "path": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\circuit-de-la-sarthe--hyper-4687173702\\episode_pair_features.json",
       "pair_count": 0
     },
@@ -92,7 +91,7 @@
   },
   "next_action": "Collect more usable same-track sessions/episodes.",
   "matcher": {
-    "status": "BLOCKED_BY_REAL_DATA",
-    "reason": "No thresholds, weights, automatic matching, clustering, or persistent_pattern are implemented."
+    "status": "NO_CALIBRATION_FOR_CONTEXT",
+    "reason": "No hay thresholds calibrados para este contexto exacto; labelar el batch para calibrar."
   }
 }

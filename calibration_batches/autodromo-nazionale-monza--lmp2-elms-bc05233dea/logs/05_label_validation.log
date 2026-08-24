@@ -1,0 +1,43 @@
+$ 'C:\Users\thres\Documents\GitHub\raithreshzz\.venv\Scripts\python.exe' 'C:\Users\thres\Documents\GitHub\raithreshzz\validate_pair_labels.py' 'C:\Users\thres\Documents\GitHub\raithreshzz\calibration_batches\autodromo-nazionale-monza--lmp2-elms-bc05233dea\pair_review_queue.json' 'C:\Users\thres\Documents\GitHub\raithreshzz\calibration_batches\autodromo-nazionale-monza--lmp2-elms-bc05233dea\pair_labels.json'
+
+--- STDOUT ---
+
+======================================================================
+RACE ENGINEER - PAIR LABEL VALIDATOR v1.1
+======================================================================
+
+{
+  "queue_pairs": 24,
+  "label_records": 24,
+  "counts": {
+    "SAME": 7,
+    "DIFFERENT": 17
+  },
+  "unreviewed": 0,
+  "sessions_by_label": {
+    "SAME": [
+      15,
+      18,
+      19,
+      40
+    ],
+    "DIFFERENT": [
+      15,
+      18,
+      19,
+      20,
+      23,
+      40
+    ]
+  }
+}
+
+WARNINGS
+- No hay ningún AMBIGUOUS. No es necesariamente un error, pero conviene confirmar que no se están forzando decisiones.
+
+PAIR LABEL VALIDATION: PASS
+
+--- STDERR ---
+
+--- RETURN CODE ---
+0

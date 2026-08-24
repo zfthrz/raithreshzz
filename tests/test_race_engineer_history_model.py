@@ -10,7 +10,16 @@ from race_engineer_history_model import (
     load_history_detail,
     load_history_sessions,
 )
-from session_history import initialize_schema
+from session_history import default_db_path, initialize_schema
+
+
+def test_history_cli_default_db_lives_under_data_local():
+    """El default de la CLI debe apuntar a data/local, no a la raíz del repo."""
+    path = Path(default_db_path())
+
+    assert path.name == "race_engineer_history.duckdb"
+    assert "data" in path.parts
+    assert "local" in path.parts
 
 
 def history_database(tmp_path: Path) -> Path:

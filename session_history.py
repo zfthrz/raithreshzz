@@ -7,6 +7,8 @@ from datetime import datetime, timezone
 
 import duckdb
 
+from runtime_paths import local_root
+
 
 # ============================================================
 # RACE ENGINEER - SESSION HISTORY v1.4
@@ -206,7 +208,7 @@ def base_dir():
 
 def default_db_path():
     return os.path.join(
-        base_dir(),
+        str(local_root()),
         HISTORY_DB_NAME,
     )
 

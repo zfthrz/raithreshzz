@@ -1,0 +1,57 @@
+$ 'C:\Users\thres\Documents\GitHub\raithreshzz\.venv\Scripts\python.exe' 'C:\Users\thres\Documents\GitHub\raithreshzz\validate_pair_labels.py' 'C:\Users\thres\Documents\GitHub\raithreshzz\calibration_batches\autodromo-enzo-e-dino-ferrari--lmp2-elms-5a8126df14\pair_review_queue.json' 'C:\Users\thres\Documents\GitHub\raithreshzz\calibration_batches\autodromo-enzo-e-dino-ferrari--lmp2-elms-5a8126df14\pair_labels.json'
+
+--- STDOUT ---
+
+======================================================================
+RACE ENGINEER - PAIR LABEL VALIDATOR v1.1
+======================================================================
+
+{
+  "queue_pairs": 24,
+  "label_records": 24,
+  "counts": {
+    "SAME": 11,
+    "DIFFERENT": 10,
+    "AMBIGUOUS": 3
+  },
+  "unreviewed": 0,
+  "sessions_by_label": {
+    "SAME": [
+      9,
+      10,
+      32,
+      50,
+      51,
+      57,
+      61,
+      62,
+      63,
+      65
+    ],
+    "DIFFERENT": [
+      9,
+      10,
+      32,
+      36,
+      50,
+      51,
+      61,
+      63,
+      65
+    ],
+    "AMBIGUOUS": [
+      9,
+      34,
+      51,
+      61,
+      63
+    ]
+  }
+}
+
+PAIR LABEL VALIDATION: PASS
+
+--- STDERR ---
+
+--- RETURN CODE ---
+0

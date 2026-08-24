@@ -1,10 +1,10 @@
-$ /usr/local/bin/python /workspaces/raithreshzz/session_history.py --db /workspaces/raithreshzz/race_engineer_history.duckdb init
+$ 'C:\Users\thres\Documents\GitHub\raithreshzz\.venv\Scripts\python.exe' 'C:\Users\thres\Documents\GitHub\raithreshzz\session_history.py' --db 'C:\Users\thres\Documents\GitHub\raithreshzz\data\local\race_engineer_history.duckdb' init
 
 --- STDOUT ---
 
 History DB inicializada:
-/workspaces/raithreshzz/race_engineer_history.duckdb
-Schema version: 3
+c:\users\thres\documents\github\raithreshzz\data\local\race_engineer_history.duckdb
+Schema version: 4
 
 --- STDERR ---
 

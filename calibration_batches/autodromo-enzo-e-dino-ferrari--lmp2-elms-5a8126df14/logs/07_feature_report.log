@@ -1,0 +1,18 @@
+$ 'C:\Users\thres\Documents\GitHub\raithreshzz\.venv\Scripts\python.exe' 'C:\Users\thres\Documents\GitHub\raithreshzz\calibration_feature_report.py' 'C:\Users\thres\Documents\GitHub\raithreshzz\calibration_batches\autodromo-enzo-e-dino-ferrari--lmp2-elms-5a8126df14\calibration_dataset.json' --output 'C:\Users\thres\Documents\GitHub\raithreshzz\calibration_batches\autodromo-enzo-e-dino-ferrari--lmp2-elms-5a8126df14\calibration_feature_report.json'
+
+--- STDOUT ---
+
+========================================================================
+RACE ENGINEER - CALIBRATION FEATURE REPORT v1.0
+========================================================================
+
+calibration: pairs=9 labels={'SAME': 2, 'DIFFERENT': 6, 'AMBIGUOUS': 1}
+evaluation: pairs=1 labels={'SAME': 1, 'DIFFERENT': 0, 'AMBIGUOUS': 0}
+
+Output: C:\Users\thres\Documents\GitHub\raithreshzz\calibration_batches\autodromo-enzo-e-dino-ferrari--lmp2-elms-5a8126df14\calibration_feature_report.json
+No thresholds, weights, probabilities, or automatic match decisions were created.
+
+--- STDERR ---
+
+--- RETURN CODE ---
+0

@@ -1,22 +1,26 @@
-$ /usr/local/bin/python /workspaces/raithreshzz/validate_history_db.py --db /workspaces/raithreshzz/race_engineer_history.duckdb
+$ 'C:\Users\thres\Documents\GitHub\raithreshzz\.venv\Scripts\python.exe' 'C:\Users\thres\Documents\GitHub\raithreshzz\validate_history_db.py' --db 'C:\Users\thres\Documents\GitHub\raithreshzz\data\local\race_engineer_history.duckdb'
 
 --- STDOUT ---
 
 ======================================================================
-RACE ENGINEER - HISTORY DB VALIDATOR v1.2
+RACE ENGINEER - HISTORY DB VALIDATOR v1.3
 ======================================================================
 
-DB: /workspaces/raithreshzz/race_engineer_history.duckdb
+DB: C:\Users\thres\Documents\GitHub\raithreshzz\data\local\race_engineer_history.duckdb
 
 DB SUMMARY
 ------------------------------------------------------------
-sessions: 6
-laps: 41
-comparisons: 25
-episodes: 270
-episode_channels: 484
-speed_propagations: 155
-import_log: 36
+sessions: 68
+laps: 353
+comparisons: 184
+episodes: 1643
+episode_channels: 2992
+speed_propagations: 853
+import_log: 140
+pattern_runs: 2
+persistent_patterns: 102
+persistent_pattern_members: 232
+persistent_pattern_pair_evidence: 344
 
 HISTORY VALIDATION: PASS
 Warnings: 0

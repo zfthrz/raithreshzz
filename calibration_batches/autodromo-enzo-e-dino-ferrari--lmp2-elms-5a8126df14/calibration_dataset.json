@@ -1,0 +1,1375 @@
+{
+  "metadata": {
+    "dataset_schema_version": "1.0",
+    "created_at_utc": "2026-08-24T00:26:39.904061+00:00",
+    "source_queue_path": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\autodromo-enzo-e-dino-ferrari--lmp2-elms-5a8126df14\\pair_review_queue.json",
+    "source_queue_sha256": "34858582667a8fbb6b0541a360f99db9a2086bc88c3e47646d3cc7abea902fe8",
+    "source_labels_path": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\autodromo-enzo-e-dino-ferrari--lmp2-elms-5a8126df14\\pair_labels.json",
+    "source_labels_sha256": "ce39488ae2b2821b136d248119f9e9401e14d46c0a411e6513e2d3aba39b6e3c",
+    "split_unit": "session",
+    "evaluation_fraction_requested": 0.25,
+    "seed": 20260810,
+    "leakage_policy": "A session may belong to only one partition. Pairs crossing partitions are excluded from both.",
+    "skip_policy": "SKIP is excluded from calibration/evaluation ground truth.",
+    "ambiguous_policy": "AMBIGUOUS is preserved as a first-class human label.",
+    "matcher_status": "NO_THRESHOLDS_NO_MATCH_SCORE_NO_AUTOMATIC_MATCHING"
+  },
+  "validation": {
+    "pair_label_validation_summary": {
+      "queue_pairs": 24,
+      "label_records": 24,
+      "counts": {
+        "SAME": 11,
+        "DIFFERENT": 10,
+        "AMBIGUOUS": 3
+      },
+      "unreviewed": 0,
+      "sessions_by_label": {
+        "SAME": [
+          9,
+          10,
+          32,
+          50,
+          51,
+          57,
+          61,
+          62,
+          63,
+          65
+        ],
+        "DIFFERENT": [
+          9,
+          10,
+          32,
+          36,
+          50,
+          51,
+          61,
+          63,
+          65
+        ],
+        "AMBIGUOUS": [
+          9,
+          34,
+          51,
+          61,
+          63
+        ]
+      }
+    },
+    "warnings": []
+  },
+  "session_assignment": [
+    {
+      "session_key": "[\"Autodromo Enzo e Dino Ferrari\",9]",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_id": 9,
+      "partition": "calibration"
+    },
+    {
+      "session_key": "[\"Autodromo Enzo e Dino Ferrari\",10]",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_id": 10,
+      "partition": "calibration"
+    },
+    {
+      "session_key": "[\"Autodromo Enzo e Dino Ferrari\",32]",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_id": 32,
+      "partition": "calibration"
+    },
+    {
+      "session_key": "[\"Autodromo Enzo e Dino Ferrari\",34]",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_id": 34,
+      "partition": "calibration"
+    },
+    {
+      "session_key": "[\"Autodromo Enzo e Dino Ferrari\",36]",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_id": 36,
+      "partition": "calibration"
+    },
+    {
+      "session_key": "[\"Autodromo Enzo e Dino Ferrari\",50]",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_id": 50,
+      "partition": "evaluation"
+    },
+    {
+      "session_key": "[\"Autodromo Enzo e Dino Ferrari\",51]",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_id": 51,
+      "partition": "calibration"
+    },
+    {
+      "session_key": "[\"Autodromo Enzo e Dino Ferrari\",57]",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_id": 57,
+      "partition": "calibration"
+    },
+    {
+      "session_key": "[\"Autodromo Enzo e Dino Ferrari\",61]",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_id": 61,
+      "partition": "calibration"
+    },
+    {
+      "session_key": "[\"Autodromo Enzo e Dino Ferrari\",62]",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_id": 62,
+      "partition": "calibration"
+    },
+    {
+      "session_key": "[\"Autodromo Enzo e Dino Ferrari\",63]",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_id": 63,
+      "partition": "evaluation"
+    },
+    {
+      "session_key": "[\"Autodromo Enzo e Dino Ferrari\",65]",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_id": 65,
+      "partition": "evaluation"
+    }
+  ],
+  "counts": {
+    "reviewed_usable_pairs": 24,
+    "ignored_skip_pairs": 0,
+    "usable_sessions": 12,
+    "calibration_sessions": 9,
+    "evaluation_sessions": 3,
+    "calibration_pairs": 9,
+    "evaluation_pairs": 1,
+    "cross_split_pairs_excluded": 14,
+    "calibration_labels": {
+      "SAME": 2,
+      "DIFFERENT": 6,
+      "AMBIGUOUS": 1
+    },
+    "evaluation_labels": {
+      "SAME": 1,
+      "DIFFERENT": 0,
+      "AMBIGUOUS": 0
+    },
+    "all_usable_labels": {
+      "SAME": 11,
+      "DIFFERENT": 10,
+      "AMBIGUOUS": 3
+    }
+  },
+  "calibration": [
+    {
+      "pair_id": "3c3ba32691e756be485d",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:24:51.627390+00:00",
+      "selected_by": [
+        {
+          "lens": "similar_channels_farther_apart",
+          "rank": 1
+        }
+      ],
+      "features": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "track_layout": "Autodromo Enzo e Dino Ferrari",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "IDEC Sport #18:ELMS25",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "54f618e7dd4c2b68b6994a5a15830c9a1b3646d48428ddc1da93767beb1b1f14",
+        "setup_sha256_b": "a00352762ffd97d8d2d1d41b10386d34f46c8f9279f63a645a80d47166428dcf",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Partially Cloudy",
+        "weather_conditions_b": "Partially Cloudy",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 9,
+        "session_b": 32,
+        "timestamp_a": "2026-08-13T23:25:02Z",
+        "timestamp_b": "2026-08-19T05:35:02Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 396,
+        "episode_pk_b": 923,
+        "episode_id_a": 4,
+        "episode_id_b": 1,
+        "python_rank_a": 4,
+        "python_rank_b": 1,
+        "priority_rank_a": 2,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 4247.0,
+        "end_distance_a_m": 4313.0,
+        "center_distance_a_m": 4280.0,
+        "start_distance_b_m": 1.0,
+        "end_distance_b_m": 206.0,
+        "center_distance_b_m": 103.5,
+        "center_distance_abs_diff_m": 4176.5,
+        "start_distance_abs_diff_m": 4246.0,
+        "end_distance_abs_diff_m": 4107.0,
+        "center_fraction_a": 0.8740581785402316,
+        "center_fraction_b": 0.021138824659488884,
+        "center_fraction_abs_diff": 0.8529193538807427,
+        "start_fraction_abs_diff": 0.8671147050688631,
+        "end_fraction_abs_diff": 0.8387240026926222,
+        "action_time_loss_a_s": 0.07145713392540642,
+        "action_time_loss_b_s": 9.75176534272979,
+        "action_time_loss_similarity": 0.007327610069973606,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": false,
+        "speed_propagation_b": true,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "channel_jaccard": 1.0,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.6685144124168514,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 156.0,
+            "mean_difference_similarity": 0.5975691871360984,
+            "peak_difference_similarity": 0.4580497636508652,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.4527716186252772,
+            "onset_offset_abs_diff_m": 17.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.29425919510644977,
+            "peak_difference_similarity": 0.4489002491304388,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 4312.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.32195121951219513,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "3c3ba32691e756be485d"
+      }
+    },
+    {
+      "pair_id": "358b970a7d00ede101a4",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:24:59.819347+00:00",
+      "selected_by": [
+        {
+          "lens": "deterministic_baseline",
+          "rank": 1
+        }
+      ],
+      "features": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "track_layout": "Autodromo Enzo e Dino Ferrari",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "IDEC Sport #18:ELMS25",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "54f618e7dd4c2b68b6994a5a15830c9a1b3646d48428ddc1da93767beb1b1f14",
+        "setup_sha256_b": "a5b7670047d9e9df1f732f67c22c8fad60e2881e091c9e5bc7853134c3fe35f5",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Partially Cloudy",
+        "weather_conditions_b": "Partially Cloudy",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 36,
+        "session_b": 61,
+        "timestamp_a": "2026-08-19T19:25:42Z",
+        "timestamp_b": "2026-08-23T02:52:18Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 1015,
+        "episode_pk_b": 1454,
+        "episode_id_a": 6,
+        "episode_id_b": 2,
+        "python_rank_a": 6,
+        "python_rank_b": 2,
+        "priority_rank_a": 2,
+        "priority_rank_b": 1,
+        "start_distance_a_m": 2814.0,
+        "end_distance_a_m": 2834.0,
+        "center_distance_a_m": 2824.0,
+        "start_distance_b_m": 3969.0,
+        "end_distance_b_m": 4107.0,
+        "center_distance_b_m": 4038.0,
+        "center_distance_abs_diff_m": 1214.0,
+        "start_distance_abs_diff_m": 1155.0,
+        "end_distance_abs_diff_m": 1273.0,
+        "center_fraction_a": 0.5768622804182775,
+        "center_fraction_b": 0.8248210389495366,
+        "center_fraction_abs_diff": 0.24795875853125915,
+        "start_fraction_abs_diff": 0.23590720460707815,
+        "end_fraction_abs_diff": 0.26001031245544026,
+        "action_time_loss_a_s": 0.02615850010113263,
+        "action_time_loss_b_s": 0.18291959380040623,
+        "action_time_loss_similarity": 0.1430054569751321,
+        "evidence_strength_a": "weak",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": false,
+        "speed_propagation_b": false,
+        "channels_a": [
+          "brake"
+        ],
+        "channels_b": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "brake"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channel_jaccard": 0.3333333333333333,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.06521739130434778,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.8290709316781141,
+            "peak_difference_similarity": 0.20126167156530278,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "mixed"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 1293.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.14492753623188406,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "358b970a7d00ede101a4"
+      }
+    },
+    {
+      "pair_id": "39c01bb894a2c19c582b",
+      "human_label": "AMBIGUOUS",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:25:07.931342+00:00",
+      "selected_by": [
+        {
+          "lens": "closest_centers",
+          "rank": 2
+        },
+        {
+          "lens": "nearby_channel_disagreement",
+          "rank": 3
+        }
+      ],
+      "features": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "track_layout": "Autodromo Enzo e Dino Ferrari",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "IDEC Sport #18:ELMS25",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "a00352762ffd97d8d2d1d41b10386d34f46c8f9279f63a645a80d47166428dcf",
+        "setup_sha256_b": "a5b7670047d9e9df1f732f67c22c8fad60e2881e091c9e5bc7853134c3fe35f5",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Partially Cloudy",
+        "weather_conditions_b": "Partially Cloudy",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 34,
+        "session_b": 61,
+        "timestamp_a": "2026-08-19T08:15:17Z",
+        "timestamp_b": "2026-08-23T02:52:18Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 935,
+        "episode_pk_b": 1456,
+        "episode_id_a": 2,
+        "episode_id_b": 4,
+        "python_rank_a": 2,
+        "python_rank_b": 4,
+        "priority_rank_a": 1,
+        "priority_rank_b": 1,
+        "start_distance_a_m": 1573.0,
+        "end_distance_a_m": 1762.0,
+        "center_distance_a_m": 1667.5,
+        "start_distance_b_m": 1656.0,
+        "end_distance_b_m": 1679.0,
+        "center_distance_b_m": 1667.5,
+        "center_distance_abs_diff_m": 0.0,
+        "start_distance_abs_diff_m": 83.0,
+        "end_distance_abs_diff_m": 83.0,
+        "center_fraction_a": 0.33958223620884687,
+        "center_fraction_b": 0.340611461725694,
+        "center_fraction_abs_diff": 0.0010292255168471431,
+        "start_fraction_abs_diff": 0.017924871401039322,
+        "end_fraction_abs_diff": 0.015866420367345146,
+        "action_time_loss_a_s": 1.1686156529308356,
+        "action_time_loss_b_s": 0.09289364149736912,
+        "action_time_loss_similarity": 0.0794903279486254,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "moderate",
+        "speed_propagation_a": true,
+        "speed_propagation_b": false,
+        "channels_a": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "brake"
+        ],
+        "shared_channels": [
+          "brake"
+        ],
+        "channels_only_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_b": [],
+        "channel_jaccard": 0.3333333333333333,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.3650793650793651,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 62.0,
+            "mean_difference_similarity": 0.5495351568803942,
+            "peak_difference_similarity": 0.3920146116058145,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 23.0,
+        "union_m": 189.0,
+        "overlap_over_union": 0.12169312169312169,
+        "overlap_over_shorter": 1.0,
+        "overlap_over_longer": 0.12169312169312169,
+        "length_similarity": 0.12169312169312169,
+        "fraction_overlap": 0.004698089127250948,
+        "fraction_overlap_over_union": 0.12206195625723089,
+        "fraction_overlap_over_shorter": 1.0,
+        "pair_id": "39c01bb894a2c19c582b"
+      }
+    },
+    {
+      "pair_id": "b95bd55f8978c9d6260d",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:25:14.411726+00:00",
+      "selected_by": [
+        {
+          "lens": "highest_channel_similarity",
+          "rank": 2
+        },
+        {
+          "lens": "closest_centers",
+          "rank": 4
+        }
+      ],
+      "features": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "track_layout": "Autodromo Enzo e Dino Ferrari",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "IDEC Sport #18:ELMS25",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "54f618e7dd4c2b68b6994a5a15830c9a1b3646d48428ddc1da93767beb1b1f14",
+        "setup_sha256_b": "a5b7670047d9e9df1f732f67c22c8fad60e2881e091c9e5bc7853134c3fe35f5",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Partially Cloudy",
+        "weather_conditions_b": "Partially Cloudy",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 9,
+        "session_b": 51,
+        "timestamp_a": "2026-08-13T23:25:02Z",
+        "timestamp_b": "2026-08-21T05:56:21Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 399,
+        "episode_pk_b": 1333,
+        "episode_id_a": 7,
+        "episode_id_b": 10,
+        "python_rank_a": 7,
+        "python_rank_b": 10,
+        "priority_rank_a": 2,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 1412.0,
+        "end_distance_a_m": 1479.0,
+        "center_distance_a_m": 1445.5,
+        "start_distance_b_m": 1426.0,
+        "end_distance_b_m": 1465.0,
+        "center_distance_b_m": 1445.5,
+        "center_distance_abs_diff_m": 0.0,
+        "start_distance_abs_diff_m": 14.0,
+        "end_distance_abs_diff_m": 14.0,
+        "center_fraction_a": 0.29519885445792166,
+        "center_fraction_b": 0.29500611460377846,
+        "center_fraction_abs_diff": 0.00019273985414319794,
+        "start_fraction_abs_diff": 0.0026689290421325618,
+        "end_fraction_abs_diff": 0.003054408750419013,
+        "action_time_loss_a_s": 0.06322847762757178,
+        "action_time_loss_b_s": 0.07976591733118354,
+        "action_time_loss_similarity": 0.792675364906176,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": false,
+        "speed_propagation_b": true,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "channel_jaccard": 1.0,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.28052047455032525,
+            "onset_offset_abs_diff_m": 19.0,
+            "end_offset_abs_diff_m": 22.0,
+            "mean_difference_similarity": 0.8884321765390429,
+            "peak_difference_similarity": 0.6426397827122208,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.06161500191350944,
+            "onset_offset_abs_diff_m": 4.0,
+            "end_offset_abs_diff_m": 11.0,
+            "mean_difference_similarity": 0.6472428778165243,
+            "peak_difference_similarity": 0.4409894576661123,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 39.0,
+        "union_m": 67.0,
+        "overlap_over_union": 0.582089552238806,
+        "overlap_over_shorter": 1.0,
+        "overlap_over_longer": 0.582089552238806,
+        "length_similarity": 0.582089552238806,
+        "fraction_overlap": 0.007959348647213704,
+        "fraction_overlap_over_union": 0.581709497053288,
+        "fraction_overlap_over_shorter": 1.0,
+        "pair_id": "b95bd55f8978c9d6260d"
+      }
+    },
+    {
+      "pair_id": "787ecd64c89fdde75c57",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:25:24.907814+00:00",
+      "selected_by": [
+        {
+          "lens": "impact_divergence",
+          "rank": 2
+        }
+      ],
+      "features": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "track_layout": "Autodromo Enzo e Dino Ferrari",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "IDEC Sport #18:ELMS25",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "553d4e81322920896d9710826fe067d64fe2f65daf3fc12bf00f0826a2d6f836",
+        "setup_sha256_b": "a00352762ffd97d8d2d1d41b10386d34f46c8f9279f63a645a80d47166428dcf",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Partially Cloudy",
+        "weather_conditions_b": "Partially Cloudy",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 10,
+        "session_b": 32,
+        "timestamp_a": "2026-08-13T23:34:47Z",
+        "timestamp_b": "2026-08-19T05:35:02Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 427,
+        "episode_pk_b": 923,
+        "episode_id_a": 6,
+        "episode_id_b": 1,
+        "python_rank_a": 6,
+        "python_rank_b": 1,
+        "priority_rank_a": 2,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 3347.0,
+        "end_distance_a_m": 3364.0,
+        "center_distance_a_m": 3355.5,
+        "start_distance_b_m": 1.0,
+        "end_distance_b_m": 206.0,
+        "center_distance_b_m": 103.5,
+        "center_distance_abs_diff_m": 3252.0,
+        "start_distance_abs_diff_m": 3346.0,
+        "end_distance_abs_diff_m": 3158.0,
+        "center_fraction_a": 0.68541322192879,
+        "center_fraction_b": 0.021138824659488884,
+        "center_fraction_abs_diff": 0.664274397269301,
+        "start_fraction_abs_diff": 0.683472724474148,
+        "end_fraction_abs_diff": 0.645076070064454,
+        "action_time_loss_a_s": 0.021058348508425695,
+        "action_time_loss_b_s": 9.75176534272979,
+        "action_time_loss_similarity": 0.002159439626398032,
+        "evidence_strength_a": "weak",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": false,
+        "speed_propagation_b": true,
+        "channels_a": [
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [
+          "steering_magnitude"
+        ],
+        "channel_jaccard": 0.5,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.09268292682926826,
+            "onset_offset_abs_diff_m": 19.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.18542543923736743,
+            "peak_difference_similarity": 0.3299638965509033,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 3363.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.08292682926829269,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "787ecd64c89fdde75c57"
+      }
+    },
+    {
+      "pair_id": "3ce4f2c18430754df104",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:25:37.604234+00:00",
+      "selected_by": [
+        {
+          "lens": "similar_channels_farther_apart",
+          "rank": 3
+        }
+      ],
+      "features": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "track_layout": "Autodromo Enzo e Dino Ferrari",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "IDEC Sport #18:ELMS25",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "a00352762ffd97d8d2d1d41b10386d34f46c8f9279f63a645a80d47166428dcf",
+        "setup_sha256_b": "a5b7670047d9e9df1f732f67c22c8fad60e2881e091c9e5bc7853134c3fe35f5",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Partially Cloudy",
+        "weather_conditions_b": "Partially Cloudy",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 32,
+        "session_b": 51,
+        "timestamp_a": "2026-08-19T05:35:02Z",
+        "timestamp_b": "2026-08-21T05:56:21Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 923,
+        "episode_pk_b": 1320,
+        "episode_id_a": 1,
+        "episode_id_b": 6,
+        "python_rank_a": 1,
+        "python_rank_b": 6,
+        "priority_rank_a": 2,
+        "priority_rank_b": 1,
+        "start_distance_a_m": 1.0,
+        "end_distance_a_m": 206.0,
+        "center_distance_a_m": 103.5,
+        "start_distance_b_m": 4146.0,
+        "end_distance_b_m": 4176.0,
+        "center_distance_b_m": 4161.0,
+        "center_distance_abs_diff_m": 4057.5,
+        "start_distance_abs_diff_m": 4145.0,
+        "end_distance_abs_diff_m": 3970.0,
+        "center_fraction_a": 0.021138824659488884,
+        "center_fraction_b": 0.8492012748988739,
+        "center_fraction_abs_diff": 0.828062450239385,
+        "start_fraction_abs_diff": 0.8459357471058553,
+        "end_fraction_abs_diff": 0.8101891533729146,
+        "action_time_loss_a_s": 9.75176534272979,
+        "action_time_loss_b_s": 0.08278242542300518,
+        "action_time_loss_similarity": 0.008488968152286577,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": true,
+        "speed_propagation_b": true,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "channel_jaccard": 1.0,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.8048780487804879,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 165.0,
+            "mean_difference_similarity": 0.7269743793395079,
+            "peak_difference_similarity": 0.40197599503387366,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.10731707317073169,
+            "onset_offset_abs_diff_m": 14.0,
+            "end_offset_abs_diff_m": 1.0,
+            "mean_difference_similarity": 0.21698606340384216,
+            "peak_difference_similarity": 0.3147207827918226,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 4175.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.14634146341463414,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "3ce4f2c18430754df104"
+      }
+    },
+    {
+      "pair_id": "baebb562a1639e65d4ab",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:25:57.757167+00:00",
+      "selected_by": [
+        {
+          "lens": "similar_channels_farther_apart",
+          "rank": 4
+        }
+      ],
+      "features": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "track_layout": "Autodromo Enzo e Dino Ferrari",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "IDEC Sport #18:ELMS25",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "a00352762ffd97d8d2d1d41b10386d34f46c8f9279f63a645a80d47166428dcf",
+        "setup_sha256_b": "a5b7670047d9e9df1f732f67c22c8fad60e2881e091c9e5bc7853134c3fe35f5",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Partially Cloudy",
+        "weather_conditions_b": "Partially Cloudy",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 32,
+        "session_b": 51,
+        "timestamp_a": "2026-08-19T05:35:02Z",
+        "timestamp_b": "2026-08-21T05:56:21Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 923,
+        "episode_pk_b": 1329,
+        "episode_id_a": 1,
+        "episode_id_b": 6,
+        "python_rank_a": 1,
+        "python_rank_b": 6,
+        "priority_rank_a": 2,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 1.0,
+        "end_distance_a_m": 206.0,
+        "center_distance_a_m": 103.5,
+        "start_distance_b_m": 4142.0,
+        "end_distance_b_m": 4175.0,
+        "center_distance_b_m": 4158.5,
+        "center_distance_abs_diff_m": 4055.0,
+        "start_distance_abs_diff_m": 4141.0,
+        "end_distance_abs_diff_m": 3969.0,
+        "center_fraction_a": 0.021138824659488884,
+        "center_fraction_b": 0.8486910602420011,
+        "center_fraction_abs_diff": 0.8275522355825122,
+        "start_fraction_abs_diff": 0.845119403654859,
+        "end_fraction_abs_diff": 0.8099850675101655,
+        "action_time_loss_a_s": 9.75176534272979,
+        "action_time_loss_b_s": 0.13100969963602438,
+        "action_time_loss_similarity": 0.013434459816416288,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": true,
+        "speed_propagation_b": true,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "channel_jaccard": 1.0,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.25942350332594233,
+            "onset_offset_abs_diff_m": 1.0,
+            "end_offset_abs_diff_m": 148.0,
+            "mean_difference_similarity": 0.8476045761391322,
+            "peak_difference_similarity": 0.4165676254693313,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.09268292682926826,
+            "onset_offset_abs_diff_m": 19.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.2272859609676033,
+            "peak_difference_similarity": 0.31524427842000374,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 4174.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.16097560975609757,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "baebb562a1639e65d4ab"
+      }
+    },
+    {
+      "pair_id": "b03dd08555399e41d063",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:25:59.660844+00:00",
+      "selected_by": [
+        {
+          "lens": "impact_divergence",
+          "rank": 4
+        }
+      ],
+      "features": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "track_layout": "Autodromo Enzo e Dino Ferrari",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "IDEC Sport #18:ELMS25",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "553d4e81322920896d9710826fe067d64fe2f65daf3fc12bf00f0826a2d6f836",
+        "setup_sha256_b": "a00352762ffd97d8d2d1d41b10386d34f46c8f9279f63a645a80d47166428dcf",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Partially Cloudy",
+        "weather_conditions_b": "Partially Cloudy",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 10,
+        "session_b": 32,
+        "timestamp_a": "2026-08-13T23:34:47Z",
+        "timestamp_b": "2026-08-19T05:35:02Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 421,
+        "episode_pk_b": 923,
+        "episode_id_a": 8,
+        "episode_id_b": 1,
+        "python_rank_a": 8,
+        "python_rank_b": 1,
+        "priority_rank_a": 1,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 695.0,
+        "end_distance_a_m": 712.0,
+        "center_distance_a_m": 703.5,
+        "start_distance_b_m": 1.0,
+        "end_distance_b_m": 206.0,
+        "center_distance_b_m": 103.5,
+        "center_distance_abs_diff_m": 600.0,
+        "start_distance_abs_diff_m": 694.0,
+        "end_distance_abs_diff_m": 506.0,
+        "center_fraction_a": 0.14370084983665735,
+        "center_fraction_b": 0.021138824659488884,
+        "center_fraction_abs_diff": 0.12256202517716847,
+        "start_fraction_abs_diff": 0.14176035238201543,
+        "end_fraction_abs_diff": 0.10336369797232148,
+        "action_time_loss_a_s": 0.02200826264633804,
+        "action_time_loss_b_s": 9.75176534272979,
+        "action_time_loss_similarity": 0.002256849080432991,
+        "evidence_strength_a": "weak",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": true,
+        "speed_propagation_b": true,
+        "channels_a": [
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [
+          "steering_magnitude"
+        ],
+        "channel_jaccard": 0.5,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.09268292682926826,
+            "onset_offset_abs_diff_m": 19.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.22741721666524015,
+            "peak_difference_similarity": 0.2889155093634484,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 711.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.08292682926829269,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "b03dd08555399e41d063"
+      }
+    },
+    {
+      "pair_id": "96c83bee9df87ba42e40",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:26:06.396943+00:00",
+      "selected_by": [
+        {
+          "lens": "deterministic_baseline",
+          "rank": 4
+        }
+      ],
+      "features": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "track_layout": "Autodromo Enzo e Dino Ferrari",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "IDEC Sport #18:ELMS25",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "54f618e7dd4c2b68b6994a5a15830c9a1b3646d48428ddc1da93767beb1b1f14",
+        "setup_sha256_b": "a00352762ffd97d8d2d1d41b10386d34f46c8f9279f63a645a80d47166428dcf",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Partially Cloudy",
+        "weather_conditions_b": "Partially Cloudy",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 9,
+        "session_b": 32,
+        "timestamp_a": "2026-08-13T23:25:02Z",
+        "timestamp_b": "2026-08-19T05:35:02Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 392,
+        "episode_pk_b": 918,
+        "episode_id_a": 6,
+        "episode_id_b": 10,
+        "python_rank_a": 6,
+        "python_rank_b": 10,
+        "priority_rank_a": 1,
+        "priority_rank_b": 1,
+        "start_distance_a_m": 1232.0,
+        "end_distance_a_m": 1263.0,
+        "center_distance_a_m": 1247.5,
+        "start_distance_b_m": 1393.0,
+        "end_distance_b_m": 1427.0,
+        "center_distance_b_m": 1410.0,
+        "center_distance_abs_diff_m": 162.5,
+        "start_distance_abs_diff_m": 161.0,
+        "end_distance_abs_diff_m": 164.0,
+        "center_fraction_a": 0.2547634527404063,
+        "center_fraction_b": 0.28797819101332683,
+        "center_fraction_abs_diff": 0.03321473827292054,
+        "start_fraction_abs_diff": 0.032908058401817486,
+        "end_fraction_abs_diff": 0.03352141814402365,
+        "action_time_loss_a_s": 0.02341757974328118,
+        "action_time_loss_b_s": 0.0538605822388476,
+        "action_time_loss_similarity": 0.43478140729030157,
+        "evidence_strength_a": "weak",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": true,
+        "speed_propagation_b": true,
+        "channels_a": [
+          "brake",
+          "throttle"
+        ],
+        "channels_b": [
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [
+          "brake"
+        ],
+        "channels_only_b": [],
+        "channel_jaccard": 0.5,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.06451612903225812,
+            "onset_offset_abs_diff_m": 1.0,
+            "end_offset_abs_diff_m": 1.0,
+            "mean_difference_similarity": 0.4153632097749002,
+            "peak_difference_similarity": 0.2096125315342349,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 195.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.9117647058823529,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "96c83bee9df87ba42e40"
+      }
+    }
+  ],
+  "evaluation": [
+    {
+      "pair_id": "5e57228997a566215541",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:25:11.484038+00:00",
+      "selected_by": [
+        {
+          "lens": "highest_spatial_overlap",
+          "rank": 2
+        }
+      ],
+      "features": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "track_layout": "Autodromo Enzo e Dino Ferrari",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "IDEC Sport #18:ELMS25",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "a5b7670047d9e9df1f732f67c22c8fad60e2881e091c9e5bc7853134c3fe35f5",
+        "setup_sha256_b": "6279f4f69a54efd205bdca869394d51259583e2dba9f52241344f5a4740dd973",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Partially Cloudy",
+        "weather_conditions_b": "Overcast & Storm",
+        "same_weather_conditions": false,
+        "same_session_type": true,
+        "session_a": 50,
+        "session_b": 63,
+        "timestamp_a": "2026-08-21T06:17:41Z",
+        "timestamp_b": "2026-08-23T03:35:43Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 1292,
+        "episode_pk_b": 1492,
+        "episode_id_a": 7,
+        "episode_id_b": 9,
+        "python_rank_a": 7,
+        "python_rank_b": 9,
+        "priority_rank_a": 1,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 2643.0,
+        "end_distance_a_m": 2675.0,
+        "center_distance_a_m": 2659.0,
+        "start_distance_b_m": 2643.0,
+        "end_distance_b_m": 2674.0,
+        "center_distance_b_m": 2658.5,
+        "center_distance_abs_diff_m": 0.5,
+        "start_distance_abs_diff_m": 0.0,
+        "end_distance_abs_diff_m": 1.0,
+        "center_fraction_a": 0.5433167227746105,
+        "center_fraction_b": 0.5432783004512378,
+        "center_fraction_abs_diff": 3.842232337269991e-05,
+        "start_fraction_abs_diff": 6.337164225200809e-05,
+        "end_fraction_abs_diff": 0.00014021628899729688,
+        "action_time_loss_a_s": 0.03132857043934223,
+        "action_time_loss_b_s": 0.02754602149151708,
+        "action_time_loss_similarity": 0.879261999676977,
+        "evidence_strength_a": "moderate",
+        "evidence_strength_b": "weak",
+        "speed_propagation_a": true,
+        "speed_propagation_b": false,
+        "channels_a": [
+          "brake",
+          "throttle"
+        ],
+        "channels_b": [
+          "brake",
+          "throttle"
+        ],
+        "shared_channels": [
+          "brake",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "channel_jaccard": 1.0,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.0010080645161290036,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.7514537210856659,
+            "peak_difference_similarity": 0.7023079043567977,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.155241935483871,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 5.0,
+            "mean_difference_similarity": 0.8096847169640272,
+            "peak_difference_similarity": 0.8505091434464621,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 31.0,
+        "union_m": 32.0,
+        "overlap_over_union": 0.96875,
+        "overlap_over_shorter": 1.0,
+        "overlap_over_longer": 0.96875,
+        "length_similarity": 0.96875,
+        "fraction_overlap": 0.006335011214590347,
+        "fraction_overlap_over_union": 0.9688636775694006,
+        "fraction_overlap_over_shorter": 1.0,
+        "pair_id": "5e57228997a566215541"
+      }
+    }
+  ],
+  "excluded_cross_split": [
+    {
+      "pair_id": "2df9681ae752093be658",
+      "human_label": "SAME",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_a": 61,
+      "session_b": 65,
+      "partition_a": "calibration",
+      "partition_b": "evaluation",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "64313ac723103f9901fa",
+      "human_label": "SAME",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_a": 50,
+      "session_b": 62,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "d1d3f16b681ab7659c93",
+      "human_label": "SAME",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_a": 63,
+      "session_b": 62,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "08979ec19875a977f5ca",
+      "human_label": "DIFFERENT",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_a": 32,
+      "session_b": 65,
+      "partition_a": "calibration",
+      "partition_b": "evaluation",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "8bc25327368445c10e91",
+      "human_label": "AMBIGUOUS",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_a": 9,
+      "session_b": 63,
+      "partition_a": "calibration",
+      "partition_b": "evaluation",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "038ed13afd76bd0208dd",
+      "human_label": "DIFFERENT",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_a": 32,
+      "session_b": 65,
+      "partition_a": "calibration",
+      "partition_b": "evaluation",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "774f55f53b497e128b80",
+      "human_label": "DIFFERENT",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_a": 32,
+      "session_b": 50,
+      "partition_a": "calibration",
+      "partition_b": "evaluation",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "33ba58da695de285ae5c",
+      "human_label": "SAME",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_a": 50,
+      "session_b": 61,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "0f31d3f8e6b5711b6b85",
+      "human_label": "SAME",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_a": 51,
+      "session_b": 63,
+      "partition_a": "calibration",
+      "partition_b": "evaluation",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "b6be296bdbfe50610684",
+      "human_label": "DIFFERENT",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_a": 32,
+      "session_b": 63,
+      "partition_a": "calibration",
+      "partition_b": "evaluation",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "3c030c3b6a9a8c46ce6c",
+      "human_label": "AMBIGUOUS",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_a": 51,
+      "session_b": 63,
+      "partition_a": "calibration",
+      "partition_b": "evaluation",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "61a7a47727f2870f6171",
+      "human_label": "SAME",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_a": 51,
+      "session_b": 50,
+      "partition_a": "calibration",
+      "partition_b": "evaluation",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "338518e53a20c0f35c93",
+      "human_label": "SAME",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_a": 57,
+      "session_b": 63,
+      "partition_a": "calibration",
+      "partition_b": "evaluation",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "c922e0cc138315d71b7e",
+      "human_label": "SAME",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_a": 10,
+      "session_b": 63,
+      "partition_a": "calibration",
+      "partition_b": "evaluation",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    }
+  ],
+  "ignored_skip": []
+}

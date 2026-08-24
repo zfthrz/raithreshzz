@@ -1,0 +1,19 @@
+$ 'C:\Users\thres\Documents\GitHub\raithreshzz\.venv\Scripts\python.exe' 'C:\Users\thres\Documents\GitHub\raithreshzz\pair_review_queue.py' 'C:\Users\thres\Documents\GitHub\raithreshzz\calibration_batches\fuji-speedway--lmp2-elms-b0b0f526f9\episode_pair_features.json' --output 'C:\Users\thres\Documents\GitHub\raithreshzz\calibration_batches\fuji-speedway--lmp2-elms-b0b0f526f9\pair_review_queue.json' --per-lens 6 --seed 20260810 --max-total 24
+
+--- STDOUT ---
+
+======================================================================
+RACE ENGINEER - PAIR REVIEW QUEUE v1.1
+======================================================================
+
+Source pairs: 2251
+Selected unique pairs: 24
+Output: C:\Users\thres\Documents\GitHub\raithreshzz\calibration_batches\fuji-speedway--lmp2-elms-b0b0f526f9\pair_review_queue.json
+
+No matching decision was made.
+The queue is for human calibration review only.
+
+--- STDERR ---
+
+--- RETURN CODE ---
+0

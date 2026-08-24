@@ -1,0 +1,1585 @@
+{
+  "metadata": {
+    "label_schema_version": "1.1",
+    "created_at_utc": "2026-08-24T00:24:05.947642+00:00",
+    "updated_at_utc": "2026-08-24T00:26:06.397019+00:00",
+    "source_queue_path": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\autodromo-enzo-e-dino-ferrari--lmp2-elms-5a8126df14\\pair_review_queue.json",
+    "source_queue_sha256": "34858582667a8fbb6b0541a360f99db9a2086bc88c3e47646d3cc7abea902fe8",
+    "reviewer": "tu_nombre",
+    "semantics": "Human calibration labels. SAME means same general location and driving-difference type, not proven identical causality."
+  },
+  "labels": [
+    {
+      "pair_id": "2df9681ae752093be658",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:24:18.348163+00:00",
+      "selected_by": [
+        {
+          "lens": "closest_centers",
+          "rank": 1
+        },
+        {
+          "lens": "highest_channel_similarity",
+          "rank": 1
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "session_a": 61,
+        "session_b": 65,
+        "episode_pk_a": 1455,
+        "episode_pk_b": 1499,
+        "episode_id_a": 3,
+        "episode_id_b": 6,
+        "start_distance_a_m": 3353.0,
+        "end_distance_a_m": 3386.0,
+        "center_distance_a_m": 3369.5,
+        "start_distance_b_m": 3341.0,
+        "end_distance_b_m": 3398.0,
+        "center_distance_b_m": 3369.5,
+        "center_distance_abs_diff_m": 0.0,
+        "overlap_m": 33.0,
+        "overlap_over_union": 0.5789473684210527,
+        "overlap_over_shorter": 1.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.1012609311567303,
+        "action_time_loss_b_s": 0.04698792839785426,
+        "action_time_loss_similarity": 0.4640282077312422,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.2519936204146731,
+            "onset_offset_abs_diff_m": 5.0,
+            "end_offset_abs_diff_m": 23.0,
+            "mean_difference_similarity": 0.029155231252858446,
+            "peak_difference_similarity": 0.6229799814440301,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.379585326953748,
+            "onset_offset_abs_diff_m": 6.0,
+            "end_offset_abs_diff_m": 16.0,
+            "mean_difference_similarity": 0.078165609832036,
+            "peak_difference_similarity": 0.5443807106485566,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "64313ac723103f9901fa",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:24:21.915734+00:00",
+      "selected_by": [
+        {
+          "lens": "highest_spatial_overlap",
+          "rank": 1
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "session_a": 50,
+        "session_b": 62,
+        "episode_pk_a": 1286,
+        "episode_pk_b": 1466,
+        "episode_id_a": 1,
+        "episode_id_b": 1,
+        "start_distance_a_m": 3960.0,
+        "end_distance_a_m": 4109.0,
+        "center_distance_a_m": 4034.5,
+        "start_distance_b_m": 3958.0,
+        "end_distance_b_m": 4110.0,
+        "center_distance_b_m": 4034.0,
+        "center_distance_abs_diff_m": 0.5,
+        "overlap_m": 149.0,
+        "overlap_over_union": 0.9802631578947368,
+        "overlap_over_shorter": 1.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "brake",
+          "throttle"
+        ],
+        "channels_b": [
+          "brake",
+          "throttle"
+        ],
+        "shared_channels": [
+          "brake",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.31440132115272945,
+        "action_time_loss_b_s": 0.2982144175071113,
+        "action_time_loss_similarity": 0.9485151538604544,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.02472624514305899,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.8965620704144168,
+            "peak_difference_similarity": 0.9578337715212168,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "mixed"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.24090427410808898,
+            "onset_offset_abs_diff_m": 2.0,
+            "end_offset_abs_diff_m": 46.0,
+            "mean_difference_similarity": 0.46318491705694914,
+            "peak_difference_similarity": 0.9414510647609029,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "d1d3f16b681ab7659c93",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:24:37.538828+00:00",
+      "selected_by": [
+        {
+          "lens": "nearby_channel_disagreement",
+          "rank": 1
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "session_a": 63,
+        "session_b": 62,
+        "episode_pk_a": 1483,
+        "episode_pk_b": 1471,
+        "episode_id_a": 8,
+        "episode_id_b": 6,
+        "start_distance_a_m": 1292.0,
+        "end_distance_a_m": 1324.0,
+        "center_distance_a_m": 1308.0,
+        "start_distance_b_m": 1274.0,
+        "end_distance_b_m": 1342.0,
+        "center_distance_b_m": 1308.0,
+        "center_distance_abs_diff_m": 0.0,
+        "overlap_m": 32.0,
+        "overlap_over_union": 0.47058823529411764,
+        "overlap_over_shorter": 1.0,
+        "channel_jaccard": 0.3333333333333333,
+        "channels_a": [
+          "brake"
+        ],
+        "channels_b": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "brake"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "action_time_loss_a_s": 0.02918212450235913,
+        "action_time_loss_b_s": 0.11418068834397133,
+        "action_time_loss_similarity": 0.25557846011969615,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.4980660653601935,
+            "peak_difference_similarity": 0.38521231324036376,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "3c3ba32691e756be485d",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:24:51.627390+00:00",
+      "selected_by": [
+        {
+          "lens": "similar_channels_farther_apart",
+          "rank": 1
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "session_a": 9,
+        "session_b": 32,
+        "episode_pk_a": 396,
+        "episode_pk_b": 923,
+        "episode_id_a": 4,
+        "episode_id_b": 1,
+        "start_distance_a_m": 4247.0,
+        "end_distance_a_m": 4313.0,
+        "center_distance_a_m": 4280.0,
+        "start_distance_b_m": 1.0,
+        "end_distance_b_m": 206.0,
+        "center_distance_b_m": 103.5,
+        "center_distance_abs_diff_m": 4176.5,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.07145713392540642,
+        "action_time_loss_b_s": 9.75176534272979,
+        "action_time_loss_similarity": 0.007327610069973606,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.6685144124168514,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 156.0,
+            "mean_difference_similarity": 0.5975691871360984,
+            "peak_difference_similarity": 0.4580497636508652,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.4527716186252772,
+            "onset_offset_abs_diff_m": 17.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.29425919510644977,
+            "peak_difference_similarity": 0.4489002491304388,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "08979ec19875a977f5ca",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:24:56.499155+00:00",
+      "selected_by": [
+        {
+          "lens": "impact_divergence",
+          "rank": 1
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "session_a": 32,
+        "session_b": 65,
+        "episode_pk_a": 923,
+        "episode_pk_b": 1503,
+        "episode_id_a": 1,
+        "episode_id_b": 10,
+        "start_distance_a_m": 1.0,
+        "end_distance_a_m": 206.0,
+        "center_distance_a_m": 103.5,
+        "start_distance_b_m": 2757.0,
+        "end_distance_b_m": 2774.0,
+        "center_distance_b_m": 2765.5,
+        "center_distance_abs_diff_m": 2662.0,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 0.0,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "brake"
+        ],
+        "shared_channels": [],
+        "channels_only_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_b": [
+          "brake"
+        ],
+        "action_time_loss_a_s": 9.75176534272979,
+        "action_time_loss_b_s": 0.020058804172059297,
+        "action_time_loss_similarity": 0.002056940817081257,
+        "per_channel_metrics": {}
+      }
+    },
+    {
+      "pair_id": "358b970a7d00ede101a4",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:24:59.819347+00:00",
+      "selected_by": [
+        {
+          "lens": "deterministic_baseline",
+          "rank": 1
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "session_a": 36,
+        "session_b": 61,
+        "episode_pk_a": 1015,
+        "episode_pk_b": 1454,
+        "episode_id_a": 6,
+        "episode_id_b": 2,
+        "start_distance_a_m": 2814.0,
+        "end_distance_a_m": 2834.0,
+        "center_distance_a_m": 2824.0,
+        "start_distance_b_m": 3969.0,
+        "end_distance_b_m": 4107.0,
+        "center_distance_b_m": 4038.0,
+        "center_distance_abs_diff_m": 1214.0,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 0.3333333333333333,
+        "channels_a": [
+          "brake"
+        ],
+        "channels_b": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "brake"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "action_time_loss_a_s": 0.02615850010113263,
+        "action_time_loss_b_s": 0.18291959380040623,
+        "action_time_loss_similarity": 0.1430054569751321,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.06521739130434778,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.8290709316781141,
+            "peak_difference_similarity": 0.20126167156530278,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "mixed"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "39c01bb894a2c19c582b",
+      "human_label": "AMBIGUOUS",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:25:07.931342+00:00",
+      "selected_by": [
+        {
+          "lens": "closest_centers",
+          "rank": 2
+        },
+        {
+          "lens": "nearby_channel_disagreement",
+          "rank": 3
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "session_a": 34,
+        "session_b": 61,
+        "episode_pk_a": 935,
+        "episode_pk_b": 1456,
+        "episode_id_a": 2,
+        "episode_id_b": 4,
+        "start_distance_a_m": 1573.0,
+        "end_distance_a_m": 1762.0,
+        "center_distance_a_m": 1667.5,
+        "start_distance_b_m": 1656.0,
+        "end_distance_b_m": 1679.0,
+        "center_distance_b_m": 1667.5,
+        "center_distance_abs_diff_m": 0.0,
+        "overlap_m": 23.0,
+        "overlap_over_union": 0.12169312169312169,
+        "overlap_over_shorter": 1.0,
+        "channel_jaccard": 0.3333333333333333,
+        "channels_a": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "brake"
+        ],
+        "shared_channels": [
+          "brake"
+        ],
+        "channels_only_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 1.1686156529308356,
+        "action_time_loss_b_s": 0.09289364149736912,
+        "action_time_loss_similarity": 0.0794903279486254,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.3650793650793651,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 62.0,
+            "mean_difference_similarity": 0.5495351568803942,
+            "peak_difference_similarity": 0.3920146116058145,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "5e57228997a566215541",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:25:11.484038+00:00",
+      "selected_by": [
+        {
+          "lens": "highest_spatial_overlap",
+          "rank": 2
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "session_a": 50,
+        "session_b": 63,
+        "episode_pk_a": 1292,
+        "episode_pk_b": 1492,
+        "episode_id_a": 7,
+        "episode_id_b": 9,
+        "start_distance_a_m": 2643.0,
+        "end_distance_a_m": 2675.0,
+        "center_distance_a_m": 2659.0,
+        "start_distance_b_m": 2643.0,
+        "end_distance_b_m": 2674.0,
+        "center_distance_b_m": 2658.5,
+        "center_distance_abs_diff_m": 0.5,
+        "overlap_m": 31.0,
+        "overlap_over_union": 0.96875,
+        "overlap_over_shorter": 1.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "brake",
+          "throttle"
+        ],
+        "channels_b": [
+          "brake",
+          "throttle"
+        ],
+        "shared_channels": [
+          "brake",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.03132857043934223,
+        "action_time_loss_b_s": 0.02754602149151708,
+        "action_time_loss_similarity": 0.879261999676977,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.0010080645161290036,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.7514537210856659,
+            "peak_difference_similarity": 0.7023079043567977,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.155241935483871,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 5.0,
+            "mean_difference_similarity": 0.8096847169640272,
+            "peak_difference_similarity": 0.8505091434464621,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "b95bd55f8978c9d6260d",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:25:14.411726+00:00",
+      "selected_by": [
+        {
+          "lens": "highest_channel_similarity",
+          "rank": 2
+        },
+        {
+          "lens": "closest_centers",
+          "rank": 4
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "session_a": 9,
+        "session_b": 51,
+        "episode_pk_a": 399,
+        "episode_pk_b": 1333,
+        "episode_id_a": 7,
+        "episode_id_b": 10,
+        "start_distance_a_m": 1412.0,
+        "end_distance_a_m": 1479.0,
+        "center_distance_a_m": 1445.5,
+        "start_distance_b_m": 1426.0,
+        "end_distance_b_m": 1465.0,
+        "center_distance_b_m": 1445.5,
+        "center_distance_abs_diff_m": 0.0,
+        "overlap_m": 39.0,
+        "overlap_over_union": 0.582089552238806,
+        "overlap_over_shorter": 1.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.06322847762757178,
+        "action_time_loss_b_s": 0.07976591733118354,
+        "action_time_loss_similarity": 0.792675364906176,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.28052047455032525,
+            "onset_offset_abs_diff_m": 19.0,
+            "end_offset_abs_diff_m": 22.0,
+            "mean_difference_similarity": 0.8884321765390429,
+            "peak_difference_similarity": 0.6426397827122208,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.06161500191350944,
+            "onset_offset_abs_diff_m": 4.0,
+            "end_offset_abs_diff_m": 11.0,
+            "mean_difference_similarity": 0.6472428778165243,
+            "peak_difference_similarity": 0.4409894576661123,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "8bc25327368445c10e91",
+      "human_label": "AMBIGUOUS",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:25:18.004065+00:00",
+      "selected_by": [
+        {
+          "lens": "nearby_channel_disagreement",
+          "rank": 2
+        },
+        {
+          "lens": "closest_centers",
+          "rank": 3
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "session_a": 9,
+        "session_b": 63,
+        "episode_pk_a": 393,
+        "episode_pk_b": 1479,
+        "episode_id_a": 1,
+        "episode_id_b": 4,
+        "start_distance_a_m": 3312.0,
+        "end_distance_a_m": 3415.0,
+        "center_distance_a_m": 3363.5,
+        "start_distance_b_m": 3345.0,
+        "end_distance_b_m": 3382.0,
+        "center_distance_b_m": 3363.5,
+        "center_distance_abs_diff_m": 0.0,
+        "overlap_m": 37.0,
+        "overlap_over_union": 0.3592233009708738,
+        "overlap_over_shorter": 1.0,
+        "channel_jaccard": 0.3333333333333333,
+        "channels_a": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude"
+        ],
+        "shared_channels": [
+          "steering_magnitude"
+        ],
+        "channels_only_a": [
+          "brake",
+          "throttle"
+        ],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.2518265610802217,
+        "action_time_loss_b_s": 0.0996088849847041,
+        "action_time_loss_similarity": 0.39554558723840394,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.5631067961165048,
+            "onset_offset_abs_diff_m": 18.0,
+            "end_offset_abs_diff_m": 35.0,
+            "mean_difference_similarity": 0.4934680006073083,
+            "peak_difference_similarity": 0.43308486499040094,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "038ed13afd76bd0208dd",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:25:22.509305+00:00",
+      "selected_by": [
+        {
+          "lens": "similar_channels_farther_apart",
+          "rank": 2
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "session_a": 32,
+        "session_b": 65,
+        "episode_pk_a": 923,
+        "episode_pk_b": 1495,
+        "episode_id_a": 1,
+        "episode_id_b": 2,
+        "start_distance_a_m": 1.0,
+        "end_distance_a_m": 206.0,
+        "center_distance_a_m": 103.5,
+        "start_distance_b_m": 4241.0,
+        "end_distance_b_m": 4300.0,
+        "center_distance_b_m": 4270.5,
+        "center_distance_abs_diff_m": 4167.0,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 9.75176534272979,
+        "action_time_loss_b_s": 0.12977120029032108,
+        "action_time_loss_similarity": 0.013307457237685593,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.1438610996279454,
+            "onset_offset_abs_diff_m": 15.0,
+            "end_offset_abs_diff_m": 141.0,
+            "mean_difference_similarity": 0.6528143199965107,
+            "peak_difference_similarity": 0.25824281846836816,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.09268292682926826,
+            "onset_offset_abs_diff_m": 19.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.3323609322055817,
+            "peak_difference_similarity": 0.5985189909912298,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "787ecd64c89fdde75c57",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:25:24.907814+00:00",
+      "selected_by": [
+        {
+          "lens": "impact_divergence",
+          "rank": 2
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "session_a": 10,
+        "session_b": 32,
+        "episode_pk_a": 427,
+        "episode_pk_b": 923,
+        "episode_id_a": 6,
+        "episode_id_b": 1,
+        "start_distance_a_m": 3347.0,
+        "end_distance_a_m": 3364.0,
+        "center_distance_a_m": 3355.5,
+        "start_distance_b_m": 1.0,
+        "end_distance_b_m": 206.0,
+        "center_distance_b_m": 103.5,
+        "center_distance_abs_diff_m": 3252.0,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 0.5,
+        "channels_a": [
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [
+          "steering_magnitude"
+        ],
+        "action_time_loss_a_s": 0.021058348508425695,
+        "action_time_loss_b_s": 9.75176534272979,
+        "action_time_loss_similarity": 0.002159439626398032,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.09268292682926826,
+            "onset_offset_abs_diff_m": 19.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.18542543923736743,
+            "peak_difference_similarity": 0.3299638965509033,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "774f55f53b497e128b80",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:25:26.581056+00:00",
+      "selected_by": [
+        {
+          "lens": "deterministic_baseline",
+          "rank": 2
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "session_a": 32,
+        "session_b": 50,
+        "episode_pk_a": 923,
+        "episode_pk_b": 1286,
+        "episode_id_a": 1,
+        "episode_id_b": 1,
+        "start_distance_a_m": 1.0,
+        "end_distance_a_m": 206.0,
+        "center_distance_a_m": 103.5,
+        "start_distance_b_m": 3960.0,
+        "end_distance_b_m": 4109.0,
+        "center_distance_b_m": 4034.5,
+        "center_distance_abs_diff_m": 3931.0,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 0.3333333333333333,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "brake",
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [
+          "steering_magnitude"
+        ],
+        "channels_only_b": [
+          "brake"
+        ],
+        "action_time_loss_a_s": 9.75176534272979,
+        "action_time_loss_b_s": 0.31440132115272945,
+        "action_time_loss_similarity": 0.032240451867222616,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.7798002946472418,
+            "onset_offset_abs_diff_m": 19.0,
+            "end_offset_abs_diff_m": 130.0,
+            "mean_difference_similarity": 0.6554506871259187,
+            "peak_difference_similarity": 0.9829075785845732,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "33ba58da695de285ae5c",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:25:33.428520+00:00",
+      "selected_by": [
+        {
+          "lens": "highest_spatial_overlap",
+          "rank": 3
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "session_a": 50,
+        "session_b": 61,
+        "episode_pk_a": 1286,
+        "episode_pk_b": 1454,
+        "episode_id_a": 1,
+        "episode_id_b": 2,
+        "start_distance_a_m": 3960.0,
+        "end_distance_a_m": 4109.0,
+        "center_distance_a_m": 4034.5,
+        "start_distance_b_m": 3969.0,
+        "end_distance_b_m": 4107.0,
+        "center_distance_b_m": 4038.0,
+        "center_distance_abs_diff_m": 3.5,
+        "overlap_m": 138.0,
+        "overlap_over_union": 0.9261744966442953,
+        "overlap_over_shorter": 1.0,
+        "channel_jaccard": 0.6666666666666666,
+        "channels_a": [
+          "brake",
+          "throttle"
+        ],
+        "channels_b": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "brake",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [
+          "steering_magnitude"
+        ],
+        "action_time_loss_a_s": 0.31440132115272945,
+        "action_time_loss_b_s": 0.18291959380040623,
+        "action_time_loss_similarity": 0.581802878975651,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.015319521447330064,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.9125743404181632,
+            "peak_difference_similarity": 0.8867471467639546,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "mixed"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.08262814901274193,
+            "onset_offset_abs_diff_m": 2.0,
+            "end_offset_abs_diff_m": 23.0,
+            "mean_difference_similarity": 0.9396315223788904,
+            "peak_difference_similarity": 0.9627112010447729,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "0f31d3f8e6b5711b6b85",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:25:35.820212+00:00",
+      "selected_by": [
+        {
+          "lens": "highest_channel_similarity",
+          "rank": 3
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "session_a": 51,
+        "session_b": 63,
+        "episode_pk_a": 1323,
+        "episode_pk_b": 1482,
+        "episode_id_a": 9,
+        "episode_id_b": 7,
+        "start_distance_a_m": 1595.0,
+        "end_distance_a_m": 1614.0,
+        "center_distance_a_m": 1604.5,
+        "start_distance_b_m": 1593.0,
+        "end_distance_b_m": 1615.0,
+        "center_distance_b_m": 1604.0,
+        "center_distance_abs_diff_m": 0.5,
+        "overlap_m": 19.0,
+        "overlap_over_union": 0.8636363636363636,
+        "overlap_over_shorter": 1.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "brake",
+          "throttle"
+        ],
+        "channels_b": [
+          "brake",
+          "throttle"
+        ],
+        "shared_channels": [
+          "brake",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.036361012793499015,
+        "action_time_loss_b_s": 0.031217552734194243,
+        "action_time_loss_similarity": 0.8585446426227057,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.6240482219935272,
+            "peak_difference_similarity": 0.5558398673770371,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.2727272727272727,
+            "onset_offset_abs_diff_m": 1.0,
+            "end_offset_abs_diff_m": 5.0,
+            "mean_difference_similarity": 0.725398327843023,
+            "peak_difference_similarity": 0.7530479757417035,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "3ce4f2c18430754df104",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:25:37.604234+00:00",
+      "selected_by": [
+        {
+          "lens": "similar_channels_farther_apart",
+          "rank": 3
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "session_a": 32,
+        "session_b": 51,
+        "episode_pk_a": 923,
+        "episode_pk_b": 1320,
+        "episode_id_a": 1,
+        "episode_id_b": 6,
+        "start_distance_a_m": 1.0,
+        "end_distance_a_m": 206.0,
+        "center_distance_a_m": 103.5,
+        "start_distance_b_m": 4146.0,
+        "end_distance_b_m": 4176.0,
+        "center_distance_b_m": 4161.0,
+        "center_distance_abs_diff_m": 4057.5,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 9.75176534272979,
+        "action_time_loss_b_s": 0.08278242542300518,
+        "action_time_loss_similarity": 0.008488968152286577,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.8048780487804879,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 165.0,
+            "mean_difference_similarity": 0.7269743793395079,
+            "peak_difference_similarity": 0.40197599503387366,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.10731707317073169,
+            "onset_offset_abs_diff_m": 14.0,
+            "end_offset_abs_diff_m": 1.0,
+            "mean_difference_similarity": 0.21698606340384216,
+            "peak_difference_similarity": 0.3147207827918226,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "b6be296bdbfe50610684",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:25:40.644929+00:00",
+      "selected_by": [
+        {
+          "lens": "impact_divergence",
+          "rank": 3
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "session_a": 32,
+        "session_b": 63,
+        "episode_pk_a": 923,
+        "episode_pk_b": 1493,
+        "episode_id_a": 1,
+        "episode_id_b": 10,
+        "start_distance_a_m": 1.0,
+        "end_distance_a_m": 206.0,
+        "center_distance_a_m": 103.5,
+        "start_distance_b_m": 898.0,
+        "end_distance_b_m": 927.0,
+        "center_distance_b_m": 912.5,
+        "center_distance_abs_diff_m": 809.0,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 0.5,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [
+          "steering_magnitude"
+        ],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 9.75176534272979,
+        "action_time_loss_b_s": 0.021327369416543007,
+        "action_time_loss_similarity": 0.002187026519505327,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.09268292682926826,
+            "onset_offset_abs_diff_m": 19.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.13608565214403795,
+            "peak_difference_similarity": 0.14309677382403,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "3c030c3b6a9a8c46ce6c",
+      "human_label": "AMBIGUOUS",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:25:43.645101+00:00",
+      "selected_by": [
+        {
+          "lens": "deterministic_baseline",
+          "rank": 3
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "session_a": 51,
+        "session_b": 63,
+        "episode_pk_a": 1318,
+        "episode_pk_b": 1479,
+        "episode_id_a": 4,
+        "episode_id_b": 4,
+        "start_distance_a_m": 3381.0,
+        "end_distance_a_m": 3423.0,
+        "center_distance_a_m": 3402.0,
+        "start_distance_b_m": 3345.0,
+        "end_distance_b_m": 3382.0,
+        "center_distance_b_m": 3363.5,
+        "center_distance_abs_diff_m": 38.5,
+        "overlap_m": 1.0,
+        "overlap_over_union": 0.01282051282051282,
+        "overlap_over_shorter": 0.02702702702702703,
+        "channel_jaccard": 0.5,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude"
+        ],
+        "shared_channels": [
+          "steering_magnitude"
+        ],
+        "channels_only_a": [
+          "throttle"
+        ],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.13965343876184022,
+        "action_time_loss_b_s": 0.0996088849847041,
+        "action_time_loss_similarity": 0.7132576603041862,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.5,
+            "onset_offset_abs_diff_m": 21.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.6215253237408429,
+            "peak_difference_similarity": 0.40967356524713905,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "61a7a47727f2870f6171",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:25:49.220419+00:00",
+      "selected_by": [
+        {
+          "lens": "highest_spatial_overlap",
+          "rank": 4
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "session_a": 51,
+        "session_b": 50,
+        "episode_pk_a": 1327,
+        "episode_pk_b": 1287,
+        "episode_id_a": 4,
+        "episode_id_b": 2,
+        "start_distance_a_m": 1593.0,
+        "end_distance_a_m": 1687.0,
+        "center_distance_a_m": 1640.0,
+        "start_distance_b_m": 1598.0,
+        "end_distance_b_m": 1685.0,
+        "center_distance_b_m": 1641.5,
+        "center_distance_abs_diff_m": 1.5,
+        "overlap_m": 87.0,
+        "overlap_over_union": 0.925531914893617,
+        "overlap_over_shorter": 1.0,
+        "channel_jaccard": 0.6666666666666666,
+        "channels_a": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "brake",
+          "steering_magnitude"
+        ],
+        "shared_channels": [
+          "brake",
+          "steering_magnitude"
+        ],
+        "channels_only_a": [
+          "throttle"
+        ],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.35181768064077446,
+        "action_time_loss_b_s": 0.2325865159660907,
+        "action_time_loss_similarity": 0.6610995659526689,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.02164343360234766,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 5.0,
+            "mean_difference_similarity": 0.7189526676609133,
+            "peak_difference_similarity": 0.7691971839832487,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "mixed"
+          },
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.13731963805331376,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 8.0,
+            "mean_difference_similarity": 0.7817254113312632,
+            "peak_difference_similarity": 0.5553309897353752,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "338518e53a20c0f35c93",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:25:51.053025+00:00",
+      "selected_by": [
+        {
+          "lens": "highest_channel_similarity",
+          "rank": 4
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "session_a": 57,
+        "session_b": 63,
+        "episode_pk_a": 1379,
+        "episode_pk_b": 1481,
+        "episode_id_a": 2,
+        "episode_id_b": 6,
+        "start_distance_a_m": 1703.0,
+        "end_distance_a_m": 1788.0,
+        "center_distance_a_m": 1745.5,
+        "start_distance_b_m": 1734.0,
+        "end_distance_b_m": 1756.0,
+        "center_distance_b_m": 1745.0,
+        "center_distance_abs_diff_m": 0.5,
+        "overlap_m": 22.0,
+        "overlap_over_union": 0.25882352941176473,
+        "overlap_over_shorter": 1.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.19254910307456186,
+        "action_time_loss_b_s": 0.040323438507911646,
+        "action_time_loss_similarity": 0.20941898904767672,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.050802139037433136,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 5.0,
+            "mean_difference_similarity": 0.3112448316116513,
+            "peak_difference_similarity": 0.5298971851599026,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.05508021390374329,
+            "onset_offset_abs_diff_m": 5.0,
+            "end_offset_abs_diff_m": 19.0,
+            "mean_difference_similarity": 0.08619157992853703,
+            "peak_difference_similarity": 0.7747013175705443,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "c922e0cc138315d71b7e",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:25:54.221100+00:00",
+      "selected_by": [
+        {
+          "lens": "nearby_channel_disagreement",
+          "rank": 4
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "session_a": 10,
+        "session_b": 63,
+        "episode_pk_a": 423,
+        "episode_pk_b": 1478,
+        "episode_id_a": 2,
+        "episode_id_b": 3,
+        "start_distance_a_m": 2873.0,
+        "end_distance_a_m": 2929.0,
+        "center_distance_a_m": 2901.0,
+        "start_distance_b_m": 2880.0,
+        "end_distance_b_m": 2922.0,
+        "center_distance_b_m": 2901.0,
+        "center_distance_abs_diff_m": 0.0,
+        "overlap_m": 42.0,
+        "overlap_over_union": 0.75,
+        "overlap_over_shorter": 1.0,
+        "channel_jaccard": 0.5,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [
+          "steering_magnitude"
+        ],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.14190113617495115,
+        "action_time_loss_b_s": 0.11526877408996938,
+        "action_time_loss_similarity": 0.8123174852374226,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.9342540912433315,
+            "peak_difference_similarity": 0.7347442459126532,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "baebb562a1639e65d4ab",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:25:57.757167+00:00",
+      "selected_by": [
+        {
+          "lens": "similar_channels_farther_apart",
+          "rank": 4
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "session_a": 32,
+        "session_b": 51,
+        "episode_pk_a": 923,
+        "episode_pk_b": 1329,
+        "episode_id_a": 1,
+        "episode_id_b": 6,
+        "start_distance_a_m": 1.0,
+        "end_distance_a_m": 206.0,
+        "center_distance_a_m": 103.5,
+        "start_distance_b_m": 4142.0,
+        "end_distance_b_m": 4175.0,
+        "center_distance_b_m": 4158.5,
+        "center_distance_abs_diff_m": 4055.0,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 9.75176534272979,
+        "action_time_loss_b_s": 0.13100969963602438,
+        "action_time_loss_similarity": 0.013434459816416288,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.25942350332594233,
+            "onset_offset_abs_diff_m": 1.0,
+            "end_offset_abs_diff_m": 148.0,
+            "mean_difference_similarity": 0.8476045761391322,
+            "peak_difference_similarity": 0.4165676254693313,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.09268292682926826,
+            "onset_offset_abs_diff_m": 19.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.2272859609676033,
+            "peak_difference_similarity": 0.31524427842000374,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "b03dd08555399e41d063",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:25:59.660844+00:00",
+      "selected_by": [
+        {
+          "lens": "impact_divergence",
+          "rank": 4
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "session_a": 10,
+        "session_b": 32,
+        "episode_pk_a": 421,
+        "episode_pk_b": 923,
+        "episode_id_a": 8,
+        "episode_id_b": 1,
+        "start_distance_a_m": 695.0,
+        "end_distance_a_m": 712.0,
+        "center_distance_a_m": 703.5,
+        "start_distance_b_m": 1.0,
+        "end_distance_b_m": 206.0,
+        "center_distance_b_m": 103.5,
+        "center_distance_abs_diff_m": 600.0,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 0.5,
+        "channels_a": [
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [
+          "steering_magnitude"
+        ],
+        "action_time_loss_a_s": 0.02200826264633804,
+        "action_time_loss_b_s": 9.75176534272979,
+        "action_time_loss_similarity": 0.002256849080432991,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.09268292682926826,
+            "onset_offset_abs_diff_m": 19.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.22741721666524015,
+            "peak_difference_similarity": 0.2889155093634484,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "96c83bee9df87ba42e40",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:26:06.396943+00:00",
+      "selected_by": [
+        {
+          "lens": "deterministic_baseline",
+          "rank": 4
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "session_a": 9,
+        "session_b": 32,
+        "episode_pk_a": 392,
+        "episode_pk_b": 918,
+        "episode_id_a": 6,
+        "episode_id_b": 10,
+        "start_distance_a_m": 1232.0,
+        "end_distance_a_m": 1263.0,
+        "center_distance_a_m": 1247.5,
+        "start_distance_b_m": 1393.0,
+        "end_distance_b_m": 1427.0,
+        "center_distance_b_m": 1410.0,
+        "center_distance_abs_diff_m": 162.5,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 0.5,
+        "channels_a": [
+          "brake",
+          "throttle"
+        ],
+        "channels_b": [
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [
+          "brake"
+        ],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.02341757974328118,
+        "action_time_loss_b_s": 0.0538605822388476,
+        "action_time_loss_similarity": 0.43478140729030157,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.06451612903225812,
+            "onset_offset_abs_diff_m": 1.0,
+            "end_offset_abs_diff_m": 1.0,
+            "mean_difference_similarity": 0.4153632097749002,
+            "peak_difference_similarity": 0.2096125315342349,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    }
+  ]
+}

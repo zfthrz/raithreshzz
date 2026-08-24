@@ -1,0 +1,2421 @@
+{
+  "metadata": {
+    "queue_schema_version": "1.1",
+    "created_at_utc": "2026-08-24T00:22:36.190169+00:00",
+    "source_features_path": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\autodromo-enzo-e-dino-ferrari--hyper-c75b788fa4\\episode_pair_features.json",
+    "source_features_sha256": "63bfa01b55005ae1cd35a8c68d22a089ba09c9c3b6b78982f9bdd3ace79cfafd",
+    "source_pair_count": 324,
+    "selected_pair_count": 24,
+    "per_lens": 6,
+    "max_total": 24,
+    "seed": 20260810,
+    "selection_policy": "round_robin_stratified_v1.1",
+    "semantics": "Selection lenses are review-ordering only. They are not matching decisions or labels. The queue is intentionally capped for manageable human review."
+  },
+  "queue": [
+    {
+      "pair_id": "0603208b31f82c969b54",
+      "selected_by": [
+        {
+          "lens": "closest_centers",
+          "rank": 1
+        },
+        {
+          "lens": "highest_spatial_overlap",
+          "rank": 1
+        },
+        {
+          "lens": "highest_channel_similarity",
+          "rank": 1
+        },
+        {
+          "lens": "nearby_channel_disagreement",
+          "rank": 1
+        }
+      ],
+      "features": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "track_layout": "Autodromo Enzo e Dino Ferrari",
+        "vehicle_family": "HYPERCAR",
+        "vehicle_variant": "HYPER",
+        "car_class_raw_a": "Hyper",
+        "car_class_raw_b": "Hyper",
+        "car_name_raw_a": "Toyota Racing 2026 #7:LM",
+        "car_name_raw_b": "Toyota Racing 2026 #7:LM",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "setup_sha256_b": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "same_setup_sha256": true,
+        "weather_conditions_a": "Partially Cloudy",
+        "weather_conditions_b": "Partially Cloudy",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 42,
+        "session_b": 49,
+        "timestamp_a": "2026-08-20T03:54:40Z",
+        "timestamp_b": "2026-08-20T03:54:40Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 1153,
+        "episode_pk_b": 1239,
+        "episode_id_a": 2,
+        "episode_id_b": 2,
+        "python_rank_a": 2,
+        "python_rank_b": 2,
+        "priority_rank_a": 1,
+        "priority_rank_b": 1,
+        "start_distance_a_m": 2856.0,
+        "end_distance_a_m": 2897.0,
+        "center_distance_a_m": 2876.5,
+        "start_distance_b_m": 2856.0,
+        "end_distance_b_m": 2897.0,
+        "center_distance_b_m": 2876.5,
+        "center_distance_abs_diff_m": 0.0,
+        "start_distance_abs_diff_m": 0.0,
+        "end_distance_abs_diff_m": 0.0,
+        "center_fraction_a": 0.5854364548842304,
+        "center_fraction_b": 0.5854364548842304,
+        "center_fraction_abs_diff": 0.0,
+        "start_fraction_abs_diff": 0.0,
+        "end_fraction_abs_diff": 0.0,
+        "action_time_loss_a_s": 0.15128734610963335,
+        "action_time_loss_b_s": 0.15128734610963335,
+        "action_time_loss_similarity": 1.0,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": true,
+        "speed_propagation_b": true,
+        "channels_a": [
+          "throttle"
+        ],
+        "channels_b": [
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "channel_jaccard": 1.0,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 1.0,
+            "peak_difference_similarity": 1.0,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 41.0,
+        "union_m": 41.0,
+        "overlap_over_union": 1.0,
+        "overlap_over_shorter": 1.0,
+        "overlap_over_longer": 1.0,
+        "length_similarity": 1.0,
+        "fraction_overlap": 0.008344479280463557,
+        "fraction_overlap_over_union": 1.0,
+        "fraction_overlap_over_shorter": 1.0,
+        "pair_id": "0603208b31f82c969b54"
+      },
+      "queue_position": 1
+    },
+    {
+      "pair_id": "4dd0e2068ce00fbeff03",
+      "selected_by": [
+        {
+          "lens": "similar_channels_farther_apart",
+          "rank": 1
+        }
+      ],
+      "features": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "track_layout": "Autodromo Enzo e Dino Ferrari",
+        "vehicle_family": "HYPERCAR",
+        "vehicle_variant": "HYPER",
+        "car_class_raw_a": "Hyper",
+        "car_class_raw_b": "Hyper",
+        "car_name_raw_a": "Toyota Racing 2026 #7:LM",
+        "car_name_raw_b": "Toyota Racing 2026 #7:LM",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "setup_sha256_b": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "same_setup_sha256": true,
+        "weather_conditions_a": "Partially Cloudy",
+        "weather_conditions_b": "Partially Cloudy",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 42,
+        "session_b": 49,
+        "timestamp_a": "2026-08-20T03:54:40Z",
+        "timestamp_b": "2026-08-20T03:54:40Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 1168,
+        "episode_pk_b": 1252,
+        "episode_id_a": 9,
+        "episode_id_b": 7,
+        "python_rank_a": 9,
+        "python_rank_b": 7,
+        "priority_rank_a": 2,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 1750.0,
+        "end_distance_a_m": 1766.0,
+        "center_distance_a_m": 1758.0,
+        "start_distance_b_m": 4286.0,
+        "end_distance_b_m": 4312.0,
+        "center_distance_b_m": 4299.0,
+        "center_distance_abs_diff_m": 2541.0,
+        "start_distance_abs_diff_m": 2536.0,
+        "end_distance_abs_diff_m": 2546.0,
+        "center_fraction_a": 0.35779498963548656,
+        "center_fraction_b": 0.8749491811393383,
+        "center_fraction_abs_diff": 0.5171541915038518,
+        "start_fraction_abs_diff": 0.5161365720794049,
+        "end_fraction_abs_diff": 0.5181718109282984,
+        "action_time_loss_a_s": 0.02684712716305171,
+        "action_time_loss_b_s": 0.04778971705147228,
+        "action_time_loss_similarity": 0.561776231780904,
+        "evidence_strength_a": "weak",
+        "evidence_strength_b": "moderate",
+        "speed_propagation_a": false,
+        "speed_propagation_b": true,
+        "channels_a": [
+          "throttle"
+        ],
+        "channels_b": [
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "channel_jaccard": 1.0,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.4897115331959041,
+            "peak_difference_similarity": 0.7476582235389129,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 2562.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.6153846153846154,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "4dd0e2068ce00fbeff03"
+      },
+      "queue_position": 2
+    },
+    {
+      "pair_id": "80f23489559e606b40c1",
+      "selected_by": [
+        {
+          "lens": "impact_divergence",
+          "rank": 1
+        }
+      ],
+      "features": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "track_layout": "Autodromo Enzo e Dino Ferrari",
+        "vehicle_family": "HYPERCAR",
+        "vehicle_variant": "HYPER",
+        "car_class_raw_a": "Hyper",
+        "car_class_raw_b": "Hyper",
+        "car_name_raw_a": "Toyota Racing 2026 #7:LM",
+        "car_name_raw_b": "Toyota Racing 2026 #7:LM",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "setup_sha256_b": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "same_setup_sha256": true,
+        "weather_conditions_a": "Partially Cloudy",
+        "weather_conditions_b": "Partially Cloudy",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 42,
+        "session_b": 49,
+        "timestamp_a": "2026-08-20T03:54:40Z",
+        "timestamp_b": "2026-08-20T03:54:40Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 1152,
+        "episode_pk_b": 1255,
+        "episode_id_a": 1,
+        "episode_id_b": 10,
+        "python_rank_a": 1,
+        "python_rank_b": 10,
+        "priority_rank_a": 1,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 742.0,
+        "end_distance_a_m": 977.0,
+        "center_distance_a_m": 859.5,
+        "start_distance_b_m": 1451.0,
+        "end_distance_b_m": 1472.0,
+        "center_distance_b_m": 1461.5,
+        "center_distance_abs_diff_m": 602.0,
+        "start_distance_abs_diff_m": 709.0,
+        "end_distance_abs_diff_m": 495.0,
+        "center_fraction_a": 0.17492877906240084,
+        "center_fraction_b": 0.2974501577657927,
+        "center_fraction_abs_diff": 0.12252137870339186,
+        "start_fraction_abs_diff": 0.14429843438655288,
+        "end_fraction_abs_diff": 0.10074432302023084,
+        "action_time_loss_a_s": 0.42413234182548365,
+        "action_time_loss_b_s": 0.02360089476910332,
+        "action_time_loss_similarity": 0.055645119321775995,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "weak",
+        "speed_propagation_a": false,
+        "speed_propagation_b": false,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude"
+        ],
+        "shared_channels": [
+          "steering_magnitude"
+        ],
+        "channels_only_a": [
+          "throttle"
+        ],
+        "channels_only_b": [],
+        "channel_jaccard": 0.5,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.5787234042553191,
+            "onset_offset_abs_diff_m": 136.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.7261183919743674,
+            "peak_difference_similarity": 0.5957137425481526,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 730.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.08936170212765958,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "80f23489559e606b40c1"
+      },
+      "queue_position": 3
+    },
+    {
+      "pair_id": "5a617bd35f4514a6d62f",
+      "selected_by": [
+        {
+          "lens": "deterministic_baseline",
+          "rank": 1
+        }
+      ],
+      "features": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "track_layout": "Autodromo Enzo e Dino Ferrari",
+        "vehicle_family": "HYPERCAR",
+        "vehicle_variant": "HYPER",
+        "car_class_raw_a": "Hyper",
+        "car_class_raw_b": "Hyper",
+        "car_name_raw_a": "Toyota Racing 2026 #7:LM",
+        "car_name_raw_b": "Toyota Racing 2026 #7:LM",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "setup_sha256_b": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "same_setup_sha256": true,
+        "weather_conditions_a": "Partially Cloudy",
+        "weather_conditions_b": "Partially Cloudy",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 42,
+        "session_b": 49,
+        "timestamp_a": "2026-08-20T03:54:40Z",
+        "timestamp_b": "2026-08-20T03:54:40Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 1158,
+        "episode_pk_b": 1239,
+        "episode_id_a": 7,
+        "episode_id_b": 2,
+        "python_rank_a": 7,
+        "python_rank_b": 2,
+        "priority_rank_a": 1,
+        "priority_rank_b": 1,
+        "start_distance_a_m": 4119.0,
+        "end_distance_a_m": 4148.0,
+        "center_distance_a_m": 4133.5,
+        "start_distance_b_m": 2856.0,
+        "end_distance_b_m": 2897.0,
+        "center_distance_b_m": 2876.5,
+        "center_distance_abs_diff_m": 1257.0,
+        "start_distance_abs_diff_m": 1263.0,
+        "end_distance_abs_diff_m": 1251.0,
+        "center_fraction_a": 0.8412659781901499,
+        "center_fraction_b": 0.5854364548842304,
+        "center_fraction_abs_diff": 0.25582952330591957,
+        "start_fraction_abs_diff": 0.25705066661525566,
+        "end_fraction_abs_diff": 0.25460837999658337,
+        "action_time_loss_a_s": 0.02969522148849535,
+        "action_time_loss_b_s": 0.15128734610963335,
+        "action_time_loss_similarity": 0.19628357725950274,
+        "evidence_strength_a": "weak",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": false,
+        "speed_propagation_b": true,
+        "channels_a": [
+          "throttle"
+        ],
+        "channels_b": [
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "channel_jaccard": 1.0,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.7326024685252359,
+            "peak_difference_similarity": 0.8026287545890031,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 1292.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.7073170731707317,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "5a617bd35f4514a6d62f"
+      },
+      "queue_position": 4
+    },
+    {
+      "pair_id": "1822a0a0ae4801f4cf9d",
+      "selected_by": [
+        {
+          "lens": "closest_centers",
+          "rank": 2
+        },
+        {
+          "lens": "highest_spatial_overlap",
+          "rank": 2
+        },
+        {
+          "lens": "highest_channel_similarity",
+          "rank": 2
+        },
+        {
+          "lens": "nearby_channel_disagreement",
+          "rank": 2
+        }
+      ],
+      "features": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "track_layout": "Autodromo Enzo e Dino Ferrari",
+        "vehicle_family": "HYPERCAR",
+        "vehicle_variant": "HYPER",
+        "car_class_raw_a": "Hyper",
+        "car_class_raw_b": "Hyper",
+        "car_name_raw_a": "Toyota Racing 2026 #7:LM",
+        "car_name_raw_b": "Toyota Racing 2026 #7:LM",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "setup_sha256_b": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "same_setup_sha256": true,
+        "weather_conditions_a": "Partially Cloudy",
+        "weather_conditions_b": "Partially Cloudy",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 42,
+        "session_b": 49,
+        "timestamp_a": "2026-08-20T03:54:40Z",
+        "timestamp_b": "2026-08-20T03:54:40Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 1154,
+        "episode_pk_b": 1240,
+        "episode_id_a": 3,
+        "episode_id_b": 3,
+        "python_rank_a": 3,
+        "python_rank_b": 3,
+        "priority_rank_a": 1,
+        "priority_rank_b": 1,
+        "start_distance_a_m": 3387.0,
+        "end_distance_a_m": 3422.0,
+        "center_distance_a_m": 3404.5,
+        "start_distance_b_m": 3387.0,
+        "end_distance_b_m": 3422.0,
+        "center_distance_b_m": 3404.5,
+        "center_distance_abs_diff_m": 0.0,
+        "start_distance_abs_diff_m": 0.0,
+        "end_distance_abs_diff_m": 0.0,
+        "center_fraction_a": 0.6928970661058099,
+        "center_fraction_b": 0.6928970661058099,
+        "center_fraction_abs_diff": 0.0,
+        "start_fraction_abs_diff": 0.0,
+        "end_fraction_abs_diff": 0.0,
+        "action_time_loss_a_s": 0.10911194903953003,
+        "action_time_loss_b_s": 0.10911194903953003,
+        "action_time_loss_similarity": 1.0,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": true,
+        "speed_propagation_b": true,
+        "channels_a": [
+          "throttle"
+        ],
+        "channels_b": [
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "channel_jaccard": 1.0,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 1.0,
+            "peak_difference_similarity": 1.0,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 35.0,
+        "union_m": 35.0,
+        "overlap_over_union": 1.0,
+        "overlap_over_shorter": 1.0,
+        "overlap_over_longer": 1.0,
+        "length_similarity": 1.0,
+        "fraction_overlap": 0.007123335971127465,
+        "fraction_overlap_over_union": 1.0,
+        "fraction_overlap_over_shorter": 1.0,
+        "pair_id": "1822a0a0ae4801f4cf9d"
+      },
+      "queue_position": 5
+    },
+    {
+      "pair_id": "a119f4995d1ab890dcd5",
+      "selected_by": [
+        {
+          "lens": "similar_channels_farther_apart",
+          "rank": 2
+        }
+      ],
+      "features": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "track_layout": "Autodromo Enzo e Dino Ferrari",
+        "vehicle_family": "HYPERCAR",
+        "vehicle_variant": "HYPER",
+        "car_class_raw_a": "Hyper",
+        "car_class_raw_b": "Hyper",
+        "car_name_raw_a": "Toyota Racing 2026 #7:LM",
+        "car_name_raw_b": "Toyota Racing 2026 #7:LM",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "setup_sha256_b": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "same_setup_sha256": true,
+        "weather_conditions_a": "Partially Cloudy",
+        "weather_conditions_b": "Partially Cloudy",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 42,
+        "session_b": 49,
+        "timestamp_a": "2026-08-20T03:54:40Z",
+        "timestamp_b": "2026-08-20T03:54:40Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 1166,
+        "episode_pk_b": 1254,
+        "episode_id_a": 7,
+        "episode_id_b": 9,
+        "python_rank_a": 7,
+        "python_rank_b": 9,
+        "priority_rank_a": 2,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 4286.0,
+        "end_distance_a_m": 4312.0,
+        "center_distance_a_m": 4299.0,
+        "start_distance_b_m": 1750.0,
+        "end_distance_b_m": 1766.0,
+        "center_distance_b_m": 1758.0,
+        "center_distance_abs_diff_m": 2541.0,
+        "start_distance_abs_diff_m": 2536.0,
+        "end_distance_abs_diff_m": 2546.0,
+        "center_fraction_a": 0.8749491811393383,
+        "center_fraction_b": 0.35779498963548656,
+        "center_fraction_abs_diff": 0.5171541915038518,
+        "start_fraction_abs_diff": 0.5161365720794049,
+        "end_fraction_abs_diff": 0.5181718109282984,
+        "action_time_loss_a_s": 0.04778971705147228,
+        "action_time_loss_b_s": 0.02684712716305171,
+        "action_time_loss_similarity": 0.561776231780904,
+        "evidence_strength_a": "moderate",
+        "evidence_strength_b": "weak",
+        "speed_propagation_a": true,
+        "speed_propagation_b": false,
+        "channels_a": [
+          "throttle"
+        ],
+        "channels_b": [
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "channel_jaccard": 1.0,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.4897115331959041,
+            "peak_difference_similarity": 0.7476582235389129,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 2562.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.6153846153846154,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "a119f4995d1ab890dcd5"
+      },
+      "queue_position": 6
+    },
+    {
+      "pair_id": "9a9b69f8b3923fd9125b",
+      "selected_by": [
+        {
+          "lens": "impact_divergence",
+          "rank": 2
+        }
+      ],
+      "features": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "track_layout": "Autodromo Enzo e Dino Ferrari",
+        "vehicle_family": "HYPERCAR",
+        "vehicle_variant": "HYPER",
+        "car_class_raw_a": "Hyper",
+        "car_class_raw_b": "Hyper",
+        "car_name_raw_a": "Toyota Racing 2026 #7:LM",
+        "car_name_raw_b": "Toyota Racing 2026 #7:LM",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "setup_sha256_b": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "same_setup_sha256": true,
+        "weather_conditions_a": "Partially Cloudy",
+        "weather_conditions_b": "Partially Cloudy",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 42,
+        "session_b": 49,
+        "timestamp_a": "2026-08-20T03:54:40Z",
+        "timestamp_b": "2026-08-20T03:54:40Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 1169,
+        "episode_pk_b": 1238,
+        "episode_id_a": 10,
+        "episode_id_b": 1,
+        "python_rank_a": 10,
+        "python_rank_b": 1,
+        "priority_rank_a": 2,
+        "priority_rank_b": 1,
+        "start_distance_a_m": 1451.0,
+        "end_distance_a_m": 1472.0,
+        "center_distance_a_m": 1461.5,
+        "start_distance_b_m": 742.0,
+        "end_distance_b_m": 977.0,
+        "center_distance_b_m": 859.5,
+        "center_distance_abs_diff_m": 602.0,
+        "start_distance_abs_diff_m": 709.0,
+        "end_distance_abs_diff_m": 495.0,
+        "center_fraction_a": 0.2974501577657927,
+        "center_fraction_b": 0.17492877906240084,
+        "center_fraction_abs_diff": 0.12252137870339186,
+        "start_fraction_abs_diff": 0.14429843438655288,
+        "end_fraction_abs_diff": 0.10074432302023084,
+        "action_time_loss_a_s": 0.02360089476910332,
+        "action_time_loss_b_s": 0.42413234182548365,
+        "action_time_loss_similarity": 0.055645119321775995,
+        "evidence_strength_a": "weak",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": false,
+        "speed_propagation_b": false,
+        "channels_a": [
+          "steering_magnitude"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [
+          "throttle"
+        ],
+        "channel_jaccard": 0.5,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.5787234042553191,
+            "onset_offset_abs_diff_m": 136.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.7261183919743674,
+            "peak_difference_similarity": 0.5957137425481526,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 730.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.08936170212765958,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "9a9b69f8b3923fd9125b"
+      },
+      "queue_position": 7
+    },
+    {
+      "pair_id": "9d4bbcf4c104c8792f44",
+      "selected_by": [
+        {
+          "lens": "deterministic_baseline",
+          "rank": 2
+        }
+      ],
+      "features": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "track_layout": "Autodromo Enzo e Dino Ferrari",
+        "vehicle_family": "HYPERCAR",
+        "vehicle_variant": "HYPER",
+        "car_class_raw_a": "Hyper",
+        "car_class_raw_b": "Hyper",
+        "car_name_raw_a": "Toyota Racing 2026 #7:LM",
+        "car_name_raw_b": "Toyota Racing 2026 #7:LM",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "setup_sha256_b": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "same_setup_sha256": true,
+        "weather_conditions_a": "Partially Cloudy",
+        "weather_conditions_b": "Partially Cloudy",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 42,
+        "session_b": 49,
+        "timestamp_a": "2026-08-20T03:54:40Z",
+        "timestamp_b": "2026-08-20T03:54:40Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 1167,
+        "episode_pk_b": 1247,
+        "episode_id_a": 8,
+        "episode_id_b": 2,
+        "python_rank_a": 8,
+        "python_rank_b": 2,
+        "priority_rank_a": 2,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 2636.0,
+        "end_distance_a_m": 2697.0,
+        "center_distance_a_m": 2666.5,
+        "start_distance_b_m": 1585.0,
+        "end_distance_b_m": 1681.0,
+        "center_distance_b_m": 1633.0,
+        "center_distance_abs_diff_m": 1033.5,
+        "start_distance_abs_diff_m": 1051.0,
+        "end_distance_abs_diff_m": 1016.0,
+        "center_fraction_a": 0.5426964390574658,
+        "center_fraction_b": 0.33235450402431715,
+        "center_fraction_abs_diff": 0.21034193503314863,
+        "start_fraction_abs_diff": 0.21390360301871242,
+        "end_fraction_abs_diff": 0.2067802670475849,
+        "action_time_loss_a_s": 0.02793843704744603,
+        "action_time_loss_b_s": 0.19986405354435632,
+        "action_time_loss_similarity": 0.13978720311126674,
+        "evidence_strength_a": "weak",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": true,
+        "speed_propagation_b": false,
+        "channels_a": [
+          "brake",
+          "throttle"
+        ],
+        "channels_b": [
+          "brake"
+        ],
+        "shared_channels": [
+          "brake"
+        ],
+        "channels_only_a": [
+          "throttle"
+        ],
+        "channels_only_b": [],
+        "channel_jaccard": 0.5,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.07120901639344257,
+            "onset_offset_abs_diff_m": 1.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.06571564954421284,
+            "peak_difference_similarity": 0.9074413378587323,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "mixed"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 1112.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.6354166666666666,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "9d4bbcf4c104c8792f44"
+      },
+      "queue_position": 8
+    },
+    {
+      "pair_id": "24e0875112bdd43fc5ea",
+      "selected_by": [
+        {
+          "lens": "closest_centers",
+          "rank": 3
+        },
+        {
+          "lens": "highest_spatial_overlap",
+          "rank": 3
+        },
+        {
+          "lens": "highest_channel_similarity",
+          "rank": 3
+        },
+        {
+          "lens": "nearby_channel_disagreement",
+          "rank": 3
+        }
+      ],
+      "features": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "track_layout": "Autodromo Enzo e Dino Ferrari",
+        "vehicle_family": "HYPERCAR",
+        "vehicle_variant": "HYPER",
+        "car_class_raw_a": "Hyper",
+        "car_class_raw_b": "Hyper",
+        "car_name_raw_a": "Toyota Racing 2026 #7:LM",
+        "car_name_raw_b": "Toyota Racing 2026 #7:LM",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "setup_sha256_b": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "same_setup_sha256": true,
+        "weather_conditions_a": "Partially Cloudy",
+        "weather_conditions_b": "Partially Cloudy",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 42,
+        "session_b": 49,
+        "timestamp_a": "2026-08-20T03:54:40Z",
+        "timestamp_b": "2026-08-20T03:54:40Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 1155,
+        "episode_pk_b": 1241,
+        "episode_id_a": 4,
+        "episode_id_b": 4,
+        "python_rank_a": 4,
+        "python_rank_b": 4,
+        "priority_rank_a": 1,
+        "priority_rank_b": 1,
+        "start_distance_a_m": 1618.0,
+        "end_distance_a_m": 1674.0,
+        "center_distance_a_m": 1646.0,
+        "start_distance_b_m": 1618.0,
+        "end_distance_b_m": 1674.0,
+        "center_distance_b_m": 1646.0,
+        "center_distance_abs_diff_m": 0.0,
+        "start_distance_abs_diff_m": 0.0,
+        "end_distance_abs_diff_m": 0.0,
+        "center_fraction_a": 0.33500031452787876,
+        "center_fraction_b": 0.33500031452787876,
+        "center_fraction_abs_diff": 0.0,
+        "start_fraction_abs_diff": 0.0,
+        "end_fraction_abs_diff": 0.0,
+        "action_time_loss_a_s": 0.0799014046054829,
+        "action_time_loss_b_s": 0.0799014046054829,
+        "action_time_loss_similarity": 1.0,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": false,
+        "speed_propagation_b": false,
+        "channels_a": [
+          "brake"
+        ],
+        "channels_b": [
+          "brake"
+        ],
+        "shared_channels": [
+          "brake"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "channel_jaccard": 1.0,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 1.0,
+            "peak_difference_similarity": 1.0,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 56.0,
+        "union_m": 56.0,
+        "overlap_over_union": 1.0,
+        "overlap_over_shorter": 1.0,
+        "overlap_over_longer": 1.0,
+        "length_similarity": 1.0,
+        "fraction_overlap": 0.011397337553803899,
+        "fraction_overlap_over_union": 1.0,
+        "fraction_overlap_over_shorter": 1.0,
+        "pair_id": "24e0875112bdd43fc5ea"
+      },
+      "queue_position": 9
+    },
+    {
+      "pair_id": "2f249aa36717e4a3572c",
+      "selected_by": [
+        {
+          "lens": "similar_channels_farther_apart",
+          "rank": 3
+        }
+      ],
+      "features": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "track_layout": "Autodromo Enzo e Dino Ferrari",
+        "vehicle_family": "HYPERCAR",
+        "vehicle_variant": "HYPER",
+        "car_class_raw_a": "Hyper",
+        "car_class_raw_b": "Hyper",
+        "car_name_raw_a": "Toyota Racing 2026 #7:LM",
+        "car_name_raw_b": "Toyota Racing 2026 #7:LM",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "setup_sha256_b": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "same_setup_sha256": true,
+        "weather_conditions_a": "Partially Cloudy",
+        "weather_conditions_b": "Partially Cloudy",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 42,
+        "session_b": 49,
+        "timestamp_a": "2026-08-20T03:54:40Z",
+        "timestamp_b": "2026-08-20T03:54:40Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 1168,
+        "episode_pk_b": 1244,
+        "episode_id_a": 9,
+        "episode_id_b": 7,
+        "python_rank_a": 9,
+        "python_rank_b": 7,
+        "priority_rank_a": 2,
+        "priority_rank_b": 1,
+        "start_distance_a_m": 1750.0,
+        "end_distance_a_m": 1766.0,
+        "center_distance_a_m": 1758.0,
+        "start_distance_b_m": 4119.0,
+        "end_distance_b_m": 4148.0,
+        "center_distance_b_m": 4133.5,
+        "center_distance_abs_diff_m": 2375.5,
+        "start_distance_abs_diff_m": 2369.0,
+        "end_distance_abs_diff_m": 2382.0,
+        "center_fraction_a": 0.35779498963548656,
+        "center_fraction_b": 0.8412659781901499,
+        "center_fraction_abs_diff": 0.48347098855466336,
+        "start_fraction_abs_diff": 0.4821480833028826,
+        "end_fraction_abs_diff": 0.48479389380644416,
+        "action_time_loss_a_s": 0.02684712716305171,
+        "action_time_loss_b_s": 0.02969522148849535,
+        "action_time_loss_similarity": 0.9040891368145861,
+        "evidence_strength_a": "weak",
+        "evidence_strength_b": "weak",
+        "speed_propagation_a": false,
+        "speed_propagation_b": false,
+        "channels_a": [
+          "throttle"
+        ],
+        "channels_b": [
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "channel_jaccard": 1.0,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.6667189933902294,
+            "peak_difference_similarity": 0.7296025192395047,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 2398.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.5517241379310345,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "2f249aa36717e4a3572c"
+      },
+      "queue_position": 10
+    },
+    {
+      "pair_id": "089129c6679a439aa0f0",
+      "selected_by": [
+        {
+          "lens": "impact_divergence",
+          "rank": 3
+        }
+      ],
+      "features": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "track_layout": "Autodromo Enzo e Dino Ferrari",
+        "vehicle_family": "HYPERCAR",
+        "vehicle_variant": "HYPER",
+        "car_class_raw_a": "Hyper",
+        "car_class_raw_b": "Hyper",
+        "car_name_raw_a": "Toyota Racing 2026 #7:LM",
+        "car_name_raw_b": "Toyota Racing 2026 #7:LM",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "setup_sha256_b": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "same_setup_sha256": true,
+        "weather_conditions_a": "Partially Cloudy",
+        "weather_conditions_b": "Partially Cloudy",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 42,
+        "session_b": 49,
+        "timestamp_a": "2026-08-20T03:54:40Z",
+        "timestamp_b": "2026-08-20T03:54:40Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 1152,
+        "episode_pk_b": 1254,
+        "episode_id_a": 1,
+        "episode_id_b": 9,
+        "python_rank_a": 1,
+        "python_rank_b": 9,
+        "priority_rank_a": 1,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 742.0,
+        "end_distance_a_m": 977.0,
+        "center_distance_a_m": 859.5,
+        "start_distance_b_m": 1750.0,
+        "end_distance_b_m": 1766.0,
+        "center_distance_b_m": 1758.0,
+        "center_distance_abs_diff_m": 898.5,
+        "start_distance_abs_diff_m": 1008.0,
+        "end_distance_abs_diff_m": 789.0,
+        "center_fraction_a": 0.17492877906240084,
+        "center_fraction_b": 0.35779498963548656,
+        "center_fraction_abs_diff": 0.18286621057308572,
+        "start_fraction_abs_diff": 0.20515207596847007,
+        "end_fraction_abs_diff": 0.1605803451777013,
+        "action_time_loss_a_s": 0.42413234182548365,
+        "action_time_loss_b_s": 0.02684712716305171,
+        "action_time_loss_similarity": 0.06329893883475268,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "weak",
+        "speed_propagation_a": false,
+        "speed_propagation_b": false,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [
+          "steering_magnitude"
+        ],
+        "channels_only_b": [],
+        "channel_jaccard": 0.5,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.0716741596588044,
+            "peak_difference_similarity": 0.5573420619837912,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 1024.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.06808510638297872,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "089129c6679a439aa0f0"
+      },
+      "queue_position": 11
+    },
+    {
+      "pair_id": "6f0ed880500eaa953245",
+      "selected_by": [
+        {
+          "lens": "deterministic_baseline",
+          "rank": 3
+        }
+      ],
+      "features": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "track_layout": "Autodromo Enzo e Dino Ferrari",
+        "vehicle_family": "HYPERCAR",
+        "vehicle_variant": "HYPER",
+        "car_class_raw_a": "Hyper",
+        "car_class_raw_b": "Hyper",
+        "car_name_raw_a": "Toyota Racing 2026 #7:LM",
+        "car_name_raw_b": "Toyota Racing 2026 #7:LM",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "setup_sha256_b": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "same_setup_sha256": true,
+        "weather_conditions_a": "Partially Cloudy",
+        "weather_conditions_b": "Partially Cloudy",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 42,
+        "session_b": 49,
+        "timestamp_a": "2026-08-20T03:54:40Z",
+        "timestamp_b": "2026-08-20T03:54:40Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 1157,
+        "episode_pk_b": 1242,
+        "episode_id_a": 6,
+        "episode_id_b": 5,
+        "python_rank_a": 6,
+        "python_rank_b": 5,
+        "priority_rank_a": 1,
+        "priority_rank_b": 1,
+        "start_distance_a_m": 1444.0,
+        "end_distance_a_m": 1478.0,
+        "center_distance_a_m": 1461.0,
+        "start_distance_b_m": 2188.0,
+        "end_distance_b_m": 2286.0,
+        "center_distance_b_m": 2237.0,
+        "center_distance_abs_diff_m": 776.0,
+        "start_distance_abs_diff_m": 744.0,
+        "end_distance_abs_diff_m": 808.0,
+        "center_fraction_a": 0.29734839582334804,
+        "center_fraction_b": 0.4552829304974877,
+        "center_fraction_abs_diff": 0.15793453467413965,
+        "start_fraction_abs_diff": 0.15142177035768034,
+        "end_fraction_abs_diff": 0.16444729899059907,
+        "action_time_loss_a_s": 0.030309919037680544,
+        "action_time_loss_b_s": 0.031242365593996624,
+        "action_time_loss_similarity": 0.970154418892811,
+        "evidence_strength_a": "moderate",
+        "evidence_strength_b": "moderate",
+        "speed_propagation_a": false,
+        "speed_propagation_b": false,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "brake",
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [
+          "steering_magnitude"
+        ],
+        "channels_only_b": [
+          "brake"
+        ],
+        "channel_jaccard": 0.3333333333333333,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.6476590636254501,
+            "onset_offset_abs_diff_m": 4.0,
+            "end_offset_abs_diff_m": 75.0,
+            "mean_difference_similarity": 0.5123294919092354,
+            "peak_difference_similarity": 0.930686300946322,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 842.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.3469387755102041,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "6f0ed880500eaa953245"
+      },
+      "queue_position": 12
+    },
+    {
+      "pair_id": "3e0c02fa1467f5e8be31",
+      "selected_by": [
+        {
+          "lens": "closest_centers",
+          "rank": 4
+        },
+        {
+          "lens": "highest_spatial_overlap",
+          "rank": 4
+        },
+        {
+          "lens": "highest_channel_similarity",
+          "rank": 4
+        },
+        {
+          "lens": "nearby_channel_disagreement",
+          "rank": 4
+        }
+      ],
+      "features": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "track_layout": "Autodromo Enzo e Dino Ferrari",
+        "vehicle_family": "HYPERCAR",
+        "vehicle_variant": "HYPER",
+        "car_class_raw_a": "Hyper",
+        "car_class_raw_b": "Hyper",
+        "car_name_raw_a": "Toyota Racing 2026 #7:LM",
+        "car_name_raw_b": "Toyota Racing 2026 #7:LM",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "setup_sha256_b": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "same_setup_sha256": true,
+        "weather_conditions_a": "Partially Cloudy",
+        "weather_conditions_b": "Partially Cloudy",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 42,
+        "session_b": 49,
+        "timestamp_a": "2026-08-20T03:54:40Z",
+        "timestamp_b": "2026-08-20T03:54:40Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 1165,
+        "episode_pk_b": 1251,
+        "episode_id_a": 6,
+        "episode_id_b": 6,
+        "python_rank_a": 6,
+        "python_rank_b": 6,
+        "priority_rank_a": 2,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 639.0,
+        "end_distance_a_m": 679.0,
+        "center_distance_a_m": 659.0,
+        "start_distance_b_m": 639.0,
+        "end_distance_b_m": 679.0,
+        "center_distance_b_m": 659.0,
+        "center_distance_abs_diff_m": 0.0,
+        "start_distance_abs_diff_m": 0.0,
+        "end_distance_abs_diff_m": 0.0,
+        "center_fraction_a": 0.13412224014208513,
+        "center_fraction_b": 0.13412224014208513,
+        "center_fraction_abs_diff": 0.0,
+        "start_fraction_abs_diff": 0.0,
+        "end_fraction_abs_diff": 0.0,
+        "action_time_loss_a_s": 0.05515430150436984,
+        "action_time_loss_b_s": 0.05515430150436984,
+        "action_time_loss_similarity": 1.0,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": false,
+        "speed_propagation_b": false,
+        "channels_a": [
+          "brake"
+        ],
+        "channels_b": [
+          "brake"
+        ],
+        "shared_channels": [
+          "brake"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "channel_jaccard": 1.0,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 1.0,
+            "peak_difference_similarity": 1.0,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 40.0,
+        "union_m": 40.0,
+        "overlap_over_union": 1.0,
+        "overlap_over_shorter": 1.0,
+        "overlap_over_longer": 1.0,
+        "length_similarity": 1.0,
+        "fraction_overlap": 0.008140955395574218,
+        "fraction_overlap_over_union": 1.0,
+        "fraction_overlap_over_shorter": 1.0,
+        "pair_id": "3e0c02fa1467f5e8be31"
+      },
+      "queue_position": 13
+    },
+    {
+      "pair_id": "45689ecdaf12eeeaacfc",
+      "selected_by": [
+        {
+          "lens": "similar_channels_farther_apart",
+          "rank": 4
+        }
+      ],
+      "features": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "track_layout": "Autodromo Enzo e Dino Ferrari",
+        "vehicle_family": "HYPERCAR",
+        "vehicle_variant": "HYPER",
+        "car_class_raw_a": "Hyper",
+        "car_class_raw_b": "Hyper",
+        "car_name_raw_a": "Toyota Racing 2026 #7:LM",
+        "car_name_raw_b": "Toyota Racing 2026 #7:LM",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "setup_sha256_b": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "same_setup_sha256": true,
+        "weather_conditions_a": "Partially Cloudy",
+        "weather_conditions_b": "Partially Cloudy",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 42,
+        "session_b": 49,
+        "timestamp_a": "2026-08-20T03:54:40Z",
+        "timestamp_b": "2026-08-20T03:54:40Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 1158,
+        "episode_pk_b": 1254,
+        "episode_id_a": 7,
+        "episode_id_b": 9,
+        "python_rank_a": 7,
+        "python_rank_b": 9,
+        "priority_rank_a": 1,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 4119.0,
+        "end_distance_a_m": 4148.0,
+        "center_distance_a_m": 4133.5,
+        "start_distance_b_m": 1750.0,
+        "end_distance_b_m": 1766.0,
+        "center_distance_b_m": 1758.0,
+        "center_distance_abs_diff_m": 2375.5,
+        "start_distance_abs_diff_m": 2369.0,
+        "end_distance_abs_diff_m": 2382.0,
+        "center_fraction_a": 0.8412659781901499,
+        "center_fraction_b": 0.35779498963548656,
+        "center_fraction_abs_diff": 0.48347098855466336,
+        "start_fraction_abs_diff": 0.4821480833028826,
+        "end_fraction_abs_diff": 0.48479389380644416,
+        "action_time_loss_a_s": 0.02969522148849535,
+        "action_time_loss_b_s": 0.02684712716305171,
+        "action_time_loss_similarity": 0.9040891368145861,
+        "evidence_strength_a": "weak",
+        "evidence_strength_b": "weak",
+        "speed_propagation_a": false,
+        "speed_propagation_b": false,
+        "channels_a": [
+          "throttle"
+        ],
+        "channels_b": [
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "channel_jaccard": 1.0,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.6667189933902294,
+            "peak_difference_similarity": 0.7296025192395047,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 2398.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.5517241379310345,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "45689ecdaf12eeeaacfc"
+      },
+      "queue_position": 14
+    },
+    {
+      "pair_id": "77219f4210d83d92cbf8",
+      "selected_by": [
+        {
+          "lens": "impact_divergence",
+          "rank": 4
+        }
+      ],
+      "features": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "track_layout": "Autodromo Enzo e Dino Ferrari",
+        "vehicle_family": "HYPERCAR",
+        "vehicle_variant": "HYPER",
+        "car_class_raw_a": "Hyper",
+        "car_class_raw_b": "Hyper",
+        "car_name_raw_a": "Toyota Racing 2026 #7:LM",
+        "car_name_raw_b": "Toyota Racing 2026 #7:LM",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "setup_sha256_b": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "same_setup_sha256": true,
+        "weather_conditions_a": "Partially Cloudy",
+        "weather_conditions_b": "Partially Cloudy",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 42,
+        "session_b": 49,
+        "timestamp_a": "2026-08-20T03:54:40Z",
+        "timestamp_b": "2026-08-20T03:54:40Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 1168,
+        "episode_pk_b": 1238,
+        "episode_id_a": 9,
+        "episode_id_b": 1,
+        "python_rank_a": 9,
+        "python_rank_b": 1,
+        "priority_rank_a": 2,
+        "priority_rank_b": 1,
+        "start_distance_a_m": 1750.0,
+        "end_distance_a_m": 1766.0,
+        "center_distance_a_m": 1758.0,
+        "start_distance_b_m": 742.0,
+        "end_distance_b_m": 977.0,
+        "center_distance_b_m": 859.5,
+        "center_distance_abs_diff_m": 898.5,
+        "start_distance_abs_diff_m": 1008.0,
+        "end_distance_abs_diff_m": 789.0,
+        "center_fraction_a": 0.35779498963548656,
+        "center_fraction_b": 0.17492877906240084,
+        "center_fraction_abs_diff": 0.18286621057308572,
+        "start_fraction_abs_diff": 0.20515207596847007,
+        "end_fraction_abs_diff": 0.1605803451777013,
+        "action_time_loss_a_s": 0.02684712716305171,
+        "action_time_loss_b_s": 0.42413234182548365,
+        "action_time_loss_similarity": 0.06329893883475268,
+        "evidence_strength_a": "weak",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": false,
+        "speed_propagation_b": false,
+        "channels_a": [
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [
+          "steering_magnitude"
+        ],
+        "channel_jaccard": 0.5,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.0716741596588044,
+            "peak_difference_similarity": 0.5573420619837912,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 1024.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.06808510638297872,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "77219f4210d83d92cbf8"
+      },
+      "queue_position": 15
+    },
+    {
+      "pair_id": "2d5533703f7d3b67bfd8",
+      "selected_by": [
+        {
+          "lens": "deterministic_baseline",
+          "rank": 4
+        }
+      ],
+      "features": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "track_layout": "Autodromo Enzo e Dino Ferrari",
+        "vehicle_family": "HYPERCAR",
+        "vehicle_variant": "HYPER",
+        "car_class_raw_a": "Hyper",
+        "car_class_raw_b": "Hyper",
+        "car_name_raw_a": "Toyota Racing 2026 #7:LM",
+        "car_name_raw_b": "Toyota Racing 2026 #7:LM",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "setup_sha256_b": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "same_setup_sha256": true,
+        "weather_conditions_a": "Partially Cloudy",
+        "weather_conditions_b": "Partially Cloudy",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 42,
+        "session_b": 49,
+        "timestamp_a": "2026-08-20T03:54:40Z",
+        "timestamp_b": "2026-08-20T03:54:40Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 1168,
+        "episode_pk_b": 1239,
+        "episode_id_a": 9,
+        "episode_id_b": 2,
+        "python_rank_a": 9,
+        "python_rank_b": 2,
+        "priority_rank_a": 2,
+        "priority_rank_b": 1,
+        "start_distance_a_m": 1750.0,
+        "end_distance_a_m": 1766.0,
+        "center_distance_a_m": 1758.0,
+        "start_distance_b_m": 2856.0,
+        "end_distance_b_m": 2897.0,
+        "center_distance_b_m": 2876.5,
+        "center_distance_abs_diff_m": 1118.5,
+        "start_distance_abs_diff_m": 1106.0,
+        "end_distance_abs_diff_m": 1131.0,
+        "center_fraction_a": 0.35779498963548656,
+        "center_fraction_b": 0.5854364548842304,
+        "center_fraction_abs_diff": 0.2276414652487438,
+        "start_fraction_abs_diff": 0.22509741668762695,
+        "end_fraction_abs_diff": 0.2301855138098608,
+        "action_time_loss_a_s": 0.02684712716305171,
+        "action_time_loss_b_s": 0.15128734610963335,
+        "action_time_loss_similarity": 0.17745784993542296,
+        "evidence_strength_a": "weak",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": false,
+        "speed_propagation_b": true,
+        "channels_a": [
+          "throttle"
+        ],
+        "channels_b": [
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "channel_jaccard": 1.0,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.48843998037034253,
+            "peak_difference_similarity": 0.9090161735024153,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 1147.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.3902439024390244,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "2d5533703f7d3b67bfd8"
+      },
+      "queue_position": 16
+    },
+    {
+      "pair_id": "462729c9980bdb645536",
+      "selected_by": [
+        {
+          "lens": "closest_centers",
+          "rank": 5
+        },
+        {
+          "lens": "highest_spatial_overlap",
+          "rank": 5
+        },
+        {
+          "lens": "highest_channel_similarity",
+          "rank": 5
+        },
+        {
+          "lens": "nearby_channel_disagreement",
+          "rank": 5
+        }
+      ],
+      "features": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "track_layout": "Autodromo Enzo e Dino Ferrari",
+        "vehicle_family": "HYPERCAR",
+        "vehicle_variant": "HYPER",
+        "car_class_raw_a": "Hyper",
+        "car_class_raw_b": "Hyper",
+        "car_name_raw_a": "Toyota Racing 2026 #7:LM",
+        "car_name_raw_b": "Toyota Racing 2026 #7:LM",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "setup_sha256_b": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "same_setup_sha256": true,
+        "weather_conditions_a": "Partially Cloudy",
+        "weather_conditions_b": "Partially Cloudy",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 42,
+        "session_b": 49,
+        "timestamp_a": "2026-08-20T03:54:40Z",
+        "timestamp_b": "2026-08-20T03:54:40Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 1158,
+        "episode_pk_b": 1244,
+        "episode_id_a": 7,
+        "episode_id_b": 7,
+        "python_rank_a": 7,
+        "python_rank_b": 7,
+        "priority_rank_a": 1,
+        "priority_rank_b": 1,
+        "start_distance_a_m": 4119.0,
+        "end_distance_a_m": 4148.0,
+        "center_distance_a_m": 4133.5,
+        "start_distance_b_m": 4119.0,
+        "end_distance_b_m": 4148.0,
+        "center_distance_b_m": 4133.5,
+        "center_distance_abs_diff_m": 0.0,
+        "start_distance_abs_diff_m": 0.0,
+        "end_distance_abs_diff_m": 0.0,
+        "center_fraction_a": 0.8412659781901499,
+        "center_fraction_b": 0.8412659781901499,
+        "center_fraction_abs_diff": 0.0,
+        "start_fraction_abs_diff": 0.0,
+        "end_fraction_abs_diff": 0.0,
+        "action_time_loss_a_s": 0.02969522148849535,
+        "action_time_loss_b_s": 0.02969522148849535,
+        "action_time_loss_similarity": 1.0,
+        "evidence_strength_a": "weak",
+        "evidence_strength_b": "weak",
+        "speed_propagation_a": false,
+        "speed_propagation_b": false,
+        "channels_a": [
+          "throttle"
+        ],
+        "channels_b": [
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "channel_jaccard": 1.0,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 1.0,
+            "peak_difference_similarity": 1.0,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 29.0,
+        "union_m": 29.0,
+        "overlap_over_union": 1.0,
+        "overlap_over_shorter": 1.0,
+        "overlap_over_longer": 1.0,
+        "length_similarity": 1.0,
+        "fraction_overlap": 0.005902192661791261,
+        "fraction_overlap_over_union": 1.0,
+        "fraction_overlap_over_shorter": 1.0,
+        "pair_id": "462729c9980bdb645536"
+      },
+      "queue_position": 17
+    },
+    {
+      "pair_id": "5b5f3a8a85cab57c3a73",
+      "selected_by": [
+        {
+          "lens": "similar_channels_farther_apart",
+          "rank": 5
+        }
+      ],
+      "features": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "track_layout": "Autodromo Enzo e Dino Ferrari",
+        "vehicle_family": "HYPERCAR",
+        "vehicle_variant": "HYPER",
+        "car_class_raw_a": "Hyper",
+        "car_class_raw_b": "Hyper",
+        "car_name_raw_a": "Toyota Racing 2026 #7:LM",
+        "car_name_raw_b": "Toyota Racing 2026 #7:LM",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "setup_sha256_b": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "same_setup_sha256": true,
+        "weather_conditions_a": "Partially Cloudy",
+        "weather_conditions_b": "Partially Cloudy",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 42,
+        "session_b": 49,
+        "timestamp_a": "2026-08-20T03:54:40Z",
+        "timestamp_b": "2026-08-20T03:54:40Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 1168,
+        "episode_pk_b": 1240,
+        "episode_id_a": 9,
+        "episode_id_b": 3,
+        "python_rank_a": 9,
+        "python_rank_b": 3,
+        "priority_rank_a": 2,
+        "priority_rank_b": 1,
+        "start_distance_a_m": 1750.0,
+        "end_distance_a_m": 1766.0,
+        "center_distance_a_m": 1758.0,
+        "start_distance_b_m": 3387.0,
+        "end_distance_b_m": 3422.0,
+        "center_distance_b_m": 3404.5,
+        "center_distance_abs_diff_m": 1646.5,
+        "start_distance_abs_diff_m": 1637.0,
+        "end_distance_abs_diff_m": 1656.0,
+        "center_fraction_a": 0.35779498963548656,
+        "center_fraction_b": 0.6928970661058099,
+        "center_fraction_abs_diff": 0.33510207647032336,
+        "start_fraction_abs_diff": 0.33316859956387457,
+        "end_fraction_abs_diff": 0.3370355533767723,
+        "action_time_loss_a_s": 0.02684712716305171,
+        "action_time_loss_b_s": 0.10911194903953003,
+        "action_time_loss_similarity": 0.24605121070035416,
+        "evidence_strength_a": "weak",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": false,
+        "speed_propagation_b": true,
+        "channels_a": [
+          "throttle"
+        ],
+        "channels_b": [
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "channel_jaccard": 1.0,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.08584156376120591,
+            "peak_difference_similarity": 0.9338373018570338,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 1672.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.45714285714285713,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "5b5f3a8a85cab57c3a73"
+      },
+      "queue_position": 18
+    },
+    {
+      "pair_id": "b1ae7b68862423f84ef0",
+      "selected_by": [
+        {
+          "lens": "impact_divergence",
+          "rank": 5
+        }
+      ],
+      "features": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "track_layout": "Autodromo Enzo e Dino Ferrari",
+        "vehicle_family": "HYPERCAR",
+        "vehicle_variant": "HYPER",
+        "car_class_raw_a": "Hyper",
+        "car_class_raw_b": "Hyper",
+        "car_name_raw_a": "Toyota Racing 2026 #7:LM",
+        "car_name_raw_b": "Toyota Racing 2026 #7:LM",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "setup_sha256_b": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "same_setup_sha256": true,
+        "weather_conditions_a": "Partially Cloudy",
+        "weather_conditions_b": "Partially Cloudy",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 42,
+        "session_b": 49,
+        "timestamp_a": "2026-08-20T03:54:40Z",
+        "timestamp_b": "2026-08-20T03:54:40Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 1152,
+        "episode_pk_b": 1253,
+        "episode_id_a": 1,
+        "episode_id_b": 8,
+        "python_rank_a": 1,
+        "python_rank_b": 8,
+        "priority_rank_a": 1,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 742.0,
+        "end_distance_a_m": 977.0,
+        "center_distance_a_m": 859.5,
+        "start_distance_b_m": 2636.0,
+        "end_distance_b_m": 2697.0,
+        "center_distance_b_m": 2666.5,
+        "center_distance_abs_diff_m": 1807.0,
+        "start_distance_abs_diff_m": 1894.0,
+        "end_distance_abs_diff_m": 1720.0,
+        "center_fraction_a": 0.17492877906240084,
+        "center_fraction_b": 0.5426964390574658,
+        "center_fraction_abs_diff": 0.36776765999506494,
+        "start_fraction_abs_diff": 0.3854742379804389,
+        "end_fraction_abs_diff": 0.350061082009691,
+        "action_time_loss_a_s": 0.42413234182548365,
+        "action_time_loss_b_s": 0.02793843704744603,
+        "action_time_loss_similarity": 0.06587197978630398,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "weak",
+        "speed_propagation_a": false,
+        "speed_propagation_b": true,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "brake",
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [
+          "steering_magnitude"
+        ],
+        "channels_only_b": [
+          "brake"
+        ],
+        "channel_jaccard": 0.3333333333333333,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.6557377049180328,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 40.0,
+            "mean_difference_similarity": 0.05548780382446739,
+            "peak_difference_similarity": 0.819635097764277,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 1955.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.25957446808510637,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "b1ae7b68862423f84ef0"
+      },
+      "queue_position": 19
+    },
+    {
+      "pair_id": "c3be90aacf580ec2c97f",
+      "selected_by": [
+        {
+          "lens": "deterministic_baseline",
+          "rank": 5
+        }
+      ],
+      "features": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "track_layout": "Autodromo Enzo e Dino Ferrari",
+        "vehicle_family": "HYPERCAR",
+        "vehicle_variant": "HYPER",
+        "car_class_raw_a": "Hyper",
+        "car_class_raw_b": "Hyper",
+        "car_name_raw_a": "Toyota Racing 2026 #7:LM",
+        "car_name_raw_b": "Toyota Racing 2026 #7:LM",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "setup_sha256_b": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "same_setup_sha256": true,
+        "weather_conditions_a": "Partially Cloudy",
+        "weather_conditions_b": "Partially Cloudy",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 42,
+        "session_b": 49,
+        "timestamp_a": "2026-08-20T03:54:40Z",
+        "timestamp_b": "2026-08-20T03:54:40Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 1162,
+        "episode_pk_b": 1243,
+        "episode_id_a": 3,
+        "episode_id_b": 6,
+        "python_rank_a": 3,
+        "python_rank_b": 6,
+        "priority_rank_a": 2,
+        "priority_rank_b": 1,
+        "start_distance_a_m": 2871.0,
+        "end_distance_a_m": 2912.0,
+        "center_distance_a_m": 2891.5,
+        "start_distance_b_m": 1444.0,
+        "end_distance_b_m": 1478.0,
+        "center_distance_b_m": 1461.0,
+        "center_distance_abs_diff_m": 1430.5,
+        "start_distance_abs_diff_m": 1427.0,
+        "end_distance_abs_diff_m": 1434.0,
+        "center_fraction_a": 0.5884893131575707,
+        "center_fraction_b": 0.29734839582334804,
+        "center_fraction_abs_diff": 0.29114091733422265,
+        "start_fraction_abs_diff": 0.29042858373711,
+        "end_fraction_abs_diff": 0.29185325093133546,
+        "action_time_loss_a_s": 0.10078994091672655,
+        "action_time_loss_b_s": 0.030309919037680544,
+        "action_time_loss_similarity": 0.3007236512096266,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "moderate",
+        "speed_propagation_a": true,
+        "speed_propagation_b": false,
+        "channels_a": [
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [
+          "steering_magnitude"
+        ],
+        "channel_jaccard": 0.5,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.004304160688665681,
+            "onset_offset_abs_diff_m": 4.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.7547621636605675,
+            "peak_difference_similarity": 0.5328284314884969,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 1468.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.8292682926829268,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "c3be90aacf580ec2c97f"
+      },
+      "queue_position": 20
+    },
+    {
+      "pair_id": "6a8b4a3c239c0980df3b",
+      "selected_by": [
+        {
+          "lens": "closest_centers",
+          "rank": 6
+        },
+        {
+          "lens": "highest_spatial_overlap",
+          "rank": 6
+        },
+        {
+          "lens": "highest_channel_similarity",
+          "rank": 6
+        },
+        {
+          "lens": "nearby_channel_disagreement",
+          "rank": 6
+        }
+      ],
+      "features": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "track_layout": "Autodromo Enzo e Dino Ferrari",
+        "vehicle_family": "HYPERCAR",
+        "vehicle_variant": "HYPER",
+        "car_class_raw_a": "Hyper",
+        "car_class_raw_b": "Hyper",
+        "car_name_raw_a": "Toyota Racing 2026 #7:LM",
+        "car_name_raw_b": "Toyota Racing 2026 #7:LM",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "setup_sha256_b": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "same_setup_sha256": true,
+        "weather_conditions_a": "Partially Cloudy",
+        "weather_conditions_b": "Partially Cloudy",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 42,
+        "session_b": 49,
+        "timestamp_a": "2026-08-20T03:54:40Z",
+        "timestamp_b": "2026-08-20T03:54:40Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 1169,
+        "episode_pk_b": 1255,
+        "episode_id_a": 10,
+        "episode_id_b": 10,
+        "python_rank_a": 10,
+        "python_rank_b": 10,
+        "priority_rank_a": 2,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 1451.0,
+        "end_distance_a_m": 1472.0,
+        "center_distance_a_m": 1461.5,
+        "start_distance_b_m": 1451.0,
+        "end_distance_b_m": 1472.0,
+        "center_distance_b_m": 1461.5,
+        "center_distance_abs_diff_m": 0.0,
+        "start_distance_abs_diff_m": 0.0,
+        "end_distance_abs_diff_m": 0.0,
+        "center_fraction_a": 0.2974501577657927,
+        "center_fraction_b": 0.2974501577657927,
+        "center_fraction_abs_diff": 0.0,
+        "start_fraction_abs_diff": 0.0,
+        "end_fraction_abs_diff": 0.0,
+        "action_time_loss_a_s": 0.02360089476910332,
+        "action_time_loss_b_s": 0.02360089476910332,
+        "action_time_loss_similarity": 1.0,
+        "evidence_strength_a": "weak",
+        "evidence_strength_b": "weak",
+        "speed_propagation_a": false,
+        "speed_propagation_b": false,
+        "channels_a": [
+          "steering_magnitude"
+        ],
+        "channels_b": [
+          "steering_magnitude"
+        ],
+        "shared_channels": [
+          "steering_magnitude"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "channel_jaccard": 1.0,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 1.0,
+            "peak_difference_similarity": 1.0,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 21.0,
+        "union_m": 21.0,
+        "overlap_over_union": 1.0,
+        "overlap_over_shorter": 1.0,
+        "overlap_over_longer": 1.0,
+        "length_similarity": 1.0,
+        "fraction_overlap": 0.004274001582676434,
+        "fraction_overlap_over_union": 1.0,
+        "fraction_overlap_over_shorter": 1.0,
+        "pair_id": "6a8b4a3c239c0980df3b"
+      },
+      "queue_position": 21
+    },
+    {
+      "pair_id": "f44c2c3962dbbc73d460",
+      "selected_by": [
+        {
+          "lens": "similar_channels_farther_apart",
+          "rank": 6
+        }
+      ],
+      "features": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "track_layout": "Autodromo Enzo e Dino Ferrari",
+        "vehicle_family": "HYPERCAR",
+        "vehicle_variant": "HYPER",
+        "car_class_raw_a": "Hyper",
+        "car_class_raw_b": "Hyper",
+        "car_name_raw_a": "Toyota Racing 2026 #7:LM",
+        "car_name_raw_b": "Toyota Racing 2026 #7:LM",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "setup_sha256_b": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "same_setup_sha256": true,
+        "weather_conditions_a": "Partially Cloudy",
+        "weather_conditions_b": "Partially Cloudy",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 42,
+        "session_b": 49,
+        "timestamp_a": "2026-08-20T03:54:40Z",
+        "timestamp_b": "2026-08-20T03:54:40Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 1154,
+        "episode_pk_b": 1254,
+        "episode_id_a": 3,
+        "episode_id_b": 9,
+        "python_rank_a": 3,
+        "python_rank_b": 9,
+        "priority_rank_a": 1,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 3387.0,
+        "end_distance_a_m": 3422.0,
+        "center_distance_a_m": 3404.5,
+        "start_distance_b_m": 1750.0,
+        "end_distance_b_m": 1766.0,
+        "center_distance_b_m": 1758.0,
+        "center_distance_abs_diff_m": 1646.5,
+        "start_distance_abs_diff_m": 1637.0,
+        "end_distance_abs_diff_m": 1656.0,
+        "center_fraction_a": 0.6928970661058099,
+        "center_fraction_b": 0.35779498963548656,
+        "center_fraction_abs_diff": 0.33510207647032336,
+        "start_fraction_abs_diff": 0.33316859956387457,
+        "end_fraction_abs_diff": 0.3370355533767723,
+        "action_time_loss_a_s": 0.10911194903953003,
+        "action_time_loss_b_s": 0.02684712716305171,
+        "action_time_loss_similarity": 0.24605121070035416,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "weak",
+        "speed_propagation_a": true,
+        "speed_propagation_b": false,
+        "channels_a": [
+          "throttle"
+        ],
+        "channels_b": [
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "channel_jaccard": 1.0,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.08584156376120591,
+            "peak_difference_similarity": 0.9338373018570338,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 1672.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.45714285714285713,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "f44c2c3962dbbc73d460"
+      },
+      "queue_position": 22
+    },
+    {
+      "pair_id": "b7864fb51c6594a4db4d",
+      "selected_by": [
+        {
+          "lens": "impact_divergence",
+          "rank": 6
+        }
+      ],
+      "features": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "track_layout": "Autodromo Enzo e Dino Ferrari",
+        "vehicle_family": "HYPERCAR",
+        "vehicle_variant": "HYPER",
+        "car_class_raw_a": "Hyper",
+        "car_class_raw_b": "Hyper",
+        "car_name_raw_a": "Toyota Racing 2026 #7:LM",
+        "car_name_raw_b": "Toyota Racing 2026 #7:LM",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "setup_sha256_b": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "same_setup_sha256": true,
+        "weather_conditions_a": "Partially Cloudy",
+        "weather_conditions_b": "Partially Cloudy",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 42,
+        "session_b": 49,
+        "timestamp_a": "2026-08-20T03:54:40Z",
+        "timestamp_b": "2026-08-20T03:54:40Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 1167,
+        "episode_pk_b": 1238,
+        "episode_id_a": 8,
+        "episode_id_b": 1,
+        "python_rank_a": 8,
+        "python_rank_b": 1,
+        "priority_rank_a": 2,
+        "priority_rank_b": 1,
+        "start_distance_a_m": 2636.0,
+        "end_distance_a_m": 2697.0,
+        "center_distance_a_m": 2666.5,
+        "start_distance_b_m": 742.0,
+        "end_distance_b_m": 977.0,
+        "center_distance_b_m": 859.5,
+        "center_distance_abs_diff_m": 1807.0,
+        "start_distance_abs_diff_m": 1894.0,
+        "end_distance_abs_diff_m": 1720.0,
+        "center_fraction_a": 0.5426964390574658,
+        "center_fraction_b": 0.17492877906240084,
+        "center_fraction_abs_diff": 0.36776765999506494,
+        "start_fraction_abs_diff": 0.3854742379804389,
+        "end_fraction_abs_diff": 0.350061082009691,
+        "action_time_loss_a_s": 0.02793843704744603,
+        "action_time_loss_b_s": 0.42413234182548365,
+        "action_time_loss_similarity": 0.06587197978630398,
+        "evidence_strength_a": "weak",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": true,
+        "speed_propagation_b": false,
+        "channels_a": [
+          "brake",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [
+          "brake"
+        ],
+        "channels_only_b": [
+          "steering_magnitude"
+        ],
+        "channel_jaccard": 0.3333333333333333,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.6557377049180328,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 40.0,
+            "mean_difference_similarity": 0.05548780382446739,
+            "peak_difference_similarity": 0.819635097764277,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 1955.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.25957446808510637,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "b7864fb51c6594a4db4d"
+      },
+      "queue_position": 23
+    },
+    {
+      "pair_id": "26d9ec86569cea355662",
+      "selected_by": [
+        {
+          "lens": "deterministic_baseline",
+          "rank": 6
+        }
+      ],
+      "features": {
+        "track": "Autodromo Enzo e Dino Ferrari",
+        "track_layout": "Autodromo Enzo e Dino Ferrari",
+        "vehicle_family": "HYPERCAR",
+        "vehicle_variant": "HYPER",
+        "car_class_raw_a": "Hyper",
+        "car_class_raw_b": "Hyper",
+        "car_name_raw_a": "Toyota Racing 2026 #7:LM",
+        "car_name_raw_b": "Toyota Racing 2026 #7:LM",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "setup_sha256_b": "087f4332ac28b00810b80fa7b5a441c00cdf3f062f2e5a645b06871540d6bec5",
+        "same_setup_sha256": true,
+        "weather_conditions_a": "Partially Cloudy",
+        "weather_conditions_b": "Partially Cloudy",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 42,
+        "session_b": 49,
+        "timestamp_a": "2026-08-20T03:54:40Z",
+        "timestamp_b": "2026-08-20T03:54:40Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 1165,
+        "episode_pk_b": 1249,
+        "episode_id_a": 6,
+        "episode_id_b": 4,
+        "python_rank_a": 6,
+        "python_rank_b": 4,
+        "priority_rank_a": 2,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 639.0,
+        "end_distance_a_m": 679.0,
+        "center_distance_a_m": 659.0,
+        "start_distance_b_m": 3387.0,
+        "end_distance_b_m": 3405.0,
+        "center_distance_b_m": 3396.0,
+        "center_distance_abs_diff_m": 2737.0,
+        "start_distance_abs_diff_m": 2748.0,
+        "end_distance_abs_diff_m": 2726.0,
+        "center_fraction_a": 0.13412224014208513,
+        "center_fraction_b": 0.6911671130842505,
+        "center_fraction_abs_diff": 0.5570448729421653,
+        "start_fraction_abs_diff": 0.5592836356759483,
+        "end_fraction_abs_diff": 0.5548061102083824,
+        "action_time_loss_a_s": 0.05515430150436984,
+        "action_time_loss_b_s": 0.07748607576836264,
+        "action_time_loss_similarity": 0.7117962931720592,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "moderate",
+        "speed_propagation_a": false,
+        "speed_propagation_b": true,
+        "channels_a": [
+          "brake"
+        ],
+        "channels_b": [
+          "throttle"
+        ],
+        "shared_channels": [],
+        "channels_only_a": [
+          "brake"
+        ],
+        "channels_only_b": [
+          "throttle"
+        ],
+        "channel_jaccard": 0.0,
+        "per_channel_metrics": {},
+        "overlap_m": 0.0,
+        "union_m": 2766.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.45,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "26d9ec86569cea355662"
+      },
+      "queue_position": 24
+    }
+  ]
+}

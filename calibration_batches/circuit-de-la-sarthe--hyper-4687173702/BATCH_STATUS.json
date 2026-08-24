@@ -1,0 +1,98 @@
+{
+  "orchestrator_version": "1.5",
+  "updated_at_utc": "2026-08-24T00:22:30.560425+00:00",
+  "project_root": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz",
+  "input_dir": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\data\\generated\\analysis",
+  "history_db": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\data\\local\\race_engineer_history.duckdb",
+  "overall_status": "BLOCKED_NO_PAIR_FEATURES",
+  "track": "Circuit de la Sarthe",
+  "track_layout": "Circuit de la Sarthe",
+  "vehicle_family": "HYPERCAR",
+  "vehicle_variant": "HYPER",
+  "batch_id": "4687173702",
+  "batch_dir": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\circuit-de-la-sarthe--hyper-4687173702",
+  "steps": {
+    "project_contract": {
+      "status": "PASS",
+      "required_scripts": [
+        "session_history.py",
+        "validate_history_db.py",
+        "episode_pair_features.py",
+        "pair_review_queue.py",
+        "label_episode_pairs.py",
+        "validate_pair_labels.py",
+        "build_calibration_dataset.py",
+        "calibration_feature_report.py"
+      ],
+      "dependency_contract": {
+        "session_history_schema": 4,
+        "pair_review_queue_schema": "1.1",
+        "max_review_pairs_default": 24
+      }
+    },
+    "input_directory": {
+      "status": "PASS",
+      "path": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\data\\generated\\analysis",
+      "json_files_seen": 61
+    },
+    "history_init": {
+      "status": "PASS",
+      "command": "'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\.venv\\Scripts\\python.exe' 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\session_history.py' --db 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\data\\local\\race_engineer_history.duckdb' init"
+    },
+    "history_import": {
+      "status": "SKIPPED",
+      "reason": "--skip-import",
+      "sessions_before": 68
+    },
+    "history_validation": {
+      "status": "PASS",
+      "command": "'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\.venv\\Scripts\\python.exe' 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\validate_history_db.py' --db 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\data\\local\\race_engineer_history.duckdb'"
+    },
+    "vehicle_context_selection": {
+      "status": "PASS",
+      "selected_track": "Circuit de la Sarthe",
+      "selected_track_layout": "Circuit de la Sarthe",
+      "selected_vehicle_variant": "HYPER",
+      "vehicle_family": "HYPERCAR",
+      "session_count": 3,
+      "session_ids": [
+        53,
+        54,
+        67
+      ],
+      "session_signature": "46871737029280cae0b18d5c3557406a8eea2434d1341ec2ae45b4f787bbf5e5",
+      "sessions_by_vehicle_context": {
+        "Autodromo Enzo e Dino Ferrari | Autodromo Enzo e Dino Ferrari | GT3": 1,
+        "Autodromo Enzo e Dino Ferrari | Autodromo Enzo e Dino Ferrari | HYPER": 2,
+        "Autodromo Enzo e Dino Ferrari | Autodromo Enzo e Dino Ferrari | LMP2_ELMS": 18,
+        "Autodromo Nazionale Monza | Autodromo Nazionale Monza | HYPER": 6,
+        "Autodromo Nazionale Monza | Autodromo Nazionale Monza | LMP2_ELMS": 6,
+        "Autódromo José Carlos Pace | Autódromo José Carlos Pace | LMP2_ELMS": 8,
+        "Circuit de Spa-Francorchamps | Circuit de Spa-Francorchamps | LMP2_ELMS": 9,
+        "Circuit de Spa-Francorchamps | Circuit de Spa-Francorchamps | LMP3": 1,
+        "Circuit de la Sarthe | Circuit de la Sarthe | HYPER": 3,
+        "Circuit de la Sarthe | Circuit de la Sarthe | LMP2_WEC": 5,
+        "Daytona International Speedway | Daytona International Speedway Road Course | LMP2_ELMS": 1,
+        "Fuji Speedway | Fuji Speedway | HYPER": 1,
+        "Fuji Speedway | Fuji Speedway | LMP2_ELMS": 5,
+        "Paul Ricard Circuit | Paul Ricard - 1A-V2-Short | LMP2_ELMS": 1,
+        "WeatherTech Raceway Laguna Seca | WeatherTech Raceway Laguna Seca | GT3": 1
+      }
+    },
+    "pair_features": {
+      "status": "PASS",
+      "command": "'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\.venv\\Scripts\\python.exe' 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\episode_pair_features.py' --db 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\data\\local\\race_engineer_history.duckdb' --track 'Circuit de la Sarthe' --track-layout 'Circuit de la Sarthe' --vehicle-variant HYPER --format json --output 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\circuit-de-la-sarthe--hyper-4687173702\\episode_pair_features.json'",
+      "path": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\circuit-de-la-sarthe--hyper-4687173702\\episode_pair_features.json",
+      "pair_count": 0
+    },
+    "review_queue": {
+      "status": "BLOCKED",
+      "reason": "no_cross_session_episode_pairs"
+    }
+  },
+  "next_action": "Collect more usable same-track sessions/episodes.",
+  "matcher": {
+    "status": "BLOCKED_BY_REAL_DATA",
+    "reason": "No thresholds, weights, automatic matching, clustering, or persistent_pattern are implemented."
+  }
+}

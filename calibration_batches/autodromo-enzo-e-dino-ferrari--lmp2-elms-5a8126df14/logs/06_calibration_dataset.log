@@ -1,0 +1,42 @@
+$ 'C:\Users\thres\Documents\GitHub\raithreshzz\.venv\Scripts\python.exe' 'C:\Users\thres\Documents\GitHub\raithreshzz\build_calibration_dataset.py' 'C:\Users\thres\Documents\GitHub\raithreshzz\calibration_batches\autodromo-enzo-e-dino-ferrari--lmp2-elms-5a8126df14\pair_review_queue.json' 'C:\Users\thres\Documents\GitHub\raithreshzz\calibration_batches\autodromo-enzo-e-dino-ferrari--lmp2-elms-5a8126df14\pair_labels.json' --evaluation-fraction 0.25 --seed 20260810 --output 'C:\Users\thres\Documents\GitHub\raithreshzz\calibration_batches\autodromo-enzo-e-dino-ferrari--lmp2-elms-5a8126df14\calibration_dataset.json'
+
+--- STDOUT ---
+
+========================================================================
+RACE ENGINEER - CALIBRATION DATASET BUILDER v1.0
+========================================================================
+
+{
+  "reviewed_usable_pairs": 24,
+  "ignored_skip_pairs": 0,
+  "usable_sessions": 12,
+  "calibration_sessions": 9,
+  "evaluation_sessions": 3,
+  "calibration_pairs": 9,
+  "evaluation_pairs": 1,
+  "cross_split_pairs_excluded": 14,
+  "calibration_labels": {
+    "SAME": 2,
+    "DIFFERENT": 6,
+    "AMBIGUOUS": 1
+  },
+  "evaluation_labels": {
+    "SAME": 1,
+    "DIFFERENT": 0,
+    "AMBIGUOUS": 0
+  },
+  "all_usable_labels": {
+    "SAME": 11,
+    "DIFFERENT": 10,
+    "AMBIGUOUS": 3
+  }
+}
+
+Output: C:\Users\thres\Documents\GitHub\raithreshzz\calibration_batches\autodromo-enzo-e-dino-ferrari--lmp2-elms-5a8126df14\calibration_dataset.json
+Session leakage check: PASS
+Matcher status: NO THRESHOLDS / NO SCORE / NO AUTOMATIC MATCHING
+
+--- STDERR ---
+
+--- RETURN CODE ---
+0

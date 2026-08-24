@@ -1,0 +1,146 @@
+{
+  "orchestrator_version": "1.5",
+  "updated_at_utc": "2026-08-24T00:26:40.083817+00:00",
+  "project_root": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz",
+  "input_dir": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\data\\generated\\analysis",
+  "history_db": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\data\\local\\race_engineer_history.duckdb",
+  "overall_status": "CALIBRATION_BATCH_READY_FOR_INSPECTION",
+  "track": "Autodromo Enzo e Dino Ferrari",
+  "track_layout": "Autodromo Enzo e Dino Ferrari",
+  "vehicle_family": "LMP2",
+  "vehicle_variant": "LMP2_ELMS",
+  "batch_id": "5a8126df14",
+  "batch_dir": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\autodromo-enzo-e-dino-ferrari--lmp2-elms-5a8126df14",
+  "steps": {
+    "project_contract": {
+      "status": "PASS",
+      "required_scripts": [
+        "session_history.py",
+        "validate_history_db.py",
+        "episode_pair_features.py",
+        "pair_review_queue.py",
+        "label_episode_pairs.py",
+        "validate_pair_labels.py",
+        "build_calibration_dataset.py",
+        "calibration_feature_report.py"
+      ],
+      "dependency_contract": {
+        "session_history_schema": 4,
+        "pair_review_queue_schema": "1.1",
+        "max_review_pairs_default": 24
+      }
+    },
+    "input_directory": {
+      "status": "PASS",
+      "path": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\data\\generated\\analysis",
+      "json_files_seen": 61
+    },
+    "history_init": {
+      "status": "PASS",
+      "command": "'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\.venv\\Scripts\\python.exe' 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\session_history.py' --db 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\data\\local\\race_engineer_history.duckdb' init"
+    },
+    "history_import": {
+      "status": "SKIPPED",
+      "reason": "--skip-import",
+      "sessions_before": 68
+    },
+    "history_validation": {
+      "status": "PASS",
+      "command": "'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\.venv\\Scripts\\python.exe' 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\validate_history_db.py' --db 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\data\\local\\race_engineer_history.duckdb'"
+    },
+    "vehicle_context_selection": {
+      "status": "PASS",
+      "selected_track": "Autodromo Enzo e Dino Ferrari",
+      "selected_track_layout": "Autodromo Enzo e Dino Ferrari",
+      "selected_vehicle_variant": "LMP2_ELMS",
+      "vehicle_family": "LMP2",
+      "session_count": 18,
+      "session_ids": [
+        9,
+        10,
+        29,
+        32,
+        33,
+        34,
+        36,
+        43,
+        48,
+        50,
+        51,
+        52,
+        57,
+        61,
+        62,
+        63,
+        64,
+        65
+      ],
+      "session_signature": "5a8126df145fe2bd9ab89c3b55b2d91f6fcbef54e2008ce99813438aea9c85bd",
+      "sessions_by_vehicle_context": {
+        "Autodromo Enzo e Dino Ferrari | Autodromo Enzo e Dino Ferrari | GT3": 1,
+        "Autodromo Enzo e Dino Ferrari | Autodromo Enzo e Dino Ferrari | HYPER": 2,
+        "Autodromo Enzo e Dino Ferrari | Autodromo Enzo e Dino Ferrari | LMP2_ELMS": 18,
+        "Autodromo Nazionale Monza | Autodromo Nazionale Monza | HYPER": 6,
+        "Autodromo Nazionale Monza | Autodromo Nazionale Monza | LMP2_ELMS": 6,
+        "Autódromo José Carlos Pace | Autódromo José Carlos Pace | LMP2_ELMS": 8,
+        "Circuit de Spa-Francorchamps | Circuit de Spa-Francorchamps | LMP2_ELMS": 9,
+        "Circuit de Spa-Francorchamps | Circuit de Spa-Francorchamps | LMP3": 1,
+        "Circuit de la Sarthe | Circuit de la Sarthe | HYPER": 3,
+        "Circuit de la Sarthe | Circuit de la Sarthe | LMP2_WEC": 5,
+        "Daytona International Speedway | Daytona International Speedway Road Course | LMP2_ELMS": 1,
+        "Fuji Speedway | Fuji Speedway | HYPER": 1,
+        "Fuji Speedway | Fuji Speedway | LMP2_ELMS": 5,
+        "Paul Ricard Circuit | Paul Ricard - 1A-V2-Short | LMP2_ELMS": 1,
+        "WeatherTech Raceway Laguna Seca | WeatherTech Raceway Laguna Seca | GT3": 1
+      }
+    },
+    "pair_features": {
+      "status": "REUSED",
+      "path": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\autodromo-enzo-e-dino-ferrari--lmp2-elms-5a8126df14\\episode_pair_features.json",
+      "pair_count": 17523
+    },
+    "review_queue": {
+      "status": "REUSED",
+      "path": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\autodromo-enzo-e-dino-ferrari--lmp2-elms-5a8126df14\\pair_review_queue.json",
+      "queue_pairs": 24,
+      "reuse_reason": "compatible"
+    },
+    "label_validation": {
+      "status": "PASS",
+      "command": "'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\.venv\\Scripts\\python.exe' 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\validate_pair_labels.py' 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\autodromo-enzo-e-dino-ferrari--lmp2-elms-5a8126df14\\pair_review_queue.json' 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\autodromo-enzo-e-dino-ferrari--lmp2-elms-5a8126df14\\pair_labels.json'"
+    },
+    "human_labels": {
+      "status": "PASS",
+      "labels_path": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\autodromo-enzo-e-dino-ferrari--lmp2-elms-5a8126df14\\pair_labels.json",
+      "exists": true,
+      "queue_pairs": 24,
+      "labeled_pairs": 24,
+      "unreviewed_pairs": 0,
+      "complete": true
+    },
+    "calibration_dataset": {
+      "status": "PASS",
+      "command": "'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\.venv\\Scripts\\python.exe' 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\build_calibration_dataset.py' 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\autodromo-enzo-e-dino-ferrari--lmp2-elms-5a8126df14\\pair_review_queue.json' 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\autodromo-enzo-e-dino-ferrari--lmp2-elms-5a8126df14\\pair_labels.json' --evaluation-fraction 0.25 --seed 20260810 --output 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\autodromo-enzo-e-dino-ferrari--lmp2-elms-5a8126df14\\calibration_dataset.json'",
+      "path": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\autodromo-enzo-e-dino-ferrari--lmp2-elms-5a8126df14\\calibration_dataset.json",
+      "calibration_pairs": 9,
+      "evaluation_pairs": 1,
+      "cross_split_pairs_excluded": 14,
+      "calibration_ready": true,
+      "evaluation_ready": true
+    },
+    "feature_report": {
+      "status": "PASS",
+      "command": "'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\.venv\\Scripts\\python.exe' 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_feature_report.py' 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\autodromo-enzo-e-dino-ferrari--lmp2-elms-5a8126df14\\calibration_dataset.json' --output 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\autodromo-enzo-e-dino-ferrari--lmp2-elms-5a8126df14\\calibration_feature_report.json'",
+      "path": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\autodromo-enzo-e-dino-ferrari--lmp2-elms-5a8126df14\\calibration_feature_report.json"
+    },
+    "evaluation_readiness": {
+      "status": "PASS",
+      "evaluation_pairs": 1
+    }
+  },
+  "next_action": "Inspect calibration_feature_report.json. Do not select matcher thresholds from evaluation data.",
+  "matcher": {
+    "status": "BLOCKED_BY_REAL_DATA",
+    "reason": "No thresholds, weights, automatic matching, clustering, or persistent_pattern are implemented."
+  }
+}

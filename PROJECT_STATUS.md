@@ -33,6 +33,15 @@ Validated baseline:
   channel (sequence order preserved). Over 27 zones it removes all 8 mixed
   primary channels and converts 8 combined cues into per-channel spatial cues;
   loses ordered sequence context. Hypothesis only, production unchanged.
+- Calibration campaign (2026-08-23): 5 new H2 batches ready for human review
+  (Imola LMP2_ELMS, Interlagos LMP2_ELMS, Fuji LMP2_ELMS, Sarthe LMP2_WEC,
+  Imola HYPER; 24 pairs each). Spa LMP2_ELMS remains the only calibrated matcher
+  context; Spa 98-pair queue still unlabeled; Monza batches need more sessions
+  for an evaluation split.
+- Imola LMP2_ELMS batch labeled and processed (2026-08-23): 24/24 labels valid
+  (SAME 11 / DIFFERENT 10 / AMBIGUOUS 3); calibration dataset ready with
+  evaluation split (9 calib + 1 eval) — first non-Spa context with
+  `evaluation_readiness: PASS`.
 
 ### analyze_telemetry
 Current: `3.8`

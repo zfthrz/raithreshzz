@@ -28,6 +28,11 @@ Validated baseline:
   mixed brake+throttle (0 brake-only); human-labeled H5.3b cross-tab shows
   ACTIONABLE candidates always have nonzero throttle deltas (brake zero in 4/16).
   Shadow-only, no channel preference authorized.
+- Shadow split-mixed-cues hypothesis (2026-08-23): deterministic shadow tool
+  `shadow_split_mixed_cue_plan.py` decomposes combined brake+throttle cues per
+  channel (sequence order preserved). Over 27 zones it removes all 8 mixed
+  primary channels and converts 8 combined cues into per-channel spatial cues;
+  loses ordered sequence context. Hypothesis only, production unchanged.
 
 ### analyze_telemetry
 Current: `3.8`

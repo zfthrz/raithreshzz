@@ -60,7 +60,7 @@ def test_gui_v1_11_applies_flat_dark_control_chrome_without_opening_window():
 
     app._configure_style()
 
-    assert GUI_VERSION == "1.14"
+    assert GUI_VERSION == "1.15"
     assert style.theme == "clam"
     assert style.configurations["TEntry"]["fieldbackground"] == "#15181c"
     assert style.configurations["TCombobox"]["borderwidth"] == 0

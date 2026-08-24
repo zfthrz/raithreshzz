@@ -9,9 +9,9 @@ Validated baseline:
 
 - full pytest: `1047 PASS / 0 FAIL / 0 SKIP`;
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP` (last analyzer-affecting checkpoint);
-- GUI: v1.14, section navigation + telemetry paned area + GPS zoom/pan + H5.3
+- GUI: v1.15, section navigation + telemetry paned area + GPS zoom/pan + H5.3
   presentation + status badges and side-by-side historical comparison +
-  calibration status panel;
+  calibration status panel + plan-map-telemetry sync;
 - H5.3: shadow implementation complete, production historical actions still disabled.
 - H5.3g: deterministic faster-lap withholding audit implemented; policy unchanged.
 - H5.3h: conservative local-loss hypothesis implemented in shadow; 1 unauthorized
@@ -616,6 +616,11 @@ presentación únicamente. See `docs/RACE_ENGINEER_GUI_V1_13.md`.
 GUI v1.14 agrega `Diagnóstico → Calibración`, un panel read-only con el estado H2
 por contexto (sesiones, labels, evaluación y matcher), coloreado por estado.
 Presentación únicamente. See `docs/RACE_ENGINEER_GUI_V1_14.md`.
+
+GUI v1.15 agrega la sincronización plan ↔ mapa ↔ telemetría: selector de zonas
+del plan validado (foco P11 con prefijo `FOCO`) que resalta la prioridad en el
+mapa GPS, hace fit al intervalo y enfoca los canales en el tramo. Presentación
+únicamente. See `docs/RACE_ENGINEER_GUI_V1_15.md`.
 
 Calibration batch orchestrator `1.5` requires the current History schema 4 contract,
 reports its runtime version consistently and has a regression test against schema drift.

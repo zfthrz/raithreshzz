@@ -70,7 +70,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.14"
+GUI_VERSION = "1.15"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 PROJECT_ROOT = Path(__file__).resolve().parent
 BACKEND_LABELS = {
@@ -1140,6 +1140,20 @@ class RaceEngineerApp:
             "<<ComboboxSelected>>",
             self._on_track_turn_selected,
         )
+        self.track_plan_selector_var = self.tk.StringVar(
+            value="Elegir zona del plan…"
+        )
+        self.track_plan_selector = self.ttk.Combobox(
+            turn_controls,
+            textvariable=self.track_plan_selector_var,
+            state="disabled",
+            width=36,
+        )
+        self.track_plan_selector.pack(side="left", padx=(0, 12))
+        self.track_plan_selector.bind(
+            "<<ComboboxSelected>>",
+            self._on_track_plan_selected,
+        )
         self.track_map_zone_status = self.tk.StringVar(
             value="Sin zonas H5.2 para esta sesión."
         )
@@ -1408,6 +1422,7 @@ class RaceEngineerApp:
         self.current_track_profile = None
         self.current_track_turns = ()
         self._update_track_turn_controls()
+        self._update_track_plan_controls()
         self.current_fitted_track_points = ()
         self.selected_track_overlay = None
         self.selected_track_point_index = None
@@ -1437,6 +1452,7 @@ class RaceEngineerApp:
         self.current_track_profile = None
         self.current_track_turns = ()
         self._update_track_turn_controls()
+        self._update_track_plan_controls()
         self.current_fitted_track_points = ()
         self.selected_track_overlay = None
         self.selected_track_point_index = None
@@ -1487,6 +1503,7 @@ class RaceEngineerApp:
                 self.current_track_turns = ()
                 layer_errors.append(f"perfil: {exc}")
             self._update_track_turn_controls()
+            self._update_track_plan_controls()
             try:
                 self.current_track_zones = load_track_zones(record.cross_session_path)
             except (OSError, UnicodeDecodeError, ValueError) as exc:
@@ -1573,6 +1590,7 @@ class RaceEngineerApp:
                 self.current_track_profile = profile
                 self.current_track_turns = profile_turns(profile)
                 self._update_track_turn_controls()
+                self._update_track_plan_controls()
                 self.track_map_status.set(self._track_map_status_text(data))
                 self._set_track_zone_summary(layer_errors=list(layer_errors))
                 self._render_track_map()
@@ -1583,6 +1601,7 @@ class RaceEngineerApp:
                 self.current_track_profile = None
                 self.current_track_turns = ()
                 self._update_track_turn_controls()
+                self._update_track_plan_controls()
                 self.current_fitted_track_points = ()
                 self.selected_track_point_index = None
                 self.track_map_canvas.delete("all")
@@ -1654,6 +1673,23 @@ class RaceEngineerApp:
         )
         self.track_turn_selector_var.set("Elegir curva…")
 
+    def _update_track_plan_controls(self):
+        if not hasattr(self, "track_plan_selector"):
+            return
+        values = tuple(
+            (
+                f"{'FOCO ' if priority.is_focus else ''}"
+                f"{priority.priority_id} · {priority.label} · "
+                f"{priority.start_distance_m:.0f}-{priority.end_distance_m:.0f} m"
+            )
+            for priority in self.current_track_priorities
+        )
+        self.track_plan_selector.configure(
+            values=values,
+            state="readonly" if values else "disabled",
+        )
+        self.track_plan_selector_var.set("Elegir zona del plan…")
+
     def _on_track_turn_selected(self, _event=None):
         raw = self.track_turn_selector_var.get().strip()
         if not raw.startswith("T") or " — " not in raw:
@@ -1705,6 +1741,68 @@ class RaceEngineerApp:
             f"T{turn.turn} — {turn.name} · curva validada · "
             f"{turn.start_distance_m:.0f}-{turn.end_distance_m:.0f} m · "
             f"ápice {turn.apex_distance_m:.0f} m"
+        )
+        self._render_track_map()
+
+    def _on_track_plan_selected(self, _event=None):
+        raw = self.track_plan_selector_var.get().strip()
+        data = self.current_track_map
+        if not raw or data is None:
+            return
+        key = raw[5:] if raw.startswith("FOCO ") else raw
+        priority_id = key.split(" · ", 1)[0].strip()
+        priority = next(
+            (
+                item
+                for item in self.current_track_priorities
+                if item.priority_id == priority_id
+            ),
+            None,
+        )
+        if priority is None:
+            return
+        self.selected_track_overlay = ("priority", priority.priority_id)
+        self.telemetry_zoom_range = (
+            priority.start_distance_m,
+            priority.end_distance_m,
+        )
+        center_distance = (
+            priority.start_distance_m + priority.end_distance_m
+        ) / 2.0
+        center_index = point_index_for_distance(data.points, center_distance)
+        self.selected_track_point_index = center_index
+        width = max(self.track_map_canvas.winfo_width(), 100)
+        height = max(self.track_map_canvas.winfo_height(), 100)
+        base_fitted = fit_track_points(data.points, width_px=width, height_px=height)
+        interval_points = tuple(
+            base_fitted[index]
+            for start_index, end_index in zone_point_ranges(data.points, priority)
+            for index in range(start_index, end_index + 1)
+        )
+        (
+            self.track_map_zoom_scale,
+            offset_x,
+            offset_y,
+        ) = focus_track_canvas_view(
+            interval_points,
+            width_px=width,
+            height_px=height,
+        )
+        self.track_map_zoom_offset = (offset_x, offset_y)
+        self._set_track_map_zoom_status()
+        self._set_telemetry_zoom_status()
+        if center_index is not None:
+            self._set_interval_telemetry(
+                data,
+                priority.start_distance_m,
+                priority.end_distance_m,
+                data.points[center_index],
+            )
+        focus_label = "Foco" if priority.is_focus else "Plan"
+        cues = "; ".join(priority.cues[:2]) if priority.cues else "sin cue textual"
+        self.track_map_zone_status.set(
+            f"{focus_label} {priority.priority_id} · {priority.label} · "
+            f"{priority.start_distance_m:.0f}-{priority.end_distance_m:.0f} m · {cues}"
         )
         self._render_track_map()
 

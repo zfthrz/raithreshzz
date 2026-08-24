@@ -1,7 +1,7 @@
 # Race Engineer — PROJECT_CONTEXT v1.0
 
 > Canonical end-to-end onboarding context for coding agents and LLMs working on the Race Engineer repository.
-> Baseline represented here: GUI v1.14, H5.4 P1–P11 and historical-shadow checkpoint 2026-08-23.
+> Baseline represented here: GUI v1.15, H5.4 P1–P11 and historical-shadow checkpoint 2026-08-23.
 >
 > This is the detailed mental model of the project. `AGENTS.md` should instruct coding agents to read this file before non-trivial work.
 
@@ -147,12 +147,12 @@ DeepSeek pseudo-labels/reviews are assistance and must never be silently mixed w
 
 # 4. Current operational baseline
 
-Checkpoint: **2026-08-23 GUI v1.14, H5.4 presentation and historical shadow**.
+Checkpoint: **2026-08-23 GUI v1.15, H5.4 presentation and historical shadow**.
 
 | Component | Current operational baseline |
 |---|---|
 | `race_engineer.py` | orchestrator v0.3 |
-| `race_engineer_gui.py` | v1.14 / calibration status panel |
+| `race_engineer_gui.py` | v1.15 / plan-map-telemetry sync |
 | `analyze_telemetry.py` | v3.8 + Objective Python v6 |
 | Brake point | 2.1 / schema 2.1 |
 | Throttle point | 1.2.1 / schema 1.2 |
@@ -1305,6 +1305,12 @@ por contexto (sesiones, labels, partición de evaluación y status del matcher
 resuelto), coloreado por estado. Se calcula en `race_engineer_ui_model.py`
 (`load_calibration_summary`) desde los `BATCH_STATUS.json`; presentación
 únicamente. See `docs/RACE_ENGINEER_GUI_V1_14.md`.
+
+GUI v1.15 agrega la sincronización plan ↔ mapa ↔ telemetría: selector de zonas
+del `next_stint_plan` validado (foco P11 con prefijo `FOCO`) que resalta la
+prioridad en el mapa GPS, hace fit al intervalo y enfoca el gráfico de canales
+en el tramo inicio-fin. Presentación únicamente. See
+`docs/RACE_ENGINEER_GUI_V1_15.md`.
 
 The scheduled task must execute `hidden_history_ingest.py` through `pythonw.exe`.
 That wrapper preserves the same maintenance arguments, creates no console window and

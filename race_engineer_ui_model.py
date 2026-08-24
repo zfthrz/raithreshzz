@@ -144,23 +144,23 @@ def load_calibration_summary(
             matcher = _dict(payload.get("matcher"))
             matcher_status = str(matcher.get("status") or "NO_MATCHER_STATUS")
             legacy_refreshed = False
-            if matcher_status == "BLOCKED_BY_REAL_DATA":
-                # BATCH_STATUS legacy previo al registro por contexto: el registro
-                # del matcher es la fuente de verdad si ya hay calibración.
-                try:
-                    from episode_pair_matcher import CALIBRATIONS
-                except Exception:
-                    CALIBRATIONS = {}
-                registry_status = CALIBRATIONS.get(
-                    (
-                        str(payload.get("track") or ""),
-                        str(payload.get("track_layout") or ""),
-                        str(payload.get("vehicle_variant") or ""),
-                    )
+            # El registro del matcher es la fuente de verdad del status por
+            # contexto; el campo del BATCH_STATUS es un snapshot (puede ser
+            # legacy BLOCKED_BY_REAL_DATA o anterior al registro).
+            try:
+                from episode_pair_matcher import CALIBRATIONS
+            except Exception:
+                CALIBRATIONS = {}
+            registry_status = CALIBRATIONS.get(
+                (
+                    str(payload.get("track") or ""),
+                    str(payload.get("track_layout") or ""),
+                    str(payload.get("vehicle_variant") or ""),
                 )
-                if registry_status is not None:
-                    matcher_status = str(registry_status.get("status") or matcher_status)
-                    legacy_refreshed = True
+            )
+            if registry_status is not None:
+                matcher_status = str(registry_status.get("status") or matcher_status)
+                legacy_refreshed = True
             rows.append(
                 {
                     "track": str(payload.get("track") or "—"),

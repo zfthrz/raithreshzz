@@ -32,6 +32,16 @@ INTERLAGOS_CALIBRATION_KEY = (
     "Autódromo José Carlos Pace",
     "LMP2_ELMS",
 )
+MONZA_HYPER_CALIBRATION_KEY = (
+    "Autodromo Nazionale Monza",
+    "Autodromo Nazionale Monza",
+    "HYPER",
+)
+MONZA_LMP2_CALIBRATION_KEY = (
+    "Autodromo Nazionale Monza",
+    "Autodromo Nazionale Monza",
+    "LMP2_ELMS",
+)
 
 # Conservative high-precision core learned from the 32 human-reviewed Spa/LMP2_ELMS pairs.
 # These are provisional guardrails, not universal physics constants.
@@ -129,6 +139,54 @@ CALIBRATIONS: dict[tuple[str, str, str], dict[str, Any]] = {
             "shape_conflict_coverage_diff_min": SHAPE_CONFLICT_COVERAGE_DIFF_MIN,
             "shape_conflict_impact_sim_max": SHAPE_CONFLICT_IMPACT_SIM_MAX,
             "reject_center_gt_m": 500.0,
+            "reject_overlap_union_max": 0.33,
+        },
+    },
+    MONZA_HYPER_CALIBRATION_KEY: {
+        "status": "CALIBRATED_PROVISIONAL_LOW_EVIDENCE",
+        "human_labels": 24,
+        "provenance": {
+            "batch_id": "aa020d588d",
+            "calibration_pairs": 7,
+            "evaluation_pairs": 0,
+            "labels": {"SAME": 0, "DIFFERENT": 7, "AMBIGUOUS": 0},
+            "match_core_disabled": "sin evidencia SAME en calibracion",
+        },
+        "thresholds": {
+            "match_enabled": False,
+            "match_center_max_m": 200.0,
+            "match_overlap_shorter_min": 0.90,
+            "match_overlap_union_min": 0.40,
+            "match_shared_channel_min": 1,
+            "extended_match_center_max_m": None,
+            "shape_conflict_mean_sim_max": SHAPE_CONFLICT_MEAN_SIM_MAX,
+            "shape_conflict_coverage_diff_min": SHAPE_CONFLICT_COVERAGE_DIFF_MIN,
+            "shape_conflict_impact_sim_max": SHAPE_CONFLICT_IMPACT_SIM_MAX,
+            "reject_center_gt_m": 1000.0,
+            "reject_overlap_union_max": 0.33,
+        },
+    },
+    MONZA_LMP2_CALIBRATION_KEY: {
+        "status": "CALIBRATED_PROVISIONAL_LOW_EVIDENCE",
+        "human_labels": 24,
+        "provenance": {
+            "batch_id": "bc05233dea",
+            "calibration_pairs": 7,
+            "evaluation_pairs": 0,
+            "labels": {"SAME": 0, "DIFFERENT": 7, "AMBIGUOUS": 0},
+            "match_core_disabled": "sin evidencia SAME en calibracion",
+        },
+        "thresholds": {
+            "match_enabled": False,
+            "match_center_max_m": 200.0,
+            "match_overlap_shorter_min": 0.90,
+            "match_overlap_union_min": 0.40,
+            "match_shared_channel_min": 1,
+            "extended_match_center_max_m": None,
+            "shape_conflict_mean_sim_max": SHAPE_CONFLICT_MEAN_SIM_MAX,
+            "shape_conflict_coverage_diff_min": SHAPE_CONFLICT_COVERAGE_DIFF_MIN,
+            "shape_conflict_impact_sim_max": SHAPE_CONFLICT_IMPACT_SIM_MAX,
+            "reject_center_gt_m": 1000.0,
             "reject_overlap_union_max": 0.33,
         },
     },
@@ -286,6 +344,7 @@ def classify_pair(pair: dict[str, Any]) -> dict[str, Any]:
     match_overlap_shorter_min = thresholds["match_overlap_shorter_min"]
     match_overlap_union_min = thresholds["match_overlap_union_min"]
     match_shared_channel_min = thresholds["match_shared_channel_min"]
+    match_enabled = thresholds.get("match_enabled", True)
     extended_center_max_m = thresholds.get("extended_match_center_max_m")
     extended_overlap_shorter_min = thresholds.get(
         "extended_match_overlap_shorter_min"
@@ -348,7 +407,7 @@ def classify_pair(pair: dict[str, Any]) -> dict[str, Any]:
         and shared_count >= match_shared_channel_min
     )
 
-    if core_spatial_match or extended_spatial_channel_match:
+    if match_enabled and (core_spatial_match or extended_spatial_channel_match):
         if weak_shape_conflict_veto(pair, shape, thresholds):
             return {
                 "decision": "AMBIGUOUS",

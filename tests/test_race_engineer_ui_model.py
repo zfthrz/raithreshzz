@@ -550,6 +550,34 @@ def test_calibration_summary_dedupes_by_context_keeping_latest(tmp_path: Path):
     assert summary["rows"][0]["batch_id"] == "new"
 
 
+def test_calibration_summary_prefers_registry_status_over_snapshot(tmp_path: Path):
+    batch = tmp_path / "monza" / "BATCH_STATUS.json"
+    batch.parent.mkdir(parents=True)
+    batch.write_text(
+        json.dumps(
+            {
+                "track": "Autodromo Nazionale Monza",
+                "track_layout": "Autodromo Nazionale Monza",
+                "vehicle_variant": "HYPER",
+                "batch_id": "aa020d588d",
+                "steps": {
+                    "vehicle_context_selection": {"session_count": 6},
+                    "human_labels": {"labeled_pairs": 24, "queue_pairs": 24},
+                    "evaluation_readiness": {"status": "WARNING_EMPTY"},
+                },
+                "matcher": {"status": "NO_CALIBRATION_FOR_CONTEXT"},
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    summary = load_calibration_summary(base_dir=tmp_path)
+
+    row = summary["rows"][0]
+    assert row["matcher_status"] == "CALIBRATED_PROVISIONAL_LOW_EVIDENCE"
+    assert row["legacy_status_refreshed"] is True
+
+
 def test_gui_entry_points_and_documentation_are_present():
     root = Path(__file__).resolve().parents[1]
     assert (root / "RaceEngineer.pyw").is_file()

@@ -52,6 +52,10 @@ Validated baseline:
 - Interlagos LMP2_ELMS registered in the matcher (2026-08-23): provisional
   calibration from batch `40c70a4dd3` (4 calib + 5 eval pairs), validated against
   24 real labels with 0 contradictions (SAME 9 MATCH / DIFFERENT 10 REJECT).
+- Monza HYPER and Monza LMP2_ELMS registered in the matcher (2026-08-23):
+  provisional REJECT-only calibration (no SAME evidence in calibration split;
+  MATCH core disabled, REJECT >1000 m without overlap). Both validated with 0
+  contradictions over 24 real labels each.
 
 ### analyze_telemetry
 Current: `3.8`

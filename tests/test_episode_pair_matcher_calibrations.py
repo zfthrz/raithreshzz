@@ -18,6 +18,16 @@ INTERLAGOS = {
     "track_layout": "Autódromo José Carlos Pace",
     "vehicle_variant": "LMP2_ELMS",
 }
+MONZA_HYPER = {
+    "track": "Autodromo Nazionale Monza",
+    "track_layout": "Autodromo Nazionale Monza",
+    "vehicle_variant": "HYPER",
+}
+MONZA_LMP2 = {
+    "track": "Autodromo Nazionale Monza",
+    "track_layout": "Autodromo Nazionale Monza",
+    "vehicle_variant": "LMP2_ELMS",
+}
 
 
 def pair(context: dict, *, center: float, overlap_union: float, overlap_shorter: float, shared: int = 1, jaccard: float | None = 1.0) -> dict:
@@ -103,3 +113,27 @@ def test_interlagos_match_reject_ambiguous():
     assert classify_pair(
         pair(INTERLAGOS, center=1941.0, overlap_union=0.0, overlap_shorter=0.0)
     )["decision"] == "REJECT"
+
+
+def test_monza_calibration_is_reject_only_without_same_evidence():
+    for context in (MONZA_HYPER, MONZA_LMP2):
+        calibration = resolve_calibration(
+            pair(context, center=3000.0, overlap_union=0.0, overlap_shorter=0.0)
+        )
+        assert calibration["status"] == "CALIBRATED_PROVISIONAL_LOW_EVIDENCE"
+        assert calibration["thresholds"]["match_enabled"] is False
+        assert calibration["provenance"]["match_core_disabled"]
+
+
+def test_monza_rejects_far_pairs_and_fails_closed_without_match_core():
+    # DIFFERENT lejanos sin overlap -> REJECT
+    assert classify_pair(
+        pair(MONZA_HYPER, center=2412.0, overlap_union=0.0, overlap_shorter=0.0)
+    )["decision"] == "REJECT"
+    assert classify_pair(
+        pair(MONZA_LMP2, center=2468.0, overlap_union=0.0, overlap_shorter=0.0)
+    )["decision"] == "REJECT"
+    # Sin núcleo MATCH: un par cercano con overlap fuerte queda AMBIGUOUS (fail-closed)
+    assert classify_pair(
+        pair(MONZA_HYPER, center=5.0, overlap_union=0.9, overlap_shorter=1.0)
+    )["decision"] == "AMBIGUOUS"

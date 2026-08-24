@@ -9,6 +9,7 @@ from race_engineer_ui_model import (
     discover_sessions,
     filter_sessions,
     format_lap_time,
+    load_calibration_summary,
     load_session_detail,
 )
 
@@ -442,6 +443,51 @@ def test_lap_time_formatter_is_driver_friendly():
     assert format_lap_time(None) == "—"
 
 
+def test_calibration_summary_reads_batch_statuses(tmp_path: Path):
+    batch = tmp_path / "spa" / "BATCH_STATUS.json"
+    batch.parent.mkdir(parents=True)
+    batch.write_text(
+        json.dumps(
+            {
+                "track": "Circuit de Spa-Francorchamps",
+                "track_layout": "Circuit de Spa-Francorchamps",
+                "vehicle_variant": "LMP2_ELMS",
+                "batch_id": "abc",
+                "steps": {
+                    "vehicle_context_selection": {"session_count": 9},
+                    "human_labels": {"labeled_pairs": 24, "queue_pairs": 24},
+                    "evaluation_readiness": {
+                        "status": "PASS",
+                        "evaluation_pairs": 5,
+                    },
+                    "calibration_dataset": {"calibration_ready": True},
+                },
+                "matcher": {
+                    "status": "CALIBRATED_PROVISIONAL_SINGLE_CONTEXT"
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    summary = load_calibration_summary(base_dir=tmp_path)
+
+    assert summary["calibrated_contexts"] == 1
+    assert summary["ready_datasets"] == 1
+    row = summary["rows"][0]
+    assert row["sessions"] == 9
+    assert row["labeled_pairs"] == 24
+    assert row["evaluation_pairs"] == 5
+    assert row["matcher_status"] == "CALIBRATED_PROVISIONAL_SINGLE_CONTEXT"
+
+
+def test_calibration_summary_empty_directory(tmp_path: Path):
+    summary = load_calibration_summary(base_dir=tmp_path)
+    assert summary["rows"] == []
+    assert summary["calibrated_contexts"] == 0
+    assert summary["ready_datasets"] == 0
+
+
 def test_gui_entry_points_and_documentation_are_present():
     root = Path(__file__).resolve().parents[1]
     assert (root / "RaceEngineer.pyw").is_file()
@@ -450,6 +496,7 @@ def test_gui_entry_points_and_documentation_are_present():
         source = (root / relative).read_text(encoding="utf-8")
         assert "race_engineer_gui.py" in source or "RACE_ENGINEER_GUI_V1_11.md" in source
     assert (root / "docs" / "RACE_ENGINEER_GUI_V1_11.md").is_file()
+    assert (root / "docs" / "RACE_ENGINEER_GUI_V1_14.md").is_file()
     assert (root / "docs" / "RACE_ENGINEER_GUI_V1_13.md").is_file()
     assert (root / "docs" / "RACE_ENGINEER_GUI_V1_10.md").is_file()
     assert (root / "docs" / "RACE_ENGINEER_GUI_V1_9.md").is_file()

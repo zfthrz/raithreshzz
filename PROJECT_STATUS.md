@@ -9,8 +9,9 @@ Validated baseline:
 
 - full pytest: `1047 PASS / 0 FAIL / 0 SKIP`;
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP` (last analyzer-affecting checkpoint);
-- GUI: v1.13, section navigation + telemetry paned area + GPS zoom/pan + H5.3
-  presentation + status badges and side-by-side historical comparison;
+- GUI: v1.14, section navigation + telemetry paned area + GPS zoom/pan + H5.3
+  presentation + status badges and side-by-side historical comparison +
+  calibration status panel;
 - H5.3: shadow implementation complete, production historical actions still disabled.
 - H5.3g: deterministic faster-lap withholding audit implemented; policy unchanged.
 - H5.3h: conservative local-loss hypothesis implemented in shadow; 1 unauthorized
@@ -48,6 +49,9 @@ Validated baseline:
   `CALIBRATED_PROVISIONAL_LOW_EVIDENCE` (24 labels, validated 0 contradictions);
   uncalibrated contexts fail closed to AMBIGUOUS. Orchestrator BATCH_STATUS now
   reports the resolved matcher status per context.
+- Interlagos LMP2_ELMS registered in the matcher (2026-08-23): provisional
+  calibration from batch `40c70a4dd3` (4 calib + 5 eval pairs), validated against
+  24 real labels with 0 contradictions (SAME 9 MATCH / DIFFERENT 10 REJECT).
 
 ### analyze_telemetry
 Current: `3.8`
@@ -591,6 +595,10 @@ GUI v1.13 agrega badges de estado con color y tooltip en el catálogo de sesione
 convierte `Historial → Comparación` en una vista lado a lado: delta resumido,
 paneles histórico/actual y detalle con zonas top 3 y lectura H5.2 validada. Es
 presentación únicamente. See `docs/RACE_ENGINEER_GUI_V1_13.md`.
+
+GUI v1.14 agrega `Diagnóstico → Calibración`, un panel read-only con el estado H2
+por contexto (sesiones, labels, evaluación y matcher), coloreado por estado.
+Presentación únicamente. See `docs/RACE_ENGINEER_GUI_V1_14.md`.
 
 Calibration batch orchestrator `1.5` requires the current History schema 4 contract,
 reports its runtime version consistently and has a regression test against schema drift.

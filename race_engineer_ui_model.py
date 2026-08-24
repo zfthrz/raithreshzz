@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any
 
 
+PROJECT_ROOT = Path(__file__).resolve().parent
 UI_MODEL_VERSION = "0.5"
 READY_STAGE_STATUSES = {"RUN", "REUSED"}
 FAILED_STAGE_STATUSES = {"FAILED"}
@@ -116,6 +117,63 @@ def format_timestamp(value: str, fallback_timestamp: float) -> str:
         except ValueError:
             pass
     return datetime.fromtimestamp(fallback_timestamp).strftime("%d/%m/%Y %H:%M")
+
+
+def load_calibration_summary(
+    base_dir: Path | None = None,
+) -> dict[str, Any]:
+    """Resumen determinista del estado de calibración H2 por contexto.
+
+    Lee los BATCH_STATUS.json de calibration_batches/ (runtime trackeado) y el
+    status del matcher por contexto ya resuelto por el orquestador. Es
+    presentación read-only: no consulta DuckDB ni modifica nada.
+    """
+    batches_root = base_dir or (PROJECT_ROOT / "calibration_batches")
+    rows: list[dict[str, Any]] = []
+    if batches_root.is_dir():
+        for status_path in sorted(batches_root.glob("*/BATCH_STATUS.json")):
+            try:
+                payload = _json(status_path)
+            except (OSError, ValueError, json.JSONDecodeError):
+                continue
+            steps = _dict(payload.get("steps"))
+            context_sel = _dict(steps.get("vehicle_context_selection"))
+            human = _dict(steps.get("human_labels"))
+            eval_step = _dict(steps.get("evaluation_readiness"))
+            dataset = _dict(steps.get("calibration_dataset"))
+            matcher = _dict(payload.get("matcher"))
+            rows.append(
+                {
+                    "track": str(payload.get("track") or "—"),
+                    "track_layout": str(payload.get("track_layout") or "—"),
+                    "vehicle_variant": str(payload.get("vehicle_variant") or "—"),
+                    "sessions": _integer(context_sel.get("session_count")) or 0,
+                    "labeled_pairs": _integer(human.get("labeled_pairs")) or 0,
+                    "queue_pairs": _integer(human.get("queue_pairs")) or 0,
+                    "evaluation_status": str(
+                        eval_step.get("status") or "NO_EVALUATION"
+                    ),
+                    "evaluation_pairs": _integer(eval_step.get("evaluation_pairs"))
+                    or 0,
+                    "dataset_ready": dataset.get("calibration_ready") is True,
+                    "matcher_status": str(
+                        matcher.get("status") or "NO_MATCHER_STATUS"
+                    ),
+                    "batch_id": str(
+                        payload.get("batch_id") or status_path.parent.name
+                    ),
+                }
+            )
+    rows.sort(key=lambda row: (row["track"], row["vehicle_variant"]))
+    calibrated = sum(
+        1 for row in rows if "CALIBRATED" in row["matcher_status"]
+    )
+    ready_datasets = sum(1 for row in rows if row["dataset_ready"])
+    return {
+        "rows": rows,
+        "calibrated_contexts": calibrated,
+        "ready_datasets": ready_datasets,
+    }
 
 
 def _stage_statuses(state: dict[str, Any]) -> tuple[tuple[str, str], ...]:

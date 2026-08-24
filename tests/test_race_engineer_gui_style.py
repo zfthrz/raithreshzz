@@ -5,6 +5,8 @@ from race_engineer_gui import (
     PRIMARY_SECTIONS,
     SECTION_VIEWS,
     RaceEngineerApp,
+    calibration_status_color,
+    calibration_status_tag,
     format_comparison_columns,
     session_status_color,
     session_status_tooltip,
@@ -57,7 +59,7 @@ def test_gui_v1_11_applies_flat_dark_control_chrome_without_opening_window():
 
     app._configure_style()
 
-    assert GUI_VERSION == "1.13"
+    assert GUI_VERSION == "1.14"
     assert style.theme == "clam"
     assert style.configurations["TEntry"]["fieldbackground"] == "#15181c"
     assert style.configurations["TCombobox"]["borderwidth"] == 0
@@ -97,7 +99,7 @@ def test_primary_navigation_groups_technical_views_by_user_task():
     )
     assert SECTION_VIEWS["Resumen"] == ("Debrief", "Próxima tanda", "Vueltas")
     assert SECTION_VIEWS["Historial"] == ("Referencia", "Comparación")
-    assert SECTION_VIEWS["Diagnóstico"] == ("Pipeline", "Ejecución")
+    assert SECTION_VIEWS["Diagnóstico"] == ("Pipeline", "Ejecución", "Calibración")
 
 
 def test_session_summary_uses_existing_status_and_history_availability_only():
@@ -183,3 +185,12 @@ def test_format_comparison_columns_falls_back_when_unavailable():
     assert hist_text == "Sin comparación histórica."
     assert current_text == "Sin comparación histórica."
     assert "no tiene una comparación histórica H5.2" in detail_text
+
+
+def test_calibration_status_colors_and_tags():
+    assert calibration_status_tag("CALIBRATED_PROVISIONAL_LOW_EVIDENCE") == "PROVISIONAL"
+    assert calibration_status_tag("CALIBRATED_PROVISIONAL_SINGLE_CONTEXT") == "PROVISIONAL"
+    assert calibration_status_tag("NO_CALIBRATION_FOR_CONTEXT") == "NO_CALIBRATION"
+    assert calibration_status_tag("BLOCKED_BY_REAL_DATA") == "BLOCKED"
+    assert calibration_status_color("CALIBRATED_PROVISIONAL_LOW_EVIDENCE") == "#f0c674"
+    assert calibration_status_color("NO_CALIBRATION_FOR_CONTEXT") == "#9aa5ad"

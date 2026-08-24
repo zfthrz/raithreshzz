@@ -29,6 +29,7 @@ from race_engineer_ui_model import (
     filter_sessions,
     format_lap_time,
     format_timestamp,
+    load_calibration_summary,
     load_session_detail,
 )
 from race_engineer_ui_analysis import (
@@ -69,7 +70,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.13"
+GUI_VERSION = "1.14"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 PROJECT_ROOT = Path(__file__).resolve().parent
 BACKEND_LABELS = {
@@ -88,7 +89,14 @@ SECTION_VIEWS = {
     "Resumen": ("Debrief", "Próxima tanda", "Vueltas"),
     "Telemetría": ("Mapa y canales",),
     "Historial": ("Referencia", "Comparación"),
-    "Diagnóstico": ("Pipeline", "Ejecución"),
+    "Diagnóstico": ("Pipeline", "Ejecución", "Calibración"),
+}
+
+CALIBRATION_STATUS_COLORS = {
+    "CALIBRATED": "#67e5d5",
+    "PROVISIONAL": "#f0c674",
+    "NO_CALIBRATION": "#9aa5ad",
+    "BLOCKED": "#ff7b72",
 }
 SESSION_STATUS_SUMMARY = {
     "DEBRIEF_READY": "Debrief listo",
@@ -179,6 +187,20 @@ def session_status_tooltip(status: str) -> str:
         status,
         "Estado no clasificado; revisá Diagnóstico → Pipeline.",
     )
+
+
+def calibration_status_tag(status: str) -> str:
+    if "CALIBRATED_PROVISIONAL" in status:
+        return "PROVISIONAL"
+    if status.startswith("CALIBRATED"):
+        return "CALIBRATED"
+    if status == "NO_CALIBRATION_FOR_CONTEXT":
+        return "NO_CALIBRATION"
+    return "BLOCKED"
+
+
+def calibration_status_color(status: str) -> str:
+    return CALIBRATION_STATUS_COLORS[calibration_status_tag(status)]
 
 
 def format_comparison_columns(view: dict) -> tuple[str, str, str, str]:
@@ -723,6 +745,7 @@ class RaceEngineerApp:
         diagnostics_notebook = self._section_tab(self.notebook, "Diagnóstico")
         self.pipeline_text = self._text_tab(diagnostics_notebook, "Pipeline")
         self.execution_text = self._text_tab(diagnostics_notebook, "Ejecución")
+        self._calibration_tab(diagnostics_notebook)
 
         execution_bar = ttk.Frame(right, style="Panel.TFrame")
         execution_bar.pack(fill="x", pady=(10, 0))
@@ -785,6 +808,89 @@ class RaceEngineerApp:
             "Detalle y lectura validada",
             side="top",
         )
+        return frame
+
+    def _calibration_tab(self, notebook):
+        frame = self.ttk.Frame(notebook, style="Panel.TFrame", padding=5)
+        notebook.add(frame, text="Calibración")
+        self.calibration_summary_var = self.tk.StringVar(value="")
+        self.ttk.Label(
+            frame,
+            textvariable=self.calibration_summary_var,
+            style="CardValue.TLabel",
+            wraplength=960,
+            justify="left",
+        ).pack(fill="x", padx=4, pady=(0, 8))
+
+        columns = ("context", "sessions", "labels", "evaluation", "matcher")
+        tree = self.ttk.Treeview(
+            frame,
+            columns=columns,
+            show="headings",
+            selectmode="browse",
+        )
+        headings = {
+            "context": "Contexto",
+            "sessions": "Sesiones",
+            "labels": "Labels",
+            "evaluation": "Evaluación",
+            "matcher": "Matcher",
+        }
+        widths = {
+            "context": 420,
+            "sessions": 70,
+            "labels": 70,
+            "evaluation": 150,
+            "matcher": 260,
+        }
+        for name in columns:
+            tree.heading(name, text=headings[name])
+            tree.column(
+                name,
+                width=widths[name],
+                minwidth=45,
+                stretch=name in {"context", "matcher"},
+            )
+        scrollbar = self.ttk.Scrollbar(frame, orient="vertical", command=tree.yview)
+        tree.configure(yscrollcommand=scrollbar.set)
+        scrollbar.pack(side="right", fill="y")
+        tree.pack(fill="both", expand=True)
+
+        summary = load_calibration_summary()
+        rows = summary["rows"]
+        self.calibration_summary_var.set(
+            f"{summary['calibrated_contexts']} contextos calibrados · "
+            f"{summary['ready_datasets']} datasets listos · "
+            f"{len(rows)} batches"
+        )
+        tree.tag_configure("row_even", background="#171717")
+        tree.tag_configure("row_odd", background="#1b1f23")
+        for tag, color in CALIBRATION_STATUS_COLORS.items():
+            tree.tag_configure(tag, foreground=color)
+        for index, row in enumerate(rows):
+            evaluation = (
+                f"{row['evaluation_pairs']} pares"
+                if row["evaluation_status"] == "PASS"
+                else row["evaluation_status"]
+            )
+            tag = calibration_status_tag(row["matcher_status"])
+            tree.insert(
+                "",
+                "end",
+                iid=str(index),
+                values=(
+                    f"{row['track']} · {row['vehicle_variant']}",
+                    row["sessions"],
+                    f"{row['labeled_pairs']}/{row['queue_pairs']}",
+                    evaluation,
+                    row["matcher_status"],
+                ),
+                tags=(
+                    "row_even" if index % 2 == 0 else "row_odd",
+                    tag,
+                ),
+            )
+        self.calibration_tree = tree
         return frame
 
     def _readonly_pane(self, parent, header, *, side):

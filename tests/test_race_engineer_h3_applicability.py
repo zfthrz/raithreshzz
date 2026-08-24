@@ -37,8 +37,8 @@ def _history(tmp_path: Path) -> Path:
 def test_h3_uncalibrated_context_is_not_applicable(tmp_path: Path):
     analysis = _analysis(
         tmp_path,
-        "Fuji Speedway",
-        "Fuji Speedway",
+        "Paul Ricard Circuit",
+        "Paul Ricard Circuit",
         "LMP2_ELMS",
     )
 

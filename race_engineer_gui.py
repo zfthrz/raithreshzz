@@ -1158,18 +1158,26 @@ class RaceEngineerApp:
             "<<ComboboxSelected>>",
             self._on_track_plan_selected,
         )
+        playback_controls = self.ttk.Frame(map_panel, style="Panel.TFrame")
+        playback_controls.pack(fill="x", pady=(4, 0))
+        self.ttk.Label(
+            playback_controls,
+            text="Playback:",
+            style="Muted.TLabel",
+        ).pack(side="left")
         self.track_rewind_button = self.ttk.Button(
-            turn_controls,
+            playback_controls,
             text="⏮ Inicio",
             command=self._on_track_rewind,
             state="disabled",
         )
-        self.track_rewind_button.pack(side="left", padx=(0, 6))
+        self.track_rewind_button.pack(side="left", padx=(8, 6))
         self.track_play_button = self.ttk.Button(
-            turn_controls,
+            playback_controls,
             text="▶ Play",
             command=self._on_track_play_toggle,
             state="disabled",
+            style="Accent.TButton",
         )
         self.track_play_button.pack(side="left", padx=(0, 12))
         self.track_map_zone_status = self.tk.StringVar(

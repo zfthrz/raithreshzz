@@ -2,8 +2,8 @@
 
 GUI v1.16 agrega **playback de telemetría** en Telemetría:
 
-- Botones `▶ Play / ⏸ Pausa` y `⏮ Inicio` junto a los selectores de curvas y
-  plan.
+- Fila `Playback:` con los botones `▶ Play / ⏸ Pausa` y `⏮ Inicio`, debajo de
+  los selectores de curvas y plan (siempre visible en el ancho default).
 - Play avanza automáticamente el punto blanco a lo largo de la vuelta (10 Hz),
   actualizando el mapa GPS, el cursor del gráfico de canales y las lecturas de
   velocidad/freno/acelerador; se detiene al llegar al final.

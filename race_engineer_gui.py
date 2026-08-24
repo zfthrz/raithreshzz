@@ -1572,7 +1572,12 @@ class RaceEngineerApp:
                 self.current_track_priorities = ()
                 layer_errors.append(f"debrief: {exc}")
             self._set_track_zone_summary(layer_errors=layer_errors)
-            self.track_map_status.set(self._track_map_status_text(cached))
+            self.track_map_status.set(
+                self._track_map_status_text(
+                    cached,
+                    resolution_hz=self.track_resolution_hz,
+                )
+            )
             self._render_track_map()
             return
 
@@ -1647,7 +1652,12 @@ class RaceEngineerApp:
                 self._update_track_turn_controls()
                 self._update_track_plan_controls()
                 self._set_track_playback_controls(True)
-                self.track_map_status.set(self._track_map_status_text(data))
+                self.track_map_status.set(
+                    self._track_map_status_text(
+                        data,
+                        resolution_hz=self.track_resolution_hz,
+                    )
+                )
                 self._set_track_zone_summary(layer_errors=list(layer_errors))
                 self._render_track_map()
             else:
@@ -1669,7 +1679,11 @@ class RaceEngineerApp:
             self.root.after(100, self._poll_track_map_queue)
 
     @staticmethod
-    def _track_map_status_text(data: TrackMapData) -> str:
+    def _track_map_status_text(
+        data: TrackMapData,
+        *,
+        resolution_hz: float | None = None,
+    ) -> str:
         if data.selection_reason == "REFERENCE_DURATION_MATCH":
             requested = data.requested_lap if data.requested_lap is not None else data.lap
             lap_text = (
@@ -1680,9 +1694,12 @@ class RaceEngineerApp:
             lap_text = f"vuelta GPS {data.lap} · trazado completo"
         else:
             lap_text = f"vuelta GPS completa {data.lap} · selección automática"
+        resolution = (
+            f"{resolution_hz:.0f} Hz · " if resolution_hz is not None else ""
+        )
         return (
             f"{data.track} · {lap_text} · {len(data.points)} puntos · "
-            f"{data.width_m:.0f} × {data.height_m:.0f} m"
+            f"{resolution}{data.width_m:.0f} × {data.height_m:.0f} m"
         )
 
     def _set_track_zone_summary(self, *, layer_errors: list[str] | None = None):

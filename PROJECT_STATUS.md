@@ -70,6 +70,12 @@ Validated baseline:
   Interlagos, Fuji, Spa, Sarthe). Semantic regression (region, action families,
   P10/P11 structure, forbidden actions, authorized evidence), not prose.
   Evaluation 6/6 PASS. No ranking change authorized without human review.
+- Phase I model observability v0.1 (2026-08-24): `model_observability.py`
+  read-only diagnostics over real artifacts — validator PASS/STALE_RENDER/FAIL
+  per backend/model + retry stats from llm_debug. Real run: deepseek 23
+  artifacts (12 PASS / 11 STALE), llamacpp 5 (1 PASS / 4 STALE), ollama 3
+  (0 PASS / 3 STALE); retry rate deepseek 6.4% / ollama 9.9%. Tokens/cost/
+  latency require a live benchmark (not in artifacts).
 
 ### analyze_telemetry
 Current: `3.8`

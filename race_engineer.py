@@ -262,6 +262,73 @@ def h4_applicability(db_path: Path, session_id: int) -> tuple[bool, list[str]]:
         connection.close()
 
 
+def h3_applicability(
+    analysis_json: Path,
+    db_path: Path,
+) -> tuple[bool, list[str]]:
+    """H3 es batch-derived: el stage per-session nunca corre.
+
+    El reason refleja la evidencia por contexto: matcher calibrado y pattern
+    runs importados en History.
+    """
+    try:
+        payload = json.loads(analysis_json.read_text(encoding="utf-8"))
+        metadata = payload.get("metadata") or {}
+    except (OSError, ValueError, json.JSONDecodeError):
+        return False, ["analysis metadata no disponible"]
+    identity = metadata.get("vehicle_identity") or {}
+    track = str(metadata.get("track") or "")
+    layout = str(
+        metadata.get("track_layout")
+        or metadata.get("lmu_track_layout")
+        or track
+    )
+    variant = str(
+        metadata.get("vehicle_variant")
+        or identity.get("variant")
+        or ""
+    )
+
+    calibrated = False
+    try:
+        from episode_pair_matcher import CALIBRATIONS
+
+        calibrated = (track, layout, variant) in CALIBRATIONS
+    except Exception:
+        calibrated = False
+
+    pattern_runs = 0
+    if db_path.exists():
+        try:
+            import duckdb
+
+            connection = duckdb.connect(str(db_path), read_only=True)
+            try:
+                row = connection.execute(
+                    """
+                    SELECT count(*) FROM pattern_runs
+                    WHERE track = ? AND track_layout = ? AND vehicle_variant = ?
+                    """,
+                    [track, layout, variant],
+                ).fetchone()
+                pattern_runs = int(row[0]) if row else 0
+            finally:
+                connection.close()
+        except Exception:
+            pattern_runs = 0
+
+    if calibrated and pattern_runs:
+        reasons = [
+            f"contexto calibrado con {pattern_runs} pattern run(s) en History; "
+            "H3 no se fuerza por sesión"
+        ]
+    elif calibrated:
+        reasons = ["contexto calibrado sin pattern runs H3 importados"]
+    else:
+        reasons = ["contexto sin calibración H2 para H3"]
+    return False, reasons
+
+
 def print_stage(name: str, status: str, detail: str | None = None) -> None:
     suffix = f" — {detail}" if detail else ""
     print(f"[{name}] {status}{suffix}")
@@ -567,11 +634,15 @@ def analyze_command(args: argparse.Namespace) -> int:
             )
 
         # H3 remains a calibration/batch-derived layer, not a mandatory per-session stage.
+        _h3_applicable, h3_reasons = h3_applicability(
+            analysis_json,
+            db_path,
+        )
         stage_results["h3"] = STATUS_SKIPPED
         print_stage(
             "h3",
             STATUS_SKIPPED,
-            "requiere un H2 matcher run calibrado; no se fuerza por sesión",
+            "; ".join(h3_reasons),
         )
 
         # ----------------------------------------------------

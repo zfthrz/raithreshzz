@@ -1,0 +1,6085 @@
+{
+  "metadata": {
+    "schema_version": "1.0",
+    "h3_version": "0.1",
+    "created_at_utc": "2026-08-24T01:32:41.395784+00:00",
+    "source_features": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\autodromo-nazionale-monza--lmp2-elms-bc05233dea\\episode_pair_features.json",
+    "source_matches": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\autodromo-nazionale-monza--lmp2-elms-bc05233dea\\episode_pair_matches.json",
+    "matcher_version": "0.3",
+    "matcher_status": "CALIBRATED_PROVISIONAL_LOW_EVIDENCE",
+    "persistent_min_independent_sessions": 3,
+    "equivalence_policy": "MATCH is transitive: A=B and B=C implies A=C. Internal AMBIGUOUS pairs are resolved by equivalence closure; internal REJECT pairs are contradictions requiring audit.",
+    "within_session_repeat_evidence_available": false,
+    "policy": "Derived H3 evidence only. Does not mutate History DB, does not select historical_reference, and does not alter coaching."
+  },
+  "summary": {
+    "episode_count": 60,
+    "pattern_count": 60,
+    "state_counts": {
+      "single_observation": 60
+    },
+    "persistent_pattern_count": 0,
+    "cross_session_repeat_count": 0,
+    "single_observation_count": 60,
+    "conflict_review_required_count": 0,
+    "match_edge_count": 0,
+    "transitively_resolved_ambiguous_pair_count": 0
+  },
+  "patterns": [
+    {
+      "pattern_id": "pat_3d218480b70b27f64354",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        18
+      ],
+      "session_observation_counts": {
+        "18": 1
+      },
+      "members": [
+        {
+          "session_id": 18,
+          "episode_pk": 581,
+          "episode_id": 1,
+          "timestamp_utc": "2026-08-09T17:11:58Z",
+          "session_type": "P",
+          "start_distance_m": 0.0,
+          "end_distance_m": 339.0,
+          "center_distance_m": 169.5,
+          "action_time_loss_s": 58.890376759110154,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 18,
+        "episode_pk": 581,
+        "episode_id": 1,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 0.0,
+        "start_min_m": 0.0,
+        "start_max_m": 0.0,
+        "end_median_m": 339.0,
+        "end_min_m": 339.0,
+        "end_max_m": 339.0,
+        "center_median_m": 169.5,
+        "center_min_m": 169.5,
+        "center_max_m": 169.5,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 58.890376759110154,
+        "action_time_loss_min_s": 58.890376759110154,
+        "action_time_loss_max_s": 58.890376759110154
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T17:11:58Z",
+        "last_observed_utc": "2026-08-09T17:11:58Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_6dc0d63fcd8e70cf12cb",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        18
+      ],
+      "session_observation_counts": {
+        "18": 1
+      },
+      "members": [
+        {
+          "session_id": 18,
+          "episode_pk": 587,
+          "episode_id": 7,
+          "timestamp_utc": "2026-08-09T17:11:58Z",
+          "session_type": "P",
+          "start_distance_m": 730.0,
+          "end_distance_m": 782.0,
+          "center_distance_m": 756.0,
+          "action_time_loss_s": 0.1905246245292389,
+          "channels": [
+            "brake",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 18,
+        "episode_pk": 587,
+        "episode_id": 7,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 730.0,
+        "start_min_m": 730.0,
+        "start_max_m": 730.0,
+        "end_median_m": 782.0,
+        "end_min_m": 782.0,
+        "end_max_m": 782.0,
+        "center_median_m": 756.0,
+        "center_min_m": 756.0,
+        "center_max_m": 756.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.1905246245292389,
+        "action_time_loss_min_s": 0.1905246245292389,
+        "action_time_loss_max_s": 0.1905246245292389
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "brake",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "brake",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "brake": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "brake": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T17:11:58Z",
+        "last_observed_utc": "2026-08-09T17:11:58Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_d4ccb3964fb16a11c774",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        18
+      ],
+      "session_observation_counts": {
+        "18": 1
+      },
+      "members": [
+        {
+          "session_id": 18,
+          "episode_pk": 586,
+          "episode_id": 6,
+          "timestamp_utc": "2026-08-09T17:11:58Z",
+          "session_type": "P",
+          "start_distance_m": 797.0,
+          "end_distance_m": 849.0,
+          "center_distance_m": 823.0,
+          "action_time_loss_s": 0.22955155616451606,
+          "channels": [
+            "brake"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 18,
+        "episode_pk": 586,
+        "episode_id": 6,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 797.0,
+        "start_min_m": 797.0,
+        "start_max_m": 797.0,
+        "end_median_m": 849.0,
+        "end_min_m": 849.0,
+        "end_max_m": 849.0,
+        "center_median_m": 823.0,
+        "center_min_m": 823.0,
+        "center_max_m": 823.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.22955155616451606,
+        "action_time_loss_min_s": 0.22955155616451606,
+        "action_time_loss_max_s": 0.22955155616451606
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "brake"
+        ],
+        "union_action_channels": [
+          "brake"
+        ],
+        "episode_prevalence_count": {
+          "brake": 1
+        },
+        "session_prevalence_count": {
+          "brake": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T17:11:58Z",
+        "last_observed_utc": "2026-08-09T17:11:58Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_82d459bd171fa404bda0",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        15
+      ],
+      "session_observation_counts": {
+        "15": 1
+      },
+      "members": [
+        {
+          "session_id": 15,
+          "episode_pk": 525,
+          "episode_id": 4,
+          "timestamp_utc": "2026-08-12T04:29:40Z",
+          "session_type": "P",
+          "start_distance_m": 834.0,
+          "end_distance_m": 865.0,
+          "center_distance_m": 849.5,
+          "action_time_loss_s": 0.08211863446814327,
+          "channels": [
+            "brake"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 15,
+        "episode_pk": 525,
+        "episode_id": 4,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 834.0,
+        "start_min_m": 834.0,
+        "start_max_m": 834.0,
+        "end_median_m": 865.0,
+        "end_min_m": 865.0,
+        "end_max_m": 865.0,
+        "center_median_m": 849.5,
+        "center_min_m": 849.5,
+        "center_max_m": 849.5,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.08211863446814327,
+        "action_time_loss_min_s": 0.08211863446814327,
+        "action_time_loss_max_s": 0.08211863446814327
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "brake"
+        ],
+        "union_action_channels": [
+          "brake"
+        ],
+        "episode_prevalence_count": {
+          "brake": 1
+        },
+        "session_prevalence_count": {
+          "brake": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-12T04:29:40Z",
+        "last_observed_utc": "2026-08-12T04:29:40Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_f06450549d2c1d915f64",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        18
+      ],
+      "session_observation_counts": {
+        "18": 1
+      },
+      "members": [
+        {
+          "session_id": 18,
+          "episode_pk": 589,
+          "episode_id": 9,
+          "timestamp_utc": "2026-08-09T17:11:58Z",
+          "session_type": "P",
+          "start_distance_m": 862.0,
+          "end_distance_m": 881.0,
+          "center_distance_m": 871.5,
+          "action_time_loss_s": 0.11182860783483761,
+          "channels": [
+            "brake"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 18,
+        "episode_pk": 589,
+        "episode_id": 9,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 862.0,
+        "start_min_m": 862.0,
+        "start_max_m": 862.0,
+        "end_median_m": 881.0,
+        "end_min_m": 881.0,
+        "end_max_m": 881.0,
+        "center_median_m": 871.5,
+        "center_min_m": 871.5,
+        "center_max_m": 871.5,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.11182860783483761,
+        "action_time_loss_min_s": 0.11182860783483761,
+        "action_time_loss_max_s": 0.11182860783483761
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "brake"
+        ],
+        "union_action_channels": [
+          "brake"
+        ],
+        "episode_prevalence_count": {
+          "brake": 1
+        },
+        "session_prevalence_count": {
+          "brake": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T17:11:58Z",
+        "last_observed_utc": "2026-08-09T17:11:58Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_8a1631bdee5b2fc0be68",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        23
+      ],
+      "session_observation_counts": {
+        "23": 1
+      },
+      "members": [
+        {
+          "session_id": 23,
+          "episode_pk": 687,
+          "episode_id": 4,
+          "timestamp_utc": "2026-08-17T18:55:39Z",
+          "session_type": "P",
+          "start_distance_m": 883.0,
+          "end_distance_m": 905.0,
+          "center_distance_m": 894.0,
+          "action_time_loss_s": 0.06190847387311038,
+          "channels": [
+            "brake"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 23,
+        "episode_pk": 687,
+        "episode_id": 4,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 883.0,
+        "start_min_m": 883.0,
+        "start_max_m": 883.0,
+        "end_median_m": 905.0,
+        "end_min_m": 905.0,
+        "end_max_m": 905.0,
+        "center_median_m": 894.0,
+        "center_min_m": 894.0,
+        "center_max_m": 894.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.06190847387311038,
+        "action_time_loss_min_s": 0.06190847387311038,
+        "action_time_loss_max_s": 0.06190847387311038
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "brake"
+        ],
+        "union_action_channels": [
+          "brake"
+        ],
+        "episode_prevalence_count": {
+          "brake": 1
+        },
+        "session_prevalence_count": {
+          "brake": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-17T18:55:39Z",
+        "last_observed_utc": "2026-08-17T18:55:39Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_3bd9d33b212edf3584e0",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        15
+      ],
+      "session_observation_counts": {
+        "15": 1
+      },
+      "members": [
+        {
+          "session_id": 15,
+          "episode_pk": 519,
+          "episode_id": 1,
+          "timestamp_utc": "2026-08-12T04:29:40Z",
+          "session_type": "P",
+          "start_distance_m": 862.0,
+          "end_distance_m": 933.0,
+          "center_distance_m": 897.5,
+          "action_time_loss_s": 0.28286298368977114,
+          "channels": [
+            "brake",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 15,
+        "episode_pk": 519,
+        "episode_id": 1,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 862.0,
+        "start_min_m": 862.0,
+        "start_max_m": 862.0,
+        "end_median_m": 933.0,
+        "end_min_m": 933.0,
+        "end_max_m": 933.0,
+        "center_median_m": 897.5,
+        "center_min_m": 897.5,
+        "center_max_m": 897.5,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.28286298368977114,
+        "action_time_loss_min_s": 0.28286298368977114,
+        "action_time_loss_max_s": 0.28286298368977114
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "brake",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "brake",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "brake": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "brake": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-12T04:29:40Z",
+        "last_observed_utc": "2026-08-12T04:29:40Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_302f94611afd760eeda9",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        15
+      ],
+      "session_observation_counts": {
+        "15": 1
+      },
+      "members": [
+        {
+          "session_id": 15,
+          "episode_pk": 522,
+          "episode_id": 1,
+          "timestamp_utc": "2026-08-12T04:29:40Z",
+          "session_type": "P",
+          "start_distance_m": 878.0,
+          "end_distance_m": 927.0,
+          "center_distance_m": 902.5,
+          "action_time_loss_s": 0.25505753194969927,
+          "channels": [
+            "brake",
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 15,
+        "episode_pk": 522,
+        "episode_id": 1,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 878.0,
+        "start_min_m": 878.0,
+        "start_max_m": 878.0,
+        "end_median_m": 927.0,
+        "end_min_m": 927.0,
+        "end_max_m": 927.0,
+        "center_median_m": 902.5,
+        "center_min_m": 902.5,
+        "center_max_m": 902.5,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.25505753194969927,
+        "action_time_loss_min_s": 0.25505753194969927,
+        "action_time_loss_max_s": 0.25505753194969927
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "brake": 1,
+          "steering_magnitude": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "brake": 1,
+          "steering_magnitude": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-12T04:29:40Z",
+        "last_observed_utc": "2026-08-12T04:29:40Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_72f2cc313a99c3843f75",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        20
+      ],
+      "session_observation_counts": {
+        "20": 1
+      },
+      "members": [
+        {
+          "session_id": 20,
+          "episode_pk": 648,
+          "episode_id": 6,
+          "timestamp_utc": "2026-08-17T02:28:27Z",
+          "session_type": "P",
+          "start_distance_m": 894.0,
+          "end_distance_m": 922.0,
+          "center_distance_m": 908.0,
+          "action_time_loss_s": 0.07249554073003672,
+          "channels": [
+            "brake",
+            "steering_magnitude"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 20,
+        "episode_pk": 648,
+        "episode_id": 6,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 894.0,
+        "start_min_m": 894.0,
+        "start_max_m": 894.0,
+        "end_median_m": 922.0,
+        "end_min_m": 922.0,
+        "end_max_m": 922.0,
+        "center_median_m": 908.0,
+        "center_min_m": 908.0,
+        "center_max_m": 908.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.07249554073003672,
+        "action_time_loss_min_s": 0.07249554073003672,
+        "action_time_loss_max_s": 0.07249554073003672
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "brake",
+          "steering_magnitude"
+        ],
+        "union_action_channels": [
+          "brake",
+          "steering_magnitude"
+        ],
+        "episode_prevalence_count": {
+          "brake": 1,
+          "steering_magnitude": 1
+        },
+        "session_prevalence_count": {
+          "brake": 1,
+          "steering_magnitude": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-17T02:28:27Z",
+        "last_observed_utc": "2026-08-17T02:28:27Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_2b22ccdf301212546559",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        19
+      ],
+      "session_observation_counts": {
+        "19": 1
+      },
+      "members": [
+        {
+          "session_id": 19,
+          "episode_pk": 594,
+          "episode_id": 2,
+          "timestamp_utc": "2026-08-15T20:03:24Z",
+          "session_type": "P",
+          "start_distance_m": 932.0,
+          "end_distance_m": 950.0,
+          "center_distance_m": 941.0,
+          "action_time_loss_s": 0.06423746855736745,
+          "channels": [
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 19,
+        "episode_pk": 594,
+        "episode_id": 2,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 932.0,
+        "start_min_m": 932.0,
+        "start_max_m": 932.0,
+        "end_median_m": 950.0,
+        "end_min_m": 950.0,
+        "end_max_m": 950.0,
+        "center_median_m": 941.0,
+        "center_min_m": 941.0,
+        "center_max_m": 941.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.06423746855736745,
+        "action_time_loss_min_s": 0.06423746855736745,
+        "action_time_loss_max_s": 0.06423746855736745
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "throttle"
+        ],
+        "union_action_channels": [
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-15T20:03:24Z",
+        "last_observed_utc": "2026-08-15T20:03:24Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_bc0ec79ffbbc463e3e84",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        40
+      ],
+      "session_observation_counts": {
+        "40": 1
+      },
+      "members": [
+        {
+          "session_id": 40,
+          "episode_pk": 1079,
+          "episode_id": 2,
+          "timestamp_utc": "2026-08-15T20:03:24Z",
+          "session_type": "P",
+          "start_distance_m": 932.0,
+          "end_distance_m": 950.0,
+          "center_distance_m": 941.0,
+          "action_time_loss_s": 0.06423746855736745,
+          "channels": [
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 40,
+        "episode_pk": 1079,
+        "episode_id": 2,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 932.0,
+        "start_min_m": 932.0,
+        "start_max_m": 932.0,
+        "end_median_m": 950.0,
+        "end_min_m": 950.0,
+        "end_max_m": 950.0,
+        "center_median_m": 941.0,
+        "center_min_m": 941.0,
+        "center_max_m": 941.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.06423746855736745,
+        "action_time_loss_min_s": 0.06423746855736745,
+        "action_time_loss_max_s": 0.06423746855736745
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "throttle"
+        ],
+        "union_action_channels": [
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-15T20:03:24Z",
+        "last_observed_utc": "2026-08-15T20:03:24Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_476dca4eacc0621c8663",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        23
+      ],
+      "session_observation_counts": {
+        "23": 1
+      },
+      "members": [
+        {
+          "session_id": 23,
+          "episode_pk": 681,
+          "episode_id": 1,
+          "timestamp_utc": "2026-08-17T18:55:39Z",
+          "session_type": "P",
+          "start_distance_m": 939.0,
+          "end_distance_m": 1002.0,
+          "center_distance_m": 970.5,
+          "action_time_loss_s": 0.5946893123860733,
+          "channels": [
+            "steering_magnitude"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 23,
+        "episode_pk": 681,
+        "episode_id": 1,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 939.0,
+        "start_min_m": 939.0,
+        "start_max_m": 939.0,
+        "end_median_m": 1002.0,
+        "end_min_m": 1002.0,
+        "end_max_m": 1002.0,
+        "center_median_m": 970.5,
+        "center_min_m": 970.5,
+        "center_max_m": 970.5,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.5946893123860733,
+        "action_time_loss_min_s": 0.5946893123860733,
+        "action_time_loss_max_s": 0.5946893123860733
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "steering_magnitude"
+        ],
+        "union_action_channels": [
+          "steering_magnitude"
+        ],
+        "episode_prevalence_count": {
+          "steering_magnitude": 1
+        },
+        "session_prevalence_count": {
+          "steering_magnitude": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-17T18:55:39Z",
+        "last_observed_utc": "2026-08-17T18:55:39Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_975fcc2f93d7c9824901",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        18
+      ],
+      "session_observation_counts": {
+        "18": 1
+      },
+      "members": [
+        {
+          "session_id": 18,
+          "episode_pk": 584,
+          "episode_id": 4,
+          "timestamp_utc": "2026-08-09T17:11:58Z",
+          "session_type": "P",
+          "start_distance_m": 944.0,
+          "end_distance_m": 1010.0,
+          "center_distance_m": 977.0,
+          "action_time_loss_s": 0.3274990149836299,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 18,
+        "episode_pk": 584,
+        "episode_id": 4,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 944.0,
+        "start_min_m": 944.0,
+        "start_max_m": 944.0,
+        "end_median_m": 1010.0,
+        "end_min_m": 1010.0,
+        "end_max_m": 1010.0,
+        "center_median_m": 977.0,
+        "center_min_m": 977.0,
+        "center_max_m": 977.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.3274990149836299,
+        "action_time_loss_min_s": 0.3274990149836299,
+        "action_time_loss_max_s": 0.3274990149836299
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T17:11:58Z",
+        "last_observed_utc": "2026-08-09T17:11:58Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_65cead42ceec74166231",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        15
+      ],
+      "session_observation_counts": {
+        "15": 1
+      },
+      "members": [
+        {
+          "session_id": 15,
+          "episode_pk": 521,
+          "episode_id": 3,
+          "timestamp_utc": "2026-08-12T04:29:40Z",
+          "session_type": "P",
+          "start_distance_m": 978.0,
+          "end_distance_m": 997.0,
+          "center_distance_m": 987.5,
+          "action_time_loss_s": 0.031591322478002226,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 15,
+        "episode_pk": 521,
+        "episode_id": 3,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 978.0,
+        "start_min_m": 978.0,
+        "start_max_m": 978.0,
+        "end_median_m": 997.0,
+        "end_min_m": 997.0,
+        "end_max_m": 997.0,
+        "center_median_m": 987.5,
+        "center_min_m": 987.5,
+        "center_max_m": 987.5,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.031591322478002226,
+        "action_time_loss_min_s": 0.031591322478002226,
+        "action_time_loss_max_s": 0.031591322478002226
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-12T04:29:40Z",
+        "last_observed_utc": "2026-08-12T04:29:40Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_8222b176a52ec39b27ea",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        18
+      ],
+      "session_observation_counts": {
+        "18": 1
+      },
+      "members": [
+        {
+          "session_id": 18,
+          "episode_pk": 592,
+          "episode_id": 12,
+          "timestamp_utc": "2026-08-09T17:11:58Z",
+          "session_type": "P",
+          "start_distance_m": 1982.0,
+          "end_distance_m": 2006.0,
+          "center_distance_m": 1994.0,
+          "action_time_loss_s": 0.029558414299501123,
+          "channels": [
+            "brake",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 18,
+        "episode_pk": 592,
+        "episode_id": 12,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 1982.0,
+        "start_min_m": 1982.0,
+        "start_max_m": 1982.0,
+        "end_median_m": 2006.0,
+        "end_min_m": 2006.0,
+        "end_max_m": 2006.0,
+        "center_median_m": 1994.0,
+        "center_min_m": 1994.0,
+        "center_max_m": 1994.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.029558414299501123,
+        "action_time_loss_min_s": 0.029558414299501123,
+        "action_time_loss_max_s": 0.029558414299501123
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "brake",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "brake",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "brake": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "brake": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T17:11:58Z",
+        "last_observed_utc": "2026-08-09T17:11:58Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_1c47799475e083a97cb9",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        18
+      ],
+      "session_observation_counts": {
+        "18": 1
+      },
+      "members": [
+        {
+          "session_id": 18,
+          "episode_pk": 579,
+          "episode_id": 4,
+          "timestamp_utc": "2026-08-09T17:11:58Z",
+          "session_type": "P",
+          "start_distance_m": 1983.0,
+          "end_distance_m": 2015.0,
+          "center_distance_m": 1999.0,
+          "action_time_loss_s": 0.02380149574905488,
+          "channels": [
+            "brake",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 18,
+        "episode_pk": 579,
+        "episode_id": 4,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 1983.0,
+        "start_min_m": 1983.0,
+        "start_max_m": 1983.0,
+        "end_median_m": 2015.0,
+        "end_min_m": 2015.0,
+        "end_max_m": 2015.0,
+        "center_median_m": 1999.0,
+        "center_min_m": 1999.0,
+        "center_max_m": 1999.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.02380149574905488,
+        "action_time_loss_min_s": 0.02380149574905488,
+        "action_time_loss_max_s": 0.02380149574905488
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "brake",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "brake",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "brake": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "brake": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T17:11:58Z",
+        "last_observed_utc": "2026-08-09T17:11:58Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_1eeb9844d46bda8fb19c",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        18
+      ],
+      "session_observation_counts": {
+        "18": 1
+      },
+      "members": [
+        {
+          "session_id": 18,
+          "episode_pk": 590,
+          "episode_id": 10,
+          "timestamp_utc": "2026-08-09T17:11:58Z",
+          "session_type": "P",
+          "start_distance_m": 2045.0,
+          "end_distance_m": 2082.0,
+          "center_distance_m": 2063.5,
+          "action_time_loss_s": 0.10939371082622529,
+          "channels": [
+            "brake",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 18,
+        "episode_pk": 590,
+        "episode_id": 10,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 2045.0,
+        "start_min_m": 2045.0,
+        "start_max_m": 2045.0,
+        "end_median_m": 2082.0,
+        "end_min_m": 2082.0,
+        "end_max_m": 2082.0,
+        "center_median_m": 2063.5,
+        "center_min_m": 2063.5,
+        "center_max_m": 2063.5,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.10939371082622529,
+        "action_time_loss_min_s": 0.10939371082622529,
+        "action_time_loss_max_s": 0.10939371082622529
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "brake",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "brake",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "brake": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "brake": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T17:11:58Z",
+        "last_observed_utc": "2026-08-09T17:11:58Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_fa84dc7b7256f01547a2",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        18
+      ],
+      "session_observation_counts": {
+        "18": 1
+      },
+      "members": [
+        {
+          "session_id": 18,
+          "episode_pk": 576,
+          "episode_id": 1,
+          "timestamp_utc": "2026-08-09T17:11:58Z",
+          "session_type": "P",
+          "start_distance_m": 2043.0,
+          "end_distance_m": 2160.0,
+          "center_distance_m": 2101.5,
+          "action_time_loss_s": 0.4130173444930705,
+          "channels": [
+            "brake",
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 18,
+        "episode_pk": 576,
+        "episode_id": 1,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 2043.0,
+        "start_min_m": 2043.0,
+        "start_max_m": 2043.0,
+        "end_median_m": 2160.0,
+        "end_min_m": 2160.0,
+        "end_max_m": 2160.0,
+        "center_median_m": 2101.5,
+        "center_min_m": 2101.5,
+        "center_max_m": 2101.5,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.4130173444930705,
+        "action_time_loss_min_s": 0.4130173444930705,
+        "action_time_loss_max_s": 0.4130173444930705
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "brake": 1,
+          "steering_magnitude": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "brake": 1,
+          "steering_magnitude": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T17:11:58Z",
+        "last_observed_utc": "2026-08-09T17:11:58Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_75473b54a92f25cd18a4",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        15
+      ],
+      "session_observation_counts": {
+        "15": 1
+      },
+      "members": [
+        {
+          "session_id": 15,
+          "episode_pk": 532,
+          "episode_id": 11,
+          "timestamp_utc": "2026-08-12T04:29:40Z",
+          "session_type": "P",
+          "start_distance_m": 2099.0,
+          "end_distance_m": 2124.0,
+          "center_distance_m": 2111.5,
+          "action_time_loss_s": 0.025907332964784757,
+          "channels": [
+            "brake"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 15,
+        "episode_pk": 532,
+        "episode_id": 11,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 2099.0,
+        "start_min_m": 2099.0,
+        "start_max_m": 2099.0,
+        "end_median_m": 2124.0,
+        "end_min_m": 2124.0,
+        "end_max_m": 2124.0,
+        "center_median_m": 2111.5,
+        "center_min_m": 2111.5,
+        "center_max_m": 2111.5,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.025907332964784757,
+        "action_time_loss_min_s": 0.025907332964784757,
+        "action_time_loss_max_s": 0.025907332964784757
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "brake"
+        ],
+        "union_action_channels": [
+          "brake"
+        ],
+        "episode_prevalence_count": {
+          "brake": 1
+        },
+        "session_prevalence_count": {
+          "brake": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-12T04:29:40Z",
+        "last_observed_utc": "2026-08-12T04:29:40Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_20dcf03b23e97a80675a",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        20
+      ],
+      "session_observation_counts": {
+        "20": 1
+      },
+      "members": [
+        {
+          "session_id": 20,
+          "episode_pk": 647,
+          "episode_id": 5,
+          "timestamp_utc": "2026-08-17T02:28:27Z",
+          "session_type": "P",
+          "start_distance_m": 2098.0,
+          "end_distance_m": 2131.0,
+          "center_distance_m": 2114.5,
+          "action_time_loss_s": 0.1028297449636355,
+          "channels": [
+            "brake"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 20,
+        "episode_pk": 647,
+        "episode_id": 5,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 2098.0,
+        "start_min_m": 2098.0,
+        "start_max_m": 2098.0,
+        "end_median_m": 2131.0,
+        "end_min_m": 2131.0,
+        "end_max_m": 2131.0,
+        "center_median_m": 2114.5,
+        "center_min_m": 2114.5,
+        "center_max_m": 2114.5,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.1028297449636355,
+        "action_time_loss_min_s": 0.1028297449636355,
+        "action_time_loss_max_s": 0.1028297449636355
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "brake"
+        ],
+        "union_action_channels": [
+          "brake"
+        ],
+        "episode_prevalence_count": {
+          "brake": 1
+        },
+        "session_prevalence_count": {
+          "brake": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-17T02:28:27Z",
+        "last_observed_utc": "2026-08-17T02:28:27Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_faf665a10b7807bdd842",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        18
+      ],
+      "session_observation_counts": {
+        "18": 1
+      },
+      "members": [
+        {
+          "session_id": 18,
+          "episode_pk": 583,
+          "episode_id": 3,
+          "timestamp_utc": "2026-08-09T17:11:58Z",
+          "session_type": "P",
+          "start_distance_m": 2110.0,
+          "end_distance_m": 2171.0,
+          "center_distance_m": 2140.5,
+          "action_time_loss_s": 0.35010847861225614,
+          "channels": [
+            "brake",
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 18,
+        "episode_pk": 583,
+        "episode_id": 3,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 2110.0,
+        "start_min_m": 2110.0,
+        "start_max_m": 2110.0,
+        "end_median_m": 2171.0,
+        "end_min_m": 2171.0,
+        "end_max_m": 2171.0,
+        "center_median_m": 2140.5,
+        "center_min_m": 2140.5,
+        "center_max_m": 2140.5,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.35010847861225614,
+        "action_time_loss_min_s": 0.35010847861225614,
+        "action_time_loss_max_s": 0.35010847861225614
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "brake": 1,
+          "steering_magnitude": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "brake": 1,
+          "steering_magnitude": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T17:11:58Z",
+        "last_observed_utc": "2026-08-09T17:11:58Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_a60f6e89347b692308f2",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        15
+      ],
+      "session_observation_counts": {
+        "15": 1
+      },
+      "members": [
+        {
+          "session_id": 15,
+          "episode_pk": 529,
+          "episode_id": 8,
+          "timestamp_utc": "2026-08-12T04:29:40Z",
+          "session_type": "P",
+          "start_distance_m": 2141.0,
+          "end_distance_m": 2167.0,
+          "center_distance_m": 2154.0,
+          "action_time_loss_s": 0.04617093310686471,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 15,
+        "episode_pk": 529,
+        "episode_id": 8,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 2141.0,
+        "start_min_m": 2141.0,
+        "start_max_m": 2141.0,
+        "end_median_m": 2167.0,
+        "end_min_m": 2167.0,
+        "end_max_m": 2167.0,
+        "center_median_m": 2154.0,
+        "center_min_m": 2154.0,
+        "center_max_m": 2154.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.04617093310686471,
+        "action_time_loss_min_s": 0.04617093310686471,
+        "action_time_loss_max_s": 0.04617093310686471
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-12T04:29:40Z",
+        "last_observed_utc": "2026-08-12T04:29:40Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_531a07326ab43bf43f5c",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        19
+      ],
+      "session_observation_counts": {
+        "19": 1
+      },
+      "members": [
+        {
+          "session_id": 19,
+          "episode_pk": 595,
+          "episode_id": 1,
+          "timestamp_utc": "2026-08-15T20:03:24Z",
+          "session_type": "P",
+          "start_distance_m": 2158.0,
+          "end_distance_m": 2205.0,
+          "center_distance_m": 2181.5,
+          "action_time_loss_s": 0.05363318213689183,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 19,
+        "episode_pk": 595,
+        "episode_id": 1,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 2158.0,
+        "start_min_m": 2158.0,
+        "start_max_m": 2158.0,
+        "end_median_m": 2205.0,
+        "end_min_m": 2205.0,
+        "end_max_m": 2205.0,
+        "center_median_m": 2181.5,
+        "center_min_m": 2181.5,
+        "center_max_m": 2181.5,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.05363318213689183,
+        "action_time_loss_min_s": 0.05363318213689183,
+        "action_time_loss_max_s": 0.05363318213689183
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-15T20:03:24Z",
+        "last_observed_utc": "2026-08-15T20:03:24Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_cdfca05dd28ba5dc23eb",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        40
+      ],
+      "session_observation_counts": {
+        "40": 1
+      },
+      "members": [
+        {
+          "session_id": 40,
+          "episode_pk": 1080,
+          "episode_id": 1,
+          "timestamp_utc": "2026-08-15T20:03:24Z",
+          "session_type": "P",
+          "start_distance_m": 2158.0,
+          "end_distance_m": 2205.0,
+          "center_distance_m": 2181.5,
+          "action_time_loss_s": 0.05363318213689183,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 40,
+        "episode_pk": 1080,
+        "episode_id": 1,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 2158.0,
+        "start_min_m": 2158.0,
+        "start_max_m": 2158.0,
+        "end_median_m": 2205.0,
+        "end_min_m": 2205.0,
+        "end_max_m": 2205.0,
+        "center_median_m": 2181.5,
+        "center_min_m": 2181.5,
+        "center_max_m": 2181.5,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.05363318213689183,
+        "action_time_loss_min_s": 0.05363318213689183,
+        "action_time_loss_max_s": 0.05363318213689183
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-15T20:03:24Z",
+        "last_observed_utc": "2026-08-15T20:03:24Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_61643a5f78cc605fc58d",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        23
+      ],
+      "session_observation_counts": {
+        "23": 1
+      },
+      "members": [
+        {
+          "session_id": 23,
+          "episode_pk": 682,
+          "episode_id": 2,
+          "timestamp_utc": "2026-08-17T18:55:39Z",
+          "session_type": "P",
+          "start_distance_m": 2181.0,
+          "end_distance_m": 2220.0,
+          "center_distance_m": 2200.5,
+          "action_time_loss_s": 0.11815198719264686,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 23,
+        "episode_pk": 682,
+        "episode_id": 2,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 2181.0,
+        "start_min_m": 2181.0,
+        "start_max_m": 2181.0,
+        "end_median_m": 2220.0,
+        "end_min_m": 2220.0,
+        "end_max_m": 2220.0,
+        "center_median_m": 2200.5,
+        "center_min_m": 2200.5,
+        "center_max_m": 2200.5,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.11815198719264686,
+        "action_time_loss_min_s": 0.11815198719264686,
+        "action_time_loss_max_s": 0.11815198719264686
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-17T18:55:39Z",
+        "last_observed_utc": "2026-08-17T18:55:39Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_9c40fb1e257ecaa176f7",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        23
+      ],
+      "session_observation_counts": {
+        "23": 1
+      },
+      "members": [
+        {
+          "session_id": 23,
+          "episode_pk": 685,
+          "episode_id": 2,
+          "timestamp_utc": "2026-08-17T18:55:39Z",
+          "session_type": "P",
+          "start_distance_m": 2184.0,
+          "end_distance_m": 2379.0,
+          "center_distance_m": 2281.5,
+          "action_time_loss_s": 0.3271136451659018,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 23,
+        "episode_pk": 685,
+        "episode_id": 2,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 2184.0,
+        "start_min_m": 2184.0,
+        "start_max_m": 2184.0,
+        "end_median_m": 2379.0,
+        "end_min_m": 2379.0,
+        "end_max_m": 2379.0,
+        "center_median_m": 2281.5,
+        "center_min_m": 2281.5,
+        "center_max_m": 2281.5,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.3271136451659018,
+        "action_time_loss_min_s": 0.3271136451659018,
+        "action_time_loss_max_s": 0.3271136451659018
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-17T18:55:39Z",
+        "last_observed_utc": "2026-08-17T18:55:39Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_d6c6289bf28a55e9a08d",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        18
+      ],
+      "session_observation_counts": {
+        "18": 1
+      },
+      "members": [
+        {
+          "session_id": 18,
+          "episode_pk": 580,
+          "episode_id": 5,
+          "timestamp_utc": "2026-08-09T17:11:58Z",
+          "session_type": "P",
+          "start_distance_m": 2458.0,
+          "end_distance_m": 2478.0,
+          "center_distance_m": 2468.0,
+          "action_time_loss_s": 0.021209642922613625,
+          "channels": [
+            "brake"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 18,
+        "episode_pk": 580,
+        "episode_id": 5,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 2458.0,
+        "start_min_m": 2458.0,
+        "start_max_m": 2458.0,
+        "end_median_m": 2478.0,
+        "end_min_m": 2478.0,
+        "end_max_m": 2478.0,
+        "center_median_m": 2468.0,
+        "center_min_m": 2468.0,
+        "center_max_m": 2468.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.021209642922613625,
+        "action_time_loss_min_s": 0.021209642922613625,
+        "action_time_loss_max_s": 0.021209642922613625
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "brake"
+        ],
+        "union_action_channels": [
+          "brake"
+        ],
+        "episode_prevalence_count": {
+          "brake": 1
+        },
+        "session_prevalence_count": {
+          "brake": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T17:11:58Z",
+        "last_observed_utc": "2026-08-09T17:11:58Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_65be71196a85774792e9",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        18
+      ],
+      "session_observation_counts": {
+        "18": 1
+      },
+      "members": [
+        {
+          "session_id": 18,
+          "episode_pk": 582,
+          "episode_id": 2,
+          "timestamp_utc": "2026-08-09T17:11:58Z",
+          "session_type": "P",
+          "start_distance_m": 2437.0,
+          "end_distance_m": 2635.0,
+          "center_distance_m": 2536.0,
+          "action_time_loss_s": 0.37854198225986124,
+          "channels": [
+            "brake",
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 18,
+        "episode_pk": 582,
+        "episode_id": 2,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 2437.0,
+        "start_min_m": 2437.0,
+        "start_max_m": 2437.0,
+        "end_median_m": 2635.0,
+        "end_min_m": 2635.0,
+        "end_max_m": 2635.0,
+        "center_median_m": 2536.0,
+        "center_min_m": 2536.0,
+        "center_max_m": 2536.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.37854198225986124,
+        "action_time_loss_min_s": 0.37854198225986124,
+        "action_time_loss_max_s": 0.37854198225986124
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "brake": 1,
+          "steering_magnitude": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "brake": 1,
+          "steering_magnitude": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T17:11:58Z",
+        "last_observed_utc": "2026-08-09T17:11:58Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_361aa410bc6edee9e2a4",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        19
+      ],
+      "session_observation_counts": {
+        "19": 1
+      },
+      "members": [
+        {
+          "session_id": 19,
+          "episode_pk": 596,
+          "episode_id": 2,
+          "timestamp_utc": "2026-08-15T20:03:24Z",
+          "session_type": "P",
+          "start_distance_m": 2553.0,
+          "end_distance_m": 2644.0,
+          "center_distance_m": 2598.5,
+          "action_time_loss_s": 0.044927687041507625,
+          "channels": [
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 19,
+        "episode_pk": 596,
+        "episode_id": 2,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 2553.0,
+        "start_min_m": 2553.0,
+        "start_max_m": 2553.0,
+        "end_median_m": 2644.0,
+        "end_min_m": 2644.0,
+        "end_max_m": 2644.0,
+        "center_median_m": 2598.5,
+        "center_min_m": 2598.5,
+        "center_max_m": 2598.5,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.044927687041507625,
+        "action_time_loss_min_s": 0.044927687041507625,
+        "action_time_loss_max_s": 0.044927687041507625
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "throttle"
+        ],
+        "union_action_channels": [
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-15T20:03:24Z",
+        "last_observed_utc": "2026-08-15T20:03:24Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_3f650aa6a0a526faf51c",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        40
+      ],
+      "session_observation_counts": {
+        "40": 1
+      },
+      "members": [
+        {
+          "session_id": 40,
+          "episode_pk": 1081,
+          "episode_id": 2,
+          "timestamp_utc": "2026-08-15T20:03:24Z",
+          "session_type": "P",
+          "start_distance_m": 2553.0,
+          "end_distance_m": 2644.0,
+          "center_distance_m": 2598.5,
+          "action_time_loss_s": 0.044927687041507625,
+          "channels": [
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 40,
+        "episode_pk": 1081,
+        "episode_id": 2,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 2553.0,
+        "start_min_m": 2553.0,
+        "start_max_m": 2553.0,
+        "end_median_m": 2644.0,
+        "end_min_m": 2644.0,
+        "end_max_m": 2644.0,
+        "center_median_m": 2598.5,
+        "center_min_m": 2598.5,
+        "center_max_m": 2598.5,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.044927687041507625,
+        "action_time_loss_min_s": 0.044927687041507625,
+        "action_time_loss_max_s": 0.044927687041507625
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "throttle"
+        ],
+        "union_action_channels": [
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-15T20:03:24Z",
+        "last_observed_utc": "2026-08-15T20:03:24Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_df7c244fce6b0c9a0ed3",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        23
+      ],
+      "session_observation_counts": {
+        "23": 1
+      },
+      "members": [
+        {
+          "session_id": 23,
+          "episode_pk": 684,
+          "episode_id": 1,
+          "timestamp_utc": "2026-08-17T18:55:39Z",
+          "session_type": "P",
+          "start_distance_m": 2555.0,
+          "end_distance_m": 2679.0,
+          "center_distance_m": 2617.0,
+          "action_time_loss_s": 0.9954233466881561,
+          "channels": [
+            "brake",
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 23,
+        "episode_pk": 684,
+        "episode_id": 1,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 2555.0,
+        "start_min_m": 2555.0,
+        "start_max_m": 2555.0,
+        "end_median_m": 2679.0,
+        "end_min_m": 2679.0,
+        "end_max_m": 2679.0,
+        "center_median_m": 2617.0,
+        "center_min_m": 2617.0,
+        "center_max_m": 2617.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.9954233466881561,
+        "action_time_loss_min_s": 0.9954233466881561,
+        "action_time_loss_max_s": 0.9954233466881561
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "brake": 1,
+          "steering_magnitude": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "brake": 1,
+          "steering_magnitude": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-17T18:55:39Z",
+        "last_observed_utc": "2026-08-17T18:55:39Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_5702cb0eec36dab6192b",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        18
+      ],
+      "session_observation_counts": {
+        "18": 1
+      },
+      "members": [
+        {
+          "session_id": 18,
+          "episode_pk": 578,
+          "episode_id": 3,
+          "timestamp_utc": "2026-08-09T17:11:58Z",
+          "session_type": "P",
+          "start_distance_m": 2614.0,
+          "end_distance_m": 2656.0,
+          "center_distance_m": 2635.0,
+          "action_time_loss_s": 0.03857202224836698,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 18,
+        "episode_pk": 578,
+        "episode_id": 3,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 2614.0,
+        "start_min_m": 2614.0,
+        "start_max_m": 2614.0,
+        "end_median_m": 2656.0,
+        "end_min_m": 2656.0,
+        "end_max_m": 2656.0,
+        "center_median_m": 2635.0,
+        "center_min_m": 2635.0,
+        "center_max_m": 2635.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.03857202224836698,
+        "action_time_loss_min_s": 0.03857202224836698,
+        "action_time_loss_max_s": 0.03857202224836698
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T17:11:58Z",
+        "last_observed_utc": "2026-08-09T17:11:58Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_64f7c39f31c11269eb7c",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        23
+      ],
+      "session_observation_counts": {
+        "23": 1
+      },
+      "members": [
+        {
+          "session_id": 23,
+          "episode_pk": 683,
+          "episode_id": 3,
+          "timestamp_utc": "2026-08-17T18:55:39Z",
+          "session_type": "P",
+          "start_distance_m": 2628.0,
+          "end_distance_m": 2647.0,
+          "center_distance_m": 2637.5,
+          "action_time_loss_s": 0.02043428888725174,
+          "channels": [
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 23,
+        "episode_pk": 683,
+        "episode_id": 3,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 2628.0,
+        "start_min_m": 2628.0,
+        "start_max_m": 2628.0,
+        "end_median_m": 2647.0,
+        "end_min_m": 2647.0,
+        "end_max_m": 2647.0,
+        "center_median_m": 2637.5,
+        "center_min_m": 2637.5,
+        "center_max_m": 2637.5,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.02043428888725174,
+        "action_time_loss_min_s": 0.02043428888725174,
+        "action_time_loss_max_s": 0.02043428888725174
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "throttle"
+        ],
+        "union_action_channels": [
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-17T18:55:39Z",
+        "last_observed_utc": "2026-08-17T18:55:39Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_4a4c0c6b4d8babbf9f55",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        23
+      ],
+      "session_observation_counts": {
+        "23": 1
+      },
+      "members": [
+        {
+          "session_id": 23,
+          "episode_pk": 686,
+          "episode_id": 3,
+          "timestamp_utc": "2026-08-17T18:55:39Z",
+          "session_type": "P",
+          "start_distance_m": 2780.0,
+          "end_distance_m": 2843.0,
+          "center_distance_m": 2811.5,
+          "action_time_loss_s": 0.1622819620833198,
+          "channels": [
+            "brake",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 23,
+        "episode_pk": 686,
+        "episode_id": 3,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 2780.0,
+        "start_min_m": 2780.0,
+        "start_max_m": 2780.0,
+        "end_median_m": 2843.0,
+        "end_min_m": 2843.0,
+        "end_max_m": 2843.0,
+        "center_median_m": 2811.5,
+        "center_min_m": 2811.5,
+        "center_max_m": 2811.5,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.1622819620833198,
+        "action_time_loss_min_s": 0.1622819620833198,
+        "action_time_loss_max_s": 0.1622819620833198
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "brake",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "brake",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "brake": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "brake": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-17T18:55:39Z",
+        "last_observed_utc": "2026-08-17T18:55:39Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_13a8fc9ead97ccb20145",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        18
+      ],
+      "session_observation_counts": {
+        "18": 1
+      },
+      "members": [
+        {
+          "session_id": 18,
+          "episode_pk": 585,
+          "episode_id": 5,
+          "timestamp_utc": "2026-08-09T17:11:58Z",
+          "session_type": "P",
+          "start_distance_m": 2774.0,
+          "end_distance_m": 2888.0,
+          "center_distance_m": 2831.0,
+          "action_time_loss_s": 0.2608404777404587,
+          "channels": [
+            "brake",
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 18,
+        "episode_pk": 585,
+        "episode_id": 5,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 2774.0,
+        "start_min_m": 2774.0,
+        "start_max_m": 2774.0,
+        "end_median_m": 2888.0,
+        "end_min_m": 2888.0,
+        "end_max_m": 2888.0,
+        "center_median_m": 2831.0,
+        "center_min_m": 2831.0,
+        "center_max_m": 2831.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.2608404777404587,
+        "action_time_loss_min_s": 0.2608404777404587,
+        "action_time_loss_max_s": 0.2608404777404587
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "brake": 1,
+          "steering_magnitude": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "brake": 1,
+          "steering_magnitude": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T17:11:58Z",
+        "last_observed_utc": "2026-08-09T17:11:58Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_d68c2562ff8083d6a45e",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        23
+      ],
+      "session_observation_counts": {
+        "23": 1
+      },
+      "members": [
+        {
+          "session_id": 23,
+          "episode_pk": 688,
+          "episode_id": 5,
+          "timestamp_utc": "2026-08-17T18:55:39Z",
+          "session_type": "P",
+          "start_distance_m": 2856.0,
+          "end_distance_m": 2878.0,
+          "center_distance_m": 2867.0,
+          "action_time_loss_s": 0.022021830361673267,
+          "channels": [
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 23,
+        "episode_pk": 688,
+        "episode_id": 5,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 2856.0,
+        "start_min_m": 2856.0,
+        "start_max_m": 2856.0,
+        "end_median_m": 2878.0,
+        "end_min_m": 2878.0,
+        "end_max_m": 2878.0,
+        "center_median_m": 2867.0,
+        "center_min_m": 2867.0,
+        "center_max_m": 2867.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.022021830361673267,
+        "action_time_loss_min_s": 0.022021830361673267,
+        "action_time_loss_max_s": 0.022021830361673267
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "throttle"
+        ],
+        "union_action_channels": [
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-17T18:55:39Z",
+        "last_observed_utc": "2026-08-17T18:55:39Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_d28aa5a473c2ad2ba19d",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        20
+      ],
+      "session_observation_counts": {
+        "20": 1
+      },
+      "members": [
+        {
+          "session_id": 20,
+          "episode_pk": 649,
+          "episode_id": 7,
+          "timestamp_utc": "2026-08-17T02:28:27Z",
+          "session_type": "P",
+          "start_distance_m": 2865.0,
+          "end_distance_m": 2897.0,
+          "center_distance_m": 2881.0,
+          "action_time_loss_s": 0.021611291519448628,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 20,
+        "episode_pk": 649,
+        "episode_id": 7,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 2865.0,
+        "start_min_m": 2865.0,
+        "start_max_m": 2865.0,
+        "end_median_m": 2897.0,
+        "end_min_m": 2897.0,
+        "end_max_m": 2897.0,
+        "center_median_m": 2881.0,
+        "center_min_m": 2881.0,
+        "center_max_m": 2881.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.021611291519448628,
+        "action_time_loss_min_s": 0.021611291519448628,
+        "action_time_loss_max_s": 0.021611291519448628
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-17T02:28:27Z",
+        "last_observed_utc": "2026-08-17T02:28:27Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_505433cac373c185176b",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        15
+      ],
+      "session_observation_counts": {
+        "15": 1
+      },
+      "members": [
+        {
+          "session_id": 15,
+          "episode_pk": 527,
+          "episode_id": 6,
+          "timestamp_utc": "2026-08-12T04:29:40Z",
+          "session_type": "P",
+          "start_distance_m": 2875.0,
+          "end_distance_m": 2900.0,
+          "center_distance_m": 2887.5,
+          "action_time_loss_s": 0.05065060166085544,
+          "channels": [
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 15,
+        "episode_pk": 527,
+        "episode_id": 6,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 2875.0,
+        "start_min_m": 2875.0,
+        "start_max_m": 2875.0,
+        "end_median_m": 2900.0,
+        "end_min_m": 2900.0,
+        "end_max_m": 2900.0,
+        "center_median_m": 2887.5,
+        "center_min_m": 2887.5,
+        "center_max_m": 2887.5,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.05065060166085544,
+        "action_time_loss_min_s": 0.05065060166085544,
+        "action_time_loss_max_s": 0.05065060166085544
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "throttle"
+        ],
+        "union_action_channels": [
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-12T04:29:40Z",
+        "last_observed_utc": "2026-08-12T04:29:40Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_93b23c06eba75821e446",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        15
+      ],
+      "session_observation_counts": {
+        "15": 1
+      },
+      "members": [
+        {
+          "session_id": 15,
+          "episode_pk": 528,
+          "episode_id": 7,
+          "timestamp_utc": "2026-08-12T04:29:40Z",
+          "session_type": "P",
+          "start_distance_m": 3922.0,
+          "end_distance_m": 3965.0,
+          "center_distance_m": 3943.5,
+          "action_time_loss_s": 0.05043217329819072,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 15,
+        "episode_pk": 528,
+        "episode_id": 7,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 3922.0,
+        "start_min_m": 3922.0,
+        "start_max_m": 3922.0,
+        "end_median_m": 3965.0,
+        "end_min_m": 3965.0,
+        "end_max_m": 3965.0,
+        "center_median_m": 3943.5,
+        "center_min_m": 3943.5,
+        "center_max_m": 3943.5,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.05043217329819072,
+        "action_time_loss_min_s": 0.05043217329819072,
+        "action_time_loss_max_s": 0.05043217329819072
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-12T04:29:40Z",
+        "last_observed_utc": "2026-08-12T04:29:40Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_689ebe2db5293e9f26cd",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        19
+      ],
+      "session_observation_counts": {
+        "19": 1
+      },
+      "members": [
+        {
+          "session_id": 19,
+          "episode_pk": 599,
+          "episode_id": 5,
+          "timestamp_utc": "2026-08-15T20:03:24Z",
+          "session_type": "P",
+          "start_distance_m": 3940.0,
+          "end_distance_m": 3956.0,
+          "center_distance_m": 3948.0,
+          "action_time_loss_s": 0.023442231360945698,
+          "channels": [
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 19,
+        "episode_pk": 599,
+        "episode_id": 5,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 3940.0,
+        "start_min_m": 3940.0,
+        "start_max_m": 3940.0,
+        "end_median_m": 3956.0,
+        "end_min_m": 3956.0,
+        "end_max_m": 3956.0,
+        "center_median_m": 3948.0,
+        "center_min_m": 3948.0,
+        "center_max_m": 3948.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.023442231360945698,
+        "action_time_loss_min_s": 0.023442231360945698,
+        "action_time_loss_max_s": 0.023442231360945698
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "throttle"
+        ],
+        "union_action_channels": [
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-15T20:03:24Z",
+        "last_observed_utc": "2026-08-15T20:03:24Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_919fccdfd600a6d5e5d0",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        40
+      ],
+      "session_observation_counts": {
+        "40": 1
+      },
+      "members": [
+        {
+          "session_id": 40,
+          "episode_pk": 1084,
+          "episode_id": 5,
+          "timestamp_utc": "2026-08-15T20:03:24Z",
+          "session_type": "P",
+          "start_distance_m": 3940.0,
+          "end_distance_m": 3956.0,
+          "center_distance_m": 3948.0,
+          "action_time_loss_s": 0.023442231360945698,
+          "channels": [
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 40,
+        "episode_pk": 1084,
+        "episode_id": 5,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 3940.0,
+        "start_min_m": 3940.0,
+        "start_max_m": 3940.0,
+        "end_median_m": 3956.0,
+        "end_min_m": 3956.0,
+        "end_max_m": 3956.0,
+        "center_median_m": 3948.0,
+        "center_min_m": 3948.0,
+        "center_max_m": 3948.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.023442231360945698,
+        "action_time_loss_min_s": 0.023442231360945698,
+        "action_time_loss_max_s": 0.023442231360945698
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "throttle"
+        ],
+        "union_action_channels": [
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-15T20:03:24Z",
+        "last_observed_utc": "2026-08-15T20:03:24Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_a6425d23c2d4c63edda4",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        20
+      ],
+      "session_observation_counts": {
+        "20": 1
+      },
+      "members": [
+        {
+          "session_id": 20,
+          "episode_pk": 643,
+          "episode_id": 1,
+          "timestamp_utc": "2026-08-17T02:28:27Z",
+          "session_type": "P",
+          "start_distance_m": 2915.0,
+          "end_distance_m": 5080.0,
+          "center_distance_m": 3997.5,
+          "action_time_loss_s": 25.075758315885153,
+          "channels": [
+            "brake",
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 20,
+        "episode_pk": 643,
+        "episode_id": 1,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 2915.0,
+        "start_min_m": 2915.0,
+        "start_max_m": 2915.0,
+        "end_median_m": 5080.0,
+        "end_min_m": 5080.0,
+        "end_max_m": 5080.0,
+        "center_median_m": 3997.5,
+        "center_min_m": 3997.5,
+        "center_max_m": 3997.5,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 25.075758315885153,
+        "action_time_loss_min_s": 25.075758315885153,
+        "action_time_loss_max_s": 25.075758315885153
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "brake": 1,
+          "steering_magnitude": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "brake": 1,
+          "steering_magnitude": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-17T02:28:27Z",
+        "last_observed_utc": "2026-08-17T02:28:27Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_8e9372c0d10592ec5c98",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        15
+      ],
+      "session_observation_counts": {
+        "15": 1
+      },
+      "members": [
+        {
+          "session_id": 15,
+          "episode_pk": 523,
+          "episode_id": 2,
+          "timestamp_utc": "2026-08-12T04:29:40Z",
+          "session_type": "P",
+          "start_distance_m": 3978.0,
+          "end_distance_m": 4090.0,
+          "center_distance_m": 4034.0,
+          "action_time_loss_s": 0.1661576347008804,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 15,
+        "episode_pk": 523,
+        "episode_id": 2,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 3978.0,
+        "start_min_m": 3978.0,
+        "start_max_m": 3978.0,
+        "end_median_m": 4090.0,
+        "end_min_m": 4090.0,
+        "end_max_m": 4090.0,
+        "center_median_m": 4034.0,
+        "center_min_m": 4034.0,
+        "center_max_m": 4034.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.1661576347008804,
+        "action_time_loss_min_s": 0.1661576347008804,
+        "action_time_loss_max_s": 0.1661576347008804
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-12T04:29:40Z",
+        "last_observed_utc": "2026-08-12T04:29:40Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_64277be4404f51c0979c",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        15
+      ],
+      "session_observation_counts": {
+        "15": 1
+      },
+      "members": [
+        {
+          "session_id": 15,
+          "episode_pk": 531,
+          "episode_id": 10,
+          "timestamp_utc": "2026-08-12T04:29:40Z",
+          "session_type": "P",
+          "start_distance_m": 4140.0,
+          "end_distance_m": 4158.0,
+          "center_distance_m": 4149.0,
+          "action_time_loss_s": 0.026549127549287732,
+          "channels": [
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 15,
+        "episode_pk": 531,
+        "episode_id": 10,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 4140.0,
+        "start_min_m": 4140.0,
+        "start_max_m": 4140.0,
+        "end_median_m": 4158.0,
+        "end_min_m": 4158.0,
+        "end_max_m": 4158.0,
+        "center_median_m": 4149.0,
+        "center_min_m": 4149.0,
+        "center_max_m": 4149.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.026549127549287732,
+        "action_time_loss_min_s": 0.026549127549287732,
+        "action_time_loss_max_s": 0.026549127549287732
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "throttle"
+        ],
+        "union_action_channels": [
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-12T04:29:40Z",
+        "last_observed_utc": "2026-08-12T04:29:40Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_144b80cbf6b36d475645",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        15
+      ],
+      "session_observation_counts": {
+        "15": 1
+      },
+      "members": [
+        {
+          "session_id": 15,
+          "episode_pk": 530,
+          "episode_id": 9,
+          "timestamp_utc": "2026-08-12T04:29:40Z",
+          "session_type": "P",
+          "start_distance_m": 4992.0,
+          "end_distance_m": 5035.0,
+          "center_distance_m": 5013.5,
+          "action_time_loss_s": 0.02679425632781829,
+          "channels": [
+            "brake",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 15,
+        "episode_pk": 530,
+        "episode_id": 9,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 4992.0,
+        "start_min_m": 4992.0,
+        "start_max_m": 4992.0,
+        "end_median_m": 5035.0,
+        "end_min_m": 5035.0,
+        "end_max_m": 5035.0,
+        "center_median_m": 5013.5,
+        "center_min_m": 5013.5,
+        "center_max_m": 5013.5,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.02679425632781829,
+        "action_time_loss_min_s": 0.02679425632781829,
+        "action_time_loss_max_s": 0.02679425632781829
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "brake",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "brake",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "brake": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "brake": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-12T04:29:40Z",
+        "last_observed_utc": "2026-08-12T04:29:40Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_81b6df75b0d3f62183ed",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        15
+      ],
+      "session_observation_counts": {
+        "15": 1
+      },
+      "members": [
+        {
+          "session_id": 15,
+          "episode_pk": 520,
+          "episode_id": 2,
+          "timestamp_utc": "2026-08-12T04:29:40Z",
+          "session_type": "P",
+          "start_distance_m": 5046.0,
+          "end_distance_m": 5139.0,
+          "center_distance_m": 5092.5,
+          "action_time_loss_s": 0.09119263102070363,
+          "channels": [
+            "brake",
+            "steering_magnitude"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 15,
+        "episode_pk": 520,
+        "episode_id": 2,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 5046.0,
+        "start_min_m": 5046.0,
+        "start_max_m": 5046.0,
+        "end_median_m": 5139.0,
+        "end_min_m": 5139.0,
+        "end_max_m": 5139.0,
+        "center_median_m": 5092.5,
+        "center_min_m": 5092.5,
+        "center_max_m": 5092.5,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.09119263102070363,
+        "action_time_loss_min_s": 0.09119263102070363,
+        "action_time_loss_max_s": 0.09119263102070363
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "brake",
+          "steering_magnitude"
+        ],
+        "union_action_channels": [
+          "brake",
+          "steering_magnitude"
+        ],
+        "episode_prevalence_count": {
+          "brake": 1,
+          "steering_magnitude": 1
+        },
+        "session_prevalence_count": {
+          "brake": 1,
+          "steering_magnitude": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-12T04:29:40Z",
+        "last_observed_utc": "2026-08-12T04:29:40Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_6c9f733f1754e0224405",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        19
+      ],
+      "session_observation_counts": {
+        "19": 1
+      },
+      "members": [
+        {
+          "session_id": 19,
+          "episode_pk": 598,
+          "episode_id": 4,
+          "timestamp_utc": "2026-08-15T20:03:24Z",
+          "session_type": "P",
+          "start_distance_m": 5079.0,
+          "end_distance_m": 5128.0,
+          "center_distance_m": 5103.5,
+          "action_time_loss_s": 0.030832365234033432,
+          "channels": [
+            "brake",
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 19,
+        "episode_pk": 598,
+        "episode_id": 4,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 5079.0,
+        "start_min_m": 5079.0,
+        "start_max_m": 5079.0,
+        "end_median_m": 5128.0,
+        "end_min_m": 5128.0,
+        "end_max_m": 5128.0,
+        "center_median_m": 5103.5,
+        "center_min_m": 5103.5,
+        "center_max_m": 5103.5,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.030832365234033432,
+        "action_time_loss_min_s": 0.030832365234033432,
+        "action_time_loss_max_s": 0.030832365234033432
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "brake": 1,
+          "steering_magnitude": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "brake": 1,
+          "steering_magnitude": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-15T20:03:24Z",
+        "last_observed_utc": "2026-08-15T20:03:24Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_838fc8372db3d5d3cb51",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        40
+      ],
+      "session_observation_counts": {
+        "40": 1
+      },
+      "members": [
+        {
+          "session_id": 40,
+          "episode_pk": 1083,
+          "episode_id": 4,
+          "timestamp_utc": "2026-08-15T20:03:24Z",
+          "session_type": "P",
+          "start_distance_m": 5079.0,
+          "end_distance_m": 5128.0,
+          "center_distance_m": 5103.5,
+          "action_time_loss_s": 0.030832365234033432,
+          "channels": [
+            "brake",
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 40,
+        "episode_pk": 1083,
+        "episode_id": 4,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 5079.0,
+        "start_min_m": 5079.0,
+        "start_max_m": 5079.0,
+        "end_median_m": 5128.0,
+        "end_min_m": 5128.0,
+        "end_max_m": 5128.0,
+        "center_median_m": 5103.5,
+        "center_min_m": 5103.5,
+        "center_max_m": 5103.5,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.030832365234033432,
+        "action_time_loss_min_s": 0.030832365234033432,
+        "action_time_loss_max_s": 0.030832365234033432
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "brake": 1,
+          "steering_magnitude": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "brake": 1,
+          "steering_magnitude": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-15T20:03:24Z",
+        "last_observed_utc": "2026-08-15T20:03:24Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_e2e461d86d1af6e78ae9",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        15
+      ],
+      "session_observation_counts": {
+        "15": 1
+      },
+      "members": [
+        {
+          "session_id": 15,
+          "episode_pk": 526,
+          "episode_id": 5,
+          "timestamp_utc": "2026-08-12T04:29:40Z",
+          "session_type": "P",
+          "start_distance_m": 5083.0,
+          "end_distance_m": 5165.0,
+          "center_distance_m": 5124.0,
+          "action_time_loss_s": 0.07825965986548056,
+          "channels": [
+            "brake",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 15,
+        "episode_pk": 526,
+        "episode_id": 5,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 5083.0,
+        "start_min_m": 5083.0,
+        "start_max_m": 5083.0,
+        "end_median_m": 5165.0,
+        "end_min_m": 5165.0,
+        "end_max_m": 5165.0,
+        "center_median_m": 5124.0,
+        "center_min_m": 5124.0,
+        "center_max_m": 5124.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.07825965986548056,
+        "action_time_loss_min_s": 0.07825965986548056,
+        "action_time_loss_max_s": 0.07825965986548056
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "brake",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "brake",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "brake": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "brake": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-12T04:29:40Z",
+        "last_observed_utc": "2026-08-12T04:29:40Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_6ec97aadca3d7a9a95cf",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        40
+      ],
+      "session_observation_counts": {
+        "40": 1
+      },
+      "members": [
+        {
+          "session_id": 40,
+          "episode_pk": 1082,
+          "episode_id": 3,
+          "timestamp_utc": "2026-08-15T20:03:24Z",
+          "session_type": "P",
+          "start_distance_m": 5141.0,
+          "end_distance_m": 5185.0,
+          "center_distance_m": 5163.0,
+          "action_time_loss_s": 0.035068890040562906,
+          "channels": [
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 40,
+        "episode_pk": 1082,
+        "episode_id": 3,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 5141.0,
+        "start_min_m": 5141.0,
+        "start_max_m": 5141.0,
+        "end_median_m": 5185.0,
+        "end_min_m": 5185.0,
+        "end_max_m": 5185.0,
+        "center_median_m": 5163.0,
+        "center_min_m": 5163.0,
+        "center_max_m": 5163.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.035068890040562906,
+        "action_time_loss_min_s": 0.035068890040562906,
+        "action_time_loss_max_s": 0.035068890040562906
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "throttle"
+        ],
+        "union_action_channels": [
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-15T20:03:24Z",
+        "last_observed_utc": "2026-08-15T20:03:24Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_d524ec209aa2f5d4d187",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        19
+      ],
+      "session_observation_counts": {
+        "19": 1
+      },
+      "members": [
+        {
+          "session_id": 19,
+          "episode_pk": 597,
+          "episode_id": 3,
+          "timestamp_utc": "2026-08-15T20:03:24Z",
+          "session_type": "P",
+          "start_distance_m": 5141.0,
+          "end_distance_m": 5185.0,
+          "center_distance_m": 5163.0,
+          "action_time_loss_s": 0.035068890040562906,
+          "channels": [
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 19,
+        "episode_pk": 597,
+        "episode_id": 3,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 5141.0,
+        "start_min_m": 5141.0,
+        "start_max_m": 5141.0,
+        "end_median_m": 5185.0,
+        "end_min_m": 5185.0,
+        "end_max_m": 5185.0,
+        "center_median_m": 5163.0,
+        "center_min_m": 5163.0,
+        "center_max_m": 5163.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.035068890040562906,
+        "action_time_loss_min_s": 0.035068890040562906,
+        "action_time_loss_max_s": 0.035068890040562906
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "throttle"
+        ],
+        "union_action_channels": [
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-15T20:03:24Z",
+        "last_observed_utc": "2026-08-15T20:03:24Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_97f88e1f721b45543cb0",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        19
+      ],
+      "session_observation_counts": {
+        "19": 1
+      },
+      "members": [
+        {
+          "session_id": 19,
+          "episode_pk": 593,
+          "episode_id": 1,
+          "timestamp_utc": "2026-08-15T20:03:24Z",
+          "session_type": "P",
+          "start_distance_m": 5154.0,
+          "end_distance_m": 5256.0,
+          "center_distance_m": 5205.0,
+          "action_time_loss_s": 0.14817758440607065,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 19,
+        "episode_pk": 593,
+        "episode_id": 1,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 5154.0,
+        "start_min_m": 5154.0,
+        "start_max_m": 5154.0,
+        "end_median_m": 5256.0,
+        "end_min_m": 5256.0,
+        "end_max_m": 5256.0,
+        "center_median_m": 5205.0,
+        "center_min_m": 5205.0,
+        "center_max_m": 5205.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.14817758440607065,
+        "action_time_loss_min_s": 0.14817758440607065,
+        "action_time_loss_max_s": 0.14817758440607065
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-15T20:03:24Z",
+        "last_observed_utc": "2026-08-15T20:03:24Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_bb7f8a30a5f46b73d8ca",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        40
+      ],
+      "session_observation_counts": {
+        "40": 1
+      },
+      "members": [
+        {
+          "session_id": 40,
+          "episode_pk": 1078,
+          "episode_id": 1,
+          "timestamp_utc": "2026-08-15T20:03:24Z",
+          "session_type": "P",
+          "start_distance_m": 5154.0,
+          "end_distance_m": 5256.0,
+          "center_distance_m": 5205.0,
+          "action_time_loss_s": 0.14817758440607065,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 40,
+        "episode_pk": 1078,
+        "episode_id": 1,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 5154.0,
+        "start_min_m": 5154.0,
+        "start_max_m": 5154.0,
+        "end_median_m": 5256.0,
+        "end_min_m": 5256.0,
+        "end_max_m": 5256.0,
+        "center_median_m": 5205.0,
+        "center_min_m": 5205.0,
+        "center_max_m": 5205.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.14817758440607065,
+        "action_time_loss_min_s": 0.14817758440607065,
+        "action_time_loss_max_s": 0.14817758440607065
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-15T20:03:24Z",
+        "last_observed_utc": "2026-08-15T20:03:24Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_8dd7f0591fb8300156df",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        18
+      ],
+      "session_observation_counts": {
+        "18": 1
+      },
+      "members": [
+        {
+          "session_id": 18,
+          "episode_pk": 588,
+          "episode_id": 8,
+          "timestamp_utc": "2026-08-09T17:11:58Z",
+          "session_type": "P",
+          "start_distance_m": 5155.0,
+          "end_distance_m": 5259.0,
+          "center_distance_m": 5207.0,
+          "action_time_loss_s": 0.16322565179115145,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 18,
+        "episode_pk": 588,
+        "episode_id": 8,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 5155.0,
+        "start_min_m": 5155.0,
+        "start_max_m": 5155.0,
+        "end_median_m": 5259.0,
+        "end_min_m": 5259.0,
+        "end_max_m": 5259.0,
+        "center_median_m": 5207.0,
+        "center_min_m": 5207.0,
+        "center_max_m": 5207.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.16322565179115145,
+        "action_time_loss_min_s": 0.16322565179115145,
+        "action_time_loss_max_s": 0.16322565179115145
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T17:11:58Z",
+        "last_observed_utc": "2026-08-09T17:11:58Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_b65c8e1b7e20031c5ebb",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        20
+      ],
+      "session_observation_counts": {
+        "20": 1
+      },
+      "members": [
+        {
+          "session_id": 20,
+          "episode_pk": 645,
+          "episode_id": 3,
+          "timestamp_utc": "2026-08-17T02:28:27Z",
+          "session_type": "P",
+          "start_distance_m": 5097.0,
+          "end_distance_m": 5370.0,
+          "center_distance_m": 5233.5,
+          "action_time_loss_s": 4.238689753120212,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 20,
+        "episode_pk": 645,
+        "episode_id": 3,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 5097.0,
+        "start_min_m": 5097.0,
+        "start_max_m": 5097.0,
+        "end_median_m": 5370.0,
+        "end_min_m": 5370.0,
+        "end_max_m": 5370.0,
+        "center_median_m": 5233.5,
+        "center_min_m": 5233.5,
+        "center_max_m": 5233.5,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 4.238689753120212,
+        "action_time_loss_min_s": 4.238689753120212,
+        "action_time_loss_max_s": 4.238689753120212
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-17T02:28:27Z",
+        "last_observed_utc": "2026-08-17T02:28:27Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_1763d19e73f42ec24889",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        18
+      ],
+      "session_observation_counts": {
+        "18": 1
+      },
+      "members": [
+        {
+          "session_id": 18,
+          "episode_pk": 577,
+          "episode_id": 2,
+          "timestamp_utc": "2026-08-09T17:11:58Z",
+          "session_type": "P",
+          "start_distance_m": 5210.0,
+          "end_distance_m": 5302.0,
+          "center_distance_m": 5256.0,
+          "action_time_loss_s": 0.18984293860418688,
+          "channels": [
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 18,
+        "episode_pk": 577,
+        "episode_id": 2,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 5210.0,
+        "start_min_m": 5210.0,
+        "start_max_m": 5210.0,
+        "end_median_m": 5302.0,
+        "end_min_m": 5302.0,
+        "end_max_m": 5302.0,
+        "center_median_m": 5256.0,
+        "center_min_m": 5256.0,
+        "center_max_m": 5256.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.18984293860418688,
+        "action_time_loss_min_s": 0.18984293860418688,
+        "action_time_loss_max_s": 0.18984293860418688
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "steering_magnitude": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T17:11:58Z",
+        "last_observed_utc": "2026-08-09T17:11:58Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_6cc17b453e7736d60d26",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        15
+      ],
+      "session_observation_counts": {
+        "15": 1
+      },
+      "members": [
+        {
+          "session_id": 15,
+          "episode_pk": 524,
+          "episode_id": 3,
+          "timestamp_utc": "2026-08-12T04:29:40Z",
+          "session_type": "P",
+          "start_distance_m": 5233.0,
+          "end_distance_m": 5295.0,
+          "center_distance_m": 5264.0,
+          "action_time_loss_s": 0.11679330641685226,
+          "channels": [
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 15,
+        "episode_pk": 524,
+        "episode_id": 3,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 5233.0,
+        "start_min_m": 5233.0,
+        "start_max_m": 5233.0,
+        "end_median_m": 5295.0,
+        "end_min_m": 5295.0,
+        "end_max_m": 5295.0,
+        "center_median_m": 5264.0,
+        "center_min_m": 5264.0,
+        "center_max_m": 5264.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.11679330641685226,
+        "action_time_loss_min_s": 0.11679330641685226,
+        "action_time_loss_max_s": 0.11679330641685226
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "throttle"
+        ],
+        "union_action_channels": [
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-12T04:29:40Z",
+        "last_observed_utc": "2026-08-12T04:29:40Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_4ff8b308c56f7056e8b4",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        18
+      ],
+      "session_observation_counts": {
+        "18": 1
+      },
+      "members": [
+        {
+          "session_id": 18,
+          "episode_pk": 591,
+          "episode_id": 11,
+          "timestamp_utc": "2026-08-09T17:11:58Z",
+          "session_type": "P",
+          "start_distance_m": 5281.0,
+          "end_distance_m": 5298.0,
+          "center_distance_m": 5289.5,
+          "action_time_loss_s": 0.03900581617092769,
+          "channels": [
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 18,
+        "episode_pk": 591,
+        "episode_id": 11,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 5281.0,
+        "start_min_m": 5281.0,
+        "start_max_m": 5281.0,
+        "end_median_m": 5298.0,
+        "end_min_m": 5298.0,
+        "end_max_m": 5298.0,
+        "center_median_m": 5289.5,
+        "center_min_m": 5289.5,
+        "center_max_m": 5289.5,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.03900581617092769,
+        "action_time_loss_min_s": 0.03900581617092769,
+        "action_time_loss_max_s": 0.03900581617092769
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "throttle"
+        ],
+        "union_action_channels": [
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-09T17:11:58Z",
+        "last_observed_utc": "2026-08-09T17:11:58Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_8f3ec332bdc2f6d9a8e5",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        20
+      ],
+      "session_observation_counts": {
+        "20": 1
+      },
+      "members": [
+        {
+          "session_id": 20,
+          "episode_pk": 646,
+          "episode_id": 4,
+          "timestamp_utc": "2026-08-17T02:28:27Z",
+          "session_type": "P",
+          "start_distance_m": 5396.0,
+          "end_distance_m": 5414.0,
+          "center_distance_m": 5405.0,
+          "action_time_loss_s": 0.17786009768704503,
+          "channels": [
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 20,
+        "episode_pk": 646,
+        "episode_id": 4,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 5396.0,
+        "start_min_m": 5396.0,
+        "start_max_m": 5396.0,
+        "end_median_m": 5414.0,
+        "end_min_m": 5414.0,
+        "end_max_m": 5414.0,
+        "center_median_m": 5405.0,
+        "center_min_m": 5405.0,
+        "center_max_m": 5405.0,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 0.17786009768704503,
+        "action_time_loss_min_s": 0.17786009768704503,
+        "action_time_loss_max_s": 0.17786009768704503
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "throttle"
+        ],
+        "union_action_channels": [
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-17T02:28:27Z",
+        "last_observed_utc": "2026-08-17T02:28:27Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    },
+    {
+      "pattern_id": "pat_2be2f8833ae297ffd9e6",
+      "state": "single_observation",
+      "context": {
+        "track": "Autodromo Nazionale Monza",
+        "track_layout": "Autodromo Nazionale Monza",
+        "vehicle_variant": "LMP2_ELMS",
+        "vehicle_family_values": [
+          "LMP2"
+        ]
+      },
+      "observation_count": 1,
+      "independent_session_count": 1,
+      "session_ids": [
+        20
+      ],
+      "session_observation_counts": {
+        "20": 1
+      },
+      "members": [
+        {
+          "session_id": 20,
+          "episode_pk": 644,
+          "episode_id": 2,
+          "timestamp_utc": "2026-08-17T02:28:27Z",
+          "session_type": "P",
+          "start_distance_m": 5462.0,
+          "end_distance_m": 5778.32421875,
+          "center_distance_m": 5620.162109375,
+          "action_time_loss_s": 7.517500841375025,
+          "channels": [
+            "brake",
+            "steering_magnitude",
+            "throttle"
+          ]
+        }
+      ],
+      "representative_member": {
+        "session_id": 20,
+        "episode_pk": 644,
+        "episode_id": 2,
+        "reason": "member_closest_to_median_center_then_stable_identity"
+      },
+      "spatial_summary": {
+        "start_median_m": 5462.0,
+        "start_min_m": 5462.0,
+        "start_max_m": 5462.0,
+        "end_median_m": 5778.32421875,
+        "end_min_m": 5778.32421875,
+        "end_max_m": 5778.32421875,
+        "center_median_m": 5620.162109375,
+        "center_min_m": 5620.162109375,
+        "center_max_m": 5620.162109375,
+        "center_spread_m": 0.0
+      },
+      "impact_summary": {
+        "action_time_loss_median_s": 7.517500841375025,
+        "action_time_loss_min_s": 7.517500841375025,
+        "action_time_loss_max_s": 7.517500841375025
+      },
+      "channel_summary": {
+        "common_action_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "union_action_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "episode_prevalence_count": {
+          "brake": 1,
+          "steering_magnitude": 1,
+          "throttle": 1
+        },
+        "session_prevalence_count": {
+          "brake": 1,
+          "steering_magnitude": 1,
+          "throttle": 1
+        }
+      },
+      "temporal_summary": {
+        "first_observed_utc": "2026-08-17T02:28:27Z",
+        "last_observed_utc": "2026-08-17T02:28:27Z",
+        "session_types": [
+          "P"
+        ]
+      },
+      "equivalence_evidence": {
+        "direct_match_edge_count": 0,
+        "internal_ambiguous_pair_count": 0,
+        "internal_reject_pair_count": 0,
+        "possible_cross_session_pair_count": 0,
+        "observed_internal_cross_session_pair_count": 0,
+        "missing_internal_cross_session_pair_count": 0,
+        "transitively_resolved_ambiguous_pair_count": 0,
+        "same_session_member_pair_count_inferred": 0,
+        "decision_counts": {}
+      },
+      "uncertainty": {
+        "has_internal_reject_contradiction": false,
+        "has_missing_internal_pair_decisions": false,
+        "conflict_reasons": [],
+        "internal_reject_pairs": []
+      }
+    }
+  ]
+}

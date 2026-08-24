@@ -56,6 +56,14 @@ Validated baseline:
   provisional REJECT-only calibration (no SAME evidence in calibration split;
   MATCH core disabled, REJECT >1000 m without overlap). Both validated with 0
   contradictions over 24 real labels each.
+- Phase E H5.2 expansion (2026-08-23): first raw cross-session comparison for
+  Spa LMP2_ELMS generated deterministically; Sarthe LMP2_WEC / Imola HYPER /
+  Sarthe HYPER remain blocked by H4 gates (need new telemetry).
+- Phase F H3 integration (2026-08-23): calibrated matcher run over Imola,
+  Interlagos and Monza batches; persistent patterns built (Imola 15, Interlagos
+  9) and imported into History (runs 3-4). Orchestrator `h3` stage now reports
+  `SKIPPED_NOT_APPLICABLE` with a context-aware reason (calibrated + pattern
+  runs / calibrated / uncalibrated). H3 is never forced per session.
 
 ### analyze_telemetry
 Current: `3.8`

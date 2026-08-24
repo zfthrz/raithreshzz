@@ -69,11 +69,11 @@ python race_engineer.py analyze "telemetria\ARCHIVO.duckdb" --backend ollama
 
 ## Current baseline
 
-Checkpoint: 2026-08-23 GUI v1.12 + H5.4 P1–P11 + H5.3 production gate review pending.
+Checkpoint: 2026-08-23 GUI v1.13 + H5.4 P1–P11 + H5.3 production gate review pending.
 
 ```text
 race_engineer.py             orchestrator 0.3
-race_engineer_gui.py         desktop session hub 1.12 / redesigned telemetry and section navigation
+race_engineer_gui.py         desktop session hub 1.13 / status badges + side-by-side comparison
 analyze_telemetry.py         3.8 + Objective Python v6
 llm_analysis*.py             3.10.8.5.4
 llm_analysis_llamacpp.py     3.10.8.5.4 / llama.cpp local (default qwen3-14b)
@@ -94,12 +94,13 @@ audit_h5_3_faster_lap_withholding.py   H5.3g 0.1 / local-loss diagnostic audit
 evaluate_h5_3_local_loss_policy.py     H5.3h 0.1 / unauthorized local-policy hypothesis
 audit_h5_3_local_loss_recurrence.py    H5.3i 0.1 / exact-zone vs cross-zone recurrence
 maintain_h5_3_action_review.py         automatic exact-label queue expansion / no decisions
+audit_h5_3_real_sessions.py            H5.3 Point 6 audit 0.3 / real sessions + P11 comparison
 ```
 
 Validated integration checkpoint:
 
 ```text
-pytest:                         1047 PASS / 0 FAIL / 0 SKIP
+pytest:                         1052 PASS / 0 FAIL / 0 SKIP
 Objective Python regressions:  55 PASS / 0 FAIL / 0 SKIP
 ```
 

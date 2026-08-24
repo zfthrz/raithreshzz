@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -56,6 +56,7 @@ class SessionDetail:
     historical_reference_text: str
     historical_comparison_text: str
     warnings: tuple[str, ...]
+    historical_comparison_view: dict = field(default_factory=dict)
 
 
 def _dict(value: Any) -> dict[str, Any]:
@@ -505,6 +506,95 @@ def _historical_comparison_text(
     return "\n".join(lines)
 
 
+def _historical_comparison_structured(
+    raw: dict[str, Any],
+    historical_llm: dict[str, Any],
+    *,
+    stage_status: str,
+) -> dict[str, Any]:
+    if not raw:
+        return {
+            "available": False,
+            "stage_status": stage_status,
+            "historical": None,
+            "current": None,
+            "delta_s": None,
+            "delta_text": "—",
+            "localization": {},
+            "zones": [],
+            "llm": {"rendered": "", "backend": "—", "model": "—"},
+        }
+
+    context = _dict(raw.get("context"))
+    historical = _dict(raw.get("historical_reference"))
+    current = _dict(raw.get("current_session_reference"))
+    temporal = _dict(raw.get("temporal_validation"))
+    spatial = _dict(raw.get("spatial_comparison"))
+    localization = _dict(spatial.get("localization"))
+    delta = _number(temporal.get("calculated_current_minus_historical_s"))
+    if delta is None:
+        current_time = _number(current.get("duration_s"))
+        historical_time = _number(historical.get("duration_s"))
+        if current_time is not None and historical_time is not None:
+            delta = current_time - historical_time
+    delta_text = f"{delta:+.3f} s" if delta is not None else "—"
+
+    zones = [
+        {
+            "label": str(_dict(zone.get("location")).get("label") or "Zona sin nombre"),
+            "type": str(zone.get("type") or "observación"),
+            "delta_change_s": _number(zone.get("delta_change")),
+            "start_distance_m": _number(zone.get("start_distance")),
+            "end_distance_m": _number(zone.get("end_distance")),
+        }
+        for zone in _list(spatial.get("zone_summaries"))
+        if isinstance(zone, dict)
+    ]
+    zones.sort(
+        key=lambda item: abs(item["delta_change_s"])
+        if item["delta_change_s"] is not None
+        else 0.0,
+        reverse=True,
+    )
+    zones = zones[:3]
+
+    llm_rendered = str(historical_llm.get("rendered_analysis") or "").strip()
+    llm_metadata = _dict(historical_llm.get("metadata"))
+    return {
+        "available": True,
+        "stage_status": stage_status,
+        "status": str(raw.get("status") or "UNKNOWN"),
+        "context": {
+            "track": context.get("track"),
+            "vehicle_variant": context.get("vehicle_variant"),
+        },
+        "historical": {
+            "session_id": historical.get("session_id"),
+            "lap": historical.get("lap"),
+            "duration_s": _number(historical.get("duration_s")),
+            "duration_text": format_lap_time(_number(historical.get("duration_s"))),
+        },
+        "current": {
+            "session_id": current.get("session_id"),
+            "lap": current.get("lap"),
+            "duration_s": _number(current.get("duration_s")),
+            "duration_text": format_lap_time(_number(current.get("duration_s"))),
+        },
+        "delta_s": delta,
+        "delta_text": delta_text,
+        "localization": {
+            "mode": localization.get("mode"),
+            "profile_status": localization.get("profile_status"),
+        },
+        "zones": zones,
+        "llm": {
+            "rendered": llm_rendered,
+            "backend": llm_metadata.get("backend"),
+            "model": llm_metadata.get("model"),
+        },
+    }
+
+
 def load_session_detail(record: SessionRecord) -> SessionDetail:
     warnings = []
     debrief = "Esta sesión todavía no tiene un debrief LLM validado."
@@ -542,6 +632,11 @@ def load_session_detail(record: SessionRecord) -> SessionDetail:
         historical_comparison_llm,
         stage_status=stage_status,
     )
+    historical_comparison_view = _historical_comparison_structured(
+        historical_comparison_raw,
+        historical_comparison_llm,
+        stage_status=stage_status,
+    )
     return SessionDetail(
         record=record,
         debrief_markdown=debrief,
@@ -550,5 +645,6 @@ def load_session_detail(record: SessionRecord) -> SessionDetail:
         pipeline_text=_pipeline_text(record),
         historical_reference_text=historical_reference,
         historical_comparison_text=historical_comparison,
+        historical_comparison_view=historical_comparison_view,
         warnings=tuple(warnings),
     )

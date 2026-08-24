@@ -1,4 +1,4 @@
-"""H5.3 Point 6 — Real-new-session audit harness v0.2
+"""H5.3 Point 6 — Real-new-session audit harness v0.3
 
 Estado: OBSERVATIONAL_AUDIT_ONLY
 Autoridad: ninguna
@@ -7,6 +7,19 @@ historical_actions_authorized: false
 Este auditor consume artifacts reales generados por race_engineer.py
 (el pipeline H5.3 completo: H4, H5.1, H5.2, H5.3a-f) y genera un
 informe de auditoría sin volver a ejecutar ningún paso del pipeline.
+
+Novedad en v0.3:
+  P9/P10/P11 NO son artifacts separados; viven dentro del debrief JSON
+  producido por los backends LLM (llm_analysis_deepseek.py, llm_analysis.py,
+  llm_analysis_llamacpp.py). El auditor busca esos JSONs embebidos y extrae:
+    - P9:  next_stint_plan[*]._p9_presentation_metadata.presentation_rank
+    - P10: next_stint_plan_presentation
+    - P11: next_stint_focus
+
+  El auditor compara cada historical_actions.json contra el P11 focus
+  del current-session correspondiente y clasifica:
+    SUPPORTS_CURRENT / DUPLICATES_CURRENT / CONFLICTS_WITH_CURRENT /
+    USEFUL_SECONDARY_CONTEXT / LOW_VALUE / AMBIGUOUS
 
 INPUT:
   python audit_h5_3_real_sessions.py data/generated/runs/<session> ...
@@ -29,6 +42,7 @@ RESOLUCIÓN DE ARTIFACTS (real runtime layout):
     h5_3_shadow: data/generated/h5_3_shadow/<session>/shadow_pipeline.json  (canonical)
                  data/generated/h5_3_shadow/<hashed-id>.json              (legacy fallback)
     runs:        data/generated/runs/<session>/state.json
+    llm_results: data/generated/llm_results/<session>/*.json             (P9/P10/P11)
 
   Para H5.3 shadow: se usa la identidad de sesión desde el run state
   o H4/H5.1 artifacts para encontrar el artefacto correcto.
@@ -46,6 +60,7 @@ import hashlib
 import json
 import sys
 from collections import Counter
+from itertools import product
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -74,6 +89,568 @@ AUTHORIZED_ACTIONS = frozenset({
     "reduce_throttle", "increase_throttle",
     "reduce_brake", "increase_brake",
 })
+
+
+# ── P9/P10/P11 extraction from LLM output (debrief) JSONs ──────────────────
+
+P11_CLASSIFICATION = frozenset({
+    "SUPPORTS_CURRENT",
+    "DUPLICATES_CURRENT",
+    "CONFLICTS_WITH_CURRENT",
+    "USEFUL_SECONDARY_CONTEXT",
+    "LOW_VALUE",
+    "AMBIGUOUS",
+    "P11_UNAVAILABLE",
+})
+
+
+def resolve_debrief_json(session_name: str, base_dir: Path | None = None) -> dict[str, dict | None]:
+    """Resolve P9/P10/P11 data from LLM output (debrief) JSONs.
+
+    P9/P10/P11 NO son artifacts separados; viven dentro del debrief JSON
+    producido por los backends LLM. El auditor busca esos JSONs embebidos
+    y extrae:
+      - P9:  next_stint_plan[*]._p9_presentation_metadata.presentation_rank
+      - P10: next_stint_plan_presentation
+      - P11: next_stint_focus
+
+    Search priority:
+      1. data/generated/llm_results/<session_name>/*.json
+      2. data/generated/llm_results/ (scan all sessions for matching)
+
+    Returns dict with keys:
+      debrief:        The raw LLM output JSON (or None)
+      p9_data:        next_stint_plan items with _p9_presentation_metadata
+      p10_data:       next_stint_plan_presentation dict (or None)
+      p11_data:       next_stint_focus dict (or None)
+      session_label:  The session name used to search
+
+    Args:
+        session_name: The session identifier
+        base_dir: Override the generated_root for testing.
+    """
+    if base_dir is None:
+        llm_root = generated_root()
+    else:
+        llm_root = base_dir
+
+    # ── Priority 1: exact session name match ──────────────────────────────
+    session_dir = llm_root / "llm_results" / session_name
+    if session_dir.is_dir():
+        for json_file in sorted(session_dir.glob("*.json")):
+            payload = load_json(json_file)
+            if payload and _debrief_has_p11_data(payload):
+                p9_data, p10_data, p11_data = extract_p9_p10_p11(payload)
+                return {
+                    "debrief": payload,
+                    "p9_data": p9_data,
+                    "p10_data": p10_data,
+                    "p11_data": p11_data,
+                    "session_label": session_name,
+                }
+
+    # ── Priority 2: scan all sessions for matching ────────────────────────
+    llm_dir = llm_root / "llm_results"
+    if llm_dir.is_dir():
+        for session in sorted(llm_dir.iterdir()):
+            if session.is_dir():
+                for json_file in sorted(session.glob("*.json")):
+                    payload = load_json(json_file)
+                    if payload and _debrief_has_p11_data(payload):
+                        # Check if this session's analysis JSON matches
+                        analysis_dir = llm_root / "analysis" / f"{session.name}.json"
+                        # If analysis path matches, this is the right session
+                        if analysis_dir.is_file() or session_name.lower() in session.name.lower():
+                            p9_data, p10_data, p11_data = extract_p9_p10_p11(payload)
+                            return {
+                                "debrief": payload,
+                                "p9_data": p9_data,
+                                "p10_data": p10_data,
+                                "p11_data": p11_data,
+                                "session_label": session.name,
+                            }
+
+    return {"debrief": None, "p9_data": {}, "p10_data": None, "p11_data": None, "session_label": None}
+
+
+def _debrief_has_p11_data(payload: dict) -> bool:
+    """Return True when the payload carries P9/P10/P11 data anywhere."""
+    if not isinstance(payload, dict):
+        return False
+    if "next_stint_plan" in payload or "next_stint_focus" in payload:
+        return True
+    facts = payload.get("session_coaching_facts")
+    if not isinstance(facts, dict):
+        return False
+    return any(
+        key in facts
+        for key in ("next_stint_plan", "next_stint_plan_presentation", "next_stint_focus")
+    )
+
+
+def extract_p9_p10_p11(payload: dict) -> tuple[dict, dict | None, dict | None]:
+    """Extract P9/P10/P11 from a single debrief JSON.
+
+    Real backends (llm_analysis_deepseek.py, llm_analysis.py,
+    llm_analysis_llamacpp.py) write P9/P10/P11 inside
+    ``session_coaching_facts``. Top-level keys are accepted as a fallback
+    for older/mock payloads.
+
+    Returns:
+        p9_data:    Dict mapping candidate IDs to P9 metadata
+        p10_data:   next_stint_plan_presentation dict (or None)
+        p11_data:   next_stint_focus dict (or None)
+    """
+    facts = payload.get("session_coaching_facts")
+    if not isinstance(facts, dict):
+        facts = {}
+    p9_data = {}
+    p10_data = facts.get("next_stint_plan_presentation")
+    if p10_data is None:
+        p10_data = payload.get("next_stint_plan_presentation")
+    p11_data = facts.get("next_stint_focus")
+    if p11_data is None:
+        p11_data = payload.get("next_stint_focus")
+
+    # Extract P9 metadata from each item in next_stint_plan
+    next_stint_plan = facts.get("next_stint_plan")
+    if next_stint_plan is None:
+        next_stint_plan = payload.get("next_stint_plan", [])
+    if isinstance(next_stint_plan, list):
+        for item in next_stint_plan:
+            if isinstance(item, dict):
+                p9_meta = item.get("_p9_presentation_metadata", {})
+                if p9_meta:
+                    # Use presentation_rank as the key
+                    rank = p9_meta.get("presentation_rank")
+                    if isinstance(rank, int):
+                        p9_data[f"rank_{rank}"] = p9_meta
+
+    return p9_data, p10_data, p11_data
+
+
+def get_p11_focus_items(p11_data: dict) -> list[dict]:
+    """Extract focus items from P11 data.
+
+    Real P11 items use ``track_location.label`` for the location and
+    ``driver_cues`` as a list of dicts with a ``text`` field. This function
+    normalizes them to the audit vocabulary: ``location_label`` and
+    ``driver_cues`` as a list of cue texts.
+
+    Args:
+        p11_data: next_stint_focus dict from debrief JSON
+
+    Returns:
+        List of focus items (at most 2 for P11)
+    """
+    if not p11_data or not isinstance(p11_data, dict):
+        return []
+
+    status = p11_data.get("status", "")
+    if status != "ACTIVE":
+        return []
+
+    normalized: list[dict] = []
+    for item in p11_data.get("items", []):
+        if not isinstance(item, dict):
+            continue
+        track_location = item.get("track_location")
+        location = None
+        if isinstance(track_location, dict):
+            location = track_location.get("label")
+        if not location:
+            location = item.get("location_label") or item.get("plan_label")
+
+        cues = item.get("driver_cues", [])
+        cue_texts: list[str] = []
+        channels: list[str] = []
+        for cue in cues:
+            if isinstance(cue, dict):
+                text = cue.get("text")
+                if isinstance(text, str) and text:
+                    cue_texts.append(text)
+                cue_channel = cue.get("channel") or cue.get("channels")
+                if isinstance(cue_channel, list):
+                    channels.extend(str(c) for c in cue_channel)
+                elif isinstance(cue_channel, str) and cue_channel:
+                    channels.append(cue_channel)
+            elif isinstance(cue, str) and cue:
+                cue_texts.append(cue)
+
+        normalized.append(
+            {
+                "location_label": location or "",
+                "actions": [str(a) for a in item.get("actions", []) if isinstance(a, str)],
+                "driver_cues": cue_texts,
+                "channels": sorted(set(channels)),
+                "targets": [str(t) for t in item.get("targets", []) if isinstance(t, str)],
+                "recommendation": item.get("validated_recommendation", ""),
+                "plan_label": item.get("plan_label", ""),
+            }
+        )
+    return normalized
+
+
+def get_p10_presentation_items(p10_data: dict) -> list[dict]:
+    """Extract presentation items from P10 data.
+
+    Args:
+        p10_data: next_stint_plan_presentation dict from debrief JSON
+
+    Returns:
+        List of presentation items
+    """
+    if not p10_data or not isinstance(p10_data, dict):
+        return []
+
+    return p10_data.get("presentation", [])
+
+
+def get_p9_rank(item: dict) -> int | None:
+    """Extract presentation rank from P9 metadata.
+
+    Args:
+        item: A plan item from next_stint_plan
+
+    Returns:
+        Presentation rank (int) or None
+    """
+    p9_meta = item.get("_p9_presentation_metadata", {})
+    rank = p9_meta.get("presentation_rank")
+    if isinstance(rank, int):
+        return rank
+    return None
+
+
+def classify_historical_action_vs_p11(
+    historical_action: dict,
+    p11_focus_items: list[dict],
+    p10_presentation_items: list[dict],
+) -> dict[str, Any]:
+    """Classify a historical H5.3 action against current-session P11 focus.
+
+    Classification:
+        SUPPORTS_CURRENT:       Historical action location + channel + direction
+                                matches a P11 focus item.
+        DUPLICATES_CURRENT:     Historical action is at same location/canal
+                                but P11 already communicates the same cue.
+        CONFLICTS_WITH_CURRENT: Historical action suggests different action
+                                than P11 at same location.
+        USEFUL_SECONDARY_CONTEXT: Historical action at different location or
+                                provides context not in P11.
+        LOW_VALUE:              Historical action is WITHHELD or has
+                                insufficient_action_context.
+        AMBIGUOUS:              Cannot determine relationship.
+        P11_UNAVAILABLE:        P11 is not ACTIVE or data is missing.
+
+    Args:
+        historical_action:  Candidate from historical_actions.json actions
+        p11_focus_items:    List of P11 focus items (from next_stint_focus)
+        p10_presentation_items: List of P10 presentation items
+
+    Returns:
+        dict with classification and rationale
+    """
+    # ── Check P11 availability ────────────────────────────────────────────
+    if not p11_focus_items or not p11_focus_items:
+        return {
+            "classification": "P11_UNAVAILABLE",
+            "rationale": "P11 status is not ACTIVE or no focus items available",
+        }
+
+    # ── Extract historical action details ─────────────────────────────────
+    candidate_id = historical_action.get("candidate_id", "")
+    location_label = historical_action.get("location_label", "")
+    actions = historical_action.get("actions", [])
+    observation_codes = historical_action.get("authorization", {}).get("observation_codes", [])
+
+    # ── Check each P11 focus item ─────────────────────────────────────────
+    for p11_item in p11_focus_items:
+        p11_location = p11_item.get("location_label", "")
+        p11_actions = p11_item.get("actions", [])
+        p11_cues = p11_item.get("driver_cues", [])
+
+        # ── SUPPORTS_CURRENT: Same location + same action ───────────────────
+        if _locations_match(location_label, p11_location):
+            if _actions_match(actions, p11_actions):
+                return {
+                    "classification": "SUPPORTS_CURRENT",
+                    "rationale": (
+                        f"Historical action at {location_label} matches "
+                        f"P11 focus {p11_location} with action {actions}"
+                    ),
+                }
+
+            # ── CONFLICTS_WITH_CURRENT: Same location + different action ─────
+            if actions and p11_actions:
+                if not _actions_compatible(actions, p11_actions):
+                    return {
+                        "classification": "CONFLICTS_WITH_CURRENT",
+                        "rationale": (
+                            f"Historical action {actions} conflicts with "
+                            f"P11 focus {p11_actions} at same location"
+                        ),
+                    }
+
+            # ── DUPLICATES_CURRENT: Same location + overlapping cues ────────
+            if _cues_overlap(actions, p11_cues):
+                return {
+                    "classification": "DUPLICATES_CURRENT",
+                    "rationale": (
+                        f"Historical action at {location_label} duplicates "
+                        f"P11 cue {p11_cues}"
+                    ),
+                }
+
+        # ── Real-data path: P11 items carry track_location + cue texts ───────
+        # Real debriefs do not expose action codes on P11 items; classify by
+        # channel coverage and deterministic direction vocabulary instead.
+        hist_channels = _historical_channels(actions)
+        if hist_channels and _locations_match(location_label, p11_location):
+            p11_channels = _p11_channels(p11_item)
+            if not p11_channels:
+                return {
+                    "classification": "AMBIGUOUS",
+                    "rationale": (
+                        f"Historical action at {location_label} matches a P11 "
+                        f"location but P11 channels could not be derived"
+                    ),
+                }
+            shared = hist_channels & p11_channels
+            if shared:
+                for channel in shared:
+                    hist_direction = _historical_direction(actions, channel)
+                    p11_direction = _p11_direction_for_channel(p11_item, channel)
+                    if hist_direction and p11_direction and hist_direction != p11_direction:
+                        direction_text = (
+                            f"channel {channel}: historical {hist_direction} vs "
+                            f"P11 {p11_direction}"
+                        )
+                        return {
+                            "classification": "CONFLICTS_WITH_CURRENT",
+                            "rationale": (
+                                f"Historical action {actions} at {location_label} "
+                                f"conflicts with P11 focus at same location "
+                                f"({direction_text})"
+                            ),
+                        }
+                if hist_channels <= p11_channels:
+                    return {
+                        "classification": "DUPLICATES_CURRENT",
+                        "rationale": (
+                            f"Historical action at {location_label} covers channels "
+                            f"{sorted(shared)} already present in P11 focus"
+                        ),
+                    }
+                return {
+                    "classification": "SUPPORTS_CURRENT",
+                    "rationale": (
+                        f"Historical action at {location_label} adds channels "
+                        f"{sorted(hist_channels - p11_channels)} beyond P11 focus"
+                    ),
+                }
+            return {
+                "classification": "USEFUL_SECONDARY_CONTEXT",
+                "rationale": (
+                    f"Historical action at {location_label} uses channels "
+                    f"{sorted(hist_channels)} not covered by P11 focus"
+                ),
+            }
+
+        # ── LOW_VALUE: Historical action is not matched by any P11 item ──────
+        if _locations_match(location_label, p11_location):
+            # Different channel or qualitative cue — secondary context
+            if not _actions_match(actions, p11_actions) and actions:
+                return {
+                    "classification": "USEFUL_SECONDARY_CONTEXT",
+                    "rationale": (
+                        f"Historical action {actions} at {location_label} "
+                        f"provides secondary context beyond P11"
+                    ),
+                }
+
+    return {
+        "classification": "LOW_VALUE",
+        "rationale": (
+            f"Historical action {actions} at {location_label} "
+            f"not matched by any P11 focus item"
+        ),
+    }
+
+
+ACTION_CHANNEL_DIRECTION: dict[str, tuple[str, str]] = {
+    "increase_brake": ("brake", "increase"),
+    "reduce_brake": ("brake", "decrease"),
+    "increase_throttle": ("throttle", "increase"),
+    "reduce_throttle": ("throttle", "decrease"),
+}
+
+CHANNEL_DIRECTION_KEYWORDS: dict[tuple[str, str], tuple[str, ...]] = {
+    ("brake", "increase"): (
+        "aumentar el freno",
+        "aumentar freno",
+        "aumentá el freno",
+        "más freno",
+        "más presión",
+        "aumentar la aplicación del freno",
+    ),
+    ("brake", "decrease"): (
+        "reducir el freno",
+        "reducir freno",
+        "reducí el freno",
+        "menos freno",
+        "menos presión",
+        "reducir la aplicación del freno",
+        "soltá el freno",
+        "soltar el freno",
+    ),
+    ("throttle", "increase"): (
+        "aumentar el acelerador",
+        "aumentar acelerador",
+        "aumentá el acelerador",
+        "más acelerador",
+        "aumentar la apertura del acelerador",
+    ),
+    ("throttle", "decrease"): (
+        "reducir el acelerador",
+        "reducir acelerador",
+        "reducí el acelerador",
+        "menos acelerador",
+        "reducir la apertura del acelerador",
+        "soltá el acelerador",
+        "soltar el acelerador",
+    ),
+}
+
+
+def _historical_channels(actions: list[str]) -> set[str]:
+    """Derive channels from historical action codes."""
+    return {
+        channel
+        for code in actions
+        for channel, _direction in [ACTION_CHANNEL_DIRECTION.get(code, (None, None))]
+        if channel
+    }
+
+
+def _historical_direction(actions: list[str], channel: str) -> str | None:
+    """Return deterministic direction for a channel from action codes."""
+    directions = {
+        direction
+        for code in actions
+        for ch, direction in [ACTION_CHANNEL_DIRECTION.get(code, (None, None))]
+        if ch == channel and direction
+    }
+    if len(directions) == 1:
+        return directions.pop()
+    return None
+
+
+def _p11_channels(item: dict) -> set[str]:
+    """Derive P11 channels from explicit channels or cue text vocabulary."""
+    channels = {str(c) for c in item.get("channels", []) if str(c) in {"brake", "throttle"}}
+    if channels:
+        return channels
+    text = " ".join(
+        str(part)
+        for part in [
+            *item.get("driver_cues", []),
+            *item.get("targets", []),
+            item.get("recommendation", ""),
+        ]
+        if isinstance(part, str)
+    ).lower()
+    derived: set[str] = set()
+    if any(token in text for token in ("freno", "frená", "frenar", "brake")):
+        derived.add("brake")
+    if any(token in text for token in ("acelerador", "acelerá", "acelerar", "throttle", "gas")):
+        derived.add("throttle")
+    return derived
+
+
+def _p11_direction_for_channel(item: dict, channel: str) -> str | None:
+    """Return deterministic P11 direction for a channel from cue vocabulary."""
+    text = " ".join(
+        str(part)
+        for part in [
+            *item.get("driver_cues", []),
+            *item.get("targets", []),
+            item.get("recommendation", ""),
+        ]
+        if isinstance(part, str)
+    ).lower()
+    increase_hit = any(
+        keyword in text for keyword in CHANNEL_DIRECTION_KEYWORDS.get((channel, "increase"), ())
+    )
+    decrease_hit = any(
+        keyword in text for keyword in CHANNEL_DIRECTION_KEYWORDS.get((channel, "decrease"), ())
+    )
+    if increase_hit and not decrease_hit:
+        return "increase"
+    if decrease_hit and not increase_hit:
+        return "decrease"
+    return None
+
+
+def _locations_match(historical_label: str, p11_label: str) -> bool:
+    """Check if two location labels refer to the same corner/zone.
+
+    Simple heuristic: check for common corner labels (T1, T2, etc.)
+    or shared track name + corner name.
+    """
+    if not historical_label or not p11_label:
+        return False
+
+    # Extract corner labels (e.g., "T2 — Variante Tamburello")
+    hist_corners = _extract_corners(historical_label)
+    p11_corners = _extract_corners(p11_label)
+
+    return bool(hist_corners & p11_corners)
+
+
+def _extract_corners(location_label: str) -> set[str]:
+    """Extract corner labels (T1, T2, etc.) from a location label."""
+    import re
+    matches = re.findall(r"T\d+", location_label)
+    return set(matches)
+
+
+def _actions_match(actions: list[str], p11_actions: list[str]) -> bool:
+    """Check if two action lists are identical."""
+    return set(actions) == set(p11_actions)
+
+
+def _actions_compatible(actions: list[str], p11_actions: list[str]) -> bool:
+    """Check if two action lists are compatible (not conflicting).
+
+    Compatible means they don't suggest opposite actions on the same channel.
+    """
+    action_set = set(actions)
+    p11_set = set(p11_actions)
+
+    # Conflicting: one says increase_brake, other says reduce_brake
+    conflicting = {
+        ("increase_brake", "reduce_brake"),
+        ("reduce_brake", "increase_brake"),
+        ("increase_throttle", "reduce_throttle"),
+        ("reduce_throttle", "increase_throttle"),
+    }
+
+    for hist_action, p11_action in product(actions, p11_actions):
+        if (hist_action, p11_action) in conflicting:
+            return False
+
+    return True
+
+
+def _cues_overlap(actions: list[str], p11_cues: list[str]) -> bool:
+    """Check if historical actions overlap with P11 driver cues."""
+    if not actions or not p11_cues:
+        return False
+    return bool(set(actions) & set(p11_cues))
+
+
+# ── Policy constants ──────────────────────────────────────────────────────
 
 
 def utc_now_iso() -> str:
@@ -847,6 +1424,42 @@ def audit_session(
     # ── Eligibility ───────────────────────────────────────────────────────
     eligibility = audit_h5_3_eligibility(shadow_pipeline, eligibility_artifact)
 
+    # ── P11 extraction ─────────────────────────────────────────────────────
+    # Resolve debrief JSON from LLM results for this session
+    p11_result = resolve_debrief_json(session_name, base_dir=base_dir)
+    p11_data = p11_result.get("p11_data")
+    p10_data = p11_result.get("p10_data")
+    debrief_payload = p11_result.get("debrief")
+
+    p11_status = "UNAVAILABLE"
+    p11_classification: list[dict[str, Any]] = []
+    if debrief_payload and p11_data:
+        p11_status = "ACTIVE" if p11_data.get("status") == "ACTIVE" else "INACTIVE"
+        p11_focus_items = get_p11_focus_items(p11_data)
+        p10_items = get_p10_presentation_items(p10_data)
+
+        # Get historical actions from canonical or shadow
+        historical_actions = []
+        if actions_artifact:
+            historical_actions = actions_artifact.get("actions", [])
+        elif shadow_pipeline:
+            historical_actions = shadow_pipeline.get("actions", {}).get("actions", [])
+
+        # Classify each historical action against P11
+        for hist_action in historical_actions:
+            classification = classify_historical_action_vs_p11(
+                hist_action,
+                p11_focus_items,
+                p10_items,
+            )
+            p11_classification.append({
+                "candidate_id": hist_action.get("candidate_id"),
+                "location_label": hist_action.get("location_label"),
+                "historical_actions": hist_action.get("actions"),
+                "p11_classification": classification["classification"],
+                "p11_rationale": classification["rationale"],
+            })
+
     # ── Selection ──────────────────────────────────────────────────────────
     # Extract shadow selection fallback from pipeline
     shadow_selection = {}
@@ -970,6 +1583,20 @@ def audit_session(
         "not_applicable": sum(1 for r in candidate_results if r["status"] == "NOT_APPLICABLE"),
     }
 
+    # ── P11 classification summary ───────────────────────────────────────────
+    p11_classification_summary: dict[str, Any] = {}
+    if debrief_payload:
+        p11_counter: dict[str, int] = {}
+        for item in p11_classification:
+            classification = item["p11_classification"]
+            p11_counter[classification] = p11_counter.get(classification, 0) + 1
+        p11_classification_summary = {
+            "p11_status": p11_status,
+            "historical_actions_classified": len(p11_classification),
+            "classification_distribution": p11_counter,
+            "classifications": p11_classification,
+        }
+
     return {
         "session": session_name,
         "identity": identity,
@@ -978,6 +1605,7 @@ def audit_session(
         "selector_audit": selector_audit,
         "policy_audit": actions_audit,
         "validator_audit": validator_audit,
+        "p11_classification": p11_classification_summary,
         "status": STATUS_AUDIT_COMPLETE,
         "candidate_results": candidate_results,
         "human_review": human_reviews,

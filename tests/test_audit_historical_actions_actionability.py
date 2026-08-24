@@ -71,6 +71,41 @@ def test_rejects_non_action_artifact(tmp_path: Path):
         raise AssertionError("artefacto no autorizado fue aceptado")
 
 
+def test_accepts_validated_candidate_artifact_with_shadow_authority(tmp_path: Path):
+    payload = _actions_fixture()
+    payload["status"] = "HISTORICAL_ACTION_CANDIDATES_VALIDATED"
+    payload["coaching_authority"] = {
+        "session_reference_remains_authority": True,
+        "historical_actions_authorized": False,
+    }
+    path = tmp_path / "actions.json"
+    path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+
+    audit = build_audit(path)
+
+    assert audit["status"] == "SHADOW_OBSERVATIONAL_ONLY"
+    assert audit["counts"] == {
+        "brake_only": 1,
+        "throttle_only": 1,
+        "mixed_brake_throttle": 1,
+    }
+
+
+def test_rejects_artifact_with_authorized_actions(tmp_path: Path):
+    payload = _actions_fixture()
+    payload["status"] = "HISTORICAL_ACTION_CANDIDATES_VALIDATED"
+    payload["coaching_authority"] = {"historical_actions_authorized": True}
+    path = tmp_path / "actions.json"
+    path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+
+    try:
+        build_audit(path)
+    except ValueError as exc:
+        assert "autoriza acciones históricas" in str(exc)
+    else:
+        raise AssertionError("artefacto con autorización fue aceptado")
+
+
 def test_audit_aliases_match_versioned_sources():
     root = Path(__file__).resolve().parents[1]
     alias_hash = hashlib.sha256(

@@ -69,7 +69,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.12"
+GUI_VERSION = "1.13"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 PROJECT_ROOT = Path(__file__).resolve().parent
 BACKEND_LABELS = {
@@ -145,6 +145,91 @@ def session_summary_values(
     )
 
 
+SESSION_STATUS_COLORS = {
+    "DEBRIEF_READY": "#67e5d5",
+    "DEBRIEF_UNVALIDATED": "#d2b36e",
+    "HISTORY_READY": "#f0c674",
+    "ANALYZED": "#7fb3e3",
+    "PENDING_STABILITY": "#9aa5ad",
+    "INCOMPLETE": "#9aa5ad",
+    "CHANGED_REVIEW_REQUIRED": "#e6a3f0",
+    "FAILED": "#ff7b72",
+}
+
+SESSION_STATUS_TOOLTIPS = {
+    "DEBRIEF_READY": "Debrief validado y listo para revisar.",
+    "DEBRIEF_UNVALIDATED": "Hay debrief, pero el validator no lo confirmó.",
+    "HISTORY_READY": "En History; falta generar el debrief (botón Analizar).",
+    "ANALYZED": "Analizada y validada; falta importarla a History.",
+    "PENDING_STABILITY": "Telemetría nueva; esperando estabilidad.",
+    "INCOMPLETE": "Sesión incompleta o sin vueltas comparables.",
+    "CHANGED_REVIEW_REQUIRED": (
+        "El archivo cambió después de procesarse; requiere revisión."
+    ),
+    "FAILED": "Falló en alguna etapa; revisá Diagnóstico → Pipeline.",
+}
+
+
+def session_status_color(status: str) -> str:
+    return SESSION_STATUS_COLORS.get(status, "#9aa5ad")
+
+
+def session_status_tooltip(status: str) -> str:
+    return SESSION_STATUS_TOOLTIPS.get(
+        status,
+        "Estado no clasificado; revisá Diagnóstico → Pipeline.",
+    )
+
+
+def format_comparison_columns(view: dict) -> tuple[str, str, str, str]:
+    available = bool(view.get("available"))
+    hist = view.get("historical") or {}
+    current = view.get("current") or {}
+    hist_text = (
+        (
+            f"Sesión histórica: #{hist.get('session_id', '—')}\n"
+            f"Vuelta: {hist.get('lap', '—')}\n"
+            f"Tiempo: {hist.get('duration_text', '—')}"
+        )
+        if available
+        else "Sin comparación histórica."
+    )
+    current_text = (
+        (
+            f"Sesión actual: #{current.get('session_id', '—')}\n"
+            f"Vuelta: {current.get('lap', '—')}\n"
+            f"Tiempo: {current.get('duration_text', '—')}"
+        )
+        if available
+        else "Sin comparación histórica."
+    )
+    summary = (
+        f"Delta actual − histórica: {view.get('delta_text', '—')}"
+        if available
+        else f"H5.2: {view.get('stage_status', 'NO_EJECUTADA')}"
+    )
+    detail_lines: list[str] = []
+    if available:
+        zones = view.get("zones") or []
+        if zones:
+            detail_lines.append("Zonas de mayor impacto (top 3):")
+            for zone in zones:
+                change = zone.get("delta_change_s")
+                change_text = f"{change:+.3f} s" if change is not None else "—"
+                detail_lines.append(
+                    f"• {zone.get('label')}: {zone.get('type')} · cambio {change_text}"
+                )
+        else:
+            detail_lines.append("No hay zonas deterministas disponibles.")
+        rendered = (view.get("llm") or {}).get("rendered") or ""
+        if rendered:
+            detail_lines.extend(("", "Lectura histórica validada:", rendered))
+    detail_text = "\n".join(detail_lines) if detail_lines else (
+        "Esta sesión no tiene una comparación histórica H5.2 disponible."
+    )
+    return summary, hist_text, current_text, detail_text
+
+
 class RaceEngineerApp:
     def __init__(self, root, runs_root: Path):
         import tkinter as tk
@@ -157,6 +242,7 @@ class RaceEngineerApp:
         self.sessions: list[SessionRecord] = []
         self.all_sessions: list[SessionRecord] = []
         self.session_read_errors: list[str] = []
+        self._row_tooltip = None
         self.analysis_queue: queue.Queue[tuple[str, object]] = queue.Queue()
         self.track_map_queue: queue.Queue[tuple[int, str, object]] = queue.Queue()
         self.track_map_token = 0
@@ -561,6 +647,8 @@ class RaceEngineerApp:
         self.tree.pack(fill="both", expand=True)
         self.tree.bind("<<TreeviewSelect>>", self._on_select)
         self.tree.bind("<Double-1>", self._on_session_double_click)
+        self.tree.bind("<Motion>", self._on_tree_motion)
+        self.tree.bind("<Leave>", self._hide_row_tooltip)
         ttk.Label(
             left,
             text="Doble clic: analizar el DuckDB de esa sesión con el backend seleccionado",
@@ -630,10 +718,7 @@ class RaceEngineerApp:
             history_notebook,
             "Referencia",
         )
-        self.historical_comparison_text = self._text_tab(
-            history_notebook,
-            "Comparación",
-        )
+        self._comparison_tab(history_notebook)
 
         diagnostics_notebook = self._section_tab(self.notebook, "Diagnóstico")
         self.pipeline_text = self._text_tab(diagnostics_notebook, "Pipeline")
@@ -667,6 +752,118 @@ class RaceEngineerApp:
         nested = self.ttk.Notebook(frame)
         nested.pack(fill="both", expand=True)
         return nested
+
+    def _comparison_tab(self, notebook):
+        frame = self.ttk.Frame(notebook, style="Panel.TFrame", padding=5)
+        notebook.add(frame, text="Comparación")
+        self.comparison_summary_var = self.tk.StringVar(value="")
+        self.ttk.Label(
+            frame,
+            textvariable=self.comparison_summary_var,
+            style="CardValue.TLabel",
+            wraplength=960,
+            justify="left",
+        ).pack(fill="x", padx=4, pady=(0, 6))
+
+        columns = self.ttk.Frame(frame, style="Panel.TFrame")
+        columns.pack(fill="both", expand=True)
+        self.comparison_hist_text = self._readonly_pane(
+            columns,
+            "Histórica",
+            side="left",
+        )
+        self.comparison_current_text = self._readonly_pane(
+            columns,
+            "Sesión actual",
+            side="right",
+        )
+
+        detail_holder = self.ttk.Frame(frame, style="Panel.TFrame")
+        detail_holder.pack(fill="both", expand=True, pady=(6, 0))
+        self.comparison_detail_text = self._readonly_pane(
+            detail_holder,
+            "Detalle y lectura validada",
+            side="top",
+        )
+        return frame
+
+    def _readonly_pane(self, parent, header, *, side):
+        pane = self.ttk.Frame(parent, style="Panel.TFrame")
+        pane.pack(
+            side=side,
+            fill="both",
+            expand=True,
+            padx=(0, 6) if side == "left" else 0,
+        )
+        self.ttk.Label(pane, text=header, style="CardLabel.TLabel").pack(anchor="w")
+        text = self.tk.Text(
+            pane,
+            wrap="word",
+            background="#111418",
+            foreground="#d8e3ea",
+            insertbackground="#d8e3ea",
+            relief="flat",
+            padx=8,
+            pady=6,
+            height=8,
+        )
+        scroll = self.ttk.Scrollbar(pane, orient="vertical", command=text.yview)
+        text.configure(yscrollcommand=scroll.set)
+        scroll.pack(side="right", fill="y")
+        text.pack(side="left", fill="both", expand=True)
+        text.configure(state="disabled")
+        return text
+
+    def _set_comparison_view(self, view: dict, fallback_text: str):
+        if not isinstance(view, dict) or not view.get("available"):
+            self.comparison_summary_var.set("Comparación histórica no disponible")
+            self._set_text(self.comparison_hist_text, "")
+            self._set_text(self.comparison_current_text, "")
+            self._set_text(self.comparison_detail_text, fallback_text)
+            return
+        summary, hist_text, current_text, detail_text = format_comparison_columns(
+            view
+        )
+        self.comparison_summary_var.set(summary)
+        self._set_text(self.comparison_hist_text, hist_text)
+        self._set_text(self.comparison_current_text, current_text)
+        self._set_text(self.comparison_detail_text, detail_text)
+
+    def _on_tree_motion(self, event):
+        iid = self.tree.identify_row(event.y)
+        if not iid:
+            self._hide_row_tooltip()
+            return
+        try:
+            session = self.sessions[int(iid)]
+        except (ValueError, IndexError):
+            return
+        self._show_row_tooltip(
+            session_status_tooltip(session.status),
+            event.x_root,
+            event.y_root,
+        )
+
+    def _show_row_tooltip(self, text: str, x_root: int, y_root: int):
+        self._hide_row_tooltip()
+        tooltip = self.tk.Toplevel(self.root)
+        tooltip.wm_overrideredirect(True)
+        tooltip.wm_geometry(f"+{x_root + 14}+{y_root + 14}")
+        self.ttk.Label(
+            tooltip,
+            text=text,
+            style="CardValue.TLabel",
+            padding=(8, 6),
+        ).pack()
+        self._row_tooltip = tooltip
+
+    def _hide_row_tooltip(self, _event=None):
+        if self._row_tooltip is not None:
+            try:
+                self._row_tooltip.destroy()
+            except Exception:
+                pass
+            self._row_tooltip = None
 
     def _text_tab(self, notebook, label):
         frame = self.ttk.Frame(notebook, style="Panel.TFrame", padding=5)
@@ -927,9 +1124,8 @@ class RaceEngineerApp:
             )
         self.tree.tag_configure("row_even", background="#171717")
         self.tree.tag_configure("row_odd", background="#1b1f23")
-        self.tree.tag_configure("DEBRIEF_READY", foreground="#67e5d5")
-        self.tree.tag_configure("HISTORY_READY", foreground="#f0c674")
-        self.tree.tag_configure("FAILED", foreground="#ff7b72")
+        for status in SESSION_STATUS_COLORS:
+            self.tree.tag_configure(status, foreground=session_status_color(status))
         self.count_var.set(
             f"{len(self.sessions)} de {len(self.all_sessions)} sesiones"
             + (f" · {len(errors)} errores" if errors else "")
@@ -1010,7 +1206,10 @@ class RaceEngineerApp:
         self._set_text(self.plan_text, detail.plan_text)
         self._set_text(self.laps_text, detail.laps_text)
         self._set_text(self.historical_reference_text, detail.historical_reference_text)
-        self._set_text(self.historical_comparison_text, detail.historical_comparison_text)
+        self._set_comparison_view(
+            detail.historical_comparison_view,
+            detail.historical_comparison_text,
+        )
         self._request_track_map(record)
         pipeline = detail.pipeline_text
         if detail.warnings:
@@ -1030,10 +1229,13 @@ class RaceEngineerApp:
             self.plan_text,
             self.laps_text,
             self.historical_reference_text,
-            self.historical_comparison_text,
             self.pipeline_text,
         ):
             self._set_text(widget, "")
+        self.comparison_summary_var.set("")
+        self._set_text(self.comparison_hist_text, "")
+        self._set_text(self.comparison_current_text, "")
+        self._set_text(self.comparison_detail_text, "")
         self.track_map_token += 1
         self.track_map_loading = False
         self.current_track_map = None

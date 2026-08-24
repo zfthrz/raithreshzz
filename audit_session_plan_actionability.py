@@ -88,6 +88,14 @@ def classify_cue(item: dict[str, Any], cue: dict[str, Any]) -> dict[str, Any]:
     kind = str(cue.get("kind") or "unknown")
     point_count = _physical_point_count(item, channel)
     profile_step_count = _profile_steps(cue)
+    sequence = cue.get("coaching_sequence") or {}
+    sequence_event_count = len(
+        [
+            event
+            for event in (sequence.get("events") or [])
+            if isinstance(event, dict)
+        ]
+    )
     qualitative_channel_count = len(
         [value for value in (cue.get("channels") or []) if value]
     )
@@ -104,12 +112,16 @@ def classify_cue(item: dict[str, Any], cue: dict[str, Any]) -> dict[str, Any]:
         directness_class = "qualitative_alignment"
     elif kind == "validated_llm_steering":
         directness_class = "validated_steering"
+    elif kind == "combined_spatial_sequence":
+        directness_class = "combined_spatial_sequence"
     else:
         directness_class = "other"
 
     component_count = point_count + profile_step_count
     if kind == "qualitative_reference_level":
         component_count = max(1, qualitative_channel_count)
+    elif kind == "combined_spatial_sequence":
+        component_count = max(1, sequence_event_count)
     elif component_count == 0:
         component_count = 1
 
@@ -119,6 +131,7 @@ def classify_cue(item: dict[str, Any], cue: dict[str, Any]) -> dict[str, Any]:
         "directness_class": directness_class,
         "physical_point_count": point_count,
         "reference_profile_step_count": profile_step_count,
+        "sequence_event_count": sequence_event_count,
         "instruction_component_count": component_count,
         "point_comparison_count": cue.get("point_comparison_count"),
         "region_comparison_count": cue.get("region_comparison_count"),

@@ -19,6 +19,21 @@ CHANNEL_DELTA_KEYS = (
 )
 
 
+def _channel_sign(value: Any) -> str:
+    """Signo determinista de un delta de canal (pos/neg/zero)."""
+    if value is None:
+        return "zero"
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return "zero"
+    if number > 0:
+        return "pos"
+    if number < 0:
+        return "neg"
+    return "zero"
+
+
 def utc_now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
@@ -317,6 +332,42 @@ def run_audit(
             combo_counts[combo_key] += 1
         channel_combinations[label] = dict(combo_counts)
 
+    # Brake vs throttle: presencia por label
+    brake_throttle_presence: dict[str, dict[str, int]] = {}
+    for label in VALID_HUMAN_LABELS:
+        items_for_label = [
+            item for item in labeled_items if item["human_label"] == label
+        ]
+        presence_counts: Counter = Counter()
+        for item in items_for_label:
+            has_brake = bool(item["channel_presence"].get("brake_delta_avg", False))
+            has_throttle = bool(
+                item["channel_presence"].get("throttle_delta_avg", False)
+            )
+            if has_brake and has_throttle:
+                key = "both"
+            elif has_brake:
+                key = "brake_only"
+            elif has_throttle:
+                key = "throttle_only"
+            else:
+                key = "neither"
+            presence_counts[key] += 1
+        brake_throttle_presence[label] = dict(presence_counts)
+
+    # Brake sign x throttle sign por label
+    brake_throttle_sign: dict[str, dict[str, int]] = {}
+    for label in VALID_HUMAN_LABELS:
+        items_for_label = [
+            item for item in labeled_items if item["human_label"] == label
+        ]
+        sign_counts: Counter = Counter()
+        for item in items_for_label:
+            brake_sign = _channel_sign(item.get("brake_delta_avg"))
+            throttle_sign = _channel_sign(item.get("throttle_delta_avg"))
+            sign_counts[f"brake_{brake_sign}_throttle_{throttle_sign}"] += 1
+        brake_throttle_sign[label] = dict(sign_counts)
+
     # ── Construir output ──
     output = {
         "metadata": {
@@ -374,6 +425,16 @@ def run_audit(
                 label: dict(sorted(channel_combinations[label].items()))
                 for label in sorted(VALID_HUMAN_LABELS)
                 if label in channel_combinations
+            },
+            "brake_throttle_presence_by_label": {
+                label: dict(sorted(brake_throttle_presence[label].items()))
+                for label in sorted(VALID_HUMAN_LABELS)
+                if label in brake_throttle_presence
+            },
+            "brake_throttle_sign_by_label": {
+                label: dict(sorted(brake_throttle_sign[label].items()))
+                for label in sorted(VALID_HUMAN_LABELS)
+                if label in brake_throttle_sign
             },
         },
         "labeled_items": [

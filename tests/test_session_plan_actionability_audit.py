@@ -95,6 +95,37 @@ def test_classifies_direct_point_and_point_with_sequence_without_channel_score()
     assert "score" not in throttle_audit
 
 
+def test_classifies_combined_spatial_sequence():
+    cue = {
+        "channel": "brake+throttle",
+        "kind": "combined_spatial_sequence",
+        "source": "deterministic_coaching_sequence",
+        "coaching_sequence": {
+            "version": "0.1",
+            "status": "COMBINED",
+            "event_count": 3,
+            "events": [
+                {"event_kind": "braking_onset"},
+                {"event_kind": "throttle_onset"},
+                {"event_kind": "brake_release"},
+            ],
+        },
+    }
+    item = {
+        "plan_label": "A",
+        "comparison_count": 1,
+        "track_location": {"label": "Test corner"},
+        "driver_cues": [cue],
+        "actionable_cue_count": 1,
+    }
+
+    audit = classify_cue(item, cue)
+
+    assert audit["directness_class"] == "combined_spatial_sequence"
+    assert audit["instruction_component_count"] == 3
+    assert "score" not in audit
+
+
 def test_builds_shadow_summary_from_multiple_artifacts(tmp_path: Path):
     first_path = tmp_path / "first.json"
     second_path = tmp_path / "second.json"

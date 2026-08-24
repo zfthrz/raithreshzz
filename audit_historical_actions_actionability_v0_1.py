@@ -15,6 +15,13 @@ STATUS_SHADOW = "SHADOW_OBSERVATIONAL_ONLY"
 BRAKE_ACTIONS = {"reduce_brake", "increase_brake"}
 THROTTLE_ACTIONS = {"reduce_throttle", "increase_throttle"}
 
+VALID_ACTION_STATUSES = frozenset(
+    {
+        "HISTORICAL_ACTIONS_AUTHORIZED",
+        "HISTORICAL_ACTION_CANDIDATES_VALIDATED",
+    }
+)
+
 
 def sha256_file(path: Path) -> str:
     digest = hashlib.sha256()
@@ -41,8 +48,15 @@ def build_audit(actions_path: Path) -> dict[str, Any]:
     payload = json.loads(actions_path.read_text(encoding="utf-8"))
     if not isinstance(payload, dict):
         raise ValueError("Artefacto de acciones inválido.")
-    if payload.get("status") != "HISTORICAL_ACTIONS_AUTHORIZED":
+    if payload.get("status") not in VALID_ACTION_STATUSES:
         raise ValueError("El artefacto no es de acciones autorizadas.")
+    authority = payload.get("coaching_authority") or {}
+    policy = (payload.get("metadata") or {}).get("policy") or {}
+    if (
+        authority.get("historical_actions_authorized") is True
+        or policy.get("historical_actions_authorized") is True
+    ):
+        raise ValueError("El artefacto autoriza acciones históricas; fail-closed.")
 
     records: list[dict[str, Any]] = []
     counts: Counter[str] = Counter()

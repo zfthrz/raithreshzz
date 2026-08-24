@@ -273,6 +273,97 @@ def test_detail_renders_h5_2_comparison_and_validated_observation(tmp_path: Path
     assert str(llm) in detail.pipeline_text
 
 
+def test_detail_builds_structured_historical_comparison_view(tmp_path: Path):
+    state_path = make_session(tmp_path, "session-h5-2-view")
+    raw = write_json(
+        tmp_path / "h5_2" / "comparison.json",
+        {
+            "status": "RAW_CROSS_SESSION_COMPARISON_AVAILABLE",
+            "context": {"track": "Fuji Speedway", "vehicle_variant": "LMP2_ELMS"},
+            "historical_reference": {"session_id": 7, "lap": 8, "duration_s": 90.98},
+            "current_session_reference": {"session_id": 9, "lap": 1, "duration_s": 92.26},
+            "temporal_validation": {"calculated_current_minus_historical_s": 1.28},
+            "spatial_comparison": {
+                "localization": {
+                    "mode": "validated_track_profile",
+                    "profile_status": "VALIDATED_MULTI_SESSION",
+                },
+                "zone_summaries": [
+                    {
+                        "type": "frenada",
+                        "location": {"label": "Curva 1"},
+                        "delta_change": 0.18,
+                        "start_distance": 100.0,
+                        "end_distance": 180.0,
+                    },
+                    {
+                        "type": "tracção",
+                        "location": {"label": "Curva 2"},
+                        "delta_change": 0.44,
+                        "start_distance": 500.0,
+                        "end_distance": 580.0,
+                    },
+                    {
+                        "type": "tracção",
+                        "location": {"label": "Curva 3"},
+                        "delta_change": -0.12,
+                        "start_distance": 900.0,
+                        "end_distance": 960.0,
+                    },
+                    {
+                        "type": "frenada",
+                        "location": {"label": "Curva 4"},
+                        "delta_change": 0.09,
+                        "start_distance": 1400.0,
+                        "end_distance": 1480.0,
+                    },
+                ],
+            },
+        },
+    )
+    llm = write_json(
+        tmp_path / "h5_2_llm" / "observation.json",
+        {
+            "metadata": {"backend": "ollama", "model": "ingenierov3"},
+            "rendered_analysis": "Observación validada para la vista lado a lado.",
+        },
+    )
+    state = json.loads(state_path.read_text(encoding="utf-8"))
+    state["stages"]["h5_2"] = {"status": "RUN", "output": str(raw)}
+    state["stages"]["h5_2_llm"] = {"status": "RUN", "output": str(llm)}
+    state["last_summary"]["h5_2"] = "RUN"
+    state["last_summary"]["h5_2_llm"] = "RUN"
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+
+    view = load_session_detail(discover_sessions(tmp_path / "runs")[0][0]).historical_comparison_view
+
+    assert view["available"] is True
+    assert view["stage_status"] == "RUN"
+    assert view["delta_s"] == 1.28
+    assert view["delta_text"] == "+1.280 s"
+    assert view["historical"]["session_id"] == 7
+    assert view["historical"]["duration_text"] == "1:30.980"
+    assert view["current"]["lap"] == 1
+    assert view["localization"]["mode"] == "validated_track_profile"
+    assert [zone["label"] for zone in view["zones"]] == ["Curva 2", "Curva 1", "Curva 3"]
+    assert view["zones"][0]["delta_change_s"] == 0.44
+    assert view["llm"]["backend"] == "ollama"
+    assert view["llm"]["model"] == "ingenierov3"
+    assert "Observación validada" in view["llm"]["rendered"]
+
+
+def test_structured_historical_comparison_view_reports_unavailable(tmp_path: Path):
+    make_session(tmp_path, "session-without-view")
+
+    view = load_session_detail(discover_sessions(tmp_path / "runs")[0][0]).historical_comparison_view
+
+    assert view["available"] is False
+    assert view["stage_status"] == "NO_EJECUTADA"
+    assert view["delta_s"] is None
+    assert view["zones"] == []
+    assert view["llm"]["rendered"] == ""
+
+
 def test_detail_explains_when_h5_2_is_not_available(tmp_path: Path):
     make_session(tmp_path, "session-without-h5-2")
 
@@ -359,6 +450,7 @@ def test_gui_entry_points_and_documentation_are_present():
         source = (root / relative).read_text(encoding="utf-8")
         assert "race_engineer_gui.py" in source or "RACE_ENGINEER_GUI_V1_11.md" in source
     assert (root / "docs" / "RACE_ENGINEER_GUI_V1_11.md").is_file()
+    assert (root / "docs" / "RACE_ENGINEER_GUI_V1_13.md").is_file()
     assert (root / "docs" / "RACE_ENGINEER_GUI_V1_10.md").is_file()
     assert (root / "docs" / "RACE_ENGINEER_GUI_V1_9.md").is_file()
     assert (root / "docs" / "RACE_ENGINEER_GUI_V1_8.md").is_file()

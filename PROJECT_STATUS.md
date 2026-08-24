@@ -9,7 +9,8 @@ Validated baseline:
 
 - full pytest: `1047 PASS / 0 FAIL / 0 SKIP`;
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP` (last analyzer-affecting checkpoint);
-- GUI: v1.12, section navigation + telemetry paned area + GPS zoom/pan + H5.3 presentation;
+- GUI: v1.13, section navigation + telemetry paned area + GPS zoom/pan + H5.3
+  presentation + status badges and side-by-side historical comparison;
 - H5.3: shadow implementation complete, production historical actions still disabled.
 - H5.3g: deterministic faster-lap withholding audit implemented; policy unchanged.
 - H5.3h: conservative local-loss hypothesis implemented in shadow; 1 unauthorized
@@ -19,6 +20,14 @@ Validated baseline:
   and 1 cross-zone contextual pattern.
 - H5.3 review maintenance: hidden, deterministic queue expansion enabled; first real
   checkpoint is `UP_TO_DATE`, 8 artifacts, v5 and 0 pending.
+- H5.3 production-readiness review (read-only, 2026-08-23): real-session audit v0.3
+  over 10 sessions / 4 tracks. Selector, action policy and validators at 1.0;
+  P11 comparison classifies 16 authorized actions (15 LOW_VALUE, 1
+  CONFLICTS_WITH_CURRENT at Imola T5). Production remains disabled.
+- Debrief actionability shadow evidence (2026-08-23): 16 authorized actions are
+  mixed brake+throttle (0 brake-only); human-labeled H5.3b cross-tab shows
+  ACTIONABLE candidates always have nonzero throttle deltas (brake zero in 4/16).
+  Shadow-only, no channel preference authorized.
 
 ### analyze_telemetry
 Current: `3.8`
@@ -557,6 +566,11 @@ los canales en un `Panedwindow` vertical con separador arrastrable. El gráfico 
 canales usa tres carriles, se expande con el panel y no dibuja líneas ficticias por
 debajo de 180×120 px (muestra `Ampliá el panel de canales...`). See
 `docs/RACE_ENGINEER_GUI_V1_12.md`.
+
+GUI v1.13 agrega badges de estado con color y tooltip en el catálogo de sesiones y
+convierte `Historial → Comparación` en una vista lado a lado: delta resumido,
+paneles histórico/actual y detalle con zonas top 3 y lectura H5.2 validada. Es
+presentación únicamente. See `docs/RACE_ENGINEER_GUI_V1_13.md`.
 
 Calibration batch orchestrator `1.5` requires the current History schema 4 contract,
 reports its runtime version consistently and has a regression test against schema drift.

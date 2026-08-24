@@ -487,6 +487,43 @@ def test_channel_sign_counts_correct(tmp_path: Path):
     assert sigs["throttle_delta_avg"]["zero_or_none"] == 1
 
 
+def test_brake_throttle_cross_tabs(tmp_path: Path):
+    """Presencia y signos brake x throttle se cruzan correctamente por label."""
+    ch1 = {"throttle_delta_avg": -1.0, "brake_delta_avg": 0.5}
+    ch2 = {"throttle_delta_avg": 2.0}
+    ch3 = {"brake_delta_avg": -1.0}
+    ch4 = {}
+
+    candidates = [
+        _sample_candidate("a1", "c1", "Test", "current_slower", 1.0, 0, 100, ch1),
+        _sample_candidate("a2", "c2", "Test", "current_slower", 1.0, 0, 100, ch2),
+        _sample_candidate("a3", "c3", "Test", "current_slower", 1.0, 0, 100, ch3),
+        _sample_candidate("a4", "c4", "Test", "current_slower", 1.0, 0, 100, ch4),
+    ]
+    labels = [_sample_label(audit_id, "ACTIONABLE") for audit_id in ("a1", "a2", "a3", "a4")]
+
+    dataset_path = _build_dataset_path(tmp_path, candidates)
+    labels_path = _build_labels_path(tmp_path, labels, "0" * 64)
+
+    result = run_audit(dataset_path, labels_path)
+
+    presence = result["distributions"]["brake_throttle_presence_by_label"]["ACTIONABLE"]
+    assert presence == {
+        "both": 1,
+        "brake_only": 1,
+        "neither": 1,
+        "throttle_only": 1,
+    }
+
+    signs = result["distributions"]["brake_throttle_sign_by_label"]["ACTIONABLE"]
+    assert signs == {
+        "brake_neg_throttle_zero": 1,
+        "brake_pos_throttle_neg": 1,
+        "brake_zero_throttle_pos": 1,
+        "brake_zero_throttle_zero": 1,
+    }
+
+
 def test_present_fields_not_in_missing_inventory(tmp_path: Path):
     """Los campos presentes no deben aparecer en missing_feature_inventory."""
     channels = {

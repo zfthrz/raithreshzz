@@ -1,7 +1,7 @@
 # Race Engineer — PROJECT_CONTEXT v1.0
 
 > Canonical end-to-end onboarding context for coding agents and LLMs working on the Race Engineer repository.
-> Baseline represented here: GUI v1.12, H5.4 P1–P11 and historical-shadow checkpoint 2026-08-23.
+> Baseline represented here: GUI v1.13, H5.4 P1–P11 and historical-shadow checkpoint 2026-08-23.
 >
 > This is the detailed mental model of the project. `AGENTS.md` should instruct coding agents to read this file before non-trivial work.
 
@@ -147,12 +147,12 @@ DeepSeek pseudo-labels/reviews are assistance and must never be silently mixed w
 
 # 4. Current operational baseline
 
-Checkpoint: **2026-08-23 GUI v1.12, H5.4 presentation and historical shadow**.
+Checkpoint: **2026-08-23 GUI v1.13, H5.4 presentation and historical shadow**.
 
 | Component | Current operational baseline |
 |---|---|
 | `race_engineer.py` | orchestrator v0.3 |
-| `race_engineer_gui.py` | v1.12 / section navigation + telemetry paned area |
+| `race_engineer_gui.py` | v1.13 / status badges + side-by-side historical comparison |
 | `analyze_telemetry.py` | v3.8 + Objective Python v6 |
 | Brake point | 2.1 / schema 2.1 |
 | Throttle point | 1.2.1 / schema 1.2 |
@@ -1291,6 +1291,14 @@ válidas, historial y estado) y coloca el mapa y los canales en un `Panedwindow`
 vertical con separador arrastrable. El gráfico de canales usa tres carriles, se
 expande con el panel y no dibuja líneas ficticias por debajo de 180×120 px. See
 `docs/RACE_ENGINEER_GUI_V1_12.md`.
+
+GUI v1.13 agrega badges de estado con color y tooltip en el catálogo de sesiones y
+convierte `Historial → Comparación` en una vista lado a lado: línea de delta,
+paneles histórico/actual y detalle con zonas de mayor impacto (top 3 por
+`|delta_change|`) más la lectura H5.2 validada con backend/modelo. La vista se
+calcula en `race_engineer_ui_model.py` desde artefactos H5.2 autorizados; la GUI
+sólo la presenta y no altera ninguna autoridad. See
+`docs/RACE_ENGINEER_GUI_V1_13.md`.
 
 The scheduled task must execute `hidden_history_ingest.py` through `pythonw.exe`.
 That wrapper preserves the same maintenance arguments, creates no console window and

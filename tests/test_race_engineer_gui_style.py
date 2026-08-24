@@ -5,6 +5,9 @@ from race_engineer_gui import (
     PRIMARY_SECTIONS,
     SECTION_VIEWS,
     RaceEngineerApp,
+    format_comparison_columns,
+    session_status_color,
+    session_status_tooltip,
     session_summary_values,
     status_wraplength,
     telemetry_canvas_ready,
@@ -54,7 +57,7 @@ def test_gui_v1_11_applies_flat_dark_control_chrome_without_opening_window():
 
     app._configure_style()
 
-    assert GUI_VERSION == "1.12"
+    assert GUI_VERSION == "1.13"
     assert style.theme == "clam"
     assert style.configurations["TEntry"]["fieldbackground"] == "#15181c"
     assert style.configurations["TCombobox"]["borderwidth"] == 0
@@ -112,3 +115,71 @@ def test_session_summary_uses_existing_status_and_history_availability_only():
         has_historical_comparison=False,
         status="UNKNOWN",
     ) == ("—", "0", "Sin compatible", "Estado desconocido")
+
+
+def test_session_status_badges_have_explicit_color_and_tooltip():
+    assert session_status_color("DEBRIEF_READY") == "#67e5d5"
+    assert session_status_color("FAILED") == "#ff7b72"
+    assert session_status_color("UNKNOWN") == "#9aa5ad"
+    assert "Debrief validado" in session_status_tooltip("DEBRIEF_READY")
+    assert "Falló en alguna etapa" in session_status_tooltip("FAILED")
+    assert "no clasificado" in session_status_tooltip("UNKNOWN")
+
+
+def test_format_comparison_columns_builds_side_by_side_view():
+    view = {
+        "available": True,
+        "stage_status": "RUN",
+        "delta_text": "+1.280 s",
+        "historical": {
+            "session_id": 7,
+            "lap": 8,
+            "duration_s": 90.98,
+            "duration_text": "1:30.980",
+        },
+        "current": {
+            "session_id": 9,
+            "lap": 1,
+            "duration_s": 92.26,
+            "duration_text": "1:32.260",
+        },
+        "zones": [
+            {
+                "label": "Curva 1",
+                "type": "frenada",
+                "delta_change_s": 0.32,
+            },
+            {
+                "label": "Curva 2",
+                "type": "tracção",
+                "delta_change_s": 0.21,
+            },
+        ],
+        "llm": {
+            "rendered": "Lectura histórica validada.",
+            "backend": "deepseek",
+            "model": "deepseek-v4-pro",
+        },
+    }
+
+    summary, hist_text, current_text, detail_text = format_comparison_columns(view)
+
+    assert summary == "Delta actual − histórica: +1.280 s"
+    assert "Sesión histórica: #7" in hist_text
+    assert "1:30.980" in hist_text
+    assert "Sesión actual: #9" in current_text
+    assert "1:32.260" in current_text
+    assert "Curva 1" in detail_text
+    assert "+0.320 s" in detail_text
+    assert "Lectura histórica validada" in detail_text
+
+
+def test_format_comparison_columns_falls_back_when_unavailable():
+    view = {"available": False, "stage_status": "NO_EJECUTADA"}
+
+    summary, hist_text, current_text, detail_text = format_comparison_columns(view)
+
+    assert summary == "H5.2: NO_EJECUTADA"
+    assert hist_text == "Sin comparación histórica."
+    assert current_text == "Sin comparación histórica."
+    assert "no tiene una comparación histórica H5.2" in detail_text

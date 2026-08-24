@@ -1,0 +1,1233 @@
+{
+  "metadata": {
+    "dataset_schema_version": "1.0",
+    "created_at_utc": "2026-08-24T00:34:06.124523+00:00",
+    "source_queue_path": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\aut-dromo-jos-carlos-pace--lmp2-elms-40c70a4dd3\\pair_review_queue.json",
+    "source_queue_sha256": "2939465bb61193fc653e129f5e0a6d02d710a49d1499105dc632672233d86e7c",
+    "source_labels_path": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\aut-dromo-jos-carlos-pace--lmp2-elms-40c70a4dd3\\pair_labels.json",
+    "source_labels_sha256": "b8f1d0ec2ee8417585c2cfbcbe3ce84715daef605eaa12754fd528b7f4fdc2d9",
+    "split_unit": "session",
+    "evaluation_fraction_requested": 0.25,
+    "seed": 20260810,
+    "leakage_policy": "A session may belong to only one partition. Pairs crossing partitions are excluded from both.",
+    "skip_policy": "SKIP is excluded from calibration/evaluation ground truth.",
+    "ambiguous_policy": "AMBIGUOUS is preserved as a first-class human label.",
+    "matcher_status": "NO_THRESHOLDS_NO_MATCH_SCORE_NO_AUTOMATIC_MATCHING"
+  },
+  "validation": {
+    "pair_label_validation_summary": {
+      "queue_pairs": 24,
+      "label_records": 24,
+      "counts": {
+        "SAME": 10,
+        "DIFFERENT": 10,
+        "AMBIGUOUS": 4
+      },
+      "unreviewed": 0,
+      "sessions_by_label": {
+        "SAME": [
+          11,
+          12,
+          22,
+          38,
+          58
+        ],
+        "DIFFERENT": [
+          11,
+          22,
+          37,
+          38,
+          58,
+          59
+        ],
+        "AMBIGUOUS": [
+          11,
+          22,
+          37,
+          38,
+          58
+        ]
+      }
+    },
+    "warnings": []
+  },
+  "session_assignment": [
+    {
+      "session_key": "[\"Autódromo José Carlos Pace\",11]",
+      "track": "Autódromo José Carlos Pace",
+      "session_id": 11,
+      "partition": "evaluation"
+    },
+    {
+      "session_key": "[\"Autódromo José Carlos Pace\",12]",
+      "track": "Autódromo José Carlos Pace",
+      "session_id": 12,
+      "partition": "calibration"
+    },
+    {
+      "session_key": "[\"Autódromo José Carlos Pace\",22]",
+      "track": "Autódromo José Carlos Pace",
+      "session_id": 22,
+      "partition": "calibration"
+    },
+    {
+      "session_key": "[\"Autódromo José Carlos Pace\",37]",
+      "track": "Autódromo José Carlos Pace",
+      "session_id": 37,
+      "partition": "calibration"
+    },
+    {
+      "session_key": "[\"Autódromo José Carlos Pace\",38]",
+      "track": "Autódromo José Carlos Pace",
+      "session_id": 38,
+      "partition": "calibration"
+    },
+    {
+      "session_key": "[\"Autódromo José Carlos Pace\",58]",
+      "track": "Autódromo José Carlos Pace",
+      "session_id": 58,
+      "partition": "evaluation"
+    },
+    {
+      "session_key": "[\"Autódromo José Carlos Pace\",59]",
+      "track": "Autódromo José Carlos Pace",
+      "session_id": 59,
+      "partition": "calibration"
+    }
+  ],
+  "counts": {
+    "reviewed_usable_pairs": 24,
+    "ignored_skip_pairs": 0,
+    "usable_sessions": 7,
+    "calibration_sessions": 5,
+    "evaluation_sessions": 2,
+    "calibration_pairs": 4,
+    "evaluation_pairs": 5,
+    "cross_split_pairs_excluded": 15,
+    "calibration_labels": {
+      "SAME": 1,
+      "DIFFERENT": 2,
+      "AMBIGUOUS": 1
+    },
+    "evaluation_labels": {
+      "SAME": 3,
+      "DIFFERENT": 2,
+      "AMBIGUOUS": 0
+    },
+    "all_usable_labels": {
+      "SAME": 10,
+      "DIFFERENT": 10,
+      "AMBIGUOUS": 4
+    }
+  },
+  "calibration": [
+    {
+      "pair_id": "829d31e3045b3a6d418a",
+      "human_label": "AMBIGUOUS",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:30:39.131252+00:00",
+      "selected_by": [
+        {
+          "lens": "deterministic_baseline",
+          "rank": 3
+        }
+      ],
+      "features": {
+        "track": "Autódromo José Carlos Pace",
+        "track_layout": "Autódromo José Carlos Pace",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "IDEC Sport #18:ELMS25",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "86e45b0cbe2cae6a082af65aea18aae7b6f51bc4d7b68256d3f0747c61f4c49d",
+        "setup_sha256_b": "e78fedeb87112f097b12212b16c0f782972cbda16ad8187f318719550b26ac6e",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Clear",
+        "weather_conditions_b": "Clear",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 22,
+        "session_b": 37,
+        "timestamp_a": "2026-08-14T02:57:52Z",
+        "timestamp_b": "2026-08-19T19:11:57Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 675,
+        "episode_pk_b": 1021,
+        "episode_id_a": 2,
+        "episode_id_b": 4,
+        "python_rank_a": 2,
+        "python_rank_b": 4,
+        "priority_rank_a": 1,
+        "priority_rank_b": 1,
+        "start_distance_a_m": 2764.0,
+        "end_distance_a_m": 2826.0,
+        "center_distance_a_m": 2795.0,
+        "start_distance_b_m": 3107.0,
+        "end_distance_b_m": 3239.0,
+        "center_distance_b_m": 3173.0,
+        "center_distance_abs_diff_m": 378.0,
+        "start_distance_abs_diff_m": 343.0,
+        "end_distance_abs_diff_m": 413.0,
+        "center_fraction_a": 0.6554511768935872,
+        "center_fraction_b": 0.7435945496085269,
+        "center_fraction_abs_diff": 0.08814337271493966,
+        "start_fraction_abs_diff": 0.07994599372804945,
+        "end_fraction_abs_diff": 0.09634075170182999,
+        "action_time_loss_a_s": 0.39595004478717044,
+        "action_time_loss_b_s": 1.1005392373396035,
+        "action_time_loss_similarity": 0.359778217216792,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": false,
+        "speed_propagation_b": false,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [
+          "brake"
+        ],
+        "channel_jaccard": 0.6666666666666666,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.13807429130009774,
+            "onset_offset_abs_diff_m": 25.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.12537977417810103,
+            "peak_difference_similarity": 0.7212557332566193,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.03739002932551316,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 10.0,
+            "mean_difference_similarity": 0.12541499508112303,
+            "peak_difference_similarity": 0.5439835087836563,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "mixed"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 475.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.4696969696969697,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "829d31e3045b3a6d418a"
+      }
+    },
+    {
+      "pair_id": "edbc6335adbf775bc016",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:30:45.771583+00:00",
+      "selected_by": [
+        {
+          "lens": "highest_spatial_overlap",
+          "rank": 4
+        }
+      ],
+      "features": {
+        "track": "Autódromo José Carlos Pace",
+        "track_layout": "Autódromo José Carlos Pace",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "IDEC Sport #18:ELMS25",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "849170e437a17938415f13476135859363289ac798b6f256f82eea2eddb3dda7",
+        "setup_sha256_b": "da50bb3a5319d4748dc95fbaf27cf182edd57bcfd12bac820ca4cf8b842d8929",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Clear",
+        "weather_conditions_b": "Clear",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 12,
+        "session_b": 38,
+        "timestamp_a": "2026-08-14T03:14:04Z",
+        "timestamp_b": "2026-08-19T19:16:19Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 483,
+        "episode_pk_b": 1030,
+        "episode_id_a": 2,
+        "episode_id_b": 5,
+        "python_rank_a": 2,
+        "python_rank_b": 5,
+        "priority_rank_a": 2,
+        "priority_rank_b": 1,
+        "start_distance_a_m": 1486.0,
+        "end_distance_a_m": 1554.0,
+        "center_distance_a_m": 1520.0,
+        "start_distance_b_m": 1496.0,
+        "end_distance_b_m": 1554.0,
+        "center_distance_b_m": 1525.0,
+        "center_distance_abs_diff_m": 5.0,
+        "start_distance_abs_diff_m": 10.0,
+        "end_distance_abs_diff_m": 0.0,
+        "center_fraction_a": 0.35594515515600555,
+        "center_fraction_b": 0.35714363310169844,
+        "center_fraction_abs_diff": 0.0011984779456928885,
+        "start_fraction_abs_diff": 0.0023688252052770364,
+        "end_fraction_abs_diff": 2.8130686108795988e-05,
+        "action_time_loss_a_s": 0.118216408098057,
+        "action_time_loss_b_s": 0.09528914614764972,
+        "action_time_loss_similarity": 0.8060568552261391,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": true,
+        "speed_propagation_b": true,
+        "channels_a": [
+          "throttle"
+        ],
+        "channels_b": [
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "channel_jaccard": 1.0,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.994989756613489,
+            "peak_difference_similarity": 0.8335747931334483,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 58.0,
+        "union_m": 68.0,
+        "overlap_over_union": 0.8529411764705882,
+        "overlap_over_shorter": 1.0,
+        "overlap_over_longer": 0.8529411764705882,
+        "length_similarity": 0.8529411764705882,
+        "fraction_overlap": 0.013555036999070569,
+        "fraction_overlap_over_union": 0.8497394082453573,
+        "fraction_overlap_over_shorter": 0.9979290039878187,
+        "pair_id": "edbc6335adbf775bc016"
+      }
+    },
+    {
+      "pair_id": "78f2ab2a5bd408cef5dd",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:30:52.779667+00:00",
+      "selected_by": [
+        {
+          "lens": "similar_channels_farther_apart",
+          "rank": 4
+        }
+      ],
+      "features": {
+        "track": "Autódromo José Carlos Pace",
+        "track_layout": "Autódromo José Carlos Pace",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "IDEC Sport #18:ELMS25",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "86e45b0cbe2cae6a082af65aea18aae7b6f51bc4d7b68256d3f0747c61f4c49d",
+        "setup_sha256_b": "da50bb3a5319d4748dc95fbaf27cf182edd57bcfd12bac820ca4cf8b842d8929",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Clear",
+        "weather_conditions_b": "Clear",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 22,
+        "session_b": 38,
+        "timestamp_a": "2026-08-14T02:57:52Z",
+        "timestamp_b": "2026-08-19T19:16:19Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 679,
+        "episode_pk_b": 1037,
+        "episode_id_a": 6,
+        "episode_id_b": 5,
+        "python_rank_a": 6,
+        "python_rank_b": 5,
+        "priority_rank_a": 1,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 3651.0,
+        "end_distance_a_m": 3671.0,
+        "center_distance_a_m": 3661.0,
+        "start_distance_b_m": 531.0,
+        "end_distance_b_m": 595.0,
+        "center_distance_b_m": 563.0,
+        "center_distance_abs_diff_m": 3098.0,
+        "start_distance_abs_diff_m": 3120.0,
+        "end_distance_abs_diff_m": 3076.0,
+        "center_fraction_a": 0.858535512918577,
+        "center_fraction_b": 0.1318504035647582,
+        "center_fraction_abs_diff": 0.7266851093538188,
+        "start_fraction_abs_diff": 0.7318341861236921,
+        "end_fraction_abs_diff": 0.7215360325839455,
+        "action_time_loss_a_s": 0.04414151488127516,
+        "action_time_loss_b_s": 0.15267992883006087,
+        "action_time_loss_similarity": 0.2891114452273979,
+        "evidence_strength_a": "moderate",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": true,
+        "speed_propagation_b": true,
+        "channels_a": [
+          "throttle"
+        ],
+        "channels_b": [
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "channel_jaccard": 1.0,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.10747811498768435,
+            "peak_difference_similarity": 0.9345082935772089,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 3140.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.3125,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "78f2ab2a5bd408cef5dd"
+      }
+    },
+    {
+      "pair_id": "ba0d62d2a3b3e398ba92",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:30:57.548290+00:00",
+      "selected_by": [
+        {
+          "lens": "deterministic_baseline",
+          "rank": 4
+        }
+      ],
+      "features": {
+        "track": "Autódromo José Carlos Pace",
+        "track_layout": "Autódromo José Carlos Pace",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "IDEC Sport #18:ELMS25",
+        "same_car_name_raw": true,
+        "setup_sha256_a": "86e45b0cbe2cae6a082af65aea18aae7b6f51bc4d7b68256d3f0747c61f4c49d",
+        "setup_sha256_b": "da50bb3a5319d4748dc95fbaf27cf182edd57bcfd12bac820ca4cf8b842d8929",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Clear",
+        "weather_conditions_b": "Clear",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 22,
+        "session_b": 38,
+        "timestamp_a": "2026-08-14T02:57:52Z",
+        "timestamp_b": "2026-08-19T19:16:19Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 676,
+        "episode_pk_b": 1034,
+        "episode_id_a": 3,
+        "episode_id_b": 2,
+        "python_rank_a": 3,
+        "python_rank_b": 2,
+        "priority_rank_a": 1,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 2351.0,
+        "end_distance_a_m": 2451.0,
+        "center_distance_a_m": 2401.0,
+        "start_distance_b_m": 419.0,
+        "end_distance_b_m": 501.0,
+        "center_distance_b_m": 460.0,
+        "center_distance_abs_diff_m": 1941.0,
+        "start_distance_abs_diff_m": 1932.0,
+        "end_distance_abs_diff_m": 1950.0,
+        "center_fraction_a": 0.5630548392563517,
+        "center_fraction_b": 0.10772857129625002,
+        "center_fraction_abs_diff": 0.45532626796010167,
+        "start_fraction_abs_diff": 0.45320273880022083,
+        "end_fraction_abs_diff": 0.4574497971199824,
+        "action_time_loss_a_s": 0.3365402865954792,
+        "action_time_loss_b_s": 0.22515546091447813,
+        "action_time_loss_similarity": 0.6690297414083877,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": false,
+        "speed_propagation_b": true,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "channel_jaccard": 1.0,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.20999999999999996,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.5358406977974818,
+            "peak_difference_similarity": 0.7201252669003549,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.5229268292682927,
+            "onset_offset_abs_diff_m": 22.0,
+            "end_offset_abs_diff_m": 43.0,
+            "mean_difference_similarity": 0.5506430138705573,
+            "peak_difference_similarity": 0.7712996962296659,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 2032.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.82,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "ba0d62d2a3b3e398ba92"
+      }
+    }
+  ],
+  "evaluation": [
+    {
+      "pair_id": "410e8e7d7d61c0a7d900",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:30:12.098939+00:00",
+      "selected_by": [
+        {
+          "lens": "similar_channels_farther_apart",
+          "rank": 1
+        }
+      ],
+      "features": {
+        "track": "Autódromo José Carlos Pace",
+        "track_layout": "Autódromo José Carlos Pace",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "DKR Engineering #3:ELMS25",
+        "same_car_name_raw": false,
+        "setup_sha256_a": "86e45b0cbe2cae6a082af65aea18aae7b6f51bc4d7b68256d3f0747c61f4c49d",
+        "setup_sha256_b": "aa1c3763730d7f66740c2fe7351810a6ff265eb30beb512987a63ba242393ba0",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Clear",
+        "weather_conditions_b": "Clear",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 11,
+        "session_b": 58,
+        "timestamp_a": "2026-08-14T03:03:08Z",
+        "timestamp_b": "2026-08-23T01:49:35Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 454,
+        "episode_pk_b": 1429,
+        "episode_id_a": 7,
+        "episode_id_b": 11,
+        "python_rank_a": 7,
+        "python_rank_b": 11,
+        "priority_rank_a": 1,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 357.0,
+        "end_distance_a_m": 381.0,
+        "center_distance_a_m": 369.0,
+        "start_distance_b_m": 3714.0,
+        "end_distance_b_m": 3763.0,
+        "center_distance_b_m": 3738.5,
+        "center_distance_abs_diff_m": 3369.5,
+        "start_distance_abs_diff_m": 3357.0,
+        "end_distance_abs_diff_m": 3382.0,
+        "center_fraction_a": 0.08638712752787218,
+        "center_fraction_b": 0.8756601091308759,
+        "center_fraction_abs_diff": 0.7892729816030037,
+        "start_fraction_abs_diff": 0.7863437413990305,
+        "end_fraction_abs_diff": 0.7922022218069769,
+        "action_time_loss_a_s": 0.02677175763274242,
+        "action_time_loss_b_s": 0.07001897526514256,
+        "action_time_loss_similarity": 0.38235003484934127,
+        "evidence_strength_a": "weak",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": false,
+        "speed_propagation_b": true,
+        "channels_a": [
+          "steering_magnitude"
+        ],
+        "channels_b": [
+          "steering_magnitude"
+        ],
+        "shared_channels": [
+          "steering_magnitude"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "channel_jaccard": 1.0,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.8191912355345882,
+            "peak_difference_similarity": 0.8299258462867999,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 3406.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.4897959183673469,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "410e8e7d7d61c0a7d900"
+      }
+    },
+    {
+      "pair_id": "382f8132c1dfc29a7ca5",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:30:22.580706+00:00",
+      "selected_by": [
+        {
+          "lens": "similar_channels_farther_apart",
+          "rank": 2
+        }
+      ],
+      "features": {
+        "track": "Autódromo José Carlos Pace",
+        "track_layout": "Autódromo José Carlos Pace",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "DKR Engineering #3:ELMS25",
+        "same_car_name_raw": false,
+        "setup_sha256_a": "86e45b0cbe2cae6a082af65aea18aae7b6f51bc4d7b68256d3f0747c61f4c49d",
+        "setup_sha256_b": "aa1c3763730d7f66740c2fe7351810a6ff265eb30beb512987a63ba242393ba0",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Clear",
+        "weather_conditions_b": "Clear",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 11,
+        "session_b": 58,
+        "timestamp_a": "2026-08-14T03:03:08Z",
+        "timestamp_b": "2026-08-23T01:49:35Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 455,
+        "episode_pk_b": 1429,
+        "episode_id_a": 8,
+        "episode_id_b": 11,
+        "python_rank_a": 8,
+        "python_rank_b": 11,
+        "priority_rank_a": 1,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 400.0,
+        "end_distance_a_m": 420.0,
+        "center_distance_a_m": 410.0,
+        "start_distance_b_m": 3714.0,
+        "end_distance_b_m": 3763.0,
+        "center_distance_b_m": 3738.5,
+        "center_distance_abs_diff_m": 3328.5,
+        "start_distance_abs_diff_m": 3314.0,
+        "end_distance_abs_diff_m": 3343.0,
+        "center_fraction_a": 0.09598569725319131,
+        "center_fraction_b": 0.8756601091308759,
+        "center_fraction_abs_diff": 0.7796744118776846,
+        "start_fraction_abs_diff": 0.7762769487602812,
+        "end_fraction_abs_diff": 0.7830718749950879,
+        "action_time_loss_a_s": 0.02440022084201754,
+        "action_time_loss_b_s": 0.07001897526514256,
+        "action_time_loss_similarity": 0.34848011913371524,
+        "evidence_strength_a": "weak",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": false,
+        "speed_propagation_b": true,
+        "channels_a": [
+          "steering_magnitude"
+        ],
+        "channels_b": [
+          "steering_magnitude"
+        ],
+        "shared_channels": [
+          "steering_magnitude"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "channel_jaccard": 1.0,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.9849108875636098,
+            "peak_difference_similarity": 0.9798818319913479,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 0.0,
+        "union_m": 3363.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "overlap_over_longer": 0.0,
+        "length_similarity": 0.40816326530612246,
+        "fraction_overlap": 0.0,
+        "fraction_overlap_over_union": 0.0,
+        "fraction_overlap_over_shorter": 0.0,
+        "pair_id": "382f8132c1dfc29a7ca5"
+      }
+    },
+    {
+      "pair_id": "51829f4c82eba7a6a172",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:30:29.435618+00:00",
+      "selected_by": [
+        {
+          "lens": "closest_centers",
+          "rank": 3
+        },
+        {
+          "lens": "highest_channel_similarity",
+          "rank": 3
+        },
+        {
+          "lens": "nearby_channel_disagreement",
+          "rank": 3
+        }
+      ],
+      "features": {
+        "track": "Autódromo José Carlos Pace",
+        "track_layout": "Autódromo José Carlos Pace",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "DKR Engineering #3:ELMS25",
+        "same_car_name_raw": false,
+        "setup_sha256_a": "86e45b0cbe2cae6a082af65aea18aae7b6f51bc4d7b68256d3f0747c61f4c49d",
+        "setup_sha256_b": "aa1c3763730d7f66740c2fe7351810a6ff265eb30beb512987a63ba242393ba0",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Clear",
+        "weather_conditions_b": "Clear",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 11,
+        "session_b": 58,
+        "timestamp_a": "2026-08-14T03:03:08Z",
+        "timestamp_b": "2026-08-23T01:49:35Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 462,
+        "episode_pk_b": 1410,
+        "episode_id_a": 4,
+        "episode_id_b": 3,
+        "python_rank_a": 4,
+        "python_rank_b": 3,
+        "priority_rank_a": 2,
+        "priority_rank_b": 1,
+        "start_distance_a_m": 2485.0,
+        "end_distance_a_m": 2506.0,
+        "center_distance_a_m": 2495.5,
+        "start_distance_b_m": 2448.0,
+        "end_distance_b_m": 2544.0,
+        "center_distance_b_m": 2496.0,
+        "center_distance_abs_diff_m": 0.5,
+        "start_distance_abs_diff_m": 37.0,
+        "end_distance_abs_diff_m": 38.0,
+        "center_fraction_a": 0.5842251402325339,
+        "center_fraction_b": 0.5846322408427621,
+        "center_fraction_abs_diff": 0.0004071006102281949,
+        "start_fraction_abs_diff": 0.00837765680277791,
+        "end_fraction_abs_diff": 0.0091918580232343,
+        "action_time_loss_a_s": 0.06880295198323694,
+        "action_time_loss_b_s": 0.3041996543173511,
+        "action_time_loss_similarity": 0.2261769565045575,
+        "evidence_strength_a": "moderate",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": true,
+        "speed_propagation_b": true,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "channel_jaccard": 1.0,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.29166666666666663,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 28.0,
+            "mean_difference_similarity": 0.4342979216093306,
+            "peak_difference_similarity": 0.5236527797820537,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.6592261904761905,
+            "onset_offset_abs_diff_m": 77.0,
+            "end_offset_abs_diff_m": 3.0,
+            "mean_difference_similarity": 0.2480285045057491,
+            "peak_difference_similarity": 0.3135407919105742,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 21.0,
+        "union_m": 96.0,
+        "overlap_over_union": 0.21875,
+        "overlap_over_shorter": 1.0,
+        "overlap_over_longer": 0.21875,
+        "length_similarity": 0.21875,
+        "fraction_overlap": 0.004916340591017088,
+        "fraction_overlap_over_union": 0.2186414748221576,
+        "fraction_overlap_over_shorter": 1.0,
+        "pair_id": "51829f4c82eba7a6a172"
+      }
+    },
+    {
+      "pair_id": "b62f69f7657c7ffe419e",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:30:48.037084+00:00",
+      "selected_by": [
+        {
+          "lens": "highest_channel_similarity",
+          "rank": 4
+        }
+      ],
+      "features": {
+        "track": "Autódromo José Carlos Pace",
+        "track_layout": "Autódromo José Carlos Pace",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "DKR Engineering #3:ELMS25",
+        "same_car_name_raw": false,
+        "setup_sha256_a": "86e45b0cbe2cae6a082af65aea18aae7b6f51bc4d7b68256d3f0747c61f4c49d",
+        "setup_sha256_b": "aa1c3763730d7f66740c2fe7351810a6ff265eb30beb512987a63ba242393ba0",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Clear",
+        "weather_conditions_b": "Clear",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 11,
+        "session_b": 58,
+        "timestamp_a": "2026-08-14T03:03:08Z",
+        "timestamp_b": "2026-08-23T01:49:35Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 465,
+        "episode_pk_b": 1423,
+        "episode_id_a": 7,
+        "episode_id_b": 5,
+        "python_rank_a": 7,
+        "python_rank_b": 5,
+        "priority_rank_a": 2,
+        "priority_rank_b": 2,
+        "start_distance_a_m": 405.0,
+        "end_distance_a_m": 443.0,
+        "center_distance_a_m": 424.0,
+        "start_distance_b_m": 401.0,
+        "end_distance_b_m": 449.0,
+        "center_distance_b_m": 425.0,
+        "center_distance_abs_diff_m": 1.0,
+        "start_distance_abs_diff_m": 4.0,
+        "end_distance_abs_diff_m": 6.0,
+        "center_fraction_a": 0.09926325764720272,
+        "center_fraction_b": 0.09954675575247351,
+        "center_fraction_abs_diff": 0.0002834981052707991,
+        "start_fraction_abs_diff": 0.000889848071399621,
+        "end_fraction_abs_diff": 0.0014568442819412053,
+        "action_time_loss_a_s": 0.04553148955451736,
+        "action_time_loss_b_s": 0.15581107734631328,
+        "action_time_loss_similarity": 0.2922224165956882,
+        "evidence_strength_a": "moderate",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": false,
+        "speed_propagation_b": true,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "channel_jaccard": 1.0,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.2885103046940046,
+            "peak_difference_similarity": 0.7669638913268954,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.14692982456140347,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 1.0,
+            "mean_difference_similarity": 0.7654362785546152,
+            "peak_difference_similarity": 0.7229680872444179,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        },
+        "overlap_m": 38.0,
+        "union_m": 48.0,
+        "overlap_over_union": 0.7916666666666666,
+        "overlap_over_shorter": 1.0,
+        "overlap_over_longer": 0.7916666666666666,
+        "length_similarity": 0.7916666666666666,
+        "fraction_overlap": 0.008896235355173823,
+        "fraction_overlap_over_union": 0.7912739088801934,
+        "fraction_overlap_over_shorter": 1.0,
+        "pair_id": "b62f69f7657c7ffe419e"
+      }
+    },
+    {
+      "pair_id": "d7341050ce455621d0d7",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:30:59.067662+00:00",
+      "selected_by": [
+        {
+          "lens": "highest_spatial_overlap",
+          "rank": 5
+        }
+      ],
+      "features": {
+        "track": "Autódromo José Carlos Pace",
+        "track_layout": "Autódromo José Carlos Pace",
+        "vehicle_family": "LMP2",
+        "vehicle_variant": "LMP2_ELMS",
+        "car_class_raw_a": "LMP2_ELMS",
+        "car_class_raw_b": "LMP2_ELMS",
+        "car_name_raw_a": "IDEC Sport #18:ELMS25",
+        "car_name_raw_b": "DKR Engineering #3:ELMS25",
+        "same_car_name_raw": false,
+        "setup_sha256_a": "86e45b0cbe2cae6a082af65aea18aae7b6f51bc4d7b68256d3f0747c61f4c49d",
+        "setup_sha256_b": "aa1c3763730d7f66740c2fe7351810a6ff265eb30beb512987a63ba242393ba0",
+        "same_setup_sha256": false,
+        "weather_conditions_a": "Clear",
+        "weather_conditions_b": "Clear",
+        "same_weather_conditions": true,
+        "same_session_type": true,
+        "session_a": 11,
+        "session_b": 58,
+        "timestamp_a": "2026-08-14T03:03:08Z",
+        "timestamp_b": "2026-08-23T01:49:35Z",
+        "session_type_a": "P",
+        "session_type_b": "P",
+        "episode_pk_a": 448,
+        "episode_pk_b": 1408,
+        "episode_id_a": 1,
+        "episode_id_b": 1,
+        "python_rank_a": 1,
+        "python_rank_b": 1,
+        "priority_rank_a": 1,
+        "priority_rank_b": 1,
+        "start_distance_a_m": 2767.0,
+        "end_distance_a_m": 2842.0,
+        "center_distance_a_m": 2804.5,
+        "start_distance_b_m": 2758.0,
+        "end_distance_b_m": 2838.0,
+        "center_distance_b_m": 2798.0,
+        "center_distance_abs_diff_m": 6.5,
+        "start_distance_abs_diff_m": 9.0,
+        "end_distance_abs_diff_m": 4.0,
+        "center_fraction_a": 0.6565655803575001,
+        "center_fraction_b": 0.6553689943421668,
+        "center_fraction_abs_diff": 0.0011965860153333452,
+        "start_fraction_abs_diff": 0.0017865128122792617,
+        "end_fraction_abs_diff": 0.0006066592183874286,
+        "action_time_loss_a_s": 0.1725742464076916,
+        "action_time_loss_b_s": 0.49114095468470964,
+        "action_time_loss_similarity": 0.3513741722444557,
+        "evidence_strength_a": "strong",
+        "evidence_strength_b": "strong",
+        "speed_propagation_a": false,
+        "speed_propagation_b": false,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "channel_jaccard": 1.0,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.05583333333333329,
+            "onset_offset_abs_diff_m": 5.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.3433391226255435,
+            "peak_difference_similarity": 0.9374192071803203,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "mixed"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.08499999999999996,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.4566332923524773,
+            "peak_difference_similarity": 0.925612195404291,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "mixed"
+          }
+        },
+        "overlap_m": 71.0,
+        "union_m": 84.0,
+        "overlap_over_union": 0.8452380952380952,
+        "overlap_over_shorter": 0.9466666666666667,
+        "overlap_over_longer": 0.8875,
+        "length_similarity": 0.9375,
+        "fraction_overlap": 0.016951700035245154,
+        "fraction_overlap_over_union": 0.8762890743080298,
+        "fraction_overlap_over_shorter": 0.9654489801909071,
+        "pair_id": "d7341050ce455621d0d7"
+      }
+    }
+  ],
+  "excluded_cross_split": [
+    {
+      "pair_id": "7caccf33d2e278ffeb08",
+      "human_label": "SAME",
+      "track": "Autódromo José Carlos Pace",
+      "session_a": 11,
+      "session_b": 38,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "cba38a9d4703eeb9780b",
+      "human_label": "SAME",
+      "track": "Autódromo José Carlos Pace",
+      "session_a": 22,
+      "session_b": 58,
+      "partition_a": "calibration",
+      "partition_b": "evaluation",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "196b34e97ad239418a86",
+      "human_label": "DIFFERENT",
+      "track": "Autódromo José Carlos Pace",
+      "session_a": 37,
+      "session_b": 58,
+      "partition_a": "calibration",
+      "partition_b": "evaluation",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "45c141e75f3a98b7e5af",
+      "human_label": "DIFFERENT",
+      "track": "Autódromo José Carlos Pace",
+      "session_a": 37,
+      "session_b": 58,
+      "partition_a": "calibration",
+      "partition_b": "evaluation",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "fbda06bf3b1a23ac6ee0",
+      "human_label": "SAME",
+      "track": "Autódromo José Carlos Pace",
+      "session_a": 11,
+      "session_b": 12,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "add1864e105bd5902d83",
+      "human_label": "SAME",
+      "track": "Autódromo José Carlos Pace",
+      "session_a": 38,
+      "session_b": 58,
+      "partition_a": "calibration",
+      "partition_b": "evaluation",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "25101386066a5983e326",
+      "human_label": "DIFFERENT",
+      "track": "Autódromo José Carlos Pace",
+      "session_a": 11,
+      "session_b": 37,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "77858c447a2da7f43174",
+      "human_label": "DIFFERENT",
+      "track": "Autódromo José Carlos Pace",
+      "session_a": 11,
+      "session_b": 59,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "a41ab4d7332b62c5900e",
+      "human_label": "SAME",
+      "track": "Autódromo José Carlos Pace",
+      "session_a": 11,
+      "session_b": 38,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "6ec32bd960d0456641b5",
+      "human_label": "DIFFERENT",
+      "track": "Autódromo José Carlos Pace",
+      "session_a": 22,
+      "session_b": 58,
+      "partition_a": "calibration",
+      "partition_b": "evaluation",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "e32aaf4fd7ae4397a29a",
+      "human_label": "DIFFERENT",
+      "track": "Autódromo José Carlos Pace",
+      "session_a": 11,
+      "session_b": 37,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "7d455eab427ee345d2f3",
+      "human_label": "AMBIGUOUS",
+      "track": "Autódromo José Carlos Pace",
+      "session_a": 22,
+      "session_b": 58,
+      "partition_a": "calibration",
+      "partition_b": "evaluation",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "aa8248806e9ee532a43d",
+      "human_label": "AMBIGUOUS",
+      "track": "Autódromo José Carlos Pace",
+      "session_a": 38,
+      "session_b": 58,
+      "partition_a": "calibration",
+      "partition_b": "evaluation",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "e94382789f89a724e484",
+      "human_label": "AMBIGUOUS",
+      "track": "Autódromo José Carlos Pace",
+      "session_a": 11,
+      "session_b": 37,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "0e2054aa8d8c0ce211f8",
+      "human_label": "SAME",
+      "track": "Autódromo José Carlos Pace",
+      "session_a": 22,
+      "session_b": 58,
+      "partition_a": "calibration",
+      "partition_b": "evaluation",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    }
+  ],
+  "ignored_skip": []
+}

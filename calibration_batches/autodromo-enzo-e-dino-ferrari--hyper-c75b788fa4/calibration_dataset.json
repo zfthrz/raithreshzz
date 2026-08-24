@@ -1,0 +1,331 @@
+{
+  "metadata": {
+    "dataset_schema_version": "1.0",
+    "created_at_utc": "2026-08-24T00:36:17.311193+00:00",
+    "source_queue_path": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\autodromo-enzo-e-dino-ferrari--hyper-c75b788fa4\\pair_review_queue.json",
+    "source_queue_sha256": "4e184b7a88e8fb3642c0c3f7a4e247c4427023c14e31133937f8858292a49752",
+    "source_labels_path": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\autodromo-enzo-e-dino-ferrari--hyper-c75b788fa4\\pair_labels.json",
+    "source_labels_sha256": "b99a3a56d2c625631ae8c35b33096d5ad8d7d9bb9303efb3be20e351003c072e",
+    "split_unit": "session",
+    "evaluation_fraction_requested": 0.25,
+    "seed": 20260810,
+    "leakage_policy": "A session may belong to only one partition. Pairs crossing partitions are excluded from both.",
+    "skip_policy": "SKIP is excluded from calibration/evaluation ground truth.",
+    "ambiguous_policy": "AMBIGUOUS is preserved as a first-class human label.",
+    "matcher_status": "NO_THRESHOLDS_NO_MATCH_SCORE_NO_AUTOMATIC_MATCHING"
+  },
+  "validation": {
+    "pair_label_validation_summary": {
+      "queue_pairs": 24,
+      "label_records": 24,
+      "counts": {
+        "SAME": 7,
+        "DIFFERENT": 16,
+        "AMBIGUOUS": 1
+      },
+      "unreviewed": 0,
+      "sessions_by_label": {
+        "SAME": [
+          42,
+          49
+        ],
+        "DIFFERENT": [
+          42,
+          49
+        ],
+        "AMBIGUOUS": [
+          42,
+          49
+        ]
+      }
+    },
+    "warnings": [
+      "El split dejó calibración sin pares internos.",
+      "El split dejó evaluación sin pares internos. Esto puede ocurrir con pocos pares/sesiones porque los pares cross-partition se excluyen."
+    ]
+  },
+  "session_assignment": [
+    {
+      "session_key": "[\"Autodromo Enzo e Dino Ferrari\",42]",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_id": 42,
+      "partition": "evaluation"
+    },
+    {
+      "session_key": "[\"Autodromo Enzo e Dino Ferrari\",49]",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_id": 49,
+      "partition": "calibration"
+    }
+  ],
+  "counts": {
+    "reviewed_usable_pairs": 24,
+    "ignored_skip_pairs": 0,
+    "usable_sessions": 2,
+    "calibration_sessions": 1,
+    "evaluation_sessions": 1,
+    "calibration_pairs": 0,
+    "evaluation_pairs": 0,
+    "cross_split_pairs_excluded": 24,
+    "calibration_labels": {
+      "SAME": 0,
+      "DIFFERENT": 0,
+      "AMBIGUOUS": 0
+    },
+    "evaluation_labels": {
+      "SAME": 0,
+      "DIFFERENT": 0,
+      "AMBIGUOUS": 0
+    },
+    "all_usable_labels": {
+      "SAME": 7,
+      "DIFFERENT": 16,
+      "AMBIGUOUS": 1
+    }
+  },
+  "calibration": [],
+  "evaluation": [],
+  "excluded_cross_split": [
+    {
+      "pair_id": "0603208b31f82c969b54",
+      "human_label": "SAME",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_a": 42,
+      "session_b": 49,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "4dd0e2068ce00fbeff03",
+      "human_label": "DIFFERENT",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_a": 42,
+      "session_b": 49,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "80f23489559e606b40c1",
+      "human_label": "AMBIGUOUS",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_a": 42,
+      "session_b": 49,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "5a617bd35f4514a6d62f",
+      "human_label": "DIFFERENT",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_a": 42,
+      "session_b": 49,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "1822a0a0ae4801f4cf9d",
+      "human_label": "SAME",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_a": 42,
+      "session_b": 49,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "a119f4995d1ab890dcd5",
+      "human_label": "SAME",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_a": 42,
+      "session_b": 49,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "9a9b69f8b3923fd9125b",
+      "human_label": "DIFFERENT",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_a": 42,
+      "session_b": 49,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "9d4bbcf4c104c8792f44",
+      "human_label": "DIFFERENT",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_a": 42,
+      "session_b": 49,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "24e0875112bdd43fc5ea",
+      "human_label": "SAME",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_a": 42,
+      "session_b": 49,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "2f249aa36717e4a3572c",
+      "human_label": "DIFFERENT",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_a": 42,
+      "session_b": 49,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "089129c6679a439aa0f0",
+      "human_label": "DIFFERENT",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_a": 42,
+      "session_b": 49,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "6f0ed880500eaa953245",
+      "human_label": "DIFFERENT",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_a": 42,
+      "session_b": 49,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "3e0c02fa1467f5e8be31",
+      "human_label": "SAME",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_a": 42,
+      "session_b": 49,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "45689ecdaf12eeeaacfc",
+      "human_label": "DIFFERENT",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_a": 42,
+      "session_b": 49,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "77219f4210d83d92cbf8",
+      "human_label": "DIFFERENT",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_a": 42,
+      "session_b": 49,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "2d5533703f7d3b67bfd8",
+      "human_label": "DIFFERENT",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_a": 42,
+      "session_b": 49,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "462729c9980bdb645536",
+      "human_label": "SAME",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_a": 42,
+      "session_b": 49,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "5b5f3a8a85cab57c3a73",
+      "human_label": "DIFFERENT",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_a": 42,
+      "session_b": 49,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "b1ae7b68862423f84ef0",
+      "human_label": "DIFFERENT",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_a": 42,
+      "session_b": 49,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "c3be90aacf580ec2c97f",
+      "human_label": "DIFFERENT",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_a": 42,
+      "session_b": 49,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "6a8b4a3c239c0980df3b",
+      "human_label": "SAME",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_a": 42,
+      "session_b": 49,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "f44c2c3962dbbc73d460",
+      "human_label": "DIFFERENT",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_a": 42,
+      "session_b": 49,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "b7864fb51c6594a4db4d",
+      "human_label": "DIFFERENT",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_a": 42,
+      "session_b": 49,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    },
+    {
+      "pair_id": "26d9ec86569cea355662",
+      "human_label": "DIFFERENT",
+      "track": "Autodromo Enzo e Dino Ferrari",
+      "session_a": 42,
+      "session_b": 49,
+      "partition_a": "evaluation",
+      "partition_b": "calibration",
+      "reason": "cross_partition_pair_excluded_to_prevent_session_leakage"
+    }
+  ],
+  "ignored_skip": []
+}

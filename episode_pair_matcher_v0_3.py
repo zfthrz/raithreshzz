@@ -17,6 +17,17 @@ CALIBRATION_CONTEXT = {
     "human_labels": 72,
 }
 
+SPA_CALIBRATION_KEY = (
+    "Circuit de Spa-Francorchamps",
+    "Circuit de Spa-Francorchamps",
+    "LMP2_ELMS",
+)
+IMOLA_CALIBRATION_KEY = (
+    "Autodromo Enzo e Dino Ferrari",
+    "Autodromo Enzo e Dino Ferrari",
+    "LMP2_ELMS",
+)
+
 # Conservative high-precision core learned from the 32 human-reviewed Spa/LMP2_ELMS pairs.
 # These are provisional guardrails, not universal physics constants.
 MATCH_CENTER_MAX_M = 5.5
@@ -45,6 +56,56 @@ SHAPE_CONFLICT_IMPACT_SIM_MAX = 0.45
 # is auto-rejected; the 0-250 m zero-overlap boundary remains AMBIGUOUS.
 REJECT_CENTER_GT_M = 250.0
 REJECT_OVERLAP_UNION_MAX = 0.0
+
+# Calibraciones por contexto exacto. Spa es la calibración original v0.3 (72
+# labels). Imola LMP2_ELMS se derivó del batch 5a8126df14 (24 labels: 2 SAME,
+# 6 DIFFERENT, 1 AMBIGUOUS en calibración) con un núcleo MATCH conservador
+# (overlap fuerte) y REJECT para pares lejanos sin overlap; los SAME sin overlap
+# espacial quedan AMBIGUOUS (fail-closed). Contextos sin entrada no producen
+# MATCH/REJECT automáticos.
+CALIBRATIONS: dict[tuple[str, str, str], dict[str, Any]] = {
+    SPA_CALIBRATION_KEY: {
+        "status": "CALIBRATED_PROVISIONAL_SINGLE_CONTEXT",
+        "human_labels": 72,
+        "thresholds": {
+            "match_center_max_m": MATCH_CENTER_MAX_M,
+            "match_overlap_shorter_min": MATCH_OVERLAP_SHORTER_MIN,
+            "match_overlap_union_min": MATCH_OVERLAP_UNION_MIN,
+            "match_shared_channel_min": MATCH_SHARED_CHANNEL_MIN,
+            "extended_match_center_max_m": EXTENDED_MATCH_CENTER_MAX_M,
+            "extended_match_overlap_shorter_min": EXTENDED_MATCH_OVERLAP_SHORTER_MIN,
+            "extended_match_overlap_union_min": EXTENDED_MATCH_OVERLAP_UNION_MIN,
+            "extended_match_channel_jaccard_min": EXTENDED_MATCH_CHANNEL_JACCARD_MIN,
+            "shape_conflict_mean_sim_max": SHAPE_CONFLICT_MEAN_SIM_MAX,
+            "shape_conflict_coverage_diff_min": SHAPE_CONFLICT_COVERAGE_DIFF_MIN,
+            "shape_conflict_impact_sim_max": SHAPE_CONFLICT_IMPACT_SIM_MAX,
+            "reject_center_gt_m": REJECT_CENTER_GT_M,
+            "reject_overlap_union_max": REJECT_OVERLAP_UNION_MAX,
+        },
+    },
+    IMOLA_CALIBRATION_KEY: {
+        "status": "CALIBRATED_PROVISIONAL_LOW_EVIDENCE",
+        "human_labels": 24,
+        "provenance": {
+            "batch_id": "5a8126df14",
+            "calibration_pairs": 9,
+            "evaluation_pairs": 1,
+            "labels": {"SAME": 2, "DIFFERENT": 6, "AMBIGUOUS": 1},
+        },
+        "thresholds": {
+            "match_center_max_m": 200.0,
+            "match_overlap_shorter_min": 0.90,
+            "match_overlap_union_min": 0.40,
+            "match_shared_channel_min": 1,
+            "extended_match_center_max_m": None,
+            "shape_conflict_mean_sim_max": SHAPE_CONFLICT_MEAN_SIM_MAX,
+            "shape_conflict_coverage_diff_min": SHAPE_CONFLICT_COVERAGE_DIFF_MIN,
+            "shape_conflict_impact_sim_max": SHAPE_CONFLICT_IMPACT_SIM_MAX,
+            "reject_center_gt_m": 300.0,
+            "reject_overlap_union_max": 0.33,
+        },
+    },
+}
 
 EPS = 1e-12
 
@@ -137,7 +198,23 @@ def aggregate_shape(pair: dict[str, Any]) -> dict[str, float | None]:
     }
 
 
-def weak_shape_conflict_veto(pair: dict[str, Any], shape: dict[str, float | None]) -> bool:
+def resolve_calibration(
+    pair: dict[str, Any],
+) -> dict[str, Any] | None:
+    """Calibración exacta por contexto (track, layout, variante)."""
+    key = (
+        safe_str(pair.get("track")),
+        safe_str(pair.get("track_layout")),
+        safe_str(pair.get("vehicle_variant")),
+    )
+    return CALIBRATIONS.get(key)
+
+
+def weak_shape_conflict_veto(
+    pair: dict[str, Any],
+    shape: dict[str, float | None],
+    thresholds: dict[str, Any],
+) -> bool:
     mean_sim = shape["mean_difference_similarity_mean"]
     coverage = shape["coverage_abs_diff_mean"]
     impact = safe_float(pair.get("action_time_loss_similarity"))
@@ -147,9 +224,9 @@ def weak_shape_conflict_veto(pair: dict[str, Any], shape: dict[str, float | None
         return False
 
     return (
-        mean_sim < SHAPE_CONFLICT_MEAN_SIM_MAX
-        and coverage > SHAPE_CONFLICT_COVERAGE_DIFF_MIN
-        and impact < SHAPE_CONFLICT_IMPACT_SIM_MAX
+        mean_sim < thresholds["shape_conflict_mean_sim_max"]
+        and coverage > thresholds["shape_conflict_coverage_diff_min"]
+        and impact < thresholds["shape_conflict_impact_sim_max"]
     )
 
 
@@ -162,6 +239,34 @@ def classify_pair(pair: dict[str, Any]) -> dict[str, Any]:
             "reasons": context_reasons,
             "automatic": False,
         }
+
+    calibration = resolve_calibration(pair)
+    if calibration is None:
+        return {
+            "decision": "AMBIGUOUS",
+            "rule_id": "NO_CALIBRATION_FOR_CONTEXT",
+            "reasons": [
+                f"context {safe_str(pair.get('track'))}/{safe_str(pair.get('track_layout'))}/"
+                f"{safe_str(pair.get('vehicle_variant'))} sin calibracion",
+            ],
+            "automatic": False,
+            "shape": aggregate_shape(pair),
+        }
+    thresholds = calibration["thresholds"]
+    reject_center_gt_m = thresholds["reject_center_gt_m"]
+    reject_overlap_union_max = thresholds["reject_overlap_union_max"]
+    match_center_max_m = thresholds["match_center_max_m"]
+    match_overlap_shorter_min = thresholds["match_overlap_shorter_min"]
+    match_overlap_union_min = thresholds["match_overlap_union_min"]
+    match_shared_channel_min = thresholds["match_shared_channel_min"]
+    extended_center_max_m = thresholds.get("extended_match_center_max_m")
+    extended_overlap_shorter_min = thresholds.get(
+        "extended_match_overlap_shorter_min"
+    )
+    extended_overlap_union_min = thresholds.get("extended_match_overlap_union_min")
+    extended_channel_jaccard_min = thresholds.get(
+        "extended_match_channel_jaccard_min"
+    )
 
     center = safe_float(pair.get("center_distance_abs_diff_m"))
     overlap_union = safe_float(pair.get("overlap_over_union"))
@@ -180,12 +285,15 @@ def classify_pair(pair: dict[str, Any]) -> dict[str, Any]:
 
     # Far, non-overlapping negatives only. Human labels support automatic rejection only
     # strictly above 250 m when there is no spatial overlap.
-    if center > REJECT_CENTER_GT_M and overlap_union <= REJECT_OVERLAP_UNION_MAX + EPS:
+    if (
+        center > reject_center_gt_m
+        and overlap_union <= reject_overlap_union_max + EPS
+    ):
         return {
             "decision": "REJECT",
             "rule_id": "FAR_ZERO_OVERLAP",
             "reasons": [
-                f"center_diff_m={center:.3f}>calibrated_reject_bound_{REJECT_CENTER_GT_M}",
+                f"center_diff_m={center:.3f}>calibrated_reject_bound_{reject_center_gt_m}",
                 f"overlap_union={overlap_union:.6f}",
             ],
             "automatic": True,
@@ -193,24 +301,28 @@ def classify_pair(pair: dict[str, Any]) -> dict[str, Any]:
         }
 
     core_spatial_match = (
-        center <= MATCH_CENTER_MAX_M
-        and overlap_shorter >= MATCH_OVERLAP_SHORTER_MIN
-        and overlap_union >= MATCH_OVERLAP_UNION_MIN
-        and shared_count >= MATCH_SHARED_CHANNEL_MIN
+        center <= match_center_max_m
+        and overlap_shorter >= match_overlap_shorter_min
+        and overlap_union >= match_overlap_union_min
+        and shared_count >= match_shared_channel_min
     )
 
     channel_jaccard = safe_float(pair.get("channel_jaccard"))
     extended_spatial_channel_match = (
-        center <= EXTENDED_MATCH_CENTER_MAX_M
-        and overlap_shorter >= EXTENDED_MATCH_OVERLAP_SHORTER_MIN
-        and overlap_union >= EXTENDED_MATCH_OVERLAP_UNION_MIN
+        extended_center_max_m is not None
+        and extended_overlap_shorter_min is not None
+        and extended_overlap_union_min is not None
+        and extended_channel_jaccard_min is not None
+        and center <= extended_center_max_m
+        and overlap_shorter >= extended_overlap_shorter_min
+        and overlap_union >= extended_overlap_union_min
         and channel_jaccard is not None
-        and channel_jaccard >= EXTENDED_MATCH_CHANNEL_JACCARD_MIN
-        and shared_count >= MATCH_SHARED_CHANNEL_MIN
+        and channel_jaccard >= extended_channel_jaccard_min
+        and shared_count >= match_shared_channel_min
     )
 
     if core_spatial_match or extended_spatial_channel_match:
-        if weak_shape_conflict_veto(pair, shape):
+        if weak_shape_conflict_veto(pair, shape, thresholds):
             return {
                 "decision": "AMBIGUOUS",
                 "rule_id": "MATCH_CORE_BUT_WEAK_SHAPE_CONFLICT",
@@ -229,10 +341,10 @@ def classify_pair(pair: dict[str, Any]) -> dict[str, Any]:
                 "decision": "MATCH",
                 "rule_id": "CORE_SPATIAL_MATCH",
                 "reasons": [
-                    f"center_diff_m={center:.3f}<={MATCH_CENTER_MAX_M}",
-                    f"overlap_shorter={overlap_shorter:.6f}>={MATCH_OVERLAP_SHORTER_MIN}",
-                    f"overlap_union={overlap_union:.6f}>={MATCH_OVERLAP_UNION_MIN}",
-                    f"shared_channels={shared_count}>={MATCH_SHARED_CHANNEL_MIN}",
+                    f"center_diff_m={center:.3f}<={match_center_max_m}",
+                    f"overlap_shorter={overlap_shorter:.6f}>={match_overlap_shorter_min}",
+                    f"overlap_union={overlap_union:.6f}>={match_overlap_union_min}",
+                    f"shared_channels={shared_count}>={match_shared_channel_min}",
                 ],
                 "automatic": True,
                 "shape": shape,
@@ -242,11 +354,11 @@ def classify_pair(pair: dict[str, Any]) -> dict[str, Any]:
             "decision": "MATCH",
             "rule_id": "EXTENDED_SPATIAL_CHANNEL_MATCH",
             "reasons": [
-                f"center_diff_m={center:.3f}<={EXTENDED_MATCH_CENTER_MAX_M}",
-                f"overlap_shorter={overlap_shorter:.6f}>={EXTENDED_MATCH_OVERLAP_SHORTER_MIN}",
-                f"overlap_union={overlap_union:.6f}>={EXTENDED_MATCH_OVERLAP_UNION_MIN}",
-                f"channel_jaccard={channel_jaccard:.6f}>={EXTENDED_MATCH_CHANNEL_JACCARD_MIN}",
-                f"shared_channels={shared_count}>={MATCH_SHARED_CHANNEL_MIN}",
+                f"center_diff_m={center:.3f}<={extended_center_max_m}",
+                f"overlap_shorter={overlap_shorter:.6f}>={extended_overlap_shorter_min}",
+                f"overlap_union={overlap_union:.6f}>={extended_overlap_union_min}",
+                f"channel_jaccard={channel_jaccard:.6f}>={extended_channel_jaccard_min}",
+                f"shared_channels={shared_count}>={match_shared_channel_min}",
             ],
             "automatic": True,
             "shape": shape,
@@ -305,32 +417,35 @@ def main() -> int:
             **result,
         })
 
+    calibration = resolve_calibration(pairs[0]) if pairs else None
+    if calibration is not None:
+        matcher_status = str(calibration["status"])
+        resolved_context = {
+            "track": safe_str(pairs[0].get("track")),
+            "track_layout": safe_str(pairs[0].get("track_layout")),
+            "vehicle_variant": safe_str(pairs[0].get("vehicle_variant")),
+            "human_labels": calibration.get("human_labels"),
+        }
+        if calibration.get("provenance"):
+            resolved_context["provenance"] = calibration["provenance"]
+        resolved_thresholds = dict(calibration["thresholds"])
+    else:
+        matcher_status = "NO_CALIBRATION_FOR_CONTEXT"
+        resolved_context = None
+        resolved_thresholds = {}
+
     payload = {
         "metadata": {
             "matcher_version": MATCHER_VERSION,
-            "matcher_status": MATCHER_STATUS,
+            "matcher_status": matcher_status,
             "created_at_utc": utc_now_iso(),
             "source_features": str(source),
-            "calibration_context": CALIBRATION_CONTEXT,
+            "calibration_context": resolved_context,
             "policy": (
                 "High-precision provisional matcher. Automatic MATCH/REJECT only in human-supported cores; "
                 "unobserved boundary space remains AMBIGUOUS. No clustering or persistent_pattern creation."
             ),
-            "thresholds": {
-                "match_center_max_m": MATCH_CENTER_MAX_M,
-                "match_overlap_shorter_min": MATCH_OVERLAP_SHORTER_MIN,
-                "match_overlap_union_min": MATCH_OVERLAP_UNION_MIN,
-                "match_shared_channel_min": MATCH_SHARED_CHANNEL_MIN,
-                "extended_match_center_max_m": EXTENDED_MATCH_CENTER_MAX_M,
-                "extended_match_overlap_shorter_min": EXTENDED_MATCH_OVERLAP_SHORTER_MIN,
-                "extended_match_overlap_union_min": EXTENDED_MATCH_OVERLAP_UNION_MIN,
-                "extended_match_channel_jaccard_min": EXTENDED_MATCH_CHANNEL_JACCARD_MIN,
-                "shape_conflict_mean_similarity_max": SHAPE_CONFLICT_MEAN_SIM_MAX,
-                "shape_conflict_coverage_diff_min": SHAPE_CONFLICT_COVERAGE_DIFF_MIN,
-                "shape_conflict_impact_similarity_max": SHAPE_CONFLICT_IMPACT_SIM_MAX,
-                "reject_center_gt_m": REJECT_CENTER_GT_M,
-                "reject_overlap_union_max": REJECT_OVERLAP_UNION_MAX,
-            },
+            "thresholds": resolved_thresholds,
         },
         "counts": counts,
         "decisions": decisions,
@@ -342,7 +457,7 @@ def main() -> int:
     print("=" * 72)
     print(f"RACE ENGINEER - CROSS-SESSION EPISODE MATCHER v{MATCHER_VERSION}")
     print("=" * 72)
-    print(f"Status: {MATCHER_STATUS}")
+    print(f"Status: {matcher_status}")
     print(f"Pairs: {len(pairs)}")
     print(f"MATCH: {counts['MATCH']}")
     print(f"AMBIGUOUS: {counts['AMBIGUOUS']}")

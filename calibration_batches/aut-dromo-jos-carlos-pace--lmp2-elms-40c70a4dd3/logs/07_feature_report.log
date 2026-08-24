@@ -1,0 +1,18 @@
+$ 'C:\Users\thres\Documents\GitHub\raithreshzz\.venv\Scripts\python.exe' 'C:\Users\thres\Documents\GitHub\raithreshzz\calibration_feature_report.py' 'C:\Users\thres\Documents\GitHub\raithreshzz\calibration_batches\aut-dromo-jos-carlos-pace--lmp2-elms-40c70a4dd3\calibration_dataset.json' --output 'C:\Users\thres\Documents\GitHub\raithreshzz\calibration_batches\aut-dromo-jos-carlos-pace--lmp2-elms-40c70a4dd3\calibration_feature_report.json'
+
+--- STDOUT ---
+
+========================================================================
+RACE ENGINEER - CALIBRATION FEATURE REPORT v1.0
+========================================================================
+
+calibration: pairs=4 labels={'SAME': 1, 'DIFFERENT': 2, 'AMBIGUOUS': 1}
+evaluation: pairs=5 labels={'SAME': 3, 'DIFFERENT': 2, 'AMBIGUOUS': 0}
+
+Output: C:\Users\thres\Documents\GitHub\raithreshzz\calibration_batches\aut-dromo-jos-carlos-pace--lmp2-elms-40c70a4dd3\calibration_feature_report.json
+No thresholds, weights, probabilities, or automatic match decisions were created.
+
+--- STDERR ---
+
+--- RETURN CODE ---
+0

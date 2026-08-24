@@ -1,10 +1,10 @@
 {
   "orchestrator_version": "1.5",
-  "updated_at_utc": "2026-08-24T00:22:19.868075+00:00",
+  "updated_at_utc": "2026-08-24T00:34:09.456733+00:00",
   "project_root": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz",
   "input_dir": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\data\\generated\\analysis",
   "history_db": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\data\\local\\race_engineer_history.duckdb",
-  "overall_status": "READY_FOR_HUMAN_REVIEW",
+  "overall_status": "READY_FOR_MORE_REAL_DATA",
   "track": "Fuji Speedway",
   "track_layout": "Fuji Speedway",
   "vehicle_family": "LMP2",
@@ -82,43 +82,53 @@
       }
     },
     "pair_features": {
-      "status": "PASS",
-      "command": "'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\.venv\\Scripts\\python.exe' 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\episode_pair_features.py' --db 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\data\\local\\race_engineer_history.duckdb' --track 'Fuji Speedway' --track-layout 'Fuji Speedway' --vehicle-variant LMP2_ELMS --format json --output 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\fuji-speedway--lmp2-elms-b0b0f526f9\\episode_pair_features.json'",
+      "status": "REUSED",
       "path": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\fuji-speedway--lmp2-elms-b0b0f526f9\\episode_pair_features.json",
       "pair_count": 2251
     },
     "review_queue": {
-      "status": "READY",
-      "command": "'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\.venv\\Scripts\\python.exe' 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\pair_review_queue.py' 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\fuji-speedway--lmp2-elms-b0b0f526f9\\episode_pair_features.json' --output 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\fuji-speedway--lmp2-elms-b0b0f526f9\\pair_review_queue.json' --per-lens 6 --seed 20260810 --max-total 24",
+      "status": "REUSED",
       "path": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\fuji-speedway--lmp2-elms-b0b0f526f9\\pair_review_queue.json",
       "queue_pairs": 24,
-      "regenerated_reason": "missing",
-      "review_policy": {
-        "per_lens": 6,
-        "max_review_pairs": 24,
-        "seed": 20260810
-      }
+      "reuse_reason": "compatible"
+    },
+    "label_validation": {
+      "status": "PASS",
+      "command": "'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\.venv\\Scripts\\python.exe' 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\validate_pair_labels.py' 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\fuji-speedway--lmp2-elms-b0b0f526f9\\pair_review_queue.json' 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\fuji-speedway--lmp2-elms-b0b0f526f9\\pair_labels.json'"
     },
     "human_labels": {
-      "status": "PENDING",
+      "status": "PASS",
       "labels_path": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\fuji-speedway--lmp2-elms-b0b0f526f9\\pair_labels.json",
-      "exists": false,
+      "exists": true,
       "queue_pairs": 24,
-      "labeled_pairs": 0,
-      "unreviewed_pairs": 24,
-      "complete": false,
-      "review_command": "'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\.venv\\Scripts\\python.exe' 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\label_episode_pairs.py' 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\fuji-speedway--lmp2-elms-b0b0f526f9\\pair_review_queue.json' --labels 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\fuji-speedway--lmp2-elms-b0b0f526f9\\pair_labels.json'"
+      "labeled_pairs": 24,
+      "unreviewed_pairs": 0,
+      "complete": true
     },
     "calibration_dataset": {
-      "status": "BLOCKED_BY_LABELS"
+      "status": "PASS",
+      "command": "'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\.venv\\Scripts\\python.exe' 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\build_calibration_dataset.py' 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\fuji-speedway--lmp2-elms-b0b0f526f9\\pair_review_queue.json' 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\fuji-speedway--lmp2-elms-b0b0f526f9\\pair_labels.json' --evaluation-fraction 0.25 --seed 20260810 --output 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\fuji-speedway--lmp2-elms-b0b0f526f9\\calibration_dataset.json'",
+      "path": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\fuji-speedway--lmp2-elms-b0b0f526f9\\calibration_dataset.json",
+      "calibration_pairs": 23,
+      "evaluation_pairs": 0,
+      "cross_split_pairs_excluded": 1,
+      "calibration_ready": true,
+      "evaluation_ready": false
     },
     "feature_report": {
-      "status": "BLOCKED_BY_LABELS"
+      "status": "PASS",
+      "command": "'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\.venv\\Scripts\\python.exe' 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_feature_report.py' 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\fuji-speedway--lmp2-elms-b0b0f526f9\\calibration_dataset.json' --output 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\fuji-speedway--lmp2-elms-b0b0f526f9\\calibration_feature_report.json'",
+      "path": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\fuji-speedway--lmp2-elms-b0b0f526f9\\calibration_feature_report.json"
+    },
+    "evaluation_readiness": {
+      "status": "WARNING_EMPTY",
+      "evaluation_pairs": 0,
+      "reason": "No internal evaluation pairs survived the session split."
     }
   },
-  "next_action": "'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\.venv\\Scripts\\python.exe' 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\label_episode_pairs.py' 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\fuji-speedway--lmp2-elms-b0b0f526f9\\pair_review_queue.json' --labels 'C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\fuji-speedway--lmp2-elms-b0b0f526f9\\pair_labels.json'",
+  "next_action": "Collect more independent same-track sessions before using this batch for matcher evaluation.",
   "matcher": {
-    "status": "BLOCKED_BY_REAL_DATA",
-    "reason": "No thresholds, weights, automatic matching, clustering, or persistent_pattern are implemented."
+    "status": "NO_CALIBRATION_FOR_CONTEXT",
+    "reason": "No hay thresholds calibrados para este contexto exacto; labelar el batch para calibrar."
   }
 }

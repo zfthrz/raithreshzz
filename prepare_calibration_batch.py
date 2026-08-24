@@ -906,6 +906,42 @@ def write_status(
     )
 
 
+def refresh_matcher_status(
+    status: dict[str, Any],
+) -> None:
+    """Actualiza status['matcher'] según la calibración real por contexto."""
+    try:
+        from episode_pair_matcher import CALIBRATIONS
+    except Exception:
+        return
+    calibration = CALIBRATIONS.get(
+        (
+            status.get("track"),
+            status.get("track_layout"),
+            status.get("vehicle_variant"),
+        )
+    )
+    if calibration is None:
+        status["matcher"] = {
+            "status": "NO_CALIBRATION_FOR_CONTEXT",
+            "reason": (
+                "No hay thresholds calibrados para este contexto exacto; "
+                "labelar el batch para calibrar."
+            ),
+        }
+        return
+    status["matcher"] = {
+        "status": calibration["status"],
+        "reason": (
+            "Thresholds provisionales disponibles para este contexto; "
+            "requieren más datos independientes antes de evaluar."
+        ),
+        "human_labels": calibration.get("human_labels"),
+    }
+    if calibration.get("provenance"):
+        status["matcher"]["provenance"] = calibration["provenance"]
+
+
 def ensure_success(
     result: dict[str, Any],
     *,
@@ -1507,6 +1543,9 @@ def run_pipeline(
         "status"
     ]
 
+    refresh_matcher_status(
+        status,
+    )
     write_status(
         batch_status_path,
         status,
@@ -2361,7 +2400,7 @@ def print_summary(
 
     print()
     print(
-        "MATCHER: BLOCKED_BY_REAL_DATA"
+        f"MATCHER: {status['matcher'].get('status', 'UNKNOWN')}"
     )
 
 

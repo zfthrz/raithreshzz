@@ -1,0 +1,1640 @@
+{
+  "metadata": {
+    "label_schema_version": "1.1",
+    "created_at_utc": "2026-08-24T00:31:37.275115+00:00",
+    "updated_at_utc": "2026-08-24T00:32:33.974144+00:00",
+    "source_queue_path": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\fuji-speedway--lmp2-elms-b0b0f526f9\\pair_review_queue.json",
+    "source_queue_sha256": "0eb9fc3e7ae0cf12cfd90ac16c5bdc8ce577a5dca8171a8368af46a8edb6bf43",
+    "reviewer": "thresh",
+    "semantics": "Human calibration labels. SAME means same general location and driving-difference type, not proven identical causality."
+  },
+  "labels": [
+    {
+      "pair_id": "0f01f10035fe809839a5",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:31:40.261194+00:00",
+      "selected_by": [
+        {
+          "lens": "closest_centers",
+          "rank": 1
+        },
+        {
+          "lens": "highest_spatial_overlap",
+          "rank": 1
+        },
+        {
+          "lens": "highest_channel_similarity",
+          "rank": 1
+        },
+        {
+          "lens": "nearby_channel_disagreement",
+          "rank": 1
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Fuji Speedway",
+        "session_a": 8,
+        "session_b": 56,
+        "episode_pk_a": 360,
+        "episode_pk_b": 1345,
+        "episode_id_a": 2,
+        "episode_id_b": 2,
+        "start_distance_a_m": 1605.0,
+        "end_distance_a_m": 1855.0,
+        "center_distance_a_m": 1730.0,
+        "start_distance_b_m": 1605.0,
+        "end_distance_b_m": 1855.0,
+        "center_distance_b_m": 1730.0,
+        "center_distance_abs_diff_m": 0.0,
+        "overlap_m": 250.0,
+        "overlap_over_union": 1.0,
+        "overlap_over_shorter": 1.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.20870355874940927,
+        "action_time_loss_b_s": 0.20870355874940927,
+        "action_time_loss_similarity": 1.0,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 1.0,
+            "peak_difference_similarity": 1.0,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 1.0,
+            "peak_difference_similarity": 1.0,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "mixed"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "04999ee4c327cc547544",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:31:42.125057+00:00",
+      "selected_by": [
+        {
+          "lens": "similar_channels_farther_apart",
+          "rank": 1
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Fuji Speedway",
+        "session_a": 7,
+        "session_b": 8,
+        "episode_pk_a": 286,
+        "episode_pk_b": 359,
+        "episode_id_a": 7,
+        "episode_id_b": 1,
+        "start_distance_a_m": 3708.0,
+        "end_distance_a_m": 3783.0,
+        "center_distance_a_m": 3745.5,
+        "start_distance_b_m": 731.0,
+        "end_distance_b_m": 780.0,
+        "center_distance_b_m": 755.5,
+        "center_distance_abs_diff_m": 2990.0,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.05730580085308645,
+        "action_time_loss_b_s": 0.23489061133806644,
+        "action_time_loss_similarity": 0.24396803485095048,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.5466666666666666,
+            "onset_offset_abs_diff_m": 41.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.2526532810749416,
+            "peak_difference_similarity": 0.19211327110411663,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.09687074829931974,
+            "onset_offset_abs_diff_m": 25.0,
+            "end_offset_abs_diff_m": 31.0,
+            "mean_difference_similarity": 0.2230219311870802,
+            "peak_difference_similarity": 0.8213302801295412,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "6747a88dacb39f4528b8",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:31:43.924707+00:00",
+      "selected_by": [
+        {
+          "lens": "impact_divergence",
+          "rank": 1
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Fuji Speedway",
+        "session_a": 7,
+        "session_b": 56,
+        "episode_pk_a": 280,
+        "episode_pk_b": 1343,
+        "episode_id_a": 1,
+        "episode_id_b": 8,
+        "start_distance_a_m": 733.0,
+        "end_distance_a_m": 826.0,
+        "center_distance_a_m": 779.5,
+        "start_distance_b_m": 3573.0,
+        "end_distance_b_m": 3599.0,
+        "center_distance_b_m": 3586.0,
+        "center_distance_abs_diff_m": 2806.5,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 0.5,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [
+          "steering_magnitude"
+        ],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.3462860529486669,
+        "action_time_loss_b_s": 0.020721521616621885,
+        "action_time_loss_similarity": 0.05983931908367567,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.07526881720430112,
+            "onset_offset_abs_diff_m": 7.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.050411442878569114,
+            "peak_difference_similarity": 0.7629933724219985,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "193fdcc68459a81fd44b",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:31:45.590165+00:00",
+      "selected_by": [
+        {
+          "lens": "deterministic_baseline",
+          "rank": 1
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Fuji Speedway",
+        "session_a": 8,
+        "session_b": 44,
+        "episode_pk_a": 361,
+        "episode_pk_b": 1205,
+        "episode_id_a": 3,
+        "episode_id_b": 6,
+        "start_distance_a_m": 3047.0,
+        "end_distance_a_m": 3098.0,
+        "center_distance_a_m": 3072.5,
+        "start_distance_b_m": 2034.0,
+        "end_distance_b_m": 2063.0,
+        "center_distance_b_m": 2048.5,
+        "center_distance_abs_diff_m": 1024.0,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 0.6666666666666666,
+        "channels_a": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [
+          "brake"
+        ],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.10713497523587279,
+        "action_time_loss_b_s": 0.03815031278970338,
+        "action_time_loss_similarity": 0.35609578203299225,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.31710615280595,
+            "onset_offset_abs_diff_m": 17.0,
+            "end_offset_abs_diff_m": 6.0,
+            "mean_difference_similarity": 0.39766697385810135,
+            "peak_difference_similarity": 0.391942604695041,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.18864097363083165,
+            "onset_offset_abs_diff_m": 14.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.5011684742770457,
+            "peak_difference_similarity": 0.3545839643539572,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "2728f145ec2fc5b64663",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:31:49.549446+00:00",
+      "selected_by": [
+        {
+          "lens": "closest_centers",
+          "rank": 2
+        },
+        {
+          "lens": "highest_spatial_overlap",
+          "rank": 2
+        },
+        {
+          "lens": "highest_channel_similarity",
+          "rank": 2
+        },
+        {
+          "lens": "nearby_channel_disagreement",
+          "rank": 2
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Fuji Speedway",
+        "session_a": 8,
+        "session_b": 56,
+        "episode_pk_a": 351,
+        "episode_pk_b": 1336,
+        "episode_id_a": 1,
+        "episode_id_b": 1,
+        "start_distance_a_m": 1412.0,
+        "end_distance_a_m": 1498.0,
+        "center_distance_a_m": 1455.0,
+        "start_distance_b_m": 1412.0,
+        "end_distance_b_m": 1498.0,
+        "center_distance_b_m": 1455.0,
+        "center_distance_abs_diff_m": 0.0,
+        "overlap_m": 86.0,
+        "overlap_over_union": 1.0,
+        "overlap_over_shorter": 1.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.14150131687279455,
+        "action_time_loss_b_s": 0.14150131687279455,
+        "action_time_loss_similarity": 1.0,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 1.0,
+            "peak_difference_similarity": 1.0,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 1.0,
+            "peak_difference_similarity": 1.0,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "9c2b04eeecde78401256",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:31:51.692860+00:00",
+      "selected_by": [
+        {
+          "lens": "similar_channels_farther_apart",
+          "rank": 2
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Fuji Speedway",
+        "session_a": 7,
+        "session_b": 56,
+        "episode_pk_a": 286,
+        "episode_pk_b": 1344,
+        "episode_id_a": 7,
+        "episode_id_b": 1,
+        "start_distance_a_m": 3708.0,
+        "end_distance_a_m": 3783.0,
+        "center_distance_a_m": 3745.5,
+        "start_distance_b_m": 731.0,
+        "end_distance_b_m": 780.0,
+        "center_distance_b_m": 755.5,
+        "center_distance_abs_diff_m": 2990.0,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.05730580085308645,
+        "action_time_loss_b_s": 0.23489061133806644,
+        "action_time_loss_similarity": 0.24396803485095048,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.5466666666666666,
+            "onset_offset_abs_diff_m": 41.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.2526532810749416,
+            "peak_difference_similarity": 0.19211327110411663,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.09687074829931974,
+            "onset_offset_abs_diff_m": 25.0,
+            "end_offset_abs_diff_m": 31.0,
+            "mean_difference_similarity": 0.2230219311870802,
+            "peak_difference_similarity": 0.8213302801295412,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "83c98c918fca61e80804",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:31:53.589122+00:00",
+      "selected_by": [
+        {
+          "lens": "impact_divergence",
+          "rank": 2
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Fuji Speedway",
+        "session_a": 7,
+        "session_b": 8,
+        "episode_pk_a": 280,
+        "episode_pk_b": 358,
+        "episode_id_a": 1,
+        "episode_id_b": 8,
+        "start_distance_a_m": 733.0,
+        "end_distance_a_m": 826.0,
+        "center_distance_a_m": 779.5,
+        "start_distance_b_m": 3573.0,
+        "end_distance_b_m": 3599.0,
+        "center_distance_b_m": 3586.0,
+        "center_distance_abs_diff_m": 2806.5,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 0.5,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [
+          "steering_magnitude"
+        ],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.3462860529486669,
+        "action_time_loss_b_s": 0.020721521616621885,
+        "action_time_loss_similarity": 0.05983931908367567,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.07526881720430112,
+            "onset_offset_abs_diff_m": 7.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.050411442878569114,
+            "peak_difference_similarity": 0.7629933724219985,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "26268c20f1f3bace12bc",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:31:55.252985+00:00",
+      "selected_by": [
+        {
+          "lens": "deterministic_baseline",
+          "rank": 2
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Fuji Speedway",
+        "session_a": 8,
+        "session_b": 39,
+        "episode_pk_a": 364,
+        "episode_pk_b": 1066,
+        "episode_id_a": 6,
+        "episode_id_b": 3,
+        "start_distance_a_m": 3185.0,
+        "end_distance_a_m": 3233.0,
+        "center_distance_a_m": 3209.0,
+        "start_distance_b_m": 1296.0,
+        "end_distance_b_m": 1365.0,
+        "center_distance_b_m": 1330.5,
+        "center_distance_abs_diff_m": 1878.5,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.08575311462636392,
+        "action_time_loss_b_s": 0.06377564297954663,
+        "action_time_loss_similarity": 0.7437122634836573,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.2373188405797101,
+            "onset_offset_abs_diff_m": 40.0,
+            "end_offset_abs_diff_m": 14.0,
+            "mean_difference_similarity": 0.8153709325157587,
+            "peak_difference_similarity": 0.7535532240953697,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.6011129045845559,
+            "peak_difference_similarity": 0.4083130754984655,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "3ac5edee8a8f7bb62afd",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:31:57.381073+00:00",
+      "selected_by": [
+        {
+          "lens": "closest_centers",
+          "rank": 3
+        },
+        {
+          "lens": "highest_spatial_overlap",
+          "rank": 3
+        },
+        {
+          "lens": "highest_channel_similarity",
+          "rank": 3
+        },
+        {
+          "lens": "nearby_channel_disagreement",
+          "rank": 3
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Fuji Speedway",
+        "session_a": 8,
+        "session_b": 56,
+        "episode_pk_a": 359,
+        "episode_pk_b": 1344,
+        "episode_id_a": 1,
+        "episode_id_b": 1,
+        "start_distance_a_m": 731.0,
+        "end_distance_a_m": 780.0,
+        "center_distance_a_m": 755.5,
+        "start_distance_b_m": 731.0,
+        "end_distance_b_m": 780.0,
+        "center_distance_b_m": 755.5,
+        "center_distance_abs_diff_m": 0.0,
+        "overlap_m": 49.0,
+        "overlap_over_union": 1.0,
+        "overlap_over_shorter": 1.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.23489061133806644,
+        "action_time_loss_b_s": 0.23489061133806644,
+        "action_time_loss_similarity": 1.0,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 1.0,
+            "peak_difference_similarity": 1.0,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 1.0,
+            "peak_difference_similarity": 1.0,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "e3baac7d5c13c6364282",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:31:59.310105+00:00",
+      "selected_by": [
+        {
+          "lens": "similar_channels_farther_apart",
+          "rank": 3
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Fuji Speedway",
+        "session_a": 7,
+        "session_b": 39,
+        "episode_pk_a": 286,
+        "episode_pk_b": 1065,
+        "episode_id_a": 7,
+        "episode_id_b": 2,
+        "start_distance_a_m": 3708.0,
+        "end_distance_a_m": 3783.0,
+        "center_distance_a_m": 3745.5,
+        "start_distance_b_m": 725.0,
+        "end_distance_b_m": 811.0,
+        "center_distance_b_m": 768.0,
+        "center_distance_abs_diff_m": 2977.5,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.05730580085308645,
+        "action_time_loss_b_s": 0.1445729180969888,
+        "action_time_loss_similarity": 0.396379914076591,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.3257364341085272,
+            "onset_offset_abs_diff_m": 41.0,
+            "end_offset_abs_diff_m": 11.0,
+            "mean_difference_similarity": 0.6725954210809757,
+            "peak_difference_similarity": 0.45264150744467035,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.295968992248062,
+            "onset_offset_abs_diff_m": 61.0,
+            "end_offset_abs_diff_m": 31.0,
+            "mean_difference_similarity": 0.9867017511249966,
+            "peak_difference_similarity": 0.5258463716066472,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "17308ddabebed31620d8",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:32:01.965300+00:00",
+      "selected_by": [
+        {
+          "lens": "impact_divergence",
+          "rank": 3
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Fuji Speedway",
+        "session_a": 7,
+        "session_b": 8,
+        "episode_pk_a": 281,
+        "episode_pk_b": 358,
+        "episode_id_a": 2,
+        "episode_id_b": 8,
+        "start_distance_a_m": 2836.0,
+        "end_distance_a_m": 2913.0,
+        "center_distance_a_m": 2874.5,
+        "start_distance_b_m": 3573.0,
+        "end_distance_b_m": 3599.0,
+        "center_distance_b_m": 3586.0,
+        "center_distance_abs_diff_m": 711.5,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 0.5,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [
+          "steering_magnitude"
+        ],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.33760325985826256,
+        "action_time_loss_b_s": 0.020721521616621885,
+        "action_time_loss_similarity": 0.06137832207343463,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.7922077922077921,
+            "onset_offset_abs_diff_m": 34.0,
+            "end_offset_abs_diff_m": 27.0,
+            "mean_difference_similarity": 0.4746933389210686,
+            "peak_difference_similarity": 0.6185323349315334,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "2b7c68980a95bd04560c",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:32:03.213450+00:00",
+      "selected_by": [
+        {
+          "lens": "deterministic_baseline",
+          "rank": 3
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Fuji Speedway",
+        "session_a": 7,
+        "session_b": 8,
+        "episode_pk_a": 291,
+        "episode_pk_b": 362,
+        "episode_id_a": 12,
+        "episode_id_b": 4,
+        "start_distance_a_m": 3112.0,
+        "end_distance_a_m": 3135.0,
+        "center_distance_a_m": 3123.5,
+        "start_distance_b_m": 1308.0,
+        "end_distance_b_m": 1374.0,
+        "center_distance_b_m": 1341.0,
+        "center_distance_abs_diff_m": 1782.5,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 0.5,
+        "channels_a": [
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [
+          "steering_magnitude"
+        ],
+        "action_time_loss_a_s": 0.02333892165253104,
+        "action_time_loss_b_s": 0.09903174618552413,
+        "action_time_loss_similarity": 0.23567111104764693,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.14208506500652154,
+            "peak_difference_similarity": 0.7224097397599981,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "42049787d2dfa08e7c36",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:32:05.477124+00:00",
+      "selected_by": [
+        {
+          "lens": "closest_centers",
+          "rank": 4
+        },
+        {
+          "lens": "highest_spatial_overlap",
+          "rank": 4
+        },
+        {
+          "lens": "highest_channel_similarity",
+          "rank": 4
+        },
+        {
+          "lens": "nearby_channel_disagreement",
+          "rank": 4
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Fuji Speedway",
+        "session_a": 8,
+        "session_b": 56,
+        "episode_pk_a": 352,
+        "episode_pk_b": 1337,
+        "episode_id_a": 2,
+        "episode_id_b": 2,
+        "start_distance_a_m": 1661.0,
+        "end_distance_a_m": 1858.0,
+        "center_distance_a_m": 1759.5,
+        "start_distance_b_m": 1661.0,
+        "end_distance_b_m": 1858.0,
+        "center_distance_b_m": 1759.5,
+        "center_distance_abs_diff_m": 0.0,
+        "overlap_m": 197.0,
+        "overlap_over_union": 1.0,
+        "overlap_over_shorter": 1.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.1023279784134381,
+        "action_time_loss_b_s": 0.1023279784134381,
+        "action_time_loss_similarity": 1.0,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 1.0,
+            "peak_difference_similarity": 1.0,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 1.0,
+            "peak_difference_similarity": 1.0,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "mixed"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "81d958b516ca1fe804fd",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:32:07.030508+00:00",
+      "selected_by": [
+        {
+          "lens": "similar_channels_farther_apart",
+          "rank": 4
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Fuji Speedway",
+        "session_a": 56,
+        "session_b": 39,
+        "episode_pk_a": 1344,
+        "episode_pk_b": 1070,
+        "episode_id_a": 1,
+        "episode_id_b": 7,
+        "start_distance_a_m": 731.0,
+        "end_distance_a_m": 780.0,
+        "center_distance_a_m": 755.5,
+        "start_distance_b_m": 3706.0,
+        "end_distance_b_m": 3724.0,
+        "center_distance_b_m": 3715.0,
+        "center_distance_abs_diff_m": 2959.5,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.23489061133806644,
+        "action_time_loss_b_s": 0.022570042707627636,
+        "action_time_loss_similarity": 0.09608746207034938,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.4123239654565361,
+            "peak_difference_similarity": 0.3550194083658477,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.34353741496598644,
+            "onset_offset_abs_diff_m": 22.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.23534057867914346,
+            "peak_difference_similarity": 0.69025819549059,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "313d8fbfdf9df8508158",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:32:08.461295+00:00",
+      "selected_by": [
+        {
+          "lens": "impact_divergence",
+          "rank": 4
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Fuji Speedway",
+        "session_a": 7,
+        "session_b": 56,
+        "episode_pk_a": 281,
+        "episode_pk_b": 1343,
+        "episode_id_a": 2,
+        "episode_id_b": 8,
+        "start_distance_a_m": 2836.0,
+        "end_distance_a_m": 2913.0,
+        "center_distance_a_m": 2874.5,
+        "start_distance_b_m": 3573.0,
+        "end_distance_b_m": 3599.0,
+        "center_distance_b_m": 3586.0,
+        "center_distance_abs_diff_m": 711.5,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 0.5,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [
+          "steering_magnitude"
+        ],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.33760325985826256,
+        "action_time_loss_b_s": 0.020721521616621885,
+        "action_time_loss_similarity": 0.06137832207343463,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.7922077922077921,
+            "onset_offset_abs_diff_m": 34.0,
+            "end_offset_abs_diff_m": 27.0,
+            "mean_difference_similarity": 0.4746933389210686,
+            "peak_difference_similarity": 0.6185323349315334,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "c3a684a2bdc4628356c7",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:32:09.846095+00:00",
+      "selected_by": [
+        {
+          "lens": "deterministic_baseline",
+          "rank": 4
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Fuji Speedway",
+        "session_a": 8,
+        "session_b": 56,
+        "episode_pk_a": 366,
+        "episode_pk_b": 1351,
+        "episode_id_a": 8,
+        "episode_id_b": 8,
+        "start_distance_a_m": 1525.0,
+        "end_distance_a_m": 1583.0,
+        "center_distance_a_m": 1554.0,
+        "start_distance_b_m": 1525.0,
+        "end_distance_b_m": 1583.0,
+        "center_distance_b_m": 1554.0,
+        "center_distance_abs_diff_m": 0.0,
+        "overlap_m": 58.0,
+        "overlap_over_union": 1.0,
+        "overlap_over_shorter": 1.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "throttle"
+        ],
+        "channels_b": [
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.03556986052678823,
+        "action_time_loss_b_s": 0.03556986052678823,
+        "action_time_loss_similarity": 1.0,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 1.0,
+            "peak_difference_similarity": 1.0,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "49a721fd39693208681f",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:32:11.837405+00:00",
+      "selected_by": [
+        {
+          "lens": "closest_centers",
+          "rank": 5
+        },
+        {
+          "lens": "highest_spatial_overlap",
+          "rank": 5
+        },
+        {
+          "lens": "highest_channel_similarity",
+          "rank": 5
+        },
+        {
+          "lens": "nearby_channel_disagreement",
+          "rank": 5
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Fuji Speedway",
+        "session_a": 8,
+        "session_b": 56,
+        "episode_pk_a": 357,
+        "episode_pk_b": 1342,
+        "episode_id_a": 7,
+        "episode_id_b": 7,
+        "start_distance_a_m": 1571.0,
+        "end_distance_a_m": 1593.0,
+        "center_distance_a_m": 1582.0,
+        "start_distance_b_m": 1571.0,
+        "end_distance_b_m": 1593.0,
+        "center_distance_b_m": 1582.0,
+        "center_distance_abs_diff_m": 0.0,
+        "overlap_m": 22.0,
+        "overlap_over_union": 1.0,
+        "overlap_over_shorter": 1.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "throttle"
+        ],
+        "channels_b": [
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.0242929213122558,
+        "action_time_loss_b_s": 0.0242929213122558,
+        "action_time_loss_similarity": 1.0,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 1.0,
+            "peak_difference_similarity": 1.0,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "9656fade3736e5f29170",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:32:14.661348+00:00",
+      "selected_by": [
+        {
+          "lens": "similar_channels_farther_apart",
+          "rank": 5
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Fuji Speedway",
+        "session_a": 8,
+        "session_b": 39,
+        "episode_pk_a": 359,
+        "episode_pk_b": 1070,
+        "episode_id_a": 1,
+        "episode_id_b": 7,
+        "start_distance_a_m": 731.0,
+        "end_distance_a_m": 780.0,
+        "center_distance_a_m": 755.5,
+        "start_distance_b_m": 3706.0,
+        "end_distance_b_m": 3724.0,
+        "center_distance_b_m": 3715.0,
+        "center_distance_abs_diff_m": 2959.5,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.23489061133806644,
+        "action_time_loss_b_s": 0.022570042707627636,
+        "action_time_loss_similarity": 0.09608746207034938,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.4123239654565361,
+            "peak_difference_similarity": 0.3550194083658477,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.34353741496598644,
+            "onset_offset_abs_diff_m": 22.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.23534057867914346,
+            "peak_difference_similarity": 0.69025819549059,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "64912942bac60abc3a76",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:32:16.814286+00:00",
+      "selected_by": [
+        {
+          "lens": "impact_divergence",
+          "rank": 5
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Fuji Speedway",
+        "session_a": 7,
+        "session_b": 8,
+        "episode_pk_a": 280,
+        "episode_pk_b": 368,
+        "episode_id_a": 1,
+        "episode_id_b": 10,
+        "start_distance_a_m": 733.0,
+        "end_distance_a_m": 826.0,
+        "center_distance_a_m": 779.5,
+        "start_distance_b_m": 3378.0,
+        "end_distance_b_m": 3394.0,
+        "center_distance_b_m": 3386.0,
+        "center_distance_abs_diff_m": 2606.5,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 0.5,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude"
+        ],
+        "shared_channels": [
+          "steering_magnitude"
+        ],
+        "channels_only_a": [
+          "throttle"
+        ],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.3462860529486669,
+        "action_time_loss_b_s": 0.0223133706001164,
+        "action_time_loss_similarity": 0.0644362382201518,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.3548387096774194,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 24.0,
+            "mean_difference_similarity": 0.7622496680231283,
+            "peak_difference_similarity": 0.18708558211341184,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "e255476285ecb832c7b2",
+      "human_label": "AMBIGUOUS",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:32:18.765975+00:00",
+      "selected_by": [
+        {
+          "lens": "deterministic_baseline",
+          "rank": 5
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Fuji Speedway",
+        "session_a": 56,
+        "session_b": 39,
+        "episode_pk_a": 1349,
+        "episode_pk_b": 1068,
+        "episode_id_a": 6,
+        "episode_id_b": 5,
+        "start_distance_a_m": 3185.0,
+        "end_distance_a_m": 3233.0,
+        "center_distance_a_m": 3209.0,
+        "start_distance_b_m": 2957.0,
+        "end_distance_b_m": 2976.0,
+        "center_distance_b_m": 2966.5,
+        "center_distance_abs_diff_m": 242.5,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 0.5,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [
+          "steering_magnitude"
+        ],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.08575311462636392,
+        "action_time_loss_b_s": 0.0333575020341641,
+        "action_time_loss_similarity": 0.38899464094693853,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.8623439086438867,
+            "peak_difference_similarity": 0.5526212608370994,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "5a3e46838e9c3ee3a8e8",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:32:26.461581+00:00",
+      "selected_by": [
+        {
+          "lens": "closest_centers",
+          "rank": 6
+        },
+        {
+          "lens": "highest_spatial_overlap",
+          "rank": 6
+        },
+        {
+          "lens": "highest_channel_similarity",
+          "rank": 6
+        },
+        {
+          "lens": "nearby_channel_disagreement",
+          "rank": 6
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Fuji Speedway",
+        "session_a": 8,
+        "session_b": 56,
+        "episode_pk_a": 361,
+        "episode_pk_b": 1346,
+        "episode_id_a": 3,
+        "episode_id_b": 3,
+        "start_distance_a_m": 3047.0,
+        "end_distance_a_m": 3098.0,
+        "center_distance_a_m": 3072.5,
+        "start_distance_b_m": 3047.0,
+        "end_distance_b_m": 3098.0,
+        "center_distance_b_m": 3072.5,
+        "center_distance_abs_diff_m": 0.0,
+        "overlap_m": 51.0,
+        "overlap_over_union": 1.0,
+        "overlap_over_shorter": 1.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.10713497523587279,
+        "action_time_loss_b_s": 0.10713497523587279,
+        "action_time_loss_similarity": 1.0,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 1.0,
+            "peak_difference_similarity": 1.0,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 1.0,
+            "peak_difference_similarity": 1.0,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 1.0,
+            "peak_difference_similarity": 1.0,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "mixed"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "b0609ed0460e0be04ee5",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:32:29.814523+00:00",
+      "selected_by": [
+        {
+          "lens": "similar_channels_farther_apart",
+          "rank": 6
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Fuji Speedway",
+        "session_a": 7,
+        "session_b": 39,
+        "episode_pk_a": 286,
+        "episode_pk_b": 1062,
+        "episode_id_a": 7,
+        "episode_id_b": 3,
+        "start_distance_a_m": 3708.0,
+        "end_distance_a_m": 3783.0,
+        "center_distance_a_m": 3745.5,
+        "start_distance_b_m": 762.0,
+        "end_distance_b_m": 825.0,
+        "center_distance_b_m": 793.5,
+        "center_distance_abs_diff_m": 2952.0,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.05730580085308645,
+        "action_time_loss_b_s": 0.04816192395703567,
+        "action_time_loss_similarity": 0.8404371501675244,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.19936507936507936,
+            "onset_offset_abs_diff_m": 10.0,
+            "end_offset_abs_diff_m": 16.0,
+            "mean_difference_similarity": 0.8962706998081517,
+            "peak_difference_similarity": 0.7262782231898443,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.30222222222222217,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 31.0,
+            "mean_difference_similarity": 0.2244494907058385,
+            "peak_difference_similarity": 0.9263262620157786,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "mixed"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "83048b5b813f5cf978a5",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:32:31.725867+00:00",
+      "selected_by": [
+        {
+          "lens": "impact_divergence",
+          "rank": 6
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Fuji Speedway",
+        "session_a": 7,
+        "session_b": 56,
+        "episode_pk_a": 280,
+        "episode_pk_b": 1353,
+        "episode_id_a": 1,
+        "episode_id_b": 10,
+        "start_distance_a_m": 733.0,
+        "end_distance_a_m": 826.0,
+        "center_distance_a_m": 779.5,
+        "start_distance_b_m": 3378.0,
+        "end_distance_b_m": 3394.0,
+        "center_distance_b_m": 3386.0,
+        "center_distance_abs_diff_m": 2606.5,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 0.5,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude"
+        ],
+        "shared_channels": [
+          "steering_magnitude"
+        ],
+        "channels_only_a": [
+          "throttle"
+        ],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.3462860529486669,
+        "action_time_loss_b_s": 0.0223133706001164,
+        "action_time_loss_similarity": 0.0644362382201518,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.3548387096774194,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 24.0,
+            "mean_difference_similarity": 0.7622496680231283,
+            "peak_difference_similarity": 0.18708558211341184,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "5bab671f973abfad629a",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:32:33.974096+00:00",
+      "selected_by": [
+        {
+          "lens": "deterministic_baseline",
+          "rank": 6
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Fuji Speedway",
+        "session_a": 8,
+        "session_b": 56,
+        "episode_pk_a": 363,
+        "episode_pk_b": 1343,
+        "episode_id_a": 5,
+        "episode_id_b": 8,
+        "start_distance_a_m": 2820.0,
+        "end_distance_a_m": 2853.0,
+        "center_distance_a_m": 2836.5,
+        "start_distance_b_m": 3573.0,
+        "end_distance_b_m": 3599.0,
+        "center_distance_b_m": 3586.0,
+        "center_distance_abs_diff_m": 749.5,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 0.0,
+        "channels_a": [
+          "steering_magnitude"
+        ],
+        "channels_b": [
+          "throttle"
+        ],
+        "shared_channels": [],
+        "channels_only_a": [
+          "steering_magnitude"
+        ],
+        "channels_only_b": [
+          "throttle"
+        ],
+        "action_time_loss_a_s": 0.08820001978969572,
+        "action_time_loss_b_s": 0.020721521616621885,
+        "action_time_loss_similarity": 0.23493783409607297,
+        "per_channel_metrics": {}
+      }
+    }
+  ]
+}

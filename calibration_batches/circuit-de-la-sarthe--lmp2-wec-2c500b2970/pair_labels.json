@@ -1,0 +1,1776 @@
+{
+  "metadata": {
+    "label_schema_version": "1.1",
+    "created_at_utc": "2026-08-24T00:32:50.707566+00:00",
+    "updated_at_utc": "2026-08-24T00:33:53.488141+00:00",
+    "source_queue_path": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\circuit-de-la-sarthe--lmp2-wec-2c500b2970\\pair_review_queue.json",
+    "source_queue_sha256": "71e19663ccda6775f540ee6beef7e704598ddef224422c14fcdce2cc8cd906f8",
+    "reviewer": "thresh",
+    "semantics": "Human calibration labels. SAME means same general location and driving-difference type, not proven identical causality."
+  },
+  "labels": [
+    {
+      "pair_id": "0a6d775cabf9be7411a5",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:32:54.598390+00:00",
+      "selected_by": [
+        {
+          "lens": "closest_centers",
+          "rank": 1
+        },
+        {
+          "lens": "highest_channel_similarity",
+          "rank": 1
+        },
+        {
+          "lens": "nearby_channel_disagreement",
+          "rank": 1
+        },
+        {
+          "lens": "highest_spatial_overlap",
+          "rank": 2
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Circuit de la Sarthe",
+        "session_a": 27,
+        "session_b": 28,
+        "episode_pk_a": 878,
+        "episode_pk_b": 893,
+        "episode_id_a": 3,
+        "episode_id_b": 1,
+        "start_distance_a_m": 1.0,
+        "end_distance_a_m": 79.0,
+        "center_distance_a_m": 40.0,
+        "start_distance_b_m": 0.0,
+        "end_distance_b_m": 80.0,
+        "center_distance_b_m": 40.0,
+        "center_distance_abs_diff_m": 0.0,
+        "overlap_m": 78.0,
+        "overlap_over_union": 0.975,
+        "overlap_over_shorter": 1.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 3.6938861030786647,
+        "action_time_loss_b_s": 21.65438038409435,
+        "action_time_loss_similarity": 0.17058378201354174,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.16730769230769227,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 14.0,
+            "mean_difference_similarity": 0.9025759113906618,
+            "peak_difference_similarity": 0.9961712173032515,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.0064102564102563875,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.997856599902896,
+            "peak_difference_similarity": 0.9960329621604334,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "ce0c1b95fc538aec5f75",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:32:57.031207+00:00",
+      "selected_by": [
+        {
+          "lens": "highest_spatial_overlap",
+          "rank": 1
+        },
+        {
+          "lens": "nearby_channel_disagreement",
+          "rank": 5
+        },
+        {
+          "lens": "closest_centers",
+          "rank": 6
+        },
+        {
+          "lens": "highest_channel_similarity",
+          "rank": 6
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Circuit de la Sarthe",
+        "session_a": 27,
+        "session_b": 28,
+        "episode_pk_a": 877,
+        "episode_pk_b": 896,
+        "episode_id_a": 2,
+        "episode_id_b": 4,
+        "start_distance_a_m": 3607.0,
+        "end_distance_a_m": 3986.0,
+        "center_distance_a_m": 3796.5,
+        "start_distance_b_m": 3600.0,
+        "end_distance_b_m": 3984.0,
+        "center_distance_b_m": 3792.0,
+        "center_distance_abs_diff_m": 4.5,
+        "overlap_m": 377.0,
+        "overlap_over_union": 0.9766839378238342,
+        "overlap_over_shorter": 0.9947229551451188,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 3.833420658105034,
+        "action_time_loss_b_s": 3.972430831263317,
+        "action_time_loss_similarity": 0.9650062696965639,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.07070415567282318,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.1452842203399848,
+            "peak_difference_similarity": 0.9845236089508096,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "mixed"
+          },
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.016744997801231287,
+            "onset_offset_abs_diff_m": 5.0,
+            "end_offset_abs_diff_m": 3.0,
+            "mean_difference_similarity": 0.9827547357570612,
+            "peak_difference_similarity": 0.9765786853660811,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.048214874670184704,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.5822738622519028,
+            "peak_difference_similarity": 1.0,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "mixed"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "b43655cb83529e124f80",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:33:00.022647+00:00",
+      "selected_by": [
+        {
+          "lens": "similar_channels_farther_apart",
+          "rank": 1
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Circuit de la Sarthe",
+        "session_a": 27,
+        "session_b": 28,
+        "episode_pk_a": 876,
+        "episode_pk_b": 895,
+        "episode_id_a": 1,
+        "episode_id_b": 3,
+        "start_distance_a_m": 12844.0,
+        "end_distance_a_m": 13226.0,
+        "center_distance_a_m": 13035.0,
+        "start_distance_b_m": 403.0,
+        "end_distance_b_m": 763.0,
+        "center_distance_b_m": 583.0,
+        "center_distance_abs_diff_m": 12452.0,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 4.2850403604781775,
+        "action_time_loss_b_s": 4.039345193621276,
+        "action_time_loss_similarity": 0.9426621113950293,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.07212041884816756,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.8896983262752349,
+            "peak_difference_similarity": 0.9770942742965635,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "mixed"
+          },
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.07085514834205942,
+            "onset_offset_abs_diff_m": 25.0,
+            "end_offset_abs_diff_m": 49.0,
+            "mean_difference_similarity": 0.3666151507210566,
+            "peak_difference_similarity": 0.6976065917280893,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "mixed"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.0444444444444444,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.2800239684806564,
+            "peak_difference_similarity": 1.0,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "mixed"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "44fdd413f8d60fe42265",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:33:04.822577+00:00",
+      "selected_by": [
+        {
+          "lens": "impact_divergence",
+          "rank": 1
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Circuit de la Sarthe",
+        "session_a": 26,
+        "session_b": 28,
+        "episode_pk_a": 875,
+        "episode_pk_b": 893,
+        "episode_id_a": 12,
+        "episode_id_b": 1,
+        "start_distance_a_m": 12139.0,
+        "end_distance_a_m": 12202.0,
+        "center_distance_a_m": 12170.5,
+        "start_distance_b_m": 0.0,
+        "end_distance_b_m": 80.0,
+        "center_distance_b_m": 40.0,
+        "center_distance_abs_diff_m": 12130.5,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 0.5,
+        "channels_a": [
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [
+          "steering_magnitude"
+        ],
+        "action_time_loss_a_s": 0.021467101903141383,
+        "action_time_loss_b_s": 21.65438038409435,
+        "action_time_loss_similarity": 0.0009913514735757332,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.25,
+            "onset_offset_abs_diff_m": 20.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.5667254571833643,
+            "peak_difference_similarity": 0.6031718239585692,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "b9bfaf4ec814cea2aa8d",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:33:06.910677+00:00",
+      "selected_by": [
+        {
+          "lens": "deterministic_baseline",
+          "rank": 1
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Circuit de la Sarthe",
+        "session_a": 27,
+        "session_b": 28,
+        "episode_pk_a": 880,
+        "episode_pk_b": 896,
+        "episode_id_a": 5,
+        "episode_id_b": 4,
+        "start_distance_a_m": 9314.0,
+        "end_distance_a_m": 9748.0,
+        "center_distance_a_m": 9531.0,
+        "start_distance_b_m": 3600.0,
+        "end_distance_b_m": 3984.0,
+        "center_distance_b_m": 3792.0,
+        "center_distance_abs_diff_m": 5739.0,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 3.162251916557466,
+        "action_time_loss_b_s": 3.972430831263317,
+        "action_time_loss_similarity": 0.7960495854755519,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.108366935483871,
+            "onset_offset_abs_diff_m": 61.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.15257178242144584,
+            "peak_difference_similarity": 0.8011419536288752,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "mixed"
+          },
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.10936299923195092,
+            "onset_offset_abs_diff_m": 78.0,
+            "end_offset_abs_diff_m": 33.0,
+            "mean_difference_similarity": 0.4974109293731639,
+            "peak_difference_similarity": 0.8846009158994179,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.0385584677419355,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 7.0,
+            "mean_difference_similarity": 0.0636087336364912,
+            "peak_difference_similarity": 1.0,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "mixed"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "0c03faf7ee53b3864d77",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:33:08.958838+00:00",
+      "selected_by": [
+        {
+          "lens": "closest_centers",
+          "rank": 2
+        },
+        {
+          "lens": "highest_channel_similarity",
+          "rank": 2
+        },
+        {
+          "lens": "nearby_channel_disagreement",
+          "rank": 2
+        },
+        {
+          "lens": "highest_spatial_overlap",
+          "rank": 5
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Circuit de la Sarthe",
+        "session_a": 27,
+        "session_b": 28,
+        "episode_pk_a": 879,
+        "episode_pk_b": 895,
+        "episode_id_a": 4,
+        "episode_id_b": 3,
+        "start_distance_a_m": 415.0,
+        "end_distance_a_m": 751.0,
+        "center_distance_a_m": 583.0,
+        "start_distance_b_m": 403.0,
+        "end_distance_b_m": 763.0,
+        "center_distance_b_m": 583.0,
+        "center_distance_abs_diff_m": 0.0,
+        "overlap_m": 336.0,
+        "overlap_over_union": 0.9333333333333333,
+        "overlap_over_shorter": 1.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 3.600093825001693,
+        "action_time_loss_b_s": 4.039345193621276,
+        "action_time_loss_similarity": 0.8912567885227471,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.027976190476190488,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.5509365715482839,
+            "peak_difference_similarity": 0.9548914917422452,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "mixed"
+          },
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.10059523809523807,
+            "onset_offset_abs_diff_m": 2.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.5723633825225862,
+            "peak_difference_similarity": 0.861795652997414,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "mixed"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.011706349206349165,
+            "onset_offset_abs_diff_m": 6.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.37211125798516964,
+            "peak_difference_similarity": 1.0,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "mixed"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "dcd9bbdec842d7911edb",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:33:10.414768+00:00",
+      "selected_by": [
+        {
+          "lens": "similar_channels_farther_apart",
+          "rank": 2
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Circuit de la Sarthe",
+        "session_a": 27,
+        "session_b": 28,
+        "episode_pk_a": 879,
+        "episode_pk_b": 894,
+        "episode_id_a": 4,
+        "episode_id_b": 2,
+        "start_distance_a_m": 415.0,
+        "end_distance_a_m": 751.0,
+        "center_distance_a_m": 583.0,
+        "start_distance_b_m": 12837.0,
+        "end_distance_b_m": 13232.0,
+        "center_distance_b_m": 13034.5,
+        "center_distance_abs_diff_m": 12451.5,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 3.600093825001693,
+        "action_time_loss_b_s": 4.685814110465913,
+        "action_time_loss_similarity": 0.768296338721754,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.0539858348402652,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 2.0,
+            "mean_difference_similarity": 0.4133384759850723,
+            "peak_difference_similarity": 0.8906335099781847,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "mixed"
+          },
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.1659960819770946,
+            "onset_offset_abs_diff_m": 11.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.9247283252450774,
+            "peak_difference_similarity": 0.6420064751816992,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "mixed"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.03273809523809523,
+            "onset_offset_abs_diff_m": 6.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.09510327979430079,
+            "peak_difference_similarity": 1.0,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "3b190c429c1032761fe0",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:33:12.510748+00:00",
+      "selected_by": [
+        {
+          "lens": "impact_divergence",
+          "rank": 2
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Circuit de la Sarthe",
+        "session_a": 26,
+        "session_b": 28,
+        "episode_pk_a": 874,
+        "episode_pk_b": 893,
+        "episode_id_a": 11,
+        "episode_id_b": 1,
+        "start_distance_a_m": 1445.0,
+        "end_distance_a_m": 1478.0,
+        "center_distance_a_m": 1461.5,
+        "start_distance_b_m": 0.0,
+        "end_distance_b_m": 80.0,
+        "center_distance_b_m": 40.0,
+        "center_distance_abs_diff_m": 1421.5,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 0.5,
+        "channels_a": [
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [
+          "steering_magnitude"
+        ],
+        "action_time_loss_a_s": 0.024430685032452715,
+        "action_time_loss_b_s": 21.65438038409435,
+        "action_time_loss_similarity": 0.0011282098401853894,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.25,
+            "onset_offset_abs_diff_m": 20.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.42645436373463,
+            "peak_difference_similarity": 0.542109083282396,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "f38f3f516091726a2342",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:33:13.646732+00:00",
+      "selected_by": [
+        {
+          "lens": "deterministic_baseline",
+          "rank": 2
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Circuit de la Sarthe",
+        "session_a": 26,
+        "session_b": 27,
+        "episode_pk_a": 871,
+        "episode_pk_b": 879,
+        "episode_id_a": 8,
+        "episode_id_b": 4,
+        "start_distance_a_m": 7750.0,
+        "end_distance_a_m": 7769.0,
+        "center_distance_a_m": 7759.5,
+        "start_distance_b_m": 415.0,
+        "end_distance_b_m": 751.0,
+        "center_distance_b_m": 583.0,
+        "center_distance_abs_diff_m": 7176.5,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 0.3333333333333333,
+        "channels_a": [
+          "steering_magnitude"
+        ],
+        "channels_b": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [
+          "brake",
+          "throttle"
+        ],
+        "action_time_loss_a_s": 0.04248268716979453,
+        "action_time_loss_b_s": 3.600093825001693,
+        "action_time_loss_similarity": 0.011800438887109991,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.46726190476190477,
+            "onset_offset_abs_diff_m": 71.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.6289216871517025,
+            "peak_difference_similarity": 0.8254337476672557,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "mixed"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "883a2150a0eaeb60b04b",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:33:15.806852+00:00",
+      "selected_by": [
+        {
+          "lens": "closest_centers",
+          "rank": 3
+        },
+        {
+          "lens": "highest_spatial_overlap",
+          "rank": 3
+        },
+        {
+          "lens": "highest_channel_similarity",
+          "rank": 3
+        },
+        {
+          "lens": "nearby_channel_disagreement",
+          "rank": 3
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Circuit de la Sarthe",
+        "session_a": 27,
+        "session_b": 28,
+        "episode_pk_a": 876,
+        "episode_pk_b": 894,
+        "episode_id_a": 1,
+        "episode_id_b": 2,
+        "start_distance_a_m": 12844.0,
+        "end_distance_a_m": 13226.0,
+        "center_distance_a_m": 13035.0,
+        "start_distance_b_m": 12837.0,
+        "end_distance_b_m": 13232.0,
+        "center_distance_b_m": 13034.5,
+        "center_distance_abs_diff_m": 0.5,
+        "overlap_m": 382.0,
+        "overlap_over_union": 0.9670886075949368,
+        "overlap_over_shorter": 1.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 4.2850403604781775,
+        "action_time_loss_b_s": 4.685814110465913,
+        "action_time_loss_similarity": 0.9144708388895337,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.009841606468288133,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 2.0,
+            "mean_difference_similarity": 0.8432599186860875,
+            "peak_difference_similarity": 0.9113421897901237,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "mixed"
+          },
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.005454304460202897,
+            "onset_offset_abs_diff_m": 16.0,
+            "end_offset_abs_diff_m": 49.0,
+            "mean_difference_similarity": 0.6926668546903603,
+            "peak_difference_similarity": 0.7931094632251348,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "mixed"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.9126987987603763,
+            "peak_difference_similarity": 1.0,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "aa56d0476e5bff463939",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:33:17.248195+00:00",
+      "selected_by": [
+        {
+          "lens": "similar_channels_farther_apart",
+          "rank": 3
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Circuit de la Sarthe",
+        "session_a": 27,
+        "session_b": 28,
+        "episode_pk_a": 889,
+        "episode_pk_b": 893,
+        "episode_id_a": 14,
+        "episode_id_b": 1,
+        "start_distance_a_m": 11889.0,
+        "end_distance_a_m": 12210.0,
+        "center_distance_a_m": 12049.5,
+        "start_distance_b_m": 0.0,
+        "end_distance_b_m": 80.0,
+        "center_distance_b_m": 40.0,
+        "center_distance_abs_diff_m": 12009.5,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.19956399854035567,
+        "action_time_loss_b_s": 21.65438038409435,
+        "action_time_loss_similarity": 0.009215872031459285,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.15428348909657325,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 109.0,
+            "mean_difference_similarity": 0.19837973642541745,
+            "peak_difference_similarity": 0.3758278691757652,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.21573208722741433,
+            "onset_offset_abs_diff_m": 20.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.24288075725972902,
+            "peak_difference_similarity": 0.9471142598615921,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "4f7502283aad8f97b685",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:33:18.920418+00:00",
+      "selected_by": [
+        {
+          "lens": "impact_divergence",
+          "rank": 3
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Circuit de la Sarthe",
+        "session_a": 26,
+        "session_b": 28,
+        "episode_pk_a": 873,
+        "episode_pk_b": 893,
+        "episode_id_a": 10,
+        "episode_id_b": 1,
+        "start_distance_a_m": 11395.0,
+        "end_distance_a_m": 11490.0,
+        "center_distance_a_m": 11442.5,
+        "start_distance_b_m": 0.0,
+        "end_distance_b_m": 80.0,
+        "center_distance_b_m": 40.0,
+        "center_distance_abs_diff_m": 11402.5,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 0.3333333333333333,
+        "channels_a": [
+          "brake",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [
+          "brake"
+        ],
+        "channels_only_b": [
+          "steering_magnitude"
+        ],
+        "action_time_loss_a_s": 0.025191945915707947,
+        "action_time_loss_b_s": 21.65438038409435,
+        "action_time_loss_similarity": 0.0011633648928699905,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.007894736842105288,
+            "onset_offset_abs_diff_m": 3.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.3287714319512718,
+            "peak_difference_similarity": 0.8130524018753977,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "a88d63de168c06886123",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:33:19.974941+00:00",
+      "selected_by": [
+        {
+          "lens": "deterministic_baseline",
+          "rank": 3
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Circuit de la Sarthe",
+        "session_a": 26,
+        "session_b": 27,
+        "episode_pk_a": 871,
+        "episode_pk_b": 891,
+        "episode_id_a": 8,
+        "episode_id_b": 16,
+        "start_distance_a_m": 7750.0,
+        "end_distance_a_m": 7769.0,
+        "center_distance_a_m": 7759.5,
+        "start_distance_b_m": 189.0,
+        "end_distance_b_m": 211.0,
+        "center_distance_b_m": 200.0,
+        "center_distance_abs_diff_m": 7559.5,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "steering_magnitude"
+        ],
+        "channels_b": [
+          "steering_magnitude"
+        ],
+        "shared_channels": [
+          "steering_magnitude"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.04248268716979453,
+        "action_time_loss_b_s": 0.11279800357390002,
+        "action_time_loss_similarity": 0.3766262329453539,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.3423782029279321,
+            "peak_difference_similarity": 0.1476582088452208,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "cf437d9b6e676cc09e52",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:33:21.679164+00:00",
+      "selected_by": [
+        {
+          "lens": "closest_centers",
+          "rank": 4
+        },
+        {
+          "lens": "highest_channel_similarity",
+          "rank": 4
+        },
+        {
+          "lens": "nearby_channel_disagreement",
+          "rank": 4
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Circuit de la Sarthe",
+        "session_a": 27,
+        "session_b": 28,
+        "episode_pk_a": 890,
+        "episode_pk_b": 907,
+        "episode_id_a": 15,
+        "episode_id_b": 15,
+        "start_distance_a_m": 1234.0,
+        "end_distance_a_m": 1290.0,
+        "center_distance_a_m": 1262.0,
+        "start_distance_b_m": 1233.0,
+        "end_distance_b_m": 1283.0,
+        "center_distance_b_m": 1258.0,
+        "center_distance_abs_diff_m": 4.0,
+        "overlap_m": 49.0,
+        "overlap_over_union": 0.8596491228070176,
+        "overlap_over_shorter": 0.98,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "steering_magnitude"
+        ],
+        "channels_b": [
+          "steering_magnitude"
+        ],
+        "shared_channels": [
+          "steering_magnitude"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.12827280780684802,
+        "action_time_loss_b_s": 0.17444209443258885,
+        "action_time_loss_similarity": 0.7353317341441207,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.8373119351762848,
+            "peak_difference_similarity": 0.74897115584766,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "bf9866ee8e84c41beb9a",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:33:26.207115+00:00",
+      "selected_by": [
+        {
+          "lens": "highest_spatial_overlap",
+          "rank": 4
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Circuit de la Sarthe",
+        "session_a": 27,
+        "session_b": 28,
+        "episode_pk_a": 881,
+        "episode_pk_b": 898,
+        "episode_id_a": 6,
+        "episode_id_b": 6,
+        "start_distance_a_m": 5570.0,
+        "end_distance_a_m": 5829.0,
+        "center_distance_a_m": 5699.5,
+        "start_distance_b_m": 5575.0,
+        "end_distance_b_m": 5837.0,
+        "center_distance_b_m": 5706.0,
+        "center_distance_abs_diff_m": 6.5,
+        "overlap_m": 254.0,
+        "overlap_over_union": 0.951310861423221,
+        "overlap_over_shorter": 0.9806949806949807,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 2.871010399974054,
+        "action_time_loss_b_s": 3.213036388746019,
+        "action_time_loss_similarity": 0.8935505399285407,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.0175513572460137,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 5.0,
+            "mean_difference_similarity": 0.9468471584001675,
+            "peak_difference_similarity": 0.967929452901781,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.0038315305490878027,
+            "onset_offset_abs_diff_m": 8.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.9493640833607705,
+            "peak_difference_similarity": 0.7795085182990901,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.022414453712163662,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 6.0,
+            "mean_difference_similarity": 0.9621772492366104,
+            "peak_difference_similarity": 1.0,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "dd8a89d51cf84928ce20",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:33:28.952308+00:00",
+      "selected_by": [
+        {
+          "lens": "similar_channels_farther_apart",
+          "rank": 4
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Circuit de la Sarthe",
+        "session_a": 27,
+        "session_b": 28,
+        "episode_pk_a": 892,
+        "episode_pk_b": 894,
+        "episode_id_a": 17,
+        "episode_id_b": 2,
+        "start_distance_a_m": 1328.0,
+        "end_distance_a_m": 1381.0,
+        "center_distance_a_m": 1354.5,
+        "start_distance_b_m": 12837.0,
+        "end_distance_b_m": 13232.0,
+        "center_distance_b_m": 13034.5,
+        "center_distance_abs_diff_m": 11680.0,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.054422580008051114,
+        "action_time_loss_b_s": 4.685814110465913,
+        "action_time_loss_similarity": 0.01161432756935376,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.047528063052304725,
+            "onset_offset_abs_diff_m": 26.0,
+            "end_offset_abs_diff_m": 2.0,
+            "mean_difference_similarity": 0.2004797294333268,
+            "peak_difference_similarity": 0.9542325490551279,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "mixed"
+          },
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.39684738476235965,
+            "onset_offset_abs_diff_m": 39.0,
+            "end_offset_abs_diff_m": 16.0,
+            "mean_difference_similarity": 0.9853884865430887,
+            "peak_difference_similarity": 0.27527732990492926,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "mixed"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.4211938531911216,
+            "peak_difference_similarity": 0.9995919799110291,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "af41313aa843b43a2bb6",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:33:32.215972+00:00",
+      "selected_by": [
+        {
+          "lens": "impact_divergence",
+          "rank": 4
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Circuit de la Sarthe",
+        "session_a": 26,
+        "session_b": 28,
+        "episode_pk_a": 863,
+        "episode_pk_b": 893,
+        "episode_id_a": 7,
+        "episode_id_b": 1,
+        "start_distance_a_m": 7549.0,
+        "end_distance_a_m": 7610.0,
+        "center_distance_a_m": 7579.5,
+        "start_distance_b_m": 0.0,
+        "end_distance_b_m": 80.0,
+        "center_distance_b_m": 40.0,
+        "center_distance_abs_diff_m": 7539.5,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 0.3333333333333333,
+        "channels_a": [
+          "brake",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [
+          "brake"
+        ],
+        "channels_only_b": [
+          "steering_magnitude"
+        ],
+        "action_time_loss_a_s": 0.02568470359283026,
+        "action_time_loss_b_s": 21.65438038409435,
+        "action_time_loss_similarity": 0.0011861204586438446,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.48770491803278687,
+            "onset_offset_abs_diff_m": 15.0,
+            "end_offset_abs_diff_m": 40.0,
+            "mean_difference_similarity": 0.27188706765970794,
+            "peak_difference_similarity": 0.3648516164898761,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "e182cc6ed4d2836979f1",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:33:34.695515+00:00",
+      "selected_by": [
+        {
+          "lens": "deterministic_baseline",
+          "rank": 4
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Circuit de la Sarthe",
+        "session_a": 26,
+        "session_b": 27,
+        "episode_pk_a": 861,
+        "episode_pk_b": 881,
+        "episode_id_a": 5,
+        "episode_id_b": 6,
+        "start_distance_a_m": 7610.0,
+        "end_distance_a_m": 7638.0,
+        "center_distance_a_m": 7624.0,
+        "start_distance_b_m": 5570.0,
+        "end_distance_b_m": 5829.0,
+        "center_distance_b_m": 5699.5,
+        "center_distance_abs_diff_m": 1924.5,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 0.3333333333333333,
+        "channels_a": [
+          "brake"
+        ],
+        "channels_b": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "brake"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "action_time_loss_a_s": 0.04162366663638295,
+        "action_time_loss_b_s": 2.871010399974054,
+        "action_time_loss_similarity": 0.014497915659504094,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.5328185328185329,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 81.0,
+            "mean_difference_similarity": 0.33069167821357554,
+            "peak_difference_similarity": 0.21601701314524877,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "3daab71870703bbd878d",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:33:38.184131+00:00",
+      "selected_by": [
+        {
+          "lens": "closest_centers",
+          "rank": 5
+        },
+        {
+          "lens": "highest_channel_similarity",
+          "rank": 5
+        },
+        {
+          "lens": "nearby_channel_disagreement",
+          "rank": 6
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Circuit de la Sarthe",
+        "session_a": 27,
+        "session_b": 28,
+        "episode_pk_a": 886,
+        "episode_pk_b": 904,
+        "episode_id_a": 11,
+        "episode_id_b": 12,
+        "start_distance_a_m": 7550.0,
+        "end_distance_a_m": 7636.0,
+        "center_distance_a_m": 7593.0,
+        "start_distance_b_m": 7540.0,
+        "end_distance_b_m": 7637.0,
+        "center_distance_b_m": 7588.5,
+        "center_distance_abs_diff_m": 4.5,
+        "overlap_m": 86.0,
+        "overlap_over_union": 0.8865979381443299,
+        "overlap_over_shorter": 1.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "brake",
+          "throttle"
+        ],
+        "channels_b": [
+          "brake",
+          "throttle"
+        ],
+        "shared_channels": [
+          "brake",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.3563534643922708,
+        "action_time_loss_b_s": 0.46982094658319795,
+        "action_time_loss_similarity": 0.7584878175055274,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.05154639175257736,
+            "onset_offset_abs_diff_m": 5.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.9449620144612547,
+            "peak_difference_similarity": 0.9818718886011899,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.0,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.8560585470285361,
+            "peak_difference_similarity": 1.0,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "1b239e40a8325cd8aad8",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:33:40.232228+00:00",
+      "selected_by": [
+        {
+          "lens": "similar_channels_farther_apart",
+          "rank": 5
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Circuit de la Sarthe",
+        "session_a": 26,
+        "session_b": 27,
+        "episode_pk_a": 870,
+        "episode_pk_b": 878,
+        "episode_id_a": 7,
+        "episode_id_b": 3,
+        "start_distance_a_m": 11503.0,
+        "end_distance_a_m": 11640.0,
+        "center_distance_a_m": 11571.5,
+        "start_distance_b_m": 1.0,
+        "end_distance_b_m": 79.0,
+        "center_distance_b_m": 40.0,
+        "center_distance_abs_diff_m": 11531.5,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.050657511597023586,
+        "action_time_loss_b_s": 3.6938861030786647,
+        "action_time_loss_similarity": 0.013713880228955394,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.38573834924199885,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 10.0,
+            "mean_difference_similarity": 0.03643238517336608,
+            "peak_difference_similarity": 0.15419921355969368,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.07392850458543887,
+            "onset_offset_abs_diff_m": 3.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.3877310054677511,
+            "peak_difference_similarity": 0.6290149242951326,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "cbace492479afb54ca1a",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:33:41.727474+00:00",
+      "selected_by": [
+        {
+          "lens": "impact_divergence",
+          "rank": 5
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Circuit de la Sarthe",
+        "session_a": 26,
+        "session_b": 28,
+        "episode_pk_a": 872,
+        "episode_pk_b": 893,
+        "episode_id_a": 9,
+        "episode_id_b": 1,
+        "start_distance_a_m": 13303.0,
+        "end_distance_a_m": 13329.0,
+        "center_distance_a_m": 13316.0,
+        "start_distance_b_m": 0.0,
+        "end_distance_b_m": 80.0,
+        "center_distance_b_m": 40.0,
+        "center_distance_abs_diff_m": 13276.0,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 0.5,
+        "channels_a": [
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [
+          "steering_magnitude"
+        ],
+        "action_time_loss_a_s": 0.026325708607004117,
+        "action_time_loss_b_s": 21.65438038409435,
+        "action_time_loss_similarity": 0.0012157220913298894,
+        "per_channel_metrics": {
+          "throttle": {
+            "coverage_abs_diff": 0.25,
+            "onset_offset_abs_diff_m": 20.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.4504640508151778,
+            "peak_difference_similarity": 0.6020983296166214,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "467b85b0427aceb4dd2b",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:33:45.335848+00:00",
+      "selected_by": [
+        {
+          "lens": "deterministic_baseline",
+          "rank": 5
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Circuit de la Sarthe",
+        "session_a": 26,
+        "session_b": 28,
+        "episode_pk_a": 865,
+        "episode_pk_b": 901,
+        "episode_id_a": 2,
+        "episode_id_b": 9,
+        "start_distance_a_m": 6045.0,
+        "end_distance_a_m": 6146.0,
+        "center_distance_a_m": 6095.5,
+        "start_distance_b_m": 5853.0,
+        "end_distance_b_m": 5959.0,
+        "center_distance_b_m": 5906.0,
+        "center_distance_abs_diff_m": 189.5,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.14657462062162097,
+        "action_time_loss_b_s": 0.7060630655349058,
+        "action_time_loss_similarity": 0.20759423311652422,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.7637773211283393,
+            "onset_offset_abs_diff_m": 3.0,
+            "end_offset_abs_diff_m": 80.0,
+            "mean_difference_similarity": 0.2072646830181605,
+            "peak_difference_similarity": 0.23058080729926622,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.05127965626751363,
+            "onset_offset_abs_diff_m": 9.0,
+            "end_offset_abs_diff_m": 17.0,
+            "mean_difference_similarity": 0.3257521575434498,
+            "peak_difference_similarity": 0.894452862846623,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.8132822716233887,
+            "onset_offset_abs_diff_m": 82.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.27911984842608845,
+            "peak_difference_similarity": 0.4188621890302871,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "a402d3972c9ac3661d09",
+      "human_label": "SAME",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:33:51.695732+00:00",
+      "selected_by": [
+        {
+          "lens": "highest_spatial_overlap",
+          "rank": 6
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Circuit de la Sarthe",
+        "session_a": 27,
+        "session_b": 28,
+        "episode_pk_a": 882,
+        "episode_pk_b": 900,
+        "episode_id_a": 7,
+        "episode_id_b": 8,
+        "start_distance_a_m": 7286.0,
+        "end_distance_a_m": 7460.0,
+        "center_distance_a_m": 7373.0,
+        "start_distance_b_m": 7273.0,
+        "end_distance_b_m": 7461.0,
+        "center_distance_b_m": 7367.0,
+        "center_distance_abs_diff_m": 6.0,
+        "overlap_m": 174.0,
+        "overlap_over_union": 0.925531914893617,
+        "overlap_over_shorter": 1.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "brake",
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 2.609520679393512,
+        "action_time_loss_b_s": 2.8770948737171125,
+        "action_time_loss_similarity": 0.906998480735568,
+        "per_channel_metrics": {
+          "brake": {
+            "coverage_abs_diff": 0.0007948153582783002,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 5.0,
+            "mean_difference_similarity": 0.9742330879581653,
+            "peak_difference_similarity": 0.8908662793293647,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.004279775006113928,
+            "onset_offset_abs_diff_m": 7.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.7807137255429809,
+            "peak_difference_similarity": 0.8408631621026195,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.014856933235509961,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 4.0,
+            "mean_difference_similarity": 0.9985472591790047,
+            "peak_difference_similarity": 1.0,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    },
+    {
+      "pair_id": "2134940832a7d19c0b88",
+      "human_label": "DIFFERENT",
+      "review_notes": "",
+      "reviewed_at_utc": "2026-08-24T00:33:53.488100+00:00",
+      "selected_by": [
+        {
+          "lens": "similar_channels_farther_apart",
+          "rank": 6
+        }
+      ],
+      "feature_snapshot": {
+        "track": "Circuit de la Sarthe",
+        "session_a": 26,
+        "session_b": 28,
+        "episode_pk_a": 870,
+        "episode_pk_b": 893,
+        "episode_id_a": 7,
+        "episode_id_b": 1,
+        "start_distance_a_m": 11503.0,
+        "end_distance_a_m": 11640.0,
+        "center_distance_a_m": 11571.5,
+        "start_distance_b_m": 0.0,
+        "end_distance_b_m": 80.0,
+        "center_distance_b_m": 40.0,
+        "center_distance_abs_diff_m": 11531.5,
+        "overlap_m": 0.0,
+        "overlap_over_union": 0.0,
+        "overlap_over_shorter": 0.0,
+        "channel_jaccard": 1.0,
+        "channels_a": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_b": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "shared_channels": [
+          "steering_magnitude",
+          "throttle"
+        ],
+        "channels_only_a": [],
+        "channels_only_b": [],
+        "action_time_loss_a_s": 0.050657511597023586,
+        "action_time_loss_b_s": 21.65438038409435,
+        "action_time_loss_similarity": 0.0023393655555359466,
+        "per_channel_metrics": {
+          "steering_magnitude": {
+            "coverage_abs_diff": 0.21843065693430658,
+            "onset_offset_abs_diff_m": 0.0,
+            "end_offset_abs_diff_m": 24.0,
+            "mean_difference_similarity": 0.03288299325198653,
+            "peak_difference_similarity": 0.15479187802386868,
+            "direction_consistency_a": "mixed",
+            "direction_consistency_b": "consistent"
+          },
+          "throttle": {
+            "coverage_abs_diff": 0.06751824817518248,
+            "onset_offset_abs_diff_m": 3.0,
+            "end_offset_abs_diff_m": 0.0,
+            "mean_difference_similarity": 0.38856385326857806,
+            "peak_difference_similarity": 0.6315201887804751,
+            "direction_consistency_a": "consistent",
+            "direction_consistency_b": "consistent"
+          }
+        }
+      }
+    }
+  ]
+}

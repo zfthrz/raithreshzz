@@ -42,6 +42,12 @@ Validated baseline:
   (SAME 11 / DIFFERENT 10 / AMBIGUOUS 3); calibration dataset ready with
   evaluation split (9 calib + 1 eval) — first non-Spa context with
   `evaluation_readiness: PASS`.
+- H2 matcher v0.3 per-context calibration (2026-08-23): `episode_pair_matcher.py`
+  now resolves thresholds by exact context (`CALIBRATIONS` registry). Spa keeps
+  v0.3 behavior; Imola LMP2_ELMS registered as
+  `CALIBRATED_PROVISIONAL_LOW_EVIDENCE` (24 labels, validated 0 contradictions);
+  uncalibrated contexts fail closed to AMBIGUOUS. Orchestrator BATCH_STATUS now
+  reports the resolved matcher status per context.
 
 ### analyze_telemetry
 Current: `3.8`

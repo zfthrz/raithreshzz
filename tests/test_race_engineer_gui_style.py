@@ -7,6 +7,7 @@ from race_engineer_gui import (
     RaceEngineerApp,
     calibration_status_color,
     calibration_status_tag,
+    calibration_status_tooltip,
     format_comparison_columns,
     session_status_color,
     session_status_tooltip,
@@ -191,6 +192,12 @@ def test_calibration_status_colors_and_tags():
     assert calibration_status_tag("CALIBRATED_PROVISIONAL_LOW_EVIDENCE") == "PROVISIONAL"
     assert calibration_status_tag("CALIBRATED_PROVISIONAL_SINGLE_CONTEXT") == "PROVISIONAL"
     assert calibration_status_tag("NO_CALIBRATION_FOR_CONTEXT") == "NO_CALIBRATION"
-    assert calibration_status_tag("BLOCKED_BY_REAL_DATA") == "BLOCKED"
+    assert calibration_status_tag("BLOCKED_BY_REAL_DATA") == "LEGACY"
     assert calibration_status_color("CALIBRATED_PROVISIONAL_LOW_EVIDENCE") == "#f0c674"
     assert calibration_status_color("NO_CALIBRATION_FOR_CONTEXT") == "#9aa5ad"
+    assert calibration_status_color("BLOCKED_BY_REAL_DATA") == "#9aa5ad"
+    assert "provisional" in calibration_status_tooltip(
+        "CALIBRATED_PROVISIONAL_LOW_EVIDENCE"
+    ).lower()
+    assert "labelar" in calibration_status_tooltip("NO_CALIBRATION_FOR_CONTEXT")
+    assert "legacy" in calibration_status_tooltip("BLOCKED_BY_REAL_DATA").lower()

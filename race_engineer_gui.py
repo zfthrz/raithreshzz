@@ -96,7 +96,24 @@ CALIBRATION_STATUS_COLORS = {
     "CALIBRATED": "#67e5d5",
     "PROVISIONAL": "#f0c674",
     "NO_CALIBRATION": "#9aa5ad",
+    "LEGACY": "#9aa5ad",
     "BLOCKED": "#ff7b72",
+}
+CALIBRATION_STATUS_TOOLTIPS = {
+    "CALIBRATED": "Calibrado con labels humanos para este contexto.",
+    "PROVISIONAL": (
+        "Calibración provisional con labels humanos; requiere más datos "
+        "independientes para evaluar."
+    ),
+    "NO_CALIBRATION": (
+        "Sin thresholds calibrados para este contexto; labelar el batch "
+        "para calibrar."
+    ),
+    "LEGACY": (
+        "Batch de un orquestador anterior (status legacy); el matcher actual "
+        "se resuelve por contexto."
+    ),
+    "BLOCKED": "Estado legacy o desconocido; revisá el batch de calibración.",
 }
 SESSION_STATUS_SUMMARY = {
     "DEBRIEF_READY": "Debrief listo",
@@ -196,11 +213,17 @@ def calibration_status_tag(status: str) -> str:
         return "CALIBRATED"
     if status == "NO_CALIBRATION_FOR_CONTEXT":
         return "NO_CALIBRATION"
+    if status == "BLOCKED_BY_REAL_DATA":
+        return "LEGACY"
     return "BLOCKED"
 
 
 def calibration_status_color(status: str) -> str:
     return CALIBRATION_STATUS_COLORS[calibration_status_tag(status)]
+
+
+def calibration_status_tooltip(status: str) -> str:
+    return CALIBRATION_STATUS_TOOLTIPS[calibration_status_tag(status)]
 
 
 def format_comparison_columns(view: dict) -> tuple[str, str, str, str]:
@@ -855,9 +878,12 @@ class RaceEngineerApp:
         tree.configure(yscrollcommand=scrollbar.set)
         scrollbar.pack(side="right", fill="y")
         tree.pack(fill="both", expand=True)
+        tree.bind("<Motion>", self._on_calibration_tree_motion)
+        tree.bind("<Leave>", self._hide_row_tooltip)
 
         summary = load_calibration_summary()
         rows = summary["rows"]
+        self.calibration_rows = rows
         self.calibration_summary_var.set(
             f"{summary['calibrated_contexts']} contextos calibrados · "
             f"{summary['ready_datasets']} datasets listos · "
@@ -891,7 +917,39 @@ class RaceEngineerApp:
                 ),
             )
         self.calibration_tree = tree
+
+        legend = self.ttk.Frame(frame, style="Panel.TFrame")
+        legend.pack(fill="x", pady=(6, 0))
+        for label, color in (
+            ("Calibrado", CALIBRATION_STATUS_COLORS["CALIBRATED"]),
+            ("Provisional", CALIBRATION_STATUS_COLORS["PROVISIONAL"]),
+            ("Sin calibración", CALIBRATION_STATUS_COLORS["NO_CALIBRATION"]),
+            ("Legacy", CALIBRATION_STATUS_COLORS["LEGACY"]),
+            ("Bloqueado", CALIBRATION_STATUS_COLORS["BLOCKED"]),
+        ):
+            item = self.ttk.Label(
+                legend,
+                text=f"■ {label}",
+                style="Muted.TLabel",
+            )
+            item.configure(foreground=color)
+            item.pack(side="left", padx=(0, 14))
         return frame
+
+    def _on_calibration_tree_motion(self, event):
+        iid = self.calibration_tree.identify_row(event.y)
+        if not iid:
+            self._hide_row_tooltip()
+            return
+        try:
+            row = self.calibration_rows[int(iid)]
+        except (ValueError, IndexError):
+            return
+        self._show_row_tooltip(
+            calibration_status_tooltip(row["matcher_status"]),
+            event.x_root,
+            event.y_root,
+        )
 
     def _readonly_pane(self, parent, header, *, side):
         pane = self.ttk.Frame(parent, style="Panel.TFrame")

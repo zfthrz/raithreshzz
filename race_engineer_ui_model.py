@@ -142,6 +142,25 @@ def load_calibration_summary(
             eval_step = _dict(steps.get("evaluation_readiness"))
             dataset = _dict(steps.get("calibration_dataset"))
             matcher = _dict(payload.get("matcher"))
+            matcher_status = str(matcher.get("status") or "NO_MATCHER_STATUS")
+            legacy_refreshed = False
+            if matcher_status == "BLOCKED_BY_REAL_DATA":
+                # BATCH_STATUS legacy previo al registro por contexto: el registro
+                # del matcher es la fuente de verdad si ya hay calibración.
+                try:
+                    from episode_pair_matcher import CALIBRATIONS
+                except Exception:
+                    CALIBRATIONS = {}
+                registry_status = CALIBRATIONS.get(
+                    (
+                        str(payload.get("track") or ""),
+                        str(payload.get("track_layout") or ""),
+                        str(payload.get("vehicle_variant") or ""),
+                    )
+                )
+                if registry_status is not None:
+                    matcher_status = str(registry_status.get("status") or matcher_status)
+                    legacy_refreshed = True
             rows.append(
                 {
                     "track": str(payload.get("track") or "—"),
@@ -156,15 +175,30 @@ def load_calibration_summary(
                     "evaluation_pairs": _integer(eval_step.get("evaluation_pairs"))
                     or 0,
                     "dataset_ready": dataset.get("calibration_ready") is True,
-                    "matcher_status": str(
-                        matcher.get("status") or "NO_MATCHER_STATUS"
-                    ),
+                    "matcher_status": matcher_status,
+                    "legacy_status_refreshed": legacy_refreshed,
                     "batch_id": str(
                         payload.get("batch_id") or status_path.parent.name
                     ),
                 }
             )
-    rows.sort(key=lambda row: (row["track"], row["vehicle_variant"]))
+    # Por contexto, conservar el batch con más sesiones (el que supersede).
+    by_context: dict[tuple[str, str, str], dict[str, Any]] = {}
+    for row in rows:
+        key = (row["track"], row["track_layout"], row["vehicle_variant"])
+        current = by_context.get(key)
+        if current is None or (
+            row["sessions"],
+            row["batch_id"],
+        ) > (
+            current["sessions"],
+            current["batch_id"],
+        ):
+            by_context[key] = row
+    rows = sorted(
+        by_context.values(),
+        key=lambda row: (row["track"], row["vehicle_variant"]),
+    )
     calibrated = sum(
         1 for row in rows if "CALIBRATED" in row["matcher_status"]
     )

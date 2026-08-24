@@ -488,6 +488,68 @@ def test_calibration_summary_empty_directory(tmp_path: Path):
     assert summary["ready_datasets"] == 0
 
 
+def test_calibration_summary_refreshes_legacy_matcher_status(tmp_path: Path):
+    batch = tmp_path / "spa" / "BATCH_STATUS.json"
+    batch.parent.mkdir(parents=True)
+    batch.write_text(
+        json.dumps(
+            {
+                "track": "Circuit de Spa-Francorchamps",
+                "track_layout": "Circuit de Spa-Francorchamps",
+                "vehicle_variant": "LMP2_ELMS",
+                "batch_id": "034f",
+                "steps": {
+                    "vehicle_context_selection": {"session_count": 9},
+                    "human_labels": {"labeled_pairs": 24, "queue_pairs": 24},
+                    "evaluation_readiness": {
+                        "status": "PASS",
+                        "evaluation_pairs": 1,
+                    },
+                    "calibration_dataset": {"calibration_ready": True},
+                },
+                "matcher": {"status": "BLOCKED_BY_REAL_DATA"},
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    summary = load_calibration_summary(base_dir=tmp_path)
+
+    row = summary["rows"][0]
+    assert row["matcher_status"] == "CALIBRATED_PROVISIONAL_SINGLE_CONTEXT"
+    assert row["legacy_status_refreshed"] is True
+    assert summary["calibrated_contexts"] == 1
+
+
+def test_calibration_summary_dedupes_by_context_keeping_latest(tmp_path: Path):
+    for name, sessions in (("old", 4), ("new", 6)):
+        batch = tmp_path / name / "BATCH_STATUS.json"
+        batch.parent.mkdir(parents=True)
+        batch.write_text(
+            json.dumps(
+                {
+                    "track": "Fuji Speedway",
+                    "track_layout": "Fuji Speedway",
+                    "vehicle_variant": "LMP2_ELMS",
+                    "batch_id": name,
+                    "steps": {
+                        "vehicle_context_selection": {"session_count": sessions},
+                        "human_labels": {"labeled_pairs": 0, "queue_pairs": 24},
+                        "evaluation_readiness": {"status": "NO_EVALUATION"},
+                    },
+                    "matcher": {"status": "NO_CALIBRATION_FOR_CONTEXT"},
+                }
+            ),
+            encoding="utf-8",
+        )
+
+    summary = load_calibration_summary(base_dir=tmp_path)
+
+    assert len(summary["rows"]) == 1
+    assert summary["rows"][0]["sessions"] == 6
+    assert summary["rows"][0]["batch_id"] == "new"
+
+
 def test_gui_entry_points_and_documentation_are_present():
     root = Path(__file__).resolve().parents[1]
     assert (root / "RaceEngineer.pyw").is_file()

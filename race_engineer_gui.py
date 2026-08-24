@@ -1896,8 +1896,9 @@ class RaceEngineerApp:
     def _schedule_track_playback(self):
         if not self.track_playback_active:
             return
+        interval_ms = max(16, int(round(1000.0 / self.track_resolution_hz)))
         self.track_playback_after_id = self.root.after(
-            100,
+            interval_ms,
             self._tick_track_playback,
         )
 
@@ -1909,8 +1910,7 @@ class RaceEngineerApp:
         if data is None or not data.points:
             self._stop_track_playback()
             return
-        step = max(1, int(round(self.track_resolution_hz / 10.0)))
-        index = (self.selected_track_point_index or 0) + step
+        index = (self.selected_track_point_index or 0) + 1
         if index >= len(data.points):
             self._stop_track_playback()
             return

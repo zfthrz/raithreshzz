@@ -8,7 +8,9 @@ GUI v1.17 mejora la **resolución de la telemetría**:
   detalle al hacer zoom).
 - Selector `Resolución:` en la fila de playback: `20 Hz` (default), `10 Hz` o
   `50 Hz`. Cambiarlo reconstruye la vuelta con la nueva grilla.
-- El playback ajusta su paso según la resolución para mantener velocidad 1×.
+- El playback avanza 1 índice por tick con intervalo `1000/Hz` (20 Hz → 50 ms,
+  50 Hz → 20 ms): el punto se mueve de forma continua según la resolución real,
+  sin saltos multi-índice.
 
 ## Autoridad
 

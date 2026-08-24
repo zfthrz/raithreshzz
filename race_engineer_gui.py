@@ -760,10 +760,10 @@ class RaceEngineerApp:
 
         self.notebook = ttk.Notebook(right)
         self.notebook.pack(fill="both", expand=True)
-        summary_notebook = self._section_tab(self.notebook, "Resumen")
-        self.debrief_text = self._text_tab(summary_notebook, "Debrief")
-        self.plan_text = self._text_tab(summary_notebook, "Próxima tanda")
-        self.laps_text = self._text_tab(summary_notebook, "Vueltas")
+        self.summary_notebook = self._section_tab(self.notebook, "Resumen")
+        self.debrief_text = self._text_tab(self.summary_notebook, "Debrief")
+        self.plan_text = self._text_tab(self.summary_notebook, "Próxima tanda")
+        self.laps_text = self._text_tab(self.summary_notebook, "Vueltas")
 
         self.track_map_canvas = self._track_map_tab(
             self.notebook,
@@ -777,10 +777,10 @@ class RaceEngineerApp:
         )
         self._comparison_tab(history_notebook)
 
-        diagnostics_notebook = self._section_tab(self.notebook, "Diagnóstico")
-        self.pipeline_text = self._text_tab(diagnostics_notebook, "Pipeline")
-        self.execution_text = self._text_tab(diagnostics_notebook, "Ejecución")
-        self._calibration_tab(diagnostics_notebook)
+        self.diagnostics_notebook = self._section_tab(self.notebook, "Diagnóstico")
+        self.pipeline_text = self._text_tab(self.diagnostics_notebook, "Pipeline")
+        self.execution_text = self._text_tab(self.diagnostics_notebook, "Ejecución")
+        self._calibration_tab(self.diagnostics_notebook)
 
         execution_bar = ttk.Frame(right, style="Panel.TFrame")
         execution_bar.pack(fill="x", pady=(10, 0))
@@ -2811,7 +2811,8 @@ class RaceEngineerApp:
             f"Modelo: {self.analysis_model or '—'}\n"
             f"Override espera 10 min: {'SÍ' if plan.skip_stability_wait else 'NO'}\n",
         )
-        self.notebook.select(self.execution_text.master)
+        self.notebook.select(self.diagnostics_notebook.master)
+        self.diagnostics_notebook.select(self.execution_text.master)
 
         def worker():
             try:
@@ -2875,7 +2876,8 @@ class RaceEngineerApp:
             self.session_query_var.set("")
             self.session_filter_var.set("Todas")
             self.refresh(preferred_database=database)
-            self.notebook.select(self.debrief_text.master)
+            self.notebook.select(self.summary_notebook.master)
+            self.summary_notebook.select(self.debrief_text.master)
             messagebox.showinfo(
                 "Race Engineer",
                 "El análisis terminó correctamente y la lista fue actualizada.",
@@ -2892,7 +2894,8 @@ class RaceEngineerApp:
         elif outcome == "RECOVERED_VALID_DEBRIEF":
             self.execution_status.set("Debrief válido recuperado; pipeline incompleto")
             self._append_execution_line("\nGUI RESULT: RECOVERED_VALID_DEBRIEF")
-            self.notebook.select(self.debrief_text.master)
+            self.notebook.select(self.summary_notebook.master)
+            self.summary_notebook.select(self.debrief_text.master)
             messagebox.showwarning(
                 "Race Engineer",
                 "El proceso informó un error posterior, pero el debrief ya había sido "

@@ -322,7 +322,7 @@ class RaceEngineerApp:
             self.settings = default_settings()
             self.settings_warning = f"Configuración local inválida; se usan defaults: {exc}"
 
-        root.title(f"Race Engineer — Session Hub v{GUI_VERSION}")
+        root.title(f"Threshzz's Telemetry Analysis LMU v{GUI_VERSION}")
         root.geometry("1480x880")
         root.minsize(1120, 700)
         root.configure(background="#101010")
@@ -593,10 +593,17 @@ class RaceEngineerApp:
         accent_bar.pack(fill="x")
         title_box = ttk.Frame(header, style="App.TFrame")
         title_box.pack(side="left", fill="x", expand=True)
-        ttk.Label(title_box, text="RACE ENGINEER", style="Title.TLabel").pack(anchor="w")
         ttk.Label(
             title_box,
-            text="Sesiones, History y debriefs en un solo lugar · interfaz de solo lectura",
+            text="THRESHZZ'S TELEMETRY ANALYSIS LMU",
+            style="Title.TLabel",
+        ).pack(anchor="w")
+        ttk.Label(
+            title_box,
+            text=(
+                "Race Engineer · Sesiones, History y debriefs en un solo lugar · "
+                "interfaz de solo lectura"
+            ),
             style="Subtitle.TLabel",
         ).pack(anchor="w", pady=(2, 0))
         actions = ttk.Frame(header, style="App.TFrame")

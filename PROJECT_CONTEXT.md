@@ -2,6 +2,7 @@
 
 > Canonical end-to-end onboarding context for coding agents and LLMs working on the Race Engineer repository.
 > Baseline represented here: GUI v1.17, H5.4 P1–P11 and historical-shadow checkpoint 2026-08-23.
+> Project name: **Threshzz's Telemetry Analysis LMU** (= Race Engineer).
 >
 > This is the detailed mental model of the project. `AGENTS.md` should instruct coding agents to read this file before non-trivial work.
 

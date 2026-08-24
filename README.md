@@ -2,6 +2,9 @@
 
 Proyecto de análisis de telemetría y coaching para **Le Mans Ultimate (LMU)**.
 
+> **Threshzz's Telemetry Analysis LMU = Race Engineer** (mismo proyecto; la
+> aplicación se muestra con el nombre "Threshzz's Telemetry Analysis LMU").
+
 Este README documenta el flujo operativo actual del proyecto: análisis de una sesión, track profiles, historial persistente, calibración cross-session H2, matcher provisional y revisión asistida por DeepSeek.
 
 > Para comandos de uso normal se usan nombres **genéricos sin sufijos de versión** (`llm_analysis.py`, `episode_pair_matcher.py`, etc.). Los archivos versionados se conservan como releases/historial, pero no hace falta escribir la versión en cada comando.

@@ -6607,6 +6607,136 @@ def build_calibrated_comparison_ranker_response(
     return response
 
 
+NO_ACTIONABLE_WEAK_SHARE_MAX = 0.05
+NO_ACTIONABLE_MODERATE_SHARE_MAX = 0.04
+NO_ACTIONABLE_STRONG_SHARE_MAX = 0.01
+
+
+def build_calibrated_no_actionable_start_rank(
+    episode_catalog,
+    ordered_episode_ids,
+    *,
+    priority_cut_rank,
+    weak_share_max=NO_ACTIONABLE_WEAK_SHARE_MAX,
+    moderate_share_max=NO_ACTIONABLE_MODERATE_SHARE_MAX,
+    strong_share_max=NO_ACTIONABLE_STRONG_SHARE_MAX,
+):
+    # D2.4 shadow: evidence-conditioned negligible-loss tail.
+    ordered_episode_ids = [
+        safe_int(value)
+        for value in ordered_episode_ids
+    ]
+    if not ordered_episode_ids or any(
+        value is None for value in ordered_episode_ids
+    ):
+        raise ValueError(
+            "El corte NO_ACCIONABLE calibrado requiere IDs válidos."
+        )
+
+    thresholds = {
+        "weak": weak_share_max,
+        "moderate": moderate_share_max,
+        "strong": strong_share_max,
+    }
+    if any(
+        not 0.0 <= value <= 1.0
+        for value in thresholds.values()
+    ):
+        raise ValueError(
+            "Los thresholds NO_ACCIONABLE deben estar en [0, 1]."
+        )
+
+    n = len(ordered_episode_ids)
+    if not 1 <= priority_cut_rank <= n:
+        raise ValueError("priority_cut_rank fuera de rango.")
+
+    by_id = {
+        safe_int(episode.get("episode_id")): episode
+        for episode in episode_catalog
+        if isinstance(episode, dict)
+    }
+    if set(ordered_episode_ids) != set(by_id):
+        raise ValueError(
+            "El orden calibrado no coincide con episode_catalog."
+        )
+
+    losses = []
+    for episode_id in ordered_episode_ids:
+        loss = _finite_number(
+            by_id[episode_id].get("action_time_loss_s")
+        )
+        losses.append(
+            max(0.0, loss) if loss is not None else 0.0
+        )
+
+    total_loss = sum(losses)
+    if total_loss <= 0.0:
+        return n + 1
+
+    no_actionable_start_rank = n + 1
+    for rank in range(n, priority_cut_rank, -1):
+        episode = by_id[ordered_episode_ids[rank - 1]]
+        evidence = str(
+            episode.get("evidence_strength") or ""
+        ).strip().lower()
+        threshold = thresholds.get(evidence, 0.0)
+        share = losses[rank - 1] / total_loss
+
+        if share > threshold:
+            break
+        no_actionable_start_rank = rank
+
+    return max(
+        no_actionable_start_rank,
+        priority_cut_rank + 1,
+    )
+
+
+def build_calibrated_no_actionable_comparison_ranker_response(
+    episode_catalog,
+    *,
+    calibrated_priority_response=None,
+):
+    # D2.4 shadow candidate: keep D2.3 order/priority cut and calibrate
+    # only the NO_ACCIONABLE boundary.
+    if calibrated_priority_response is None:
+        calibrated_priority_response = (
+            build_calibrated_comparison_ranker_response(
+                episode_catalog
+            )
+        )
+
+    ordered_episode_ids = list(
+        calibrated_priority_response["ordered_episode_ids"]
+    )
+    priority_cut_rank = calibrated_priority_response[
+        "priority_cut_rank"
+    ]
+    no_actionable_start_rank = (
+        build_calibrated_no_actionable_start_rank(
+            episode_catalog,
+            ordered_episode_ids,
+            priority_cut_rank=priority_cut_rank,
+        )
+    )
+
+    response = {
+        "ordered_episode_ids": ordered_episode_ids,
+        "priority_cut_rank": priority_cut_rank,
+        "no_actionable_start_rank": no_actionable_start_rank,
+    }
+    errors = validate_comparison_ranker_response(
+        response,
+        episode_catalog,
+    )
+    if errors:
+        raise ValueError(
+            "El ranker NO_ACCIONABLE calibrado no cumple el contrato: "
+            + "; ".join(errors)
+        )
+    return response
+
+
 def build_deterministic_ranker_shadow_audit(
     episode_catalog,
     llm_ranker_response,
@@ -6681,6 +6811,42 @@ def build_deterministic_ranker_shadow_audit(
         calibrated_agreement.values()
     )
 
+    calibrated_no_actionable_response = (
+        build_calibrated_no_actionable_comparison_ranker_response(
+            episode_catalog,
+            calibrated_priority_response=calibrated_response,
+        )
+    )
+    calibrated_no_actionable_classifications = (
+        derive_priority_classifications(
+            calibrated_no_actionable_response,
+            episode_catalog,
+        )
+    )
+    calibrated_no_actionable_agreement = {
+        "ordered_episode_ids": (
+            calibrated_no_actionable_response["ordered_episode_ids"]
+            == llm_ranker_response["ordered_episode_ids"]
+        ),
+        "priority_cut_rank": (
+            calibrated_no_actionable_response["priority_cut_rank"]
+            == llm_ranker_response["priority_cut_rank"]
+        ),
+        "no_actionable_start_rank": (
+            calibrated_no_actionable_response[
+                "no_actionable_start_rank"
+            ]
+            == llm_ranker_response["no_actionable_start_rank"]
+        ),
+        "classifications": (
+            calibrated_no_actionable_classifications
+            == llm_classifications
+        ),
+    }
+    calibrated_no_actionable_agreement["full"] = all(
+        calibrated_no_actionable_agreement.values()
+    )
+
     agreement = {
         "ordered_episode_ids": (
             deterministic_response["ordered_episode_ids"]
@@ -6711,6 +6877,16 @@ def build_deterministic_ranker_shadow_audit(
             "response": calibrated_response,
             "agreement": calibrated_agreement,
             "classifications": calibrated_classifications,
+        },
+        "calibrated_no_actionable_candidate": {
+            "weak_share_max": NO_ACTIONABLE_WEAK_SHARE_MAX,
+            "moderate_share_max": NO_ACTIONABLE_MODERATE_SHARE_MAX,
+            "strong_share_max": NO_ACTIONABLE_STRONG_SHARE_MAX,
+            "response": calibrated_no_actionable_response,
+            "agreement": calibrated_no_actionable_agreement,
+            "classifications": (
+                calibrated_no_actionable_classifications
+            ),
         },
     }
 

@@ -324,12 +324,12 @@ def detect_laps_from_distance(
     out = []
     prev = None
     for d in lap_dist:
-        if d is not None and prev is not None:
-            if prev - d > reset_threshold_m:
+        if d is not None and finite(d):
+            if prev is not None and prev - float(d) > reset_threshold_m:
                 lap += 1
         out.append(lap)
-        if d is not None:
-            prev = d
+        if d is not None and finite(d):
+            prev = float(d)
     return out
 
 

@@ -46,6 +46,23 @@ def test_load_track_map_rejects_above_50hz(tmp_path: Path):
         load_track_map(database, target_hz=60.0)
 
 
+@pytest.mark.parametrize("target_hz", (10.0, 20.0, 50.0))
+def test_load_track_map_accepts_supported_target_hz(tmp_path: Path, target_hz: float):
+    database = make_gps_database(tmp_path / f"session_{target_hz:g}.duckdb")
+
+    result = load_track_map(database, preferred_lap=1, target_hz=target_hz)
+
+    assert len(result.points) >= 10
+
+
+@pytest.mark.parametrize("target_hz", (0.0, -1.0))
+def test_load_track_map_rejects_nonpositive_target_hz(tmp_path: Path, target_hz: float):
+    database = make_gps_database(tmp_path / f"session_{target_hz:g}.duckdb")
+
+    with pytest.raises(ValueError, match="0 y 50 Hz"):
+        load_track_map(database, target_hz=target_hz)
+
+
 def make_gps_database(path: Path) -> Path:
     connection = duckdb.connect(str(path))
     try:

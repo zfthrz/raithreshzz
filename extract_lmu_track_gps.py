@@ -48,6 +48,7 @@ except ImportError:
 
 REQUIRED_GPS_TABLES = ("GPS Latitude", "GPS Longitude")
 OPTIONAL_TABLES = ("GPS Time", "Lap Dist", "Lap", "Lap Time", "GPS Speed")
+LAP_DISTANCE_RESET_THRESHOLD_M = 500.0
 
 
 def qident(name: str) -> str:
@@ -150,6 +151,7 @@ def interpolate_series(
     src_times: list[float],
     src_values: list[float],
     dst_times: list[float],
+    discontinuity_threshold_m: float | None = None,
 ) -> list[float | None]:
     """
     Interpolación lineal con clamp a extremos.
@@ -177,6 +179,12 @@ def interpolate_series(
         v0 = src_values[i]
         v1 = src_values[j]
 
+        if (
+            discontinuity_threshold_m is not None
+            and v0 - v1 > discontinuity_threshold_m
+        ):
+            out.append(v0)
+            continue
         if t1 <= t0:
             out.append(v0)
         else:
@@ -261,7 +269,17 @@ def align_channel(
     else:
         src_times = infer_times_from_index(len(channel["values"]), reference_times)
 
-    return interpolate_series(src_times, channel["values"], master_times)
+    discontinuity_threshold_m = (
+        LAP_DISTANCE_RESET_THRESHOLD_M
+        if channel.get("table") == "Lap Dist"
+        else None
+    )
+    return interpolate_series(
+        src_times,
+        channel["values"],
+        master_times,
+        discontinuity_threshold_m=discontinuity_threshold_m,
+    )
 
 
 def read_lap_event_times(con, tables: set[str]) -> list[float]:
@@ -296,7 +314,7 @@ def assign_laps_from_boundaries(
 
 def detect_laps_from_distance(
     lap_dist: list[float | None],
-    reset_threshold_m: float = 500.0,
+    reset_threshold_m: float = LAP_DISTANCE_RESET_THRESHOLD_M,
 ) -> list[int]:
     """
     Fallback si no existe Lap.ts.
@@ -363,7 +381,7 @@ def valid_gps(lat, lon):
 def repair_lap_distance_boundary_sample(
     indices: list[int],
     lap_dist: list[float | None],
-    reset_threshold_m: float = 500.0,
+    reset_threshold_m: float = LAP_DISTANCE_RESET_THRESHOLD_M,
     expected_start_max_m: float = 100.0,
 ):
     """

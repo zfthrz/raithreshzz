@@ -13,6 +13,7 @@ import duckdb
 from cross_session_zone_localization import find_validated_track_profile
 
 from extract_lmu_track_gps import (
+    LAP_DISTANCE_RESET_THRESHOLD_M,
     REQUIRED_GPS_TABLES,
     align_channel,
     assign_laps_from_boundaries,
@@ -31,7 +32,6 @@ from extract_lmu_track_gps import (
 
 
 TRACK_MAP_VERSION = "0.7"
-LAP_DISTANCE_RESET_THRESHOLD_M = 500.0
 
 
 @dataclass(frozen=True)

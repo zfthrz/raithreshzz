@@ -76,6 +76,18 @@ Validated baseline:
   artifacts (12 PASS / 11 STALE), llamacpp 5 (1 PASS / 4 STALE), ollama 3
   (0 PASS / 3 STALE); retry rate deepseek 6.4% / ollama 9.9%. Tokens/cost/
   latency require a live benchmark (not in artifacts).
+- D2.7 residual disagreement analysis (2026-08-25): `audit_d2_7_residual_disagreements.py`
+  offline tool explains LLM vs deterministic ranker divergence in the 17
+  comparisons (10 disagreements). 6/11 disagreement-slots resolved with
+  deterministic patterns (multi-channel promotion ×1, coverage-cut ×1,
+  tiny-loss-kept-actionable ×3, nontrivial-tail-cut ×1); 5 unresolved
+  (3 priority-cut strong/multi-channel boundary, 2 near-tie order). Shadow-only.
+- D2.8 boundary policy candidate (2026-08-25): `audit_d2_8_boundary_policy.py`
+  tests evidence/channel-aware priority cut + weak-only NO_ACCIONABLE tail.
+  Result: does NOT improve agreement vs D2.5 (priority_cut 7/17 vs 13/17,
+  full 4/17 vs 7/17) → hypothesis refuted on current data; evidence supports
+  defining product-principled deterministic policy instead of chasing the LLM.
+  Shadow-only, production unchanged.
 
 ### analyze_telemetry
 Current: `3.8`

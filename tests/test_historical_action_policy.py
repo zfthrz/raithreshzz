@@ -447,6 +447,56 @@ def test_validator_rejects_historical_actions_authorized_true(tmp_path: Path):
     assert any("historical_actions_authorized" in e for e in errors)
 
 
+def test_validator_rejects_policy_session_reference_authority_false(tmp_path: Path):
+    """La policy no puede quitar autoridad a session_reference."""
+    output = build_action_candidates(_write_selection(tmp_path))
+    tampered = copy.deepcopy(output)
+    tampered["metadata"]["policy"]["session_reference_remains_authority"] = False
+
+    errors = validate(tampered)
+
+    assert any(
+        "metadata.policy.session_reference_remains_authority" in e
+        for e in errors
+    )
+
+
+def test_validator_rejects_policy_historical_authority_escalation(tmp_path: Path):
+    """La policy shadow tampoco puede autorizar acciones históricas."""
+    output = build_action_candidates(_write_selection(tmp_path))
+    tampered = copy.deepcopy(output)
+    tampered["metadata"]["policy"]["historical_actions_authorized"] = True
+
+    errors = validate(tampered)
+
+    assert any(
+        "metadata.policy.historical_actions_authorized" in e
+        for e in errors
+    )
+
+
+def test_validator_rejects_coaching_session_reference_authority_false(tmp_path: Path):
+    """coaching_authority debe conservar session_reference como autoridad."""
+    output = build_action_candidates(_write_selection(tmp_path))
+    tampered = copy.deepcopy(output)
+    tampered["coaching_authority"]["session_reference_remains_authority"] = False
+
+    errors = validate(tampered)
+
+    assert any("session_reference dejó de ser autoridad" in e for e in errors)
+
+
+def test_validator_rejects_authority_scope_escalation(tmp_path: Path):
+    """El scope H5.3 debe permanecer limitado a candidatos shadow."""
+    output = build_action_candidates(_write_selection(tmp_path))
+    tampered = copy.deepcopy(output)
+    tampered["coaching_authority"]["scope"] = "production_coaching_actions"
+
+    errors = validate(tampered)
+
+    assert any("scope de autorización inválido" in e for e in errors)
+
+
 # ── Backward compatibility ──────────────────────────────────────────────────
 
 

@@ -6499,6 +6499,79 @@ def build_deterministic_comparison_ranker_response(episode_catalog):
         "no_actionable_start_rank": no_actionable_start_rank,
     }
 
+def build_deterministic_ranker_shadow_audit(
+    episode_catalog,
+    llm_ranker_response,
+):
+    """
+    D2.2 shadow — compara el ranker LLM autoritativo con el ranker
+    determinista sin alterar ninguna clasificación de producción.
+
+    El audit conserva ambas clasificaciones completas para poder diagnosticar
+    divergencias por episodio cuando haya sesiones reales disponibles.
+    """
+    llm_errors = validate_comparison_ranker_response(
+        llm_ranker_response,
+        episode_catalog,
+    )
+    if llm_errors:
+        raise ValueError(
+            "El ranker LLM recibido por el shadow no cumple el contrato: "
+            + "; ".join(llm_errors)
+        )
+
+    deterministic_response = (
+        build_deterministic_comparison_ranker_response(
+            episode_catalog
+        )
+    )
+    deterministic_errors = validate_comparison_ranker_response(
+        deterministic_response,
+        episode_catalog,
+    )
+    if deterministic_errors:
+        raise ValueError(
+            "El ranker determinista shadow no cumple el contrato: "
+            + "; ".join(deterministic_errors)
+        )
+
+    llm_classifications = derive_priority_classifications(
+        llm_ranker_response,
+        episode_catalog,
+    )
+    deterministic_classifications = derive_priority_classifications(
+        deterministic_response,
+        episode_catalog,
+    )
+
+    agreement = {
+        "ordered_episode_ids": (
+            deterministic_response["ordered_episode_ids"]
+            == llm_ranker_response["ordered_episode_ids"]
+        ),
+        "priority_cut_rank": (
+            deterministic_response["priority_cut_rank"]
+            == llm_ranker_response["priority_cut_rank"]
+        ),
+        "no_actionable_start_rank": (
+            deterministic_response["no_actionable_start_rank"]
+            == llm_ranker_response["no_actionable_start_rank"]
+        ),
+        "classifications": (
+            deterministic_classifications == llm_classifications
+        ),
+    }
+    agreement["full"] = all(agreement.values())
+
+    return {
+        "status": "VALID",
+        "response": deterministic_response,
+        "agreement": agreement,
+        "llm_classifications": llm_classifications,
+        "deterministic_classifications": deterministic_classifications,
+    }
+
+
 def build_comparison_ranker_prompt(
     episode_catalog,
     episode_assessments,
@@ -7417,6 +7490,21 @@ def get_validated_comparison_response(
             },
         }
 
+    try:
+        deterministic_ranker_shadow = (
+            build_deterministic_ranker_shadow_audit(
+                episode_catalog,
+                ranker["response"],
+            )
+        )
+    except Exception as exc:
+        # D2.2 is observational only: a shadow failure must never alter,
+        # reject or block the LLM-authoritative production path.
+        deterministic_ranker_shadow = {
+            "status": "ERROR",
+            "error": str(exc),
+        }
+
     classified_assessments = apply_priority_classifications(
         episode_assessments,
         episode_catalog,
@@ -7441,7 +7529,10 @@ def get_validated_comparison_response(
             ],
             "audit": {
                 "episodes": episode_audit,
-                "priority_ranking": {"attempts": ranker["attempts"]},
+                "priority_ranking": {
+                    "attempts": ranker["attempts"],
+                    "deterministic_shadow": deterministic_ranker_shadow,
+                },
                 "summary": {"attempts": summary["attempts"]},
             },
         }
@@ -7465,7 +7556,10 @@ def get_validated_comparison_response(
             "validation_errors": final_errors,
             "audit": {
                 "episodes": episode_audit,
-                "priority_ranking": {"attempts": ranker["attempts"]},
+                "priority_ranking": {
+                    "attempts": ranker["attempts"],
+                    "deterministic_shadow": deterministic_ranker_shadow,
+                },
                 "summary": {"attempts": summary["attempts"]},
             },
         }
@@ -7487,6 +7581,7 @@ def get_validated_comparison_response(
                 ranker["response"],
                 episode_catalog,
             ),
+            "deterministic_shadow": deterministic_ranker_shadow,
         },
         "summary": {
             "attempts": summary["attempts"],

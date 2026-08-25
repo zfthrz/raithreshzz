@@ -6350,6 +6350,155 @@ def comparison_ranker_json_schema():
     }
 
 
+
+def build_deterministic_comparison_ranker_response(episode_catalog):
+    """
+    D2.1 shadow — ranker comparativo 100 % determinista.
+
+    Devuelve exactamente el mismo contrato que el ranker LLM actual, pero no
+    reemplaza todavía ninguna llamada de producción.
+
+    Autoridades:
+    - si global_rank es válido para todo el catálogo, conserva ese orden;
+    - de lo contrario reconstruye el mismo orden objetivo desde hechos Python;
+    - evidence_strength sólo define los cortes de tier, no reinterpreta
+      telemetría ni introduce causalidad.
+    """
+    if not isinstance(episode_catalog, list) or not episode_catalog:
+        raise ValueError(
+            "El ranker determinista requiere al menos un episodio."
+        )
+
+    episodes = []
+    seen_ids = set()
+
+    for episode in episode_catalog:
+        if not isinstance(episode, dict):
+            raise ValueError(
+                "Cada episodio del ranker determinista debe ser objeto."
+            )
+
+        episode_id = safe_int(episode.get("episode_id"))
+        if episode_id is None:
+            raise ValueError(
+                "Cada episodio del ranker determinista requiere episode_id."
+            )
+        if episode_id in seen_ids:
+            raise ValueError(
+                f"episode_id duplicado en ranker determinista: {episode_id}"
+            )
+
+        seen_ids.add(episode_id)
+        episodes.append(episode)
+
+    global_ranks = [
+        safe_int(episode.get("global_rank"))
+        for episode in episodes
+    ]
+    usable_global_rank = (
+        all(
+            rank is not None and rank >= 1
+            for rank in global_ranks
+        )
+        and len(set(global_ranks)) == len(global_ranks)
+    )
+
+    if usable_global_rank:
+        ordered = sorted(
+            episodes,
+            key=lambda episode: (
+                safe_int(episode.get("global_rank")),
+                safe_int(episode.get("episode_id")),
+            ),
+        )
+    else:
+        evidence_priority = {
+            "strong": 2,
+            "moderate": 1,
+            "weak": 0,
+        }
+
+        ordered = sorted(
+            episodes,
+            key=lambda episode: (
+                -(
+                    _finite_number(
+                        episode.get("action_time_loss_s")
+                    )
+                    or 0.0
+                ),
+                -evidence_priority.get(
+                    episode.get("evidence_strength"),
+                    0,
+                ),
+                -(
+                    safe_int(
+                        episode.get("action_channel_count")
+                    )
+                    or 0
+                ),
+                -(
+                    _finite_number(
+                        episode.get("length_m")
+                    )
+                    or 0.0
+                ),
+                safe_int(episode.get("episode_id")),
+            ),
+        )
+
+    ordered_episode_ids = [
+        safe_int(episode.get("episode_id"))
+        for episode in ordered
+    ]
+
+    n = len(ordered)
+
+    # PRIORITARIO:
+    # - siempre existe al menos uno;
+    # - si el líder es strong, conserva el bloque strong inicial;
+    # - con N > 1 nunca todos quedan PRIORITARIO, igual que el contrato LLM.
+    if n == 1:
+        priority_cut_rank = 1
+    elif ordered[0].get("evidence_strength") == "strong":
+        strong_prefix = 0
+        for episode in ordered:
+            if episode.get("evidence_strength") != "strong":
+                break
+            strong_prefix += 1
+
+        priority_cut_rank = max(
+            1,
+            min(strong_prefix, n - 1),
+        )
+    else:
+        priority_cut_rank = 1
+
+    # NO_ACCIONABLE:
+    # sólo el sufijo final consecutivo de evidencia weak.
+    # Un weak intercalado no puede crear un corte que arrastre evidencia mejor.
+    weak_suffix_start = n + 1
+
+    for rank in range(n, 0, -1):
+        episode = ordered[rank - 1]
+        if episode.get("evidence_strength") != "weak":
+            break
+        weak_suffix_start = rank
+
+    # El contrato exige que NO_ACCIONABLE empiece después del último
+    # PRIORITARIO. Si todos son weak, el líder sigue siendo la mejor
+    # oportunidad relativa de la comparación.
+    no_actionable_start_rank = max(
+        weak_suffix_start,
+        priority_cut_rank + 1,
+    )
+
+    return {
+        "ordered_episode_ids": ordered_episode_ids,
+        "priority_cut_rank": priority_cut_rank,
+        "no_actionable_start_rank": no_actionable_start_rank,
+    }
+
 def build_comparison_ranker_prompt(
     episode_catalog,
     episode_assessments,

@@ -121,7 +121,7 @@ def test_speed_only_historical_observation_does_not_become_a_driving_action():
         [],
     )
 
-    assert result["classification"] == "SUPPORTS_CURRENT"
+    assert result["classification"] == "LOW_VALUE"
     assert "actions" not in result
     assert "increase_speed" not in result["rationale"]
     assert "km/h" not in result["rationale"]

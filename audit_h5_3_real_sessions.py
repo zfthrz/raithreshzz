@@ -372,15 +372,6 @@ def classify_historical_action_vs_p11(
 
         # ── SUPPORTS_CURRENT: Same location + same action ───────────────────
         if _locations_match(location_label, p11_location):
-            if _actions_match(actions, p11_actions):
-                return {
-                    "classification": "SUPPORTS_CURRENT",
-                    "rationale": (
-                        f"Historical action at {location_label} matches "
-                        f"P11 focus {p11_location} with action {actions}"
-                    ),
-                }
-
             # ── CONFLICTS_WITH_CURRENT: Same location + different action ─────
             if actions and p11_actions:
                 if not _actions_compatible(actions, p11_actions):
@@ -392,8 +383,29 @@ def classify_historical_action_vs_p11(
                         ),
                     }
 
+                if _actions_match(actions, p11_actions):
+                    if _cues_overlap(actions, p11_cues):
+                        return {
+                            "classification": "DUPLICATES_CURRENT",
+                            "rationale": (
+                                f"Historical action at {location_label} duplicates "
+                                f"P11 cue {p11_cues}"
+                            ),
+                        }
+                    return {
+                        "classification": "SUPPORTS_CURRENT",
+                        "rationale": (
+                            f"Historical action at {location_label} matches "
+                            f"P11 focus {p11_location} with action {actions}"
+                        ),
+                    }
+
             # ── DUPLICATES_CURRENT: Same location + overlapping cues ────────
-            if _cues_overlap(actions, p11_cues):
+            if (
+                actions
+                and not p11_actions
+                and _cues_overlap(actions, p11_cues)
+            ):
                 return {
                     "classification": "DUPLICATES_CURRENT",
                     "rationale": (
@@ -406,7 +418,11 @@ def classify_historical_action_vs_p11(
         # Real debriefs do not expose action codes on P11 items; classify by
         # channel coverage and deterministic direction vocabulary instead.
         hist_channels = _historical_channels(actions)
-        if hist_channels and _locations_match(location_label, p11_location):
+        if (
+            hist_channels
+            and not p11_actions
+            and _locations_match(location_label, p11_location)
+        ):
             p11_channels = _p11_channels(p11_item)
             if not p11_channels:
                 return {

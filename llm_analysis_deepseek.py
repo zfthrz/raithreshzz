@@ -6499,6 +6499,114 @@ def build_deterministic_comparison_ranker_response(episode_catalog):
         "no_actionable_start_rank": no_actionable_start_rank,
     }
 
+PRIORITY_COVERAGE_TARGET = 0.55
+
+
+def build_calibrated_priority_cut_rank(
+    episode_catalog,
+    ordered_episode_ids,
+    *,
+    coverage_target=PRIORITY_COVERAGE_TARGET,
+):
+    # D2.3 shadow: smallest deterministic loss-coverage prefix.
+    ordered_episode_ids = [
+        safe_int(value)
+        for value in ordered_episode_ids
+    ]
+    if not ordered_episode_ids or any(
+        value is None for value in ordered_episode_ids
+    ):
+        raise ValueError(
+            "El corte calibrado requiere IDs de episodio válidos."
+        )
+    if not 0.0 < coverage_target <= 1.0:
+        raise ValueError(
+            "coverage_target debe estar en el intervalo (0, 1]."
+        )
+
+    by_id = {
+        safe_int(episode.get("episode_id")): episode
+        for episode in episode_catalog
+        if isinstance(episode, dict)
+    }
+    if set(ordered_episode_ids) != set(by_id):
+        raise ValueError(
+            "El orden calibrado no coincide con episode_catalog."
+        )
+
+    losses = []
+    for episode_id in ordered_episode_ids:
+        loss = _finite_number(
+            by_id[episode_id].get("action_time_loss_s")
+        )
+        losses.append(
+            max(0.0, loss) if loss is not None else 0.0
+        )
+
+    n = len(ordered_episode_ids)
+    if n == 1:
+        return 1
+
+    total = sum(losses)
+    if total <= 0.0:
+        return 1
+
+    cumulative = 0.0
+    cut = 1
+    for rank, loss in enumerate(losses, start=1):
+        cumulative += loss
+        cut = rank
+        if cumulative / total >= coverage_target:
+            break
+
+    return max(1, min(cut, n - 1))
+
+
+def build_calibrated_comparison_ranker_response(
+    episode_catalog,
+    *,
+    deterministic_response=None,
+    coverage_target=PRIORITY_COVERAGE_TARGET,
+):
+    # D2.3 shadow candidate: keep deterministic order/NO_ACCIONABLE policy,
+    # replace only priority_cut_rank with the calibrated loss-coverage cut.
+    if deterministic_response is None:
+        deterministic_response = (
+            build_deterministic_comparison_ranker_response(
+                episode_catalog
+            )
+        )
+
+    ordered_episode_ids = list(
+        deterministic_response["ordered_episode_ids"]
+    )
+    priority_cut_rank = build_calibrated_priority_cut_rank(
+        episode_catalog,
+        ordered_episode_ids,
+        coverage_target=coverage_target,
+    )
+    no_actionable_start_rank = max(
+        deterministic_response["no_actionable_start_rank"],
+        priority_cut_rank + 1,
+    )
+
+    response = {
+        "ordered_episode_ids": ordered_episode_ids,
+        "priority_cut_rank": priority_cut_rank,
+        "no_actionable_start_rank": no_actionable_start_rank,
+    }
+    errors = validate_comparison_ranker_response(
+        response,
+        episode_catalog,
+    )
+    if errors:
+        raise ValueError(
+            "El ranker calibrado shadow no cumple el contrato: "
+            + "; ".join(errors)
+        )
+    return response
+
+
 def build_deterministic_ranker_shadow_audit(
     episode_catalog,
     llm_ranker_response,
@@ -6544,6 +6652,35 @@ def build_deterministic_ranker_shadow_audit(
         episode_catalog,
     )
 
+    calibrated_response = build_calibrated_comparison_ranker_response(
+        episode_catalog,
+        deterministic_response=deterministic_response,
+    )
+    calibrated_classifications = derive_priority_classifications(
+        calibrated_response,
+        episode_catalog,
+    )
+    calibrated_agreement = {
+        "ordered_episode_ids": (
+            calibrated_response["ordered_episode_ids"]
+            == llm_ranker_response["ordered_episode_ids"]
+        ),
+        "priority_cut_rank": (
+            calibrated_response["priority_cut_rank"]
+            == llm_ranker_response["priority_cut_rank"]
+        ),
+        "no_actionable_start_rank": (
+            calibrated_response["no_actionable_start_rank"]
+            == llm_ranker_response["no_actionable_start_rank"]
+        ),
+        "classifications": (
+            calibrated_classifications == llm_classifications
+        ),
+    }
+    calibrated_agreement["full"] = all(
+        calibrated_agreement.values()
+    )
+
     agreement = {
         "ordered_episode_ids": (
             deterministic_response["ordered_episode_ids"]
@@ -6569,6 +6706,12 @@ def build_deterministic_ranker_shadow_audit(
         "agreement": agreement,
         "llm_classifications": llm_classifications,
         "deterministic_classifications": deterministic_classifications,
+        "calibrated_candidate": {
+            "coverage_target": PRIORITY_COVERAGE_TARGET,
+            "response": calibrated_response,
+            "agreement": calibrated_agreement,
+            "classifications": calibrated_classifications,
+        },
     }
 
 

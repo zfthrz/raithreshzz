@@ -341,6 +341,88 @@ def test_telemetry_chart_uses_shared_distance_axis_and_three_fixed_lanes():
     assert telemetry_chart_x_for_distance(chart, 50.0, width_px=200) == 128.0
 
 
+def test_telemetry_chart_keeps_one_pass_without_duplicate_distances():
+    points = (
+        TrackMapPoint(0.0, 0.0, 0.0, 10.0, 20.0, 30.0),
+        TrackMapPoint(1.0, 0.0, 50.0, 11.0, 21.0, 31.0),
+        TrackMapPoint(2.0, 0.0, 100.0, 12.0, 22.0, 32.0),
+        TrackMapPoint(3.0, 0.0, 4050.0, 15.0, 25.0, 35.0),
+        TrackMapPoint(4.0, 0.0, 0.0, 16.0, 26.0, 36.0),
+        TrackMapPoint(5.0, 0.0, 50.0, 17.0, 27.0, 37.0),
+    )
+
+    chart = build_track_telemetry_chart(points, width_px=200, height_px=132)
+
+    assert chart is not None
+    for series in (chart.speed, chart.throttle, chart.brake):
+        x_values = [x for x, _ in series]
+        assert x_values == sorted(x_values)
+        assert len(x_values) == len(set(x_values))
+        assert max(x_values) == 182.0
+        assert not any(
+            left > right for (left, _), (right, _) in zip(series, series[1:])
+        )
+    assert [y for _, y in chart.speed] == pytest.approx(
+        [44.4, 44.04, 43.68, 42.6]
+    )
+    assert [y for _, y in chart.throttle] == pytest.approx(
+        [76.8, 76.44, 76.08, 75.0]
+    )
+    assert [y for _, y in chart.brake] == pytest.approx(
+        [109.2, 108.84, 108.48, 107.4]
+    )
+
+    ordered_chart = build_track_telemetry_chart(
+        points[:3], width_px=200, height_px=132
+    )
+    assert ordered_chart is not None
+    assert [x for x, _ in ordered_chart.speed] == [74.0, 128.0, 182.0]
+    assert [y for _, y in ordered_chart.speed] == pytest.approx([44.4, 44.04, 43.68])
+
+    filtered = build_track_telemetry_chart(
+        points,
+        width_px=200,
+        height_px=132,
+        start_distance_m=25.0,
+        end_distance_m=75.0,
+    )
+    assert filtered is not None
+    assert filtered.distance_min_m == 25.0
+    assert filtered.distance_max_m == 75.0
+    assert [x for x, _ in filtered.speed] == [128.0]
+    assert [y for _, y in filtered.speed] == pytest.approx([44.04])
+    assert [y for _, y in filtered.throttle] == pytest.approx([76.44])
+    assert [y for _, y in filtered.brake] == pytest.approx([108.84])
+
+
+def test_telemetry_chart_discards_small_distance_jitter_and_keeps_following_samples():
+    points = (
+        TrackMapPoint(0.0, 0.0, 0.0, 10.0, 20.0, 30.0),
+        TrackMapPoint(1.0, 0.0, 50.0, 11.0, 21.0, 31.0),
+        TrackMapPoint(2.0, 0.0, 100.0, 12.0, 22.0, 32.0),
+        TrackMapPoint(3.0, 0.0, 99.9, 13.0, 23.0, 33.0),
+        TrackMapPoint(4.0, 0.0, 150.0, 15.0, 25.0, 35.0),
+    )
+
+    chart = build_track_telemetry_chart(points, width_px=200, height_px=132)
+
+    assert chart is not None
+    for series in (chart.speed, chart.throttle, chart.brake):
+        x_values = [x for x, _ in series]
+        assert x_values == sorted(x_values)
+        assert all(left < right for left, right in zip(x_values, x_values[1:]))
+        assert len(x_values) == 4
+    assert [y for _, y in chart.speed] == pytest.approx(
+        [44.4, 44.04, 43.68, 42.6]
+    )
+    assert [y for _, y in chart.throttle] == pytest.approx(
+        [76.8, 76.44, 76.08, 75.0]
+    )
+    assert [y for _, y in chart.brake] == pytest.approx(
+        [109.2, 108.84, 108.48, 107.4]
+    )
+
+
 def test_telemetry_chart_requires_distance_but_tolerates_missing_channels():
     without_channels = (
         TrackMapPoint(0.0, 0.0, 0.0),

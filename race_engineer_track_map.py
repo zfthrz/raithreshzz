@@ -31,6 +31,7 @@ from extract_lmu_track_gps import (
 
 
 TRACK_MAP_VERSION = "0.7"
+LAP_DISTANCE_RESET_THRESHOLD_M = 500.0
 
 
 @dataclass(frozen=True)
@@ -582,17 +583,33 @@ def build_track_telemetry_chart(
     def series(attribute: str, lane: int, maximum: float) -> tuple[tuple[float, float], ...]:
         result = []
         lane_top = top_px + lane * lane_height
+        # Points are temporal: a decrease marks a second pass, while exact
+        # duplicates keep the first valid sample without averaging telemetry.
+        previous_distance = None
+        seen_distances = set()
         for point in points:
             distance = point.lap_distance_m
+            if distance is None or not math.isfinite(distance):
+                continue
+            distance = float(distance)
+            if (
+                previous_distance is not None
+                and previous_distance - distance > LAP_DISTANCE_RESET_THRESHOLD_M
+            ):
+                break
+            if previous_distance is not None and distance < previous_distance:
+                continue
+            previous_distance = distance
             value = getattr(point, attribute)
-            if distance is None or value is None:
+            if value is None or not math.isfinite(value):
                 continue
-            if not math.isfinite(distance) or not math.isfinite(value):
+            if distance in seen_distances:
                 continue
-            if not distance_min <= float(distance) <= distance_max:
+            seen_distances.add(distance)
+            if not distance_min <= distance <= distance_max:
                 continue
             normalized = min(max(float(value) / maximum, 0.0), 1.0)
-            result.append((x_for(float(distance)), lane_top + (1.0 - normalized) * lane_height))
+            result.append((x_for(distance), lane_top + (1.0 - normalized) * lane_height))
         return tuple(result)
 
     return TrackTelemetryChart(

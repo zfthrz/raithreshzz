@@ -1411,29 +1411,48 @@ class RaceEngineerApp:
             else:
                 lines.append(("value", f"Hasta {end:.0f} m"))
 
-        comparison_count = item.get("comparison_count")
-        comparisons = item.get("comparisons")
+        priority_reason = item.get("priority_reason")
+        if not isinstance(priority_reason, dict):
+            priority_reason = {}
+
+        comparison_count = priority_reason.get("comparison_count")
 
         if isinstance(comparison_count, int) and comparison_count > 0:
-            lines.append(("section", "SOPORTE"))
-            lines.append(
-                (
-                    "value",
-                    f"{comparison_count} comparación"
-                    if comparison_count == 1
-                    else f"{comparison_count} comparaciones",
+            lines.append(("section", "POR QUÉ ES PRIORIDAD"))
+            provenance = []
+
+            if priority_reason.get("repeated") is True:
+                provenance.append("Patrón repetido")
+
+            if comparison_count == 1:
+                provenance.append("1 comparación válida")
+            else:
+                provenance.append(f"{comparison_count} comparaciones válidas")
+
+            physical_anchor_types = priority_reason.get("physical_anchor_types")
+            if not isinstance(physical_anchor_types, list):
+                physical_anchor_types = []
+
+            anchor_labels = {
+                "braking_point": "punto de frenada",
+                "brake_release": "liberación de freno",
+                "throttle_onset": "inicio de acelerador",
+                "throttle_release": "levantada de acelerador",
+            }
+
+            rendered_anchors = [
+                anchor_labels[value]
+                for value in physical_anchor_types
+                if value in anchor_labels
+            ]
+
+            if rendered_anchors:
+                provenance.append(
+                    "Anchor físico: " + ", ".join(rendered_anchors)
                 )
-            )
-        elif isinstance(comparisons, list) and comparisons:
-            lines.append(("section", "SOPORTE"))
-            lines.append(
-                (
-                    "value",
-                    f"{len(comparisons)} comparación"
-                    if len(comparisons) == 1
-                    else f"{len(comparisons)} comparaciones",
-                )
-            )
+
+            for value in provenance:
+                lines.append(("value", f"• {value}"))
 
         cues = item.get("driver_cues")
         if not isinstance(cues, list):
@@ -1497,29 +1516,24 @@ class RaceEngineerApp:
             for value in observations[:4]:
                 lines.append(("value", f"• {value}"))
 
-        pattern_fields = (
-            ("Punto de frenada", "braking_point_patterns"),
-            ("Liberación de freno", "brake_release_patterns"),
-            ("Inicio de acelerador", "throttle_onset_patterns"),
-            ("Levantada de acelerador", "throttle_release_patterns"),
-        )
+        physical_anchor_types = priority_reason.get("physical_anchor_types")
+        if not isinstance(physical_anchor_types, list):
+            physical_anchor_types = []
 
-        pattern_lines = []
-
-        for label_text, field in pattern_fields:
-            patterns = item.get(field)
-            if isinstance(patterns, list) and patterns:
-                count = len(patterns)
-                pattern_lines.append(
-                    f"{label_text}: {count}"
-                )
-
-        if pattern_lines:
+        if physical_anchor_types:
             lines.append(("section", "PATRONES FÍSICOS"))
-            for value in pattern_lines:
-                lines.append(("value", value))
+            anchor_labels = {
+                "braking_point": "Punto de frenada",
+                "brake_release": "Liberación de freno",
+                "throttle_onset": "Inicio de acelerador",
+                "throttle_release": "Levantada de acelerador",
+            }
+            for value in physical_anchor_types:
+                label_text = anchor_labels.get(value)
+                if label_text:
+                    lines.append(("value", label_text))
 
-        actionable_count = item.get("actionable_cue_count")
+        actionable_count = priority_reason.get("actionable_cue_count")
 
         if isinstance(actionable_count, int):
             lines.append(("section", "COACHING"))

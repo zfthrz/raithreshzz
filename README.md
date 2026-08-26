@@ -33,7 +33,7 @@ Componentes principales:
 | `episode_pair_features.py` | v1.2 — hard context gate con layout |
 | `pair_review_queue.py` | schema 1.1 — cola humana estratificada |
 | `prepare_calibration_batch.py` | orchestrator 1.5 |
-| `episode_pair_matcher.py` | H2 v0.3 — `CALIBRATED_PROVISIONAL_SINGLE_CONTEXT` |
+| `episode_pair_matcher.py` | H2 v0.3 — `CALIBRATED_PROVISIONAL_MULTI_CONTEXT` |
 | `audit_episode_pair_matches.py` | v0.2 |
 | DeepSeek assisted pair review | H2.2 v1.0 — benchmark en curso |
 | `auto_ingest_telemetry.py` | v0.1 — ingest directo desde LMU, History prioritario y backfill gradual |
@@ -765,7 +765,7 @@ No intenta forzar una decisión para todos los pares.
 Status:
 
 ```text
-CALIBRATED_PROVISIONAL_SINGLE_CONTEXT
+CALIBRATED_PROVISIONAL_MULTI_CONTEXT
 ```
 
 Los umbrales exactos se leen de `episode_pair_matcher.py` v0.3 y siguen siendo

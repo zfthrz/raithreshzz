@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any
 
 MATCHER_VERSION = "0.3"
-MATCHER_STATUS = "CALIBRATED_PROVISIONAL_SINGLE_CONTEXT"
+MATCHER_STATUS = "CALIBRATED_PROVISIONAL_MULTI_CONTEXT"
 CALIBRATION_CONTEXT = {
     "track": "Circuit de Spa-Francorchamps",
     "track_layout": "Circuit de Spa-Francorchamps",
@@ -40,6 +40,11 @@ MONZA_HYPER_CALIBRATION_KEY = (
 MONZA_LMP2_CALIBRATION_KEY = (
     "Autodromo Nazionale Monza",
     "Autodromo Nazionale Monza",
+    "LMP2_ELMS",
+)
+FUJI_CALIBRATION_KEY = (
+    "Fuji Speedway",
+    "Fuji Speedway",
     "LMP2_ELMS",
 )
 
@@ -187,6 +192,29 @@ CALIBRATIONS: dict[tuple[str, str, str], dict[str, Any]] = {
             "shape_conflict_coverage_diff_min": SHAPE_CONFLICT_COVERAGE_DIFF_MIN,
             "shape_conflict_impact_sim_max": SHAPE_CONFLICT_IMPACT_SIM_MAX,
             "reject_center_gt_m": 1000.0,
+            "reject_overlap_union_max": 0.33,
+        },
+    },
+    FUJI_CALIBRATION_KEY: {
+        "status": "CALIBRATED_PROVISIONAL_LOW_EVIDENCE",
+        "human_labels": 23,
+        "provenance": {
+            "batch_id": "b0b0f526f9",
+            "calibration_pairs": 23,
+            "evaluation_pairs": 0,
+            "labels": {"SAME": 7, "DIFFERENT": 15, "AMBIGUOUS": 1},
+            "sessions": [7, 8, 39, 44, 56],
+        },
+        "thresholds": {
+            "match_center_max_m": 200.0,
+            "match_overlap_shorter_min": 0.90,
+            "match_overlap_union_min": 0.40,
+            "match_shared_channel_min": 1,
+            "extended_match_center_max_m": None,
+            "shape_conflict_mean_sim_max": SHAPE_CONFLICT_MEAN_SIM_MAX,
+            "shape_conflict_coverage_diff_min": SHAPE_CONFLICT_COVERAGE_DIFF_MIN,
+            "shape_conflict_impact_sim_max": SHAPE_CONFLICT_IMPACT_SIM_MAX,
+            "reject_center_gt_m": 300.0,
             "reject_overlap_union_max": 0.33,
         },
     },

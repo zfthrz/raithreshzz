@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from episode_pair_matcher import classify_pair, resolve_calibration
 
-
 SPA = {
     "track": "Circuit de Spa-Francorchamps",
     "track_layout": "Circuit de Spa-Francorchamps",
@@ -26,6 +25,11 @@ MONZA_HYPER = {
 MONZA_LMP2 = {
     "track": "Autodromo Nazionale Monza",
     "track_layout": "Autodromo Nazionale Monza",
+    "vehicle_variant": "LMP2_ELMS",
+}
+FUJI_LMP2 = {
+    "track": "Fuji Speedway",
+    "track_layout": "Fuji Speedway",
     "vehicle_variant": "LMP2_ELMS",
 }
 
@@ -80,16 +84,31 @@ def test_imola_reject_far_zero_overlap():
 
 
 def test_uncalibrated_context_fails_closed_to_ambiguous():
-    fuji = {
-        "track": "Fuji Speedway",
-        "track_layout": "Fuji Speedway",
-        "vehicle_variant": "LMP2_ELMS",
+    uncalibrated = {
+        "track": "Fictional Track",
+        "track_layout": "Fictional Track",
+        "vehicle_variant": "LMP3",
     }
-    result = classify_pair(pair(fuji, center=0.0, overlap_union=1.0, overlap_shorter=1.0))
+    result = classify_pair(pair(uncalibrated, center=0.0, overlap_union=1.0, overlap_shorter=1.0))
 
     assert result["decision"] == "AMBIGUOUS"
     assert result["rule_id"] == "NO_CALIBRATION_FOR_CONTEXT"
-    assert resolve_calibration(pair(fuji, center=0.0, overlap_union=1.0, overlap_shorter=1.0)) is None
+    assert resolve_calibration(pair(uncalibrated, center=0.0, overlap_union=1.0, overlap_shorter=1.0)) is None
+
+
+def test_fuji_calibration_is_provisional_and_evidence_backed():
+    calibration = resolve_calibration(
+        pair(FUJI_LMP2, center=0.0, overlap_union=1.0, overlap_shorter=1.0)
+    )
+    assert calibration["status"] == "CALIBRATED_PROVISIONAL_LOW_EVIDENCE"
+    assert calibration["provenance"]["batch_id"] == "b0b0f526f9"
+    assert calibration["provenance"]["evaluation_pairs"] == 0
+    assert classify_pair(
+        pair(FUJI_LMP2, center=0.0, overlap_union=1.0, overlap_shorter=1.0)
+    )["decision"] == "MATCH"
+    assert classify_pair(
+        pair(FUJI_LMP2, center=400.0, overlap_union=0.0, overlap_shorter=0.0)
+    )["decision"] == "REJECT"
 
 
 def test_interlagos_calibration_is_provisional_low_evidence():

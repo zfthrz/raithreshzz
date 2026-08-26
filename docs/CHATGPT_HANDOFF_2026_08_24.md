@@ -14,7 +14,7 @@ current code/tests (source of truth; never infer from `legacy/`).
 repository: zfthrz/raithreshzz
 branch: main (puede estar N commits ahead de origin; el usuario pushea)
 GUI: 1.21 — deterministic double-click + automatic H2 review queues
-full pytest: 1351 passed (última corrida completa, GUI v1.21)
+full pytest: 1353 passed (última corrida completa, matcher aliases reconciliados)
 matcher: episode_pair_matcher.py v0.3 con CALIBRATIONS por contexto
 ```
 
@@ -100,8 +100,10 @@ matcher: episode_pair_matcher.py v0.3 con CALIBRATIONS por contexto
   (MATCH core + REJECT; 0 contradicciones sobre 24 labels reales cada uno).
 - Monza HYPER y Monza LMP2_ELMS: `CALIBRATED_PROVISIONAL_LOW_EVIDENCE`
   REJECT-only (sin SAME en calibración; `match_enabled=False`, REJECT >1000 m).
+- Fuji LMP2_ELMS: `CALIBRATED_PROVISIONAL_LOW_EVIDENCE` desde batch trackeado
+  `b0b0f526f9` (23 calibration pairs, 0 evaluation pairs).
 - Contextos sin calibración → fail-closed `NO_CALIBRATION_FOR_CONTEXT`.
-- Alias versionado `episode_pair_matcher_v0_3.py` byte-idéntico.
+- Alias versionado `episode_pair_matcher_v0_3.py` source-idéntico.
 
 ### Calibración H2 (campaign 2026-08-23/24)
 - 8 batches labelados 24/24 (Imola LMP2_ELMS, Interlagos, Fuji, Sarthe

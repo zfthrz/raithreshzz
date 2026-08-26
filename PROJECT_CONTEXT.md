@@ -180,7 +180,7 @@ D3.x deterministic-first default and D2.9 production ranker (2026-08-25).
 Validated checkpoints relevant to the current working tree:
 
 ```text
-full pytest (current working tree):  1351 PASS / 0 FAIL / 0 SKIP
+full pytest (current working tree):  1353 PASS / 0 FAIL / 0 SKIP
 Objective Python regressions:         55 PASS / 0 FAIL / 0 SKIP
 Objective recovery check:             READY
 ```

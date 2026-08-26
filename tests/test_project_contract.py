@@ -66,6 +66,12 @@ def test_h5_2_raw_aliases_match_v0_2_sources():
         assert (ROOT / alias_name).read_bytes() == (ROOT / source_name).read_bytes()
 
 
+def test_h2_matcher_alias_matches_v0_3_source():
+    assert (ROOT / "episode_pair_matcher.py").read_text(encoding="utf-8") == (
+        ROOT / "episode_pair_matcher_v0_3.py"
+    ).read_text(encoding="utf-8")
+
+
 def test_llm_scripts_use_centralized_runtime_paths_and_current_version():
     contracts = {
         "llm_analysis.py": (

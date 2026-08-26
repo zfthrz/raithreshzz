@@ -7,7 +7,7 @@ llama.cpp recovery and H5.3 review work described below.
 
 Validated baseline:
 
-- full pytest: `1351 PASS / 0 FAIL / 0 SKIP`;
+- full pytest: `1353 PASS / 0 FAIL / 0 SKIP`;
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP` (last analyzer-affecting checkpoint);
 - GUI: v1.21, automatic calibration queues + deterministic double-click analysis
   presentation + status badges and side-by-side historical comparison +
@@ -37,9 +37,8 @@ Validated baseline:
   loses ordered sequence context. Hypothesis only, production unchanged.
 - Calibration campaign (2026-08-23): 5 new H2 batches ready for human review
   (Imola LMP2_ELMS, Interlagos LMP2_ELMS, Fuji LMP2_ELMS, Sarthe LMP2_WEC,
-  Imola HYPER; 24 pairs each). Spa LMP2_ELMS remains the only calibrated matcher
-  context; Spa 98-pair queue still unlabeled; Monza batches need more sessions
-  for an evaluation split.
+  Imola HYPER; 24 pairs each). The matcher now has six exact provisional
+  contexts; contexts without a registered calibration still fail closed.
 - Imola LMP2_ELMS batch labeled and processed (2026-08-23): 24/24 labels valid
   (SAME 11 / DIFFERENT 10 / AMBIGUOUS 3); calibration dataset ready with
   evaluation split (9 calib + 1 eval) — first non-Spa context with
@@ -57,6 +56,11 @@ Validated baseline:
   provisional REJECT-only calibration (no SAME evidence in calibration split;
   MATCH core disabled, REJECT >1000 m without overlap). Both validated with 0
   contradictions over 24 real labels each.
+- Fuji LMP2_ELMS registered provisionally from tracked batch `b0b0f526f9`:
+  24/24 human labels validate (7 SAME / 16 DIFFERENT / 1 AMBIGUOUS), while the
+  leakage-safe calibration split contains 23 pairs and no evaluation pairs.
+  Both matcher aliases are source-identical and production never reads local
+  auto-calibration output.
 - Phase E H5.2 expansion (2026-08-23): first raw cross-session comparison for
   Spa LMP2_ELMS generated deterministically; Sarthe LMP2_WEC / Imola HYPER /
   Sarthe HYPER remain blocked by H4 gates (need new telemetry).

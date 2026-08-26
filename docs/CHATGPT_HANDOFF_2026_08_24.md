@@ -13,8 +13,8 @@ current code/tests (source of truth; never infer from `legacy/`).
 ```text
 repository: zfthrz/raithreshzz
 branch: main (puede estar N commits ahead de origin; el usuario pushea)
-GUI: 1.20 — scheduler watchdog + reversible manual queue recovery
-full pytest: 1331 passed (última corrida completa, GUI v1.20 B4)
+GUI: 1.21 — deterministic double-click + automatic H2 review queues
+full pytest: 1351 passed (última corrida completa, GUI v1.21)
 matcher: episode_pair_matcher.py v0.3 con CALIBRATIONS por contexto
 ```
 
@@ -82,6 +82,16 @@ matcher: episode_pair_matcher.py v0.3 con CALIBRATIONS por contexto
 - The deferred item can be restored at the end of the queue with attempts reset.
 - Both actions require confirmation, reject RUNNING scheduler state and abort if
   the ingest JSON changes concurrently.
+
+### GUI v1.21 / automatic H2 queues
+- Double-click starts deterministic Python analysis without obsolete model/cost
+  confirmation; safety validation and the explicit stability override remain.
+- `maintain_calibration_queues.py` detects History contexts with at least two
+  supported sessions and prepares at most one changed review queue per cycle.
+- Exact existing batches are baselined/reused. Preparation uses `--skip-import`,
+  does not call an LLM, does not label pairs and cannot authorize thresholds.
+- Calibration table polling fingerprints `BATCH_STATUS.json` and
+  `pair_labels.json` without rebuilding telemetry or the map.
 
 ### Matcher H2 v0.3 — calibración por contexto (`CALIBRATIONS`)
 - Spa LMP2_ELMS: `CALIBRATED_PROVISIONAL_SINGLE_CONTEXT` (72 labels, v0.3

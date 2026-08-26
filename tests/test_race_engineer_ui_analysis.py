@@ -29,7 +29,6 @@ def test_plan_invokes_only_the_existing_safe_launcher(tmp_path: Path):
 
     plan = build_analysis_plan(
         database,
-        backend="llamacpp",
         project_root=root,
         python_executable=tmp_path / "python.exe",
     )
@@ -39,45 +38,22 @@ def test_plan_invokes_only_the_existing_safe_launcher(tmp_path: Path):
         "-u",
         str((root / "analyze_telemetry_file.py").resolve()),
         str(database.resolve()),
-        "--backend",
-        "llamacpp",
+        "--deterministic-debrief",
     )
     assert "race_engineer.py" not in plan.command
-    assert plan.environment_overrides == ()
     assert plan.skip_stability_wait is False
 
 
-def test_plan_rejects_unknown_backend(tmp_path: Path):
-    with pytest.raises(ValueError, match="Backend no soportado"):
-        build_analysis_plan(
-            tmp_path / "file.duckdb",
-            backend="unsafe",
-            project_root=project(tmp_path),
-        )
-
-
-def test_plan_allows_only_non_secret_backend_overrides(tmp_path: Path):
+def test_plan_can_skip_only_the_stability_wait(tmp_path: Path):
     root = project(tmp_path)
     plan = build_analysis_plan(
         tmp_path / "file.duckdb",
-        backend="llamacpp",
         project_root=root,
-        environment_overrides={
-            "LLAMACPP_MODEL": "qwen-local",
-            "LLAMACPP_API_URL": "http://localhost:8080/v1/chat/completions",
-        },
         skip_stability_wait=True,
     )
-    assert dict(plan.environment_overrides)["LLAMACPP_MODEL"] == "qwen-local"
     assert plan.command[-1] == "--skip-stability-wait"
+    assert "--deterministic-debrief" in plan.command
     assert plan.skip_stability_wait is True
-    with pytest.raises(ValueError, match="no autorizadas"):
-        build_analysis_plan(
-            tmp_path / "file.duckdb",
-            backend="deepseek",
-            project_root=root,
-            environment_overrides={"DEEPSEEK_API_KEY": "secret"},
-        )
 
 
 def test_pythonw_is_replaced_by_console_sibling_when_available(tmp_path: Path):
@@ -92,10 +68,8 @@ def test_pythonw_is_replaced_by_console_sibling_when_available(tmp_path: Path):
 def test_stream_analysis_forwards_output_and_returns_exit_code(tmp_path: Path):
     plan = build_analysis_plan(
         tmp_path / "Fuji.duckdb",
-        backend="deepseek",
         project_root=project(tmp_path),
         python_executable=tmp_path / "python.exe",
-        environment_overrides={"DEEPSEEK_MODEL": "deepseek-test"},
     )
     observed = {}
 
@@ -120,7 +94,6 @@ def test_stream_analysis_forwards_output_and_returns_exit_code(tmp_path: Path):
     assert observed["kwargs"]["env"]["PYTHONUNBUFFERED"] == "1"
     assert observed["kwargs"]["env"]["PYTHONUTF8"] == "1"
     assert observed["kwargs"]["env"]["PYTHONIOENCODING"] == "utf-8"
-    assert observed["kwargs"]["env"]["DEEPSEEK_MODEL"] == "deepseek-test"
 
 
 def test_gui_candidate_requires_an_existing_duckdb(tmp_path: Path):

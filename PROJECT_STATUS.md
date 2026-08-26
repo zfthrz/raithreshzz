@@ -7,9 +7,9 @@ llama.cpp recovery and H5.3 review work described below.
 
 Validated baseline:
 
-- full pytest: `1331 PASS / 0 FAIL / 0 SKIP`;
+- full pytest: `1351 PASS / 0 FAIL / 0 SKIP`;
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP` (last analyzer-affecting checkpoint);
-- GUI: v1.20, section navigation + telemetry paned area + GPS zoom/pan + H5.3
+- GUI: v1.21, automatic calibration queues + deterministic double-click analysis
   presentation + status badges and side-by-side historical comparison +
   calibration status panel + plan-map-telemetry sync + telemetry playback +
   telemetry resolution (20 Hz default, 10-50 Hz) + scheduler-aware auto-refresh;
@@ -694,6 +694,13 @@ B4 permite posponer manualmente una sesión que acumuló tres fallos de debrief 
 reactivarla más tarde al final de la cola. Usa `DEBRIEF_DEFERRED`, conserva History
 y el error, exige confirmación y no escribe si el scheduler está RUNNING o el
 estado cambió durante la operación. See `docs/RACE_ENGINEER_GUI_V1_20.md`.
+
+GUI v1.21 inicia el análisis determinista por doble clic sin diálogo de backend,
+modelo o costo. El mantenimiento oculto prepara una sola cola H2 cambiada por
+ciclo, basándose en contextos History con al menos dos sesiones; batches exactos
+se reutilizan y los fallos son warning no bloqueante para History. No se crean
+labels humanos ni se modifican thresholds. La pestaña Calibración refresca su
+tabla sólo ante cambios reales de `BATCH_STATUS.json` o `pair_labels.json`.
 
 Calibration batch orchestrator `1.5` requires the current History schema 4 contract,
 reports its runtime version consistently and has a regression test against schema drift.

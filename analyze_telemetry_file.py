@@ -53,7 +53,7 @@ def validate_selected_database(
     minimum_bytes = int(min_size_mib * 1024 * 1024)
     if stat.st_size < minimum_bytes:
         raise ValueError(
-            f"El DuckDB mide menos de {min_size_mib:g} MiB; no se autoriza LLM."
+            f"El DuckDB mide menos de {min_size_mib:g} MiB; no se autoriza el análisis."
         )
     current_seconds = time.time() if now_seconds is None else now_seconds
     age_seconds = max(0.0, current_seconds - stat.st_mtime)
@@ -79,6 +79,7 @@ def analyze_selected_file(
     min_stable_seconds: int = MINIMUM_STABLE_SECONDS,
     now_seconds: float | None = None,
     skip_stability_wait: bool = False,
+    deterministic_debrief: bool = False,
 ) -> int:
     print("=" * 72)
     print("RACE ENGINEER - SAFE TELEMETRY LAUNCHER v0.2")
@@ -123,17 +124,30 @@ def analyze_selected_file(
         return 1
     print(f"Vueltas válidas confirmadas por Python: {laps}")
     if laps < min_valid_laps:
+        blocked_stage = "DEBRIEF" if deterministic_debrief else "LLM"
         print(
-            f"BLOCKED_LLM: se requieren al menos {min_valid_laps} vueltas válidas."
+            f"BLOCKED_{blocked_stage}: se requieren al menos "
+            f"{min_valid_laps} vueltas válidas."
         )
-        print("La evidencia determinista puede permanecer en History; no se llamó al LLM.")
+        print("La evidencia determinista puede permanecer en History.")
         return 2
 
-    print(f"Etapa 2/2: pipeline completo con backend {backend}.")
+    if deterministic_debrief:
+        print("Etapa 2/2: debrief determinista, sin acceso a LLM.")
+        final_args = [
+            "--backend",
+            "deepseek",
+            "--no-historical-context",
+            "--force-deterministic-debrief",
+        ]
+    else:
+        print(f"Etapa 2/2: pipeline completo con backend {backend}.")
+        final_args = ["--backend", backend]
     try:
-        runner(database, ["--backend", backend])
+        runner(database, final_args)
     except Exception as exc:
-        print(f"FAILED: pipeline LLM: {type(exc).__name__}: {exc}")
+        stage = "debrief determinista" if deterministic_debrief else "pipeline LLM"
+        print(f"FAILED: {stage}: {type(exc).__name__}: {exc}")
         return 1
 
     print("RESULT: PASS")
@@ -158,6 +172,11 @@ def build_parser() -> argparse.ArgumentParser:
             "válidas siguen siendo obligatorios"
         ),
     )
+    parser.add_argument(
+        "--deterministic-debrief",
+        action="store_true",
+        help="genera el debrief validado sin acceso a un backend LLM",
+    )
     return parser
 
 
@@ -167,6 +186,7 @@ def main() -> int:
         args.database,
         backend=args.backend,
         skip_stability_wait=args.skip_stability_wait,
+        deterministic_debrief=args.deterministic_debrief,
     )
 
 

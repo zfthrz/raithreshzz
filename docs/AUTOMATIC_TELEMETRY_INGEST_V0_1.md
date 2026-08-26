@@ -285,6 +285,8 @@ Estados principales:
 - `PENDING_STABILITY`: nuevo, todavía puede estar siendo escrito.
 - `HISTORY_READY`: ya está en History; falta el debrief.
 - `DEBRIEF_READY`: flujo completo terminado.
+- `DEBRIEF_DEFERRED`: History conservado; debrief pospuesto manualmente para
+  liberar una cola bloqueada y reactivable desde la GUI.
 - `HISTORY_ONLY_INELIGIBLE`: está en History pero no cumple los filtros del debrief.
 - `HISTORY_ONLY_SUPERSEDED`: está en History y otra sesión más reciente recibió el debrief.
 - `FAILED`: falló análisis/importación. Un archivo sin cambios no se reintenta en
@@ -305,6 +307,17 @@ obsoleto falló inicialmente por divergencia de `global_analysis`. La siguiente
 ejecución con `--force-deterministic-debrief` reconstruyó el JSON sin credenciales,
 pasó el validator con cero warnings y completó `HISTORY_READY -> DEBRIEF_READY`.
 La tarea terminó con código 0 y la cola continuó con la sesión siguiente.
+
+## Colas de calibración H2
+
+Después de History y del mantenimiento H5.3, el runner oculto ejecuta
+`maintain_calibration_queues.py`. El proceso detecta cambios de sesiones por
+track/layout/vehicle variant y prepara como máximo una `pair_review_queue.json`
+por ciclo. Reutiliza batches exactos y usa `--skip-import`.
+
+Este paso no llama modelos, no crea labels y no promueve calibraciones. Sus fallos
+son warnings no bloqueantes para History. El estado local se guarda en
+`data/local/calibration_queue_maintenance.json`.
 
 ## Automatización de Windows
 

@@ -40,7 +40,8 @@ Componentes principales:
 | `analyze_telemetry_file.py` | v0.2 — launcher seguro con override explícito sólo para la espera de estabilidad |
 | `hidden_history_ingest.py` | runner sin consola con log local rotativo para la tarea programada |
 | H5.3a-f + runtime 0.2 | shadow: candidatos, auditoría, selección unificada y render validado |
-| `race_engineer_gui.py` | v1.20 — watchdog y recuperación reversible del scheduler |
+| `race_engineer_gui.py` | v1.21 — recuperación y colas de calibración automáticas |
+| `maintain_calibration_queues.py` | Prepara una cola H2 modificada por ciclo, sin LLM ni labels automáticos |
 
 Checkpoint de calibración H2 actual sobre **Spa + layout Spa + `LMP2_ELMS`**:
 

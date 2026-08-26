@@ -11,14 +11,10 @@ import threading
 from pathlib import Path
 
 from race_engineer_history_gui import open_history_browser
-from race_engineer_gui_settings import (
-    backend_environment,
-    backend_model_label,
-    default_settings,
-    load_settings,
-    save_settings,
+from race_engineer_calibration_gui import (
+    launch_calibration_labeling_powershell,
+    resolve_calibration_labeling_target,
 )
-from race_engineer_settings_gui import edit_settings
 from runtime_paths import history_db_default_path
 from race_engineer_h5_3_review_status import load_status as load_h5_3_review_status
 from race_engineer_scheduler_status import (
@@ -75,15 +71,10 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.20"
+GUI_VERSION = "1.21"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 STATE_REFRESH_INTERVAL_MS = 5_000
 PROJECT_ROOT = Path(__file__).resolve().parent
-BACKEND_LABELS = {
-    "DeepSeek (remoto)": "deepseek",
-    "llama.cpp (local)": "llamacpp",
-    "Ollama / ingenierov3 (local)": "ollama",
-}
 SESSION_FILTER_LABELS = {
     "Todas": "ALL",
     "Con debrief": "DEBRIEF_READY",
@@ -169,6 +160,25 @@ def state_files_fingerprint(runs_root: Path) -> tuple[tuple[str, int, int], ...]
         return ()
     items: list[tuple[str, int, int]] = []
     for path in root.rglob("state.json"):
+        try:
+            stat = path.stat()
+            relative = path.relative_to(root).as_posix()
+        except (OSError, ValueError):
+            continue
+        items.append((relative, stat.st_mtime_ns, stat.st_size))
+    return tuple(sorted(items))
+
+
+def calibration_files_fingerprint(
+    batches_root: Path,
+) -> tuple[tuple[str, int, int], ...]:
+    root = Path(batches_root)
+    if not root.is_dir():
+        return ()
+    items: list[tuple[str, int, int]] = []
+    watched_paths = list(root.glob("*/BATCH_STATUS.json"))
+    watched_paths.extend(root.glob("*/pair_labels.json"))
+    for path in watched_paths:
         try:
             stat = path.stat()
             relative = path.relative_to(root).as_posix()
@@ -356,9 +366,9 @@ class RaceEngineerApp:
         ] = {}
         self.analysis_running = False
         self.analysis_database: Path | None = None
-        self.analysis_model: str | None = None
         self._state_files_fingerprint: tuple[tuple[str, int, int], ...] = ()
         self._scheduler_state_fingerprint: tuple[tuple[int, int] | None, tuple[int, int] | None] | None = None
+        self._calibration_state_fingerprint: tuple[tuple[str, int, int], ...] = ()
         self._state_refresh_after_id = None
         self._closing = False
         self.telemetry_ingest_state_path = (
@@ -371,13 +381,8 @@ class RaceEngineerApp:
             PROJECT_ROOT / "data" / "local" / "telemetry_auto_ingest_task.log"
         )
         self.scheduler_diagnostic_window = None
-        self.settings_path = PROJECT_ROOT / "data" / "local" / "race_engineer_gui_settings.json"
-        try:
-            self.settings = load_settings(self.settings_path)
-            self.settings_warning = ""
-        except (OSError, ValueError, TypeError) as exc:
-            self.settings = default_settings()
-            self.settings_warning = f"Configuración local inválida; se usan defaults: {exc}"
+        self.calibration_batches_root = PROJECT_ROOT / "calibration_batches"
+        self.settings_warning = ""
 
         root.title(f"Threshzz's Telemetry Analysis LMU v{GUI_VERSION}")
         root.geometry("1480x880")
@@ -814,15 +819,6 @@ class RaceEngineerApp:
         ).pack(anchor="w", pady=(2, 0))
         actions = ttk.Frame(header, style="App.TFrame")
         actions.pack(side="right")
-        self.backend_var = tk.StringVar(value="DeepSeek (remoto)")
-        self.backend_combo = ttk.Combobox(
-            actions,
-            textvariable=self.backend_var,
-            values=tuple(BACKEND_LABELS),
-            state="readonly",
-            width=27,
-        )
-        self.backend_combo.pack(side="left", padx=(0, 8))
         self.skip_stability_var = tk.BooleanVar(value=False)
         self.skip_stability_check = ttk.Checkbutton(
             actions,
@@ -841,8 +837,6 @@ class RaceEngineerApp:
         self.refresh_button.pack(side="left")
         self.history_button = ttk.Button(actions, text="History", command=self._open_history)
         self.history_button.pack(side="left", padx=(8, 0))
-        self.settings_button = ttk.Button(actions, text="Configuración", command=self._edit_settings)
-        self.settings_button.pack(side="left", padx=(8, 0))
 
         content = ttk.Panedwindow(self.root, orient="horizontal")
         content.pack(fill="both", expand=True, padx=18, pady=(0, 18))
@@ -924,7 +918,7 @@ class RaceEngineerApp:
         self.tree.bind("<Leave>", self._hide_row_tooltip)
         ttk.Label(
             left,
-            text="Doble clic: analizar el DuckDB de esa sesión con el backend seleccionado",
+            text="Doble clic: generar el debrief determinista de esa sesión, sin LLM",
             style="Muted.TLabel",
         ).pack(anchor="w", pady=(8, 0))
 
@@ -1255,8 +1249,36 @@ class RaceEngineerApp:
         tree.pack(fill="both", expand=True)
         tree.bind("<Motion>", self._on_calibration_tree_motion)
         tree.bind("<Leave>", self._hide_row_tooltip)
+        tree.bind("<Double-1>", self._on_calibration_tree_double_click)
 
-        summary = load_calibration_summary()
+        tree.tag_configure("row_even", background="#171717")
+        tree.tag_configure("row_odd", background="#1b1f23")
+        for tag, color in CALIBRATION_STATUS_COLORS.items():
+            tree.tag_configure(tag, foreground=color)
+        self.calibration_tree = tree
+        self._refresh_calibration_summary()
+
+        legend = self.ttk.Frame(frame, style="Panel.TFrame")
+        legend.pack(fill="x", pady=(6, 0))
+        for label, color in (
+            ("Calibrado", CALIBRATION_STATUS_COLORS["CALIBRATED"]),
+            ("Provisional", CALIBRATION_STATUS_COLORS["PROVISIONAL"]),
+            ("Sin calibración", CALIBRATION_STATUS_COLORS["NO_CALIBRATION"]),
+            ("Legacy", CALIBRATION_STATUS_COLORS["LEGACY"]),
+            ("Bloqueado", CALIBRATION_STATUS_COLORS["BLOCKED"]),
+        ):
+            item = self.ttk.Label(
+                legend,
+                text=f"■ {label}",
+                style="Muted.TLabel",
+            )
+            item.configure(foreground=color)
+            item.pack(side="left", padx=(0, 14))
+        return frame
+
+    def _refresh_calibration_summary(self):
+        tree = self.calibration_tree
+        summary = load_calibration_summary(self.calibration_batches_root)
         rows = summary["rows"]
         self.calibration_rows = rows
         self.calibration_summary_var.set(
@@ -1264,10 +1286,8 @@ class RaceEngineerApp:
             f"{summary['ready_datasets']} datasets listos · "
             f"{len(rows)} batches"
         )
-        tree.tag_configure("row_even", background="#171717")
-        tree.tag_configure("row_odd", background="#1b1f23")
-        for tag, color in CALIBRATION_STATUS_COLORS.items():
-            tree.tag_configure(tag, foreground=color)
+        for iid in self.calibration_tree.get_children():
+            self.calibration_tree.delete(iid)
         for index, row in enumerate(rows):
             evaluation = (
                 f"{row['evaluation_pairs']} pares"
@@ -1291,25 +1311,68 @@ class RaceEngineerApp:
                     tag,
                 ),
             )
-        self.calibration_tree = tree
+        self._calibration_state_fingerprint = calibration_files_fingerprint(
+            self.calibration_batches_root
+        )
 
-        legend = self.ttk.Frame(frame, style="Panel.TFrame")
-        legend.pack(fill="x", pady=(6, 0))
-        for label, color in (
-            ("Calibrado", CALIBRATION_STATUS_COLORS["CALIBRATED"]),
-            ("Provisional", CALIBRATION_STATUS_COLORS["PROVISIONAL"]),
-            ("Sin calibración", CALIBRATION_STATUS_COLORS["NO_CALIBRATION"]),
-            ("Legacy", CALIBRATION_STATUS_COLORS["LEGACY"]),
-            ("Bloqueado", CALIBRATION_STATUS_COLORS["BLOCKED"]),
-        ):
-            item = self.ttk.Label(
-                legend,
-                text=f"■ {label}",
-                style="Muted.TLabel",
+    def _on_calibration_tree_double_click(self, event):
+        from tkinter import messagebox
+
+        iid = self.calibration_tree.identify_row(event.y)
+        if not iid:
+            return
+
+        self.calibration_tree.selection_set(iid)
+        self.calibration_tree.focus(iid)
+
+        try:
+            row = self.calibration_rows[int(iid)]
+        except (ValueError, IndexError):
+            messagebox.showerror(
+                "Race Engineer",
+                "No se pudo resolver el batch seleccionado.",
+                parent=self.root,
             )
-            item.configure(foreground=color)
-            item.pack(side="left", padx=(0, 14))
-        return frame
+            return
+
+        try:
+            target = resolve_calibration_labeling_target(
+                self.calibration_batches_root,
+                batch_id=str(row.get("batch_id") or ""),
+            )
+        except (OSError, ValueError, TypeError) as exc:
+            messagebox.showerror(
+                "Race Engineer",
+                f"No se puede abrir el labeler para este batch:\n\n{exc}",
+                parent=self.root,
+            )
+            return
+
+        if target.complete:
+            messagebox.showinfo(
+                "Race Engineer",
+                (
+                    f"El batch {target.batch_id} ya está completamente labelado "
+                    f"({target.labeled_pairs}/{target.queue_pairs})."
+                ),
+                parent=self.root,
+            )
+            return
+
+        try:
+            launch_calibration_labeling_powershell(PROJECT_ROOT, target)
+        except (OSError, RuntimeError, ValueError) as exc:
+            messagebox.showerror(
+                "Race Engineer",
+                f"No se pudo abrir PowerShell:\n\n{exc}",
+                parent=self.root,
+            )
+            return
+
+        self.footer_var.set(
+            f"Labeling batch {target.batch_id}: "
+            f"{target.labeled_pairs}/{target.queue_pairs} revisados"
+        )
 
     def _on_calibration_tree_motion(self, event):
         iid = self.calibration_tree.identify_row(event.y)
@@ -2161,6 +2224,7 @@ class RaceEngineerApp:
     def refresh(self, *, preferred_database: Path | None = None):
         self._refresh_h5_3_review_status()
         self._refresh_scheduler_status()
+        self._refresh_calibration_summary()
         previous = self.selected_record()
         previous_key = previous.session_key if previous else None
         self.all_sessions, errors = discover_sessions(self.runs_root)
@@ -2195,6 +2259,11 @@ class RaceEngineerApp:
                     if scheduler_current != self._scheduler_state_fingerprint:
                         self._refresh_scheduler_status()
                         self._scheduler_state_fingerprint = scheduler_current
+                    calibration_current = calibration_files_fingerprint(
+                        self.calibration_batches_root
+                    )
+                    if calibration_current != self._calibration_state_fingerprint:
+                        self._refresh_calibration_summary()
         finally:
             self._schedule_state_refresh_check()
 
@@ -3741,31 +3810,6 @@ class RaceEngineerApp:
             preferred_database=preferred,
         )
 
-    def _edit_settings(self):
-        from tkinter import messagebox
-
-        if self.analysis_running:
-            messagebox.showinfo(
-                "Race Engineer",
-                "Esperá a que termine el análisis antes de cambiar el modelo.",
-                parent=self.root,
-            )
-            return
-        updated = edit_settings(self.root, self.settings)
-        if updated is None:
-            return
-        try:
-            self.settings = save_settings(self.settings_path, updated)
-            self.settings_warning = ""
-        except (OSError, ValueError) as exc:
-            messagebox.showerror("Race Engineer", str(exc), parent=self.root)
-            return
-        messagebox.showinfo(
-            "Race Engineer",
-            "Configuración guardada localmente. Se aplicará al próximo análisis.",
-            parent=self.root,
-        )
-
     def _choose_analysis_file(self):
         from tkinter import filedialog, messagebox
 
@@ -3833,59 +3877,30 @@ class RaceEngineerApp:
                 parent=self.root,
             )
             return
-        backend_label = self.backend_var.get()
-        backend = BACKEND_LABELS[backend_label]
-        model = backend_model_label(self.settings, backend)
         skip_stability_wait = bool(self.skip_stability_var.get())
-        remote_note = (
-            "\n\nDeepSeek usa la API remota y puede generar un costo."
-            if backend == "deepseek"
-            else "\n\nEl servidor/modelo local debe estar iniciado."
-        )
-        stability_note = (
-            "\n\nATENCIÓN: se omitirá la espera de estabilidad de 10 minutos. "
-            "LMU debe estar cerrado y los demás controles siguen activos."
-            if skip_stability_wait
-            else ""
-        )
-        if not messagebox.askyesno(
-            "Confirmar análisis",
-            f"Archivo:\n{database}\n\nBackend: {backend_label}\nModelo: {model}"
-            f"{remote_note}{stability_note}\n\n"
-            "El launcher volverá a comprobar LMU, tamaño y vueltas válidas; "
-            "la estabilidad se omite sólo con este override.\n"
-            "¿Continuar?",
-            parent=self.root,
-        ):
-            return
         try:
             plan = build_analysis_plan(
                 database,
-                backend=backend,
                 project_root=PROJECT_ROOT,
-                environment_overrides=backend_environment(self.settings, backend),
                 skip_stability_wait=skip_stability_wait,
             )
         except (ValueError, FileNotFoundError, OSError) as exc:
             messagebox.showerror("Race Engineer", str(exc), parent=self.root)
             return
-        self.analysis_model = model
         self._start_analysis(plan)
 
     def _start_analysis(self, plan):
         self.analysis_running = True
         self.analysis_database = plan.database_path
         self.analyze_button.configure(state="disabled")
-        self.backend_combo.configure(state="disabled")
         self.skip_stability_check.configure(state="disabled")
         self.refresh_button.configure(state="disabled")
         self.progress.start(12)
-        self.execution_status.set(f"Analizando con {plan.backend}…")
+        self.execution_status.set("Analizando con Python determinista…")
         self._set_text(
             self.execution_text,
             "RACE ENGINEER — EJECUCIÓN DESDE GUI\n"
-            f"Archivo: {plan.database_path}\nBackend: {plan.backend}\n"
-            f"Modelo: {self.analysis_model or '—'}\n"
+            f"Archivo: {plan.database_path}\nMotor: Python determinista\n"
             f"Override espera 10 min: {'SÍ' if plan.skip_stability_wait else 'NO'}\n",
         )
         self._show_primary_section("Diagnóstico")
@@ -3929,7 +3944,6 @@ class RaceEngineerApp:
         self.analysis_running = False
         self.progress.stop()
         self.analyze_button.configure(state="normal")
-        self.backend_combo.configure(state="readonly")
         self.skip_stability_var.set(False)
         self.skip_stability_check.configure(state="normal")
         self.refresh_button.configure(state="normal")
@@ -3987,7 +4001,6 @@ class RaceEngineerApp:
                 parent=self.root,
             )
         self.analysis_database = None
-        self.analysis_model = None
 
     def _on_close(self):
         from tkinter import messagebox

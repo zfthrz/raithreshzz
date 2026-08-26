@@ -1,7 +1,7 @@
 # Race Engineer — PROJECT_CONTEXT v1.0
 
 > Canonical end-to-end onboarding context for coding agents and LLMs working on the Race Engineer repository.
-> Baseline represented here: GUI v1.20, H5.4 P1–P11 and historical-shadow checkpoint 2026-08-26.
+> Baseline represented here: GUI v1.21, automatic H2 review queues, H5.4 P1–P11 and historical-shadow checkpoint 2026-08-26.
 > Project name: **Threshzz's Telemetry Analysis LMU** (= Race Engineer).
 >
 > This is the detailed mental model of the project. `AGENTS.md` should instruct coding agents to read this file before non-trivial work.
@@ -148,13 +148,13 @@ DeepSeek pseudo-labels/reviews are assistance and must never be silently mixed w
 
 # 4. Current operational baseline
 
-Checkpoint: **2026-08-26 GUI v1.20, H5.4 presentation and historical shadow** +
+Checkpoint: **2026-08-26 GUI v1.21, H5.4 presentation and historical shadow** +
 D3.x deterministic-first default and D2.9 production ranker (2026-08-25).
 
 | Component | Current operational baseline |
 |---|---|
 | `race_engineer.py` | orchestrator v0.3 |
-| `race_engineer_gui.py` | v1.20 / scheduler watchdog + reversible recovery |
+| `race_engineer_gui.py` | v1.21 / scheduler recovery + automatic calibration queues |
 | `analyze_telemetry.py` | v3.8 + Objective Python v6 |
 | Brake point | 2.1 / schema 2.1 |
 | Throttle point | 1.2.1 / schema 1.2 |
@@ -180,7 +180,7 @@ D3.x deterministic-first default and D2.9 production ranker (2026-08-25).
 Validated checkpoints relevant to the current working tree:
 
 ```text
-full pytest (current working tree):  1331 PASS / 0 FAIL / 0 SKIP
+full pytest (current working tree):  1351 PASS / 0 FAIL / 0 SKIP
 Objective Python regressions:         55 PASS / 0 FAIL / 0 SKIP
 Objective recovery check:             READY
 ```
@@ -1398,6 +1398,15 @@ puede pasar a `DEBRIEF_DEFERRED` para liberar la cola y luego reactivarse al fin
 History, intentos y último error se conservan. La acción exige confirmación,
 rechaza un scheduler RUNNING y aborta si el JSON cambia concurrentemente. See
 `docs/RACE_ENGINEER_GUI_V1_20.md`.
+
+GUI v1.21 elimina la confirmación obsoleta de modelo/costo al iniciar análisis:
+el doble clic comienza directamente el pipeline Python determinista, conservando
+validaciones y override explícito de estabilidad. El scheduler ejecuta además
+`maintain_calibration_queues.py`: compara los session IDs por contexto con batches
+existentes, prepara como máximo una `pair_review_queue.json` cambiada por ciclo
+mediante `--skip-import` y nunca genera labels ni llama un LLM. La tabla de
+Calibración observa cambios en `BATCH_STATUS.json` y `pair_labels.json`. See
+`docs/RACE_ENGINEER_GUI_V1_21.md`.
 
 The scheduled task must execute `hidden_history_ingest.py` through `pythonw.exe`.
 That wrapper preserves the same maintenance arguments, creates no console window and

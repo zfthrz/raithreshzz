@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+import inspect
+
 from race_engineer_gui import (
     GUI_VERSION,
     PRIMARY_SECTIONS,
     SECTION_VIEWS,
     RaceEngineerApp,
+    calibration_files_fingerprint,
     calibration_status_color,
     calibration_status_tag,
     calibration_status_tooltip,
@@ -75,7 +78,7 @@ def test_gui_v1_11_applies_flat_dark_control_chrome_without_opening_window():
 
     app._configure_style()
 
-    assert GUI_VERSION == "1.20"
+    assert GUI_VERSION == "1.21"
     assert style.theme == "clam"
     assert style.configurations["TEntry"]["fieldbackground"] == "#15181c"
     assert style.configurations["TCombobox"]["borderwidth"] == 0
@@ -183,6 +186,23 @@ def test_optional_local_state_fingerprint_tracks_mtime_and_size(tmp_path):
     path.write_text('{"files": {}}', encoding="utf-8")
     assert file_fingerprint(path) != baseline
 
+
+def test_calibration_fingerprint_tracks_only_batch_status_files(tmp_path):
+    batch = tmp_path / "batch-a"
+    batch.mkdir()
+    assert calibration_files_fingerprint(tmp_path) == ()
+    (batch / "ignored.json").write_text("{}", encoding="utf-8")
+    assert calibration_files_fingerprint(tmp_path) == ()
+    (batch / "BATCH_STATUS.json").write_text("{}", encoding="utf-8")
+    assert len(calibration_files_fingerprint(tmp_path)) == 1
+
+
+def test_analysis_start_no_longer_warns_about_model_or_remote_cost():
+    source = inspect.getsource(RaceEngineerApp._confirm_analysis)
+    assert "Confirmar análisis" not in source
+    assert "DeepSeek usa la API" not in source
+    assert "Modelo:" not in source
+
 def test_state_check_refreshes_only_after_change_and_reschedules(tmp_path):
     app = RaceEngineerApp.__new__(RaceEngineerApp)
     app.root = FakeRoot()
@@ -196,6 +216,9 @@ def test_state_check_refreshes_only_after_change_and_reschedules(tmp_path):
     app.scheduler_runtime_path = tmp_path / "telemetry_scheduler_runtime.json"
     app._scheduler_state_fingerprint = None
     app._refresh_scheduler_status = lambda: None
+    app.calibration_batches_root = tmp_path / "calibration_batches"
+    app._calibration_state_fingerprint = ()
+    app._refresh_calibration_summary = lambda: None
     refreshes = []
     app.refresh = lambda: refreshes.append(True)
 
@@ -228,6 +251,9 @@ def test_state_check_does_not_refresh_during_gui_analysis(tmp_path):
     app.scheduler_runtime_path = tmp_path / "telemetry_scheduler_runtime.json"
     app._scheduler_state_fingerprint = None
     app._refresh_scheduler_status = lambda: None
+    app.calibration_batches_root = tmp_path / "calibration_batches"
+    app._calibration_state_fingerprint = ()
+    app._refresh_calibration_summary = lambda: None
     refreshes = []
     app.refresh = lambda: refreshes.append(True)
 
@@ -256,6 +282,9 @@ def test_scheduler_state_change_updates_badge_without_full_refresh(tmp_path):
     badge_refreshes = []
     app.refresh = lambda: full_refreshes.append(True)
     app._refresh_scheduler_status = lambda: badge_refreshes.append(True)
+    app.calibration_batches_root = tmp_path / "calibration_batches"
+    app._calibration_state_fingerprint = ()
+    app._refresh_calibration_summary = lambda: None
 
     app._check_for_state_updates()
 

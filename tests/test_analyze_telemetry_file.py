@@ -143,6 +143,37 @@ def test_explicit_override_skips_only_recent_file_wait(tmp_path: Path):
     ]
 
 
+def test_safe_launcher_can_generate_debrief_without_llm_access(tmp_path: Path):
+    database = make_database(tmp_path)
+    calls: list[tuple[Path, list[str]]] = []
+
+    result = launcher.analyze_selected_file(
+        str(database),
+        backend="deepseek",
+        roots=(database.parent,),
+        runner=lambda path, args: calls.append((path, args)),
+        lap_counter=lambda path: 3,
+        game_running=lambda: False,
+        min_size_mib=0,
+        min_stable_seconds=0,
+        deterministic_debrief=True,
+    )
+
+    assert result == 0
+    assert calls == [
+        (database, ["--no-llm", "--no-historical-context"]),
+        (
+            database,
+            [
+                "--backend",
+                "deepseek",
+                "--no-historical-context",
+                "--force-deterministic-debrief",
+            ],
+        ),
+    ]
+
+
 def test_override_never_bypasses_game_running_block(tmp_path: Path):
     database = make_database(tmp_path)
     calls = []
@@ -183,6 +214,13 @@ def test_parser_exposes_explicit_stability_override():
         ["session.duckdb", "--skip-stability-wait"]
     )
     assert args.skip_stability_wait is True
+
+
+def test_parser_exposes_deterministic_debrief_mode():
+    args = launcher.build_parser().parse_args(
+        ["session.duckdb", "--deterministic-debrief"]
+    )
+    assert args.deterministic_debrief is True
 
 
 def test_safe_launcher_withholds_llm_when_valid_laps_are_insufficient(tmp_path: Path):

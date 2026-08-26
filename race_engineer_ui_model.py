@@ -121,6 +121,78 @@ def format_timestamp(value: str, fallback_timestamp: float) -> str:
     return datetime.fromtimestamp(fallback_timestamp).strftime("%d/%m/%Y %H:%M")
 
 
+def _live_calibration_label_counts(
+    status_path: Path,
+    payload: dict[str, Any],
+    steps: dict[str, Any],
+) -> tuple[int | None, int | None]:
+    review_queue = _dict(steps.get("review_queue"))
+    human = _dict(steps.get("human_labels"))
+
+    batch_dir_value = payload.get("batch_dir")
+    batch_dir = (
+        Path(batch_dir_value)
+        if isinstance(batch_dir_value, str) and batch_dir_value.strip()
+        else status_path.parent
+    )
+    if not batch_dir.is_absolute():
+        batch_dir = (status_path.parent / batch_dir).resolve()
+
+    queue_value = review_queue.get("path")
+    queue_path = (
+        Path(queue_value)
+        if isinstance(queue_value, str) and queue_value.strip()
+        else batch_dir / "pair_review_queue.json"
+    )
+    if not queue_path.is_absolute():
+        queue_path = (batch_dir / queue_path).resolve()
+
+    labels_value = human.get("labels_path")
+    labels_path = (
+        Path(labels_value)
+        if isinstance(labels_value, str) and labels_value.strip()
+        else batch_dir / "pair_labels.json"
+    )
+    if not labels_path.is_absolute():
+        labels_path = (batch_dir / labels_path).resolve()
+
+    queue_pairs = None
+    labeled_pairs = None
+
+    try:
+        queue_payload = _json(queue_path)
+        queue = queue_payload.get("queue")
+        if isinstance(queue, list):
+            queue_pairs = len(queue)
+    except Exception:
+        pass
+
+    try:
+        labels_payload = _json(labels_path)
+        labels = labels_payload.get("labels")
+        if isinstance(labels, list):
+            seen = set()
+            count = 0
+            for item in labels:
+                if not isinstance(item, dict):
+                    continue
+                pair_id = item.get("pair_id")
+                human_label = item.get("human_label")
+                if (
+                    isinstance(pair_id, str)
+                    and pair_id
+                    and pair_id not in seen
+                    and human_label in {"SAME", "DIFFERENT", "AMBIGUOUS", "SKIP"}
+                ):
+                    seen.add(pair_id)
+                    count += 1
+            labeled_pairs = count
+    except Exception:
+        pass
+
+    return queue_pairs, labeled_pairs
+
+
 def load_calibration_summary(
     base_dir: Path | None = None,
 ) -> dict[str, Any]:
@@ -141,6 +213,11 @@ def load_calibration_summary(
             steps = _dict(payload.get("steps"))
             context_sel = _dict(steps.get("vehicle_context_selection"))
             human = _dict(steps.get("human_labels"))
+            live_queue_pairs, live_labeled_pairs = _live_calibration_label_counts(
+                status_path,
+                payload,
+                steps,
+            )
             eval_step = _dict(steps.get("evaluation_readiness"))
             dataset = _dict(steps.get("calibration_dataset"))
             matcher = _dict(payload.get("matcher"))
@@ -169,8 +246,16 @@ def load_calibration_summary(
                     "track_layout": str(payload.get("track_layout") or "—"),
                     "vehicle_variant": str(payload.get("vehicle_variant") or "—"),
                     "sessions": _integer(context_sel.get("session_count")) or 0,
-                    "labeled_pairs": _integer(human.get("labeled_pairs")) or 0,
-                    "queue_pairs": _integer(human.get("queue_pairs")) or 0,
+                    "labeled_pairs": (
+                        live_labeled_pairs
+                        if live_labeled_pairs is not None
+                        else (_integer(human.get("labeled_pairs")) or 0)
+                    ),
+                    "queue_pairs": (
+                        live_queue_pairs
+                        if live_queue_pairs is not None
+                        else (_integer(human.get("queue_pairs")) or 0)
+                    ),
                     "evaluation_status": str(
                         eval_step.get("status") or "NO_EVALUATION"
                     ),

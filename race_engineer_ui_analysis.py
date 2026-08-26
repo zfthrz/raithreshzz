@@ -7,26 +7,16 @@ import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable, Mapping
+from typing import Callable
 
 
 UI_ANALYSIS_VERSION = "0.2"
-SUPPORTED_BACKENDS = ("deepseek", "llamacpp", "ollama")
-ALLOWED_ENVIRONMENT_OVERRIDES = {
-    "DEEPSEEK_MODEL",
-    "LLAMACPP_MODEL",
-    "LLAMACPP_API_URL",
-}
-
-
 @dataclass(frozen=True)
 class AnalysisLaunchPlan:
     database_path: Path
-    backend: str
     project_root: Path
     python_executable: Path
     command: tuple[str, ...]
-    environment_overrides: tuple[tuple[str, str], ...]
     skip_stability_wait: bool
 
 
@@ -44,16 +34,12 @@ def console_python_executable(executable: str | Path = sys.executable) -> Path:
 def build_analysis_plan(
     database_path: Path,
     *,
-    backend: str,
     project_root: Path,
     python_executable: str | Path = sys.executable,
-    environment_overrides: Mapping[str, str] | None = None,
     skip_stability_wait: bool = False,
 ) -> AnalysisLaunchPlan:
     root = Path(project_root).resolve()
     launcher = root / "analyze_telemetry_file.py"
-    if backend not in SUPPORTED_BACKENDS:
-        raise ValueError(f"Backend no soportado: {backend}")
     if not launcher.is_file():
         raise FileNotFoundError(launcher)
     database = Path(database_path).expanduser().resolve()
@@ -63,23 +49,16 @@ def build_analysis_plan(
         "-u",
         str(launcher),
         str(database),
-        "--backend",
-        backend,
+        "--deterministic-debrief",
     ]
     if skip_stability_wait:
         command_parts.append("--skip-stability-wait")
     command = tuple(command_parts)
-    overrides = tuple(sorted((environment_overrides or {}).items()))
-    unknown = {name for name, _ in overrides} - ALLOWED_ENVIRONMENT_OVERRIDES
-    if unknown:
-        raise ValueError("Variables de entorno GUI no autorizadas: " + ", ".join(sorted(unknown)))
     return AnalysisLaunchPlan(
         database_path=database,
-        backend=backend,
         project_root=root,
         python_executable=python,
         command=command,
-        environment_overrides=overrides,
         skip_stability_wait=skip_stability_wait,
     )
 
@@ -127,7 +106,6 @@ def stream_analysis(
     # be printed without failing after the result has already been saved.
     environment["PYTHONUTF8"] = "1"
     environment["PYTHONIOENCODING"] = "utf-8"
-    environment.update(dict(plan.environment_overrides))
     process = popen_factory(
         list(plan.command),
         cwd=plan.project_root,

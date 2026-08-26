@@ -301,7 +301,14 @@ def test_maintenance_runs_one_backfill_when_scan_is_idle_and_cooldown_elapsed(
         "signature": ingest.signature(database),
     }
     ingest.save_state(state_path, state)
-    calls: list[tuple[Path, list[str]]] = []
+    calls: list[tuple[Path, list[str], dict | None]] = []
+
+    def runner(
+        path: Path,
+        args: list[str],
+        env: dict | None = None,
+    ) -> None:
+        calls.append((path, args, env))
 
     assert ingest.maintenance(
         telemetry,
@@ -310,15 +317,24 @@ def test_maintenance_runs_one_backfill_when_scan_is_idle_and_cooldown_elapsed(
         min_size_mb=0,
         backfill_minutes=30,
         now=NOW,
-        runner=lambda path, args: calls.append((path, args)),
+        runner=runner,
         probe=lambda path: None,
         pipeline_status_reader=lambda path: None,
         game_running=lambda: False,
     ) == 0
-    assert calls == [(
+    assert calls[0] == (
         database,
         ["--no-llm", "--no-historical-context"],
-    )]
+        None,
+    )
+    assert calls[1][0] == database
+    assert calls[1][1] == ["--backend", "deepseek", "--no-historical-context"]
+    assert calls[1][2] is not None
+    assert calls[1][2]["RACE_ENGINEER_DETERMINISTIC_FIRST"] == "1"
+    assert calls[1][2]["RACE_ENGINEER_LLM_RANKER"] == "0"
+    assert read_state(state_path)["files"][str(database)]["status"] == (
+        ingest.STATUS_DEBRIEF_READY
+    )
 
     assert ingest.maintenance(
         telemetry,
@@ -327,12 +343,12 @@ def test_maintenance_runs_one_backfill_when_scan_is_idle_and_cooldown_elapsed(
         min_size_mb=0,
         backfill_minutes=30,
         now=NOW + timedelta(minutes=5),
-        runner=lambda path, args: calls.append((path, args)),
+        runner=runner,
         probe=lambda path: None,
         pipeline_status_reader=lambda path: None,
         game_running=lambda: False,
     ) == 0
-    assert len(calls) == 1
+    assert len(calls) == 2
 
 
 def test_maintenance_does_nothing_while_le_mans_ultimate_is_running(
@@ -668,3 +684,166 @@ def test_scan_skips_backfill_skipped_insufficient_valid_laps(tmp_path: Path):
         probe=lambda path: None,
     ) == 0
     assert calls == []
+
+
+def _maintenance_runner(
+    calls: list,
+):
+    def runner(
+        path: Path,
+        args: list[str],
+        env: dict | None = None,
+    ) -> None:
+        calls.append((path, args, env))
+
+    return runner
+
+
+def _history_ready_state(
+    state_path: Path,
+    database: Path,
+    *,
+    status: str,
+) -> None:
+    state = ingest.empty_state()
+    state["files"][str(database)] = {
+        "status": status,
+        "signature": ingest.signature(database),
+        "history_ready_at": "2026-08-17T12:00:00Z",
+    }
+    ingest.save_state(state_path, state)
+
+
+def test_maintenance_generates_deterministic_debrief_after_ingest(
+    tmp_path: Path,
+):
+    telemetry = tmp_path / "telemetria"
+    database = make_db(telemetry)
+    state_path = tmp_path / "state.json"
+    _history_ready_state(
+        state_path,
+        database,
+        status=ingest.STATUS_HISTORY_READY,
+    )
+    calls: list = []
+
+    assert ingest.maintenance(
+        telemetry,
+        state_path,
+        settle_seconds=600,
+        min_size_mb=0,
+        backfill_minutes=30,
+        now=NOW,
+        runner=_maintenance_runner(calls),
+        probe=lambda path: None,
+        pipeline_status_reader=lambda path: None,
+        game_running=lambda: False,
+    ) == 0
+
+    assert calls == [(
+        database,
+        ["--backend", "deepseek", "--no-historical-context"],
+        ingest.deterministic_debrief_env(),
+    )]
+    entry = read_state(state_path)["files"][str(database)]
+    assert entry["status"] == ingest.STATUS_DEBRIEF_READY
+    assert entry["debrief_backend"] == "deepseek"
+    assert entry["debrief_attempts"] == 1
+
+
+def test_maintenance_debrief_failure_keeps_history_ready_for_retry(
+    tmp_path: Path,
+):
+    telemetry = tmp_path / "telemetria"
+    database = make_db(telemetry)
+    state_path = tmp_path / "state.json"
+    _history_ready_state(
+        state_path,
+        database,
+        status=ingest.STATUS_HISTORY_READY,
+    )
+
+    def fail(path: Path, args: list[str], env: dict | None = None) -> None:
+        raise RuntimeError("deterministic debrief failed")
+
+    assert ingest.maintenance(
+        telemetry,
+        state_path,
+        settle_seconds=600,
+        min_size_mb=0,
+        backfill_minutes=30,
+        now=NOW,
+        runner=fail,
+        probe=lambda path: None,
+        pipeline_status_reader=lambda path: None,
+        game_running=lambda: False,
+    ) == 1
+
+    entry = read_state(state_path)["files"][str(database)]
+    assert entry["status"] == ingest.STATUS_HISTORY_READY
+    assert "deterministic debrief failed" in entry["last_debrief_error"]
+    assert entry["debrief_attempts"] == 1
+    assert entry["history_ready_at"] == "2026-08-17T12:00:00Z"
+
+
+def test_maintenance_does_not_regenerate_existing_debrief(tmp_path: Path):
+    telemetry = tmp_path / "telemetria"
+    database = make_db(telemetry)
+    state_path = tmp_path / "state.json"
+    _history_ready_state(
+        state_path,
+        database,
+        status=ingest.STATUS_DEBRIEF_READY,
+    )
+    calls: list = []
+
+    assert ingest.maintenance(
+        telemetry,
+        state_path,
+        settle_seconds=600,
+        min_size_mb=0,
+        backfill_minutes=30,
+        now=NOW,
+        runner=_maintenance_runner(calls),
+        probe=lambda path: None,
+        pipeline_status_reader=lambda path: None,
+        game_running=lambda: False,
+    ) == 0
+
+    assert calls == []
+    entry = read_state(state_path)["files"][str(database)]
+    assert entry["status"] == ingest.STATUS_DEBRIEF_READY
+
+
+def test_maintenance_debrief_env_overrides_rollback_without_touching_parent(
+    tmp_path: Path,
+    monkeypatch,
+):
+    monkeypatch.setenv("RACE_ENGINEER_LLM_RANKER", "1")
+    telemetry = tmp_path / "telemetria"
+    database = make_db(telemetry)
+    state_path = tmp_path / "state.json"
+    _history_ready_state(
+        state_path,
+        database,
+        status=ingest.STATUS_HISTORY_READY,
+    )
+    calls: list = []
+
+    assert ingest.maintenance(
+        telemetry,
+        state_path,
+        settle_seconds=600,
+        min_size_mb=0,
+        backfill_minutes=30,
+        now=NOW,
+        runner=_maintenance_runner(calls),
+        probe=lambda path: None,
+        pipeline_status_reader=lambda path: None,
+        game_running=lambda: False,
+    ) == 0
+
+    captured = calls[0][2]
+    assert captured["RACE_ENGINEER_DETERMINISTIC_FIRST"] == "1"
+    assert captured["RACE_ENGINEER_LLM_RANKER"] == "0"
+    assert os.environ["RACE_ENGINEER_LLM_RANKER"] == "1"

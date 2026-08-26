@@ -1387,6 +1387,10 @@ The scheduled `maintenance` contract is History-first:
 - wait 10 minutes after the last game observation (`POST_GAME_SETTLE`);
 - give new stable telemetry priority over backlog;
 - run deterministic analysis and History import with `--no-llm --no-historical-context`;
+- after ingest/backfill, generate the deterministic race debrief (one session
+  per run) forcing `RACE_ENGINEER_DETERMINISTIC_FIRST=1` and
+  `RACE_ENGINEER_LLM_RANKER=0` in the subprocess plus `--no-historical-context`
+  (zero LLM calls, no `--force`; failures keep `HISTORY_READY` for retry);
 - process at most one backfill candidate per cooldown;
 - never use the 5 MiB threshold as proof that a recording is complete;
 - scope scan/backfill/debrief selection to the configured source directory.

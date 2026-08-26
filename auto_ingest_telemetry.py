@@ -282,7 +282,12 @@ def probe_duckdb(path: Path) -> None:
         connection.close()
 
 
-def run_race_engineer(path: Path, extra_args: list[str]) -> None:
+def run_race_engineer(
+    path: Path,
+    extra_args: list[str],
+    *,
+    env: dict[str, str] | None = None,
+) -> None:
     command = [
         sys.executable,
         str(PROJECT_ROOT / "race_engineer.py"),
@@ -291,7 +296,21 @@ def run_race_engineer(path: Path, extra_args: list[str]) -> None:
         *extra_args,
     ]
     print("+ " + subprocess.list2cmdline(command))
-    subprocess.run(command, cwd=PROJECT_ROOT, check=True)
+    subprocess.run(command, cwd=PROJECT_ROOT, check=True, env=env)
+
+
+def deterministic_debrief_env() -> dict[str, str]:
+    """Env para el debrief automático: garantiza salida determinista (0 LLM).
+
+    Preserva el entorno del proceso y pisa los dos switches de runtime:
+    deterministic-first activo y ranker LLM desactivado. Así el flujo
+    desatendido nunca llama al transporte LLM, aunque la sesión del usuario
+    tenga activado el rollback RACE_ENGINEER_LLM_RANKER=1.
+    """
+    env = dict(os.environ)
+    env["RACE_ENGINEER_DETERMINISTIC_FIRST"] = "1"
+    env["RACE_ENGINEER_LLM_RANKER"] = "0"
+    return env
 
 
 def le_mans_ultimate_is_running() -> bool:
@@ -588,8 +607,9 @@ def maintenance(
     settle_seconds: int,
     min_size_mb: float,
     backfill_minutes: int,
+    backend: str = "deepseek",
     now: datetime,
-    runner: Callable[[Path, list[str]], None] = run_race_engineer,
+    runner: Callable[..., None] = run_race_engineer,
     probe: Callable[[Path], None] = probe_duckdb,
     pipeline_status_reader: Callable[
         [Path], tuple[str, int] | None
@@ -649,27 +669,45 @@ def maintenance(
     summary = state.get("last_scan") or {}
     if any(int(summary.get(name, 0)) > 0 for name in ("history_ready", "pending")):
         print("MAINTENANCE: prioridad para telemetría nueva; backfill omitido.")
-        return 0
+    else:
+        backfill_due = True
+        last_backfill = state.get("last_backfill_at")
+        if isinstance(last_backfill, str):
+            elapsed_minutes = max(
+                0.0,
+                (now - parse_time(last_backfill)).total_seconds() / 60.0,
+            )
+            if elapsed_minutes < backfill_minutes:
+                backfill_due = False
+                remaining = backfill_minutes - elapsed_minutes
+                print(
+                    "MAINTENANCE: próximo backfill en aproximadamente "
+                    f"{remaining:.1f} min."
+                )
+        if backfill_due:
+            backfill_result = backfill_next(
+                state_path,
+                min_size_mb=min_size_mb,
+                now=now,
+                telemetry_dir=telemetry_dir,
+                runner=runner,
+                probe=probe,
+                pipeline_status_reader=pipeline_status_reader,
+            )
+            if backfill_result != 0:
+                return backfill_result
 
-    last_backfill = state.get("last_backfill_at")
-    if isinstance(last_backfill, str):
-        elapsed_minutes = max(
-            0.0,
-            (now - parse_time(last_backfill)).total_seconds() / 60.0,
-        )
-        if elapsed_minutes < backfill_minutes:
-            remaining = backfill_minutes - elapsed_minutes
-            print(f"MAINTENANCE: próximo backfill en aproximadamente {remaining:.1f} min.")
-            return 0
-
-    return backfill_next(
+    # Debrief determinista automático (D2.9/D3.x): una sesión por corrida,
+    # con env forzado (0 llamadas LLM). --no-historical-context mantiene la
+    # narrativa histórica observacional fuera del flujo desatendido.
+    return debrief_next(
         state_path,
-        min_size_mb=min_size_mb,
+        backend=backend,
         now=now,
         telemetry_dir=telemetry_dir,
         runner=runner,
-        probe=probe,
-        pipeline_status_reader=pipeline_status_reader,
+        env=deterministic_debrief_env(),
+        extra_args=["--no-historical-context"],
     )
 
 
@@ -678,8 +716,10 @@ def debrief_next(
     *,
     backend: str,
     now: datetime,
-    runner: Callable[[Path, list[str]], None] = run_race_engineer,
+    runner: Callable[..., None] = run_race_engineer,
     telemetry_dir: Path | None = None,
+    env: dict[str, str] | None = None,
+    extra_args: list[str] | None = None,
 ) -> int:
     state = load_state(state_path)
     candidates = [
@@ -699,7 +739,11 @@ def debrief_next(
     path_text, entry = candidates[0]
     path = Path(path_text)
     try:
-        runner(path, ["--backend", backend])
+        args = ["--backend", backend] + list(extra_args or [])
+        if env is not None:
+            runner(path, args, env=env)
+        else:
+            runner(path, args)
     except Exception as exc:
         entry["last_debrief_error"] = f"{type(exc).__name__}: {exc}"
         entry["debrief_attempts"] = int(entry.get("debrief_attempts", 0)) + 1
@@ -860,6 +904,11 @@ def build_parser() -> argparse.ArgumentParser:
     maintenance_parser.add_argument("--settle-seconds", type=int, default=600)
     maintenance_parser.add_argument("--min-size-mb", type=float, default=5.0)
     maintenance_parser.add_argument("--backfill-minutes", type=int, default=30)
+    maintenance_parser.add_argument(
+        "--backend",
+        choices=("deepseek", "ollama"),
+        default="deepseek",
+    )
     debrief = subparsers.add_parser("debrief-next", help="Generar exactamente un debrief pendiente.")
     debrief.add_argument("--backend", choices=("deepseek", "ollama"), default="deepseek")
     latest = subparsers.add_parser(
@@ -913,6 +962,7 @@ def main() -> int:
             settle_seconds=args.settle_seconds,
             min_size_mb=args.min_size_mb,
             backfill_minutes=args.backfill_minutes,
+            backend=args.backend,
             now=now,
         )
     if args.command == "debrief-next":

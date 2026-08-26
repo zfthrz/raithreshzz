@@ -98,6 +98,17 @@ estabilidad, recién importada o fallida, omite el backfill. Sólo cuando el esc
 está inactivo incorpora como máximo un histórico, respetando 30 minutos entre
 intentos. Esto evita dos procesos simultáneos sobre History.
 
+Al terminar el ingest/backfill (o al omitirlo), `maintenance` genera
+automáticamente el **debrief determinista de carrera** de la sesión
+`HISTORY_READY` más antigua — una sesión por corrida — forzando en el subproceso
+`RACE_ENGINEER_DETERMINISTIC_FIRST=1` y `RACE_ENGINEER_LLM_RANKER=0`, y pasando
+`--no-historical-context`. El debrief se produce sin ninguna llamada LLM y la
+narrativa histórica observacional (única pieza que todavía puede usar LLM) queda
+fuera del flujo desatendido. El paso no usa `--force`: si la sesión ya tiene
+debrief validado, se reconcilia sin regenerar (`DEBRIEF_READY`). Un fallo deja la
+sesión en `HISTORY_READY` con `last_debrief_error` para reintentar en la próxima
+corrida; History no se toca.
+
 Antes de cualquier operación, `maintenance` comprueba el proceso de Windows
 `Le Mans Ultimate.exe`. Mientras el juego está abierto termina con
 `SKIPPED_GAME_RUNNING`: no escanea, no analiza, no abre DuckDB, no ejecuta LLM y
@@ -210,7 +221,12 @@ Es un resultado no aplicable, no evidencia de corrupción. No llama al LLM, no s
 importa como una comparación válida en History y no debilita
 `validate_global_output`.
 
-## Generar debriefs de a uno
+## Generar debriefs de a uno (manual)
+
+Desde el cutover determinista, `maintenance` ya genera automáticamente el
+debrief de carrera determinista (una sesión por corrida, sin LLM). Los comandos
+siguientes quedan para corridas manuales o para el pipeline completo con
+backend LLM cuando se quiera la narrativa histórica.
 
 ### Procesar solamente la última sesión válida
 
@@ -285,7 +301,7 @@ Primero se debe validar manualmente `baseline`, dos ejecuciones de `scan` y
 `status`. Después puede programarse `scan` cada cinco minutos con el Programador
 de tareas de Windows.
 
-La activación automática de `debrief-latest` se hace únicamente después de
-validar el flujo manual. El comando procesa como máximo una sesión y no recorre
+La activación automática del debrief determinista ya está activa dentro de
+`maintenance`. `debrief-latest` procesa como máximo una sesión y no recorre
 sesiones anteriores, por lo que una detección masiva no dispara varias llamadas
 pagas ni varias cargas consecutivas de la GPU local.

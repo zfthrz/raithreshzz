@@ -73,6 +73,15 @@ def build_h5_3_review_command(
     ]
 
 
+def build_calibration_queue_command(
+    *, python_executable: Path | None = None,
+) -> list[str]:
+    return [
+        str(console_python_executable(python_executable)),
+        str(PROJECT_ROOT / "maintain_calibration_queues.py"),
+    ]
+
+
 def rotate_log(path: Path, *, max_bytes: int = DEFAULT_MAX_LOG_BYTES) -> None:
     if max_bytes < 1 or not path.is_file() or path.stat().st_size < max_bytes:
         return
@@ -87,6 +96,7 @@ def run_hidden_maintenance(
     log_path: Path = DEFAULT_LOG_PATH,
     command: Sequence[str] | None = None,
     review_command: Sequence[str] | None = None,
+    calibration_command: Sequence[str] | None = None,
     runner: Callable[..., object] = subprocess.run,
     max_log_bytes: int = DEFAULT_MAX_LOG_BYTES,
     runtime_path: Path = DEFAULT_RUNTIME_PATH,
@@ -98,6 +108,11 @@ def run_hidden_maintenance(
         list(review_command)
         if review_command is not None
         else (build_h5_3_review_command() if command is None else None)
+    )
+    selected_calibration_command = (
+        list(calibration_command)
+        if calibration_command is not None
+        else (build_calibration_queue_command() if command is None else None)
     )
     creationflags = getattr(subprocess, "CREATE_NO_WINDOW", 0) if os.name == "nt" else 0
 
@@ -140,6 +155,26 @@ def run_hidden_maintenance(
                     log.write(
                         "H5.3 REVIEW WARNING: "
                         f"maintenance exit_code={review_return_code}; History remains successful.\n"
+                    )
+            if return_code == 0 and selected_calibration_command is not None:
+                log.write("H2 calibration queue maintenance\n")
+                log.flush()
+                calibration_completed = runner(
+                    selected_calibration_command,
+                    cwd=str(PROJECT_ROOT),
+                    stdout=log,
+                    stderr=subprocess.STDOUT,
+                    check=False,
+                    creationflags=creationflags,
+                )
+                calibration_return_code = int(
+                    getattr(calibration_completed, "returncode", 1)
+                )
+                if calibration_return_code != 0:
+                    log.write(
+                        "H2 CALIBRATION QUEUE WARNING: "
+                        f"maintenance exit_code={calibration_return_code}; "
+                        "History remains successful.\n"
                     )
         except Exception:
             traceback.print_exc(file=log)

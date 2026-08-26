@@ -48,6 +48,14 @@ def test_build_h5_3_review_command_uses_hidden_runner_python(tmp_path: Path):
     ]
 
 
+def test_build_calibration_queue_command_uses_hidden_runner_python(tmp_path: Path):
+    python = tmp_path / "python.exe"
+    assert hidden.build_calibration_queue_command(python_executable=python) == [
+        str(python.resolve()),
+        str(hidden.PROJECT_ROOT / "maintain_calibration_queues.py"),
+    ]
+
+
 def test_hidden_maintenance_runs_nonblocking_review_maintenance_after_success(
     tmp_path: Path,
 ):
@@ -55,12 +63,13 @@ def test_hidden_maintenance_runs_nonblocking_review_maintenance_after_success(
 
     def runner(command, **kwargs):
         calls.append(command)
-        return SimpleNamespace(returncode=0 if len(calls) == 1 else 9)
+        return SimpleNamespace(returncode=0 if len(calls) in {1, 3} else 9)
 
     result = hidden.run_hidden_maintenance(
         log_path=tmp_path / "task.log",
         command=["python.exe", "history.py"],
         review_command=["python.exe", "review.py"],
+        calibration_command=["python.exe", "calibration.py"],
         runner=runner,
         runtime_path=tmp_path / "runtime.json",
     )
@@ -68,6 +77,7 @@ def test_hidden_maintenance_runs_nonblocking_review_maintenance_after_success(
     assert calls == [
         ["python.exe", "history.py"],
         ["python.exe", "review.py"],
+        ["python.exe", "calibration.py"],
     ]
     assert "H5.3 REVIEW WARNING" in (tmp_path / "task.log").read_text(encoding="utf-8")
 

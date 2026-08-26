@@ -545,3 +545,15 @@ El launcher bloquea LMU abierto, History, rutas externas, archivos menores de
 5 MiB o recientes. Ejecuta primero Python + History sin LLM y exige dos vueltas
 válidas antes de autorizar DeepSeek. Ver
 [`RACE_ENGINEER_CONTEXT_MENU.md`](RACE_ENGINEER_CONTEXT_MENU.md).
+
+## 9. Preparar automáticamente colas de calibración
+
+El scheduler lo ejecuta automáticamente, pero puede comprobarse manualmente:
+
+```powershell
+python maintain_calibration_queues.py
+```
+
+Procesa como máximo un contexto nuevo o modificado, reutiliza batches exactos y
+genera solamente la cola para labeling humano. No importa nuevamente History, no
+llama un LLM y no genera labels automáticos.

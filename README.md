@@ -196,12 +196,11 @@ DeepSeek es actualmente el backend preferido para desarrollo y pruebas frecuente
 
 ### Modo deterministic-first (default desde 2026-08-25)
 
-La etapa LLM es **deterministic-first por default**: interpretación de
-episodios, summary por comparación y prosa global se construyen en Python sin
-llamar al transporte LLM. La **única llamada LLM que queda en el runtime
-default es el ranker de prioridad** (clasificación PRIORITARIO /
-SECUNDARIO / NO_ACCIONABLE), cuya política determinista D2.9 está congelada
-como candidato de producción (sin cutover todavía).
+La etapa LLM es **100% determinista por default**: interpretación de episodios,
+summary por comparación, prosa global y el ranker de prioridad
+(clasificación PRIORITARIO / SECUNDARIO / NO_ACCIONABLE, política D2.9) se
+construyen en Python sin llamar al transporte LLM. El análisis/debrief corre
+sin API key.
 
 Para volver al comportamiento LLM-first (temporal o por modo):
 
@@ -210,6 +209,7 @@ $env:RACE_ENGINEER_DETERMINISTIC_FIRST = "0"   # desactiva el default global
 $env:RACE_ENGINEER_SUMMARY_DETERMINISTIC = "0" # o por modo
 $env:RACE_ENGINEER_GLOBAL_DETERMINISTIC = "0"
 $env:RACE_ENGINEER_EPISODE_DETERMINISTIC = "0"
+$env:RACE_ENGINEER_LLM_RANKER = "1"          # vuelve al ranker LLM (rollback)
 ```
 
 Ver [`docs/D3_LLM_RUNTIME_DEPENDENCY_AUDIT_V0_1.md`](docs/D3_LLM_RUNTIME_DEPENDENCY_AUDIT_V0_1.md).

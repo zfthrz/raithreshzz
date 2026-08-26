@@ -12,6 +12,7 @@ import urllib.request
 from datetime import datetime, timezone
 
 from runtime_paths import llm_debug_dir, llm_result_dir
+from product_priority_ranker import build_product_priority_ranker_response
 from coaching_precision import (
     enrich_patterns_with_precision,
     enrich_plan_items_with_precision,
@@ -36,6 +37,14 @@ def deterministic_first_enabled(flag_name: str) -> bool:
     if value is None:
         return master
     return value == "1"
+
+
+def llm_ranker_enabled() -> bool:
+    """D2.9 cutover: ranker determinista por default.
+
+    RACE_ENGINEER_LLM_RANKER=1 restaura el ranker LLM (rollback).
+    """
+    return os.environ.get("RACE_ENGINEER_LLM_RANKER", "0") == "1"
 
 
 # ============================================================
@@ -6450,6 +6459,48 @@ def get_validated_comparison_ranker_response(
 ):
     errors = None
     last_raw = None
+
+    if not llm_ranker_enabled():
+        try:
+            deterministic_response = (
+                build_product_priority_ranker_response(episode_catalog)
+            )
+        except Exception as exc:
+            return {
+                "status": "REJECTED",
+                "attempts": 0,
+                "response": None,
+                "validation_errors": [
+                    f"Ranker determinista D2.9: {exc}"
+                ],
+            }
+        deterministic_errors = validate_comparison_ranker_response(
+            deterministic_response,
+            episode_catalog,
+        )
+        if deterministic_errors:
+            return {
+                "status": "REJECTED",
+                "attempts": 0,
+                "response": None,
+                "validation_errors": [
+                    f"Ranker determinista D2.9: {error}"
+                    for error in deterministic_errors
+                ],
+            }
+        print(
+            "    Ranker: modo determinista D2.9 (product policy); "
+            "sin llamada LLM."
+        )
+        return {
+            "status": "VALID",
+            "attempts": 0,
+            "response": deterministic_response,
+            "validation_errors": [],
+            "deterministic": True,
+            "deterministic_first": True,
+            "ranker_source": "D2_9_PRODUCT_POLICY",
+        }
 
     for attempt in range(1, MAX_LLM_VALIDATION_ATTEMPTS + 1):
         prompt = build_comparison_ranker_prompt(

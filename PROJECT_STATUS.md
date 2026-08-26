@@ -93,17 +93,18 @@ Validated baseline:
   directo cap 3 + NO_ACCIONABLE sólo observacional/weak-negligible + tie-break
   near-tie ≤5% por parent_zone_delta). Evaluado sobre 127 comparisons (26 shadow
   + 101 derivados): 0 violaciones de política y 0 de contrato ranker; tie-break
-  activo en 25. **Congelado como candidato de producción; sin cutover ni más
-  sesiones de calibración por ahora.** Diff narrativo Imola/Spa/Fuji:
-  classification labels, listas secundarias y (al extender el cut) "Qué probar"
-  completo; el cierre de Lectura rápida y el summary determinista no cambiaron.
+  activo en 25. **Cutover a ranker determinista de producción (default)** vía
+  `product_priority_ranker.py`; rollback con `RACE_ENGINEER_LLM_RANKER=1`. Sin
+  más calibración contra DeepSeek. Validado en sesión real (Fuji 19T38,
+  `--force-llm` sin API key): 0 requests HTTP / 0 tokens / $0.00,
+  `[llm_validator] RUN` PASS, RESULT PASS.
 - D3.x deterministic-first default (2026-08-25): D3.1 H5.2 non-blocking,
   D3.2 summary determinista, D3.3 global determinista y D3.4 episodio
   determinista implementados. Nuevo switch maestro
   `RACE_ENGINEER_DETERMINISTIC_FIRST` (default "1") en los 4 backends con
-  opt-out por flag. **El ranker LLM queda como única dependencia LLM del
-  runtime default.** Evidencia: 901/901 episodios del corpus reconstruibles;
-  validación real Spa PASS; suite completa 1288 PASS. Sin commit todavía.
+  opt-out por flag. **Con el cutover D2.9 el runtime default es 100%
+  determinista (cero llamadas LLM).** Evidencia: 901/901 episodios del corpus
+  reconstruibles; validación real Spa y Fuji PASS; suite completa 1300 PASS.
 
 ### analyze_telemetry
 Current: `3.8`

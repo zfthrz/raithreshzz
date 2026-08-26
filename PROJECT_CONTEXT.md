@@ -149,7 +149,7 @@ DeepSeek pseudo-labels/reviews are assistance and must never be silently mixed w
 # 4. Current operational baseline
 
 Checkpoint: **2026-08-23 GUI v1.17, H5.4 presentation and historical shadow** +
-D3.x deterministic-first default and D2.9 production candidate (2026-08-25).
+D3.x deterministic-first default and D2.9 production ranker (2026-08-25).
 
 | Component | Current operational baseline |
 |---|---|
@@ -596,11 +596,13 @@ RACE_ENGINEER_DETERMINISTIC_FIRST=0     disables the default globally;
                                         a specific flag =1 still forces it
 ```
 
-The **only LLM call left in the default runtime path is the priority ranker**
-(`get_validated_comparison_ranker_response`): it still owns the
+The priority ranker (`get_validated_comparison_ranker_response`) is now also
+deterministic by default: D2.9 product policy
+(`product_priority_ranker.build_product_priority_ranker_response`) owns the
 PRIORITARIO / SECUNDARIO / NO_ACCIONABLE classifications that feed the render
-and the deterministic summary ordering. D2.9 is the frozen production candidate
-for that ranker (shadow, no cutover). Episode fallback
+and the deterministic summary ordering. The default pipeline is therefore
+100% deterministic; set `RACE_ENGINEER_LLM_RANKER=1` to restore the LLM ranker
+as rollback. Episode fallback
 (`build_deterministic_grounded_episode_fallback`) reconstructs the contract for
 901/901 real corpus episodes; genuinely interpretive episodes fail closed
 (REJECTED) instead of degrading silently.
@@ -1210,13 +1212,14 @@ Completed after the integration checkpoint:
 3. Monza confirmed that exact vehicle/context isolation rejects Hypercar-to-LMP2_ELMS history while accepting two compatible Toyota Hypercar sessions.
 4. A first Monza Hypercar H2 batch completed human review and feature reporting, but its leakage-safe evaluation partition is empty; more independent sessions are required before matcher evaluation.
 5. A separate Monza `LMP2_ELMS` H2 batch completed 24 human reviews across 3 sessions; its independent evaluation partition is also empty and remains blocked by real data.
-6. D2.9 — product-principled deterministic ranker policy — is implemented as
-   shadow, evaluated over 127 comparisons (0 policy violations, 0 ranker-contract
-   violations) and **frozen as production candidate**; no cutover and no more
-   calibration sessions for now. The narrative diff on Imola/Spa/Fuji showed the
-   visible changes are classification labels, the secondary/priority lists and,
-   when the cut extends, a full "Qué probar" entry; the closing focus and the
-   deterministic summary did not change in those sessions.
+6. D2.9 — product-principled deterministic ranker policy — is the **production
+   ranker by default** (cutover 2026-08-25), evaluated over 127 comparisons
+   (0 policy violations, 0 ranker-contract violations). Rollback:
+   `RACE_ENGINEER_LLM_RANKER=1`. No more DeepSeek calibration. The narrative
+   diff on Imola/Spa/Fuji showed the visible changes are classification labels,
+   the secondary/priority lists and, when the cut extends, a full "Qué probar"
+   entry; the closing focus and the deterministic summary did not change in
+   those sessions.
 7. D3.x is closed: the LLM stage is deterministic-first by default
    (`RACE_ENGINEER_DETERMINISTIC_FIRST`, default "1"), the H5.2 narrative is
    non-blocking, and **the priority ranker is the only remaining LLM dependency
@@ -1224,9 +1227,8 @@ Completed after the integration checkpoint:
 
 Current priority order:
 
-1. Review the complete D3.x state and commit the deterministic-first default;
-   after that, decide the D2.9 ranker cutover using the existing narrative-diff
-   evidence (no more calibration sessions for now).
+1. D3.x and D2.9 cutover are committed; the default pipeline is 100%
+   deterministic (rollback: `RACE_ENGINEER_LLM_RANKER=1`).
 2. Continue debrief refinement, especially brake-vs-throttle actionability.
 3. Integrate H3 only when calibrated matcher provenance/applicability can be resolved for the current context.
 4. Expand H2 calibration beyond the current limited context before calling it general.
@@ -1529,7 +1531,7 @@ Historical details belong in versioned notes or `legacy/`.
 
 Race Engineer takes an LMU DuckDB, extracts and validates deterministic lap/zone/action evidence in Python, asks an LLM only to prioritize and explain authorized evidence, validates that narrative, stores the deterministic session in a schema-4 History DB, optionally selects a context-compatible historical benchmark through H4, preserves current-session coaching authority through H5.1 dual reference, and compares both compatible raw reference laps deterministically through H5.2. A separate validated H5.2 LLM contract may select only Python-authorized zone and observation codes; Python renders every historical statement and number, while causal claims and driving recommendations remain impossible. H2/H3 are the calibrated cross-session pattern-learning path and remain context-limited rather than universal. The repo must stay clean: source/provenance is tracked, runtime telemetry/debug/results stay under ignored `telemetria/`, `data/generated/` and `data/local/` paths.
 
-Since 2026-08-25 the LLM layer is deterministic-first by default: episode
-interpretation, comparison summary and global prose are built by Python, and
-only the priority ranker still calls the LLM — with D2.9 frozen as its
-deterministic replacement candidate pending a production decision.
+Since 2026-08-25 the LLM layer is fully deterministic by default: episode
+interpretation, comparison summary, global prose and the priority ranker
+(D2.9 product policy) are built by Python. The LLM ranker remains available
+only as explicit rollback (`RACE_ENGINEER_LLM_RANKER=1`).

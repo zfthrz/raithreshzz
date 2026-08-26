@@ -1,9 +1,11 @@
 # D3 — LLM Runtime Dependency Audit v0.2
 
 **Estado:** AUDIT ORIGINAL (v0.1) + CIERRE IMPLEMENTADO (2026-08-25).
-D3.1–D3.4 están implementados y el modo deterministic-first es el **default**
-de runtime; el ranker LLM (D3-L2) queda como única dependencia LLM pendiente.
-Este documento conserva el audit original como referencia analítica.
+D3.1–D3.4 están implementados, el modo deterministic-first es el **default**
+de runtime y **D2.9 ya es el ranker determinista de producción** (cutover
+2026-08-25): el pipeline default es 100% determinista, con el ranker LLM
+disponible sólo como rollback (`RACE_ENGINEER_LLM_RANKER=1`). Este documento
+conserva el audit original como referencia analítica.
 
 **Fecha:** 2026-08-25 · **Método:** call graph real (no búsqueda por nombre).
 
@@ -17,7 +19,7 @@ Este documento conserva el audit original como referencia analítica.
 | D3.2 — Comparison summary deterministic-first | IMPLEMENTADO: `RACE_ENGINEER_SUMMARY_DETERMINISTIC` + `build_deterministic_comparison_summary`. |
 | D3.3 — Global prose deterministic-first | IMPLEMENTADO: `RACE_ENGINEER_GLOBAL_DETERMINISTIC` + `build_deterministic_global_fallback` + `build_deterministic_next_session_priorities`. |
 | D3.4 — Episode interpretation deterministic-first | IMPLEMENTADO: `RACE_ENGINEER_EPISODE_DETERMINISTIC` + `build_deterministic_grounded_episode_fallback`; episodios genuinamente interpretativos quedan fail-closed REJECTED. |
-| D3.5 — Ranker determinista (L2) | PENDIENTE: depende de la decisión de promoción de D2.9 (congelado como candidato de producción, sin cutover). |
+| D3.5 — Ranker determinista (L2) | IMPLEMENTADO (cutover 2026-08-25): D2.9 product policy por default; rollback `RACE_ENGINEER_LLM_RANKER=1`. |
 | D3.6 — LLM offline fuera del runtime | FORMALIZADO: pair review (H2.2) y selección H5.3c siguen siendo offline. |
 
 ### Mecanismo del default
@@ -38,11 +40,13 @@ RACE_ENGINEER_DETERMINISTIC_FIRST=0   desactiva el default global;
                                       ese modo individual.
 ```
 
-Con el default activo, el runtime por comparación hace **una sola llamada LLM**:
-el ranker de prioridad (D3-L2). Episodio, summary y global son deterministas y
-no llaman transporte. El ranker conserva la autoridad de clasificación
-(PRIORITARIO / SECUNDARIO / NO_ACCIONABLE) que alimenta la narrativa y el
-ordenamiento del summary determinista.
+Con el default activo, el runtime por comparación **no hace ninguna llamada
+LLM**: episodio, summary, global y ranker (D2.9 product policy) son
+deterministas y no llaman transporte. La clasificación
+(PRIORITARIO / SECUNDARIO / NO_ACCIONABLE) sale de
+`product_priority_ranker.build_product_priority_ranker_response` y alimenta la
+narrativa y el ordenamiento del summary determinista. El ranker LLM queda como
+rollback explícito (`RACE_ENGINEER_LLM_RANKER=1`).
 
 ### Evidencia
 
@@ -53,8 +57,10 @@ ordenamiento del summary determinista.
 - Validación real con los 3 modos activos (`--force-llm`, Spa
   `R_2026-08-10T01_03_52Z`): exit 0, `[llm] RUN`, `[llm_validator] RUN`
   ("Ground truth, contrato de episodios y render final consistentes").
-- Suite completa: **1288 PASS / 0 FAIL / 0 SKIP** (incluye
-  `tests/test_d3_deterministic_default.py`).
+- Validación real post-cutover (Fuji `P_2026-08-19T19_38_36Z`, 3 comparisons,
+  `--force-llm` sin API key): `[llm] RUN` 100% determinista, **HTTP requests:
+  0 / tokens: 0 / costo $0.00**, `[llm_validator] RUN` PASS, RESULT PASS.
+- Suite completa: **1300 PASS / 0 FAIL / 0 SKIP**.
 
 ### Riesgo residual conocido
 
@@ -181,7 +187,7 @@ Orden original: **primero lo que NO depende de D2**. Estado actual:
 | D3.2 — Global prose deterministic-first (L4) | IMPLEMENTADO | `build_deterministic_global_fallback` + `next_session_priorities` deterministas. |
 | D3.3 — Comparison summary deterministic-first (L3) | IMPLEMENTADO | `build_deterministic_comparison_summary`; LLM queda en opt-out. |
 | D3.4 — Episode interpretation determinista (L1) | IMPLEMENTADO | Grounded fallback por canal; interpretativos fail-closed. |
-| D3.5 — Ranker (L2) | PENDIENTE | D2.9 congelado como candidato de producción; sin cutover. |
+| D3.5 — Ranker (L2) | IMPLEMENTADO | D2.9 product policy = ranker de producción (default); rollback `RACE_ENGINEER_LLM_RANKER=1`. |
 | D3.6 — Lazy/offline LLM | FORMALIZADO | H2.2 / H5.3c fuera del runtime. |
 
 ## 9. Low-hanging fruit — TOP 3

@@ -33,7 +33,10 @@ from session_coaching_patterns import (
     _build_repeated_braking_point_patterns,
     _build_repeated_throttle_patterns,
 )
-from session_coaching_plan import _build_next_stint_plan
+from session_coaching_plan import (
+    _build_next_stint_plan,
+    build_plan_priority_reason,
+)
 from session_coaching_priority import _build_priority_regions
 from session_coaching_quality import build_session_comparison_quality_gate
 from session_coaching_recurrence import (

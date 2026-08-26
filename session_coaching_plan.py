@@ -717,6 +717,45 @@ def _single_fact_as_plan_pattern(fact, comparison=None):
 
     return value
 
+def build_plan_priority_reason(item):
+    """Return deterministic provenance for why a plan item is present."""
+    if not isinstance(item, dict):
+        return {}
+
+    kind = str(item.get("kind") or "unknown")
+
+    comparison_count = item.get("comparison_count")
+    if not isinstance(comparison_count, int):
+        comparisons = item.get("comparisons")
+        comparison_count = len(comparisons) if isinstance(comparisons, list) else 0
+
+    physical_anchor_types = []
+
+    for label, field in (
+        ("braking_point", "braking_point_patterns"),
+        ("brake_release", "brake_release_patterns"),
+        ("throttle_onset", "throttle_onset_patterns"),
+        ("throttle_release", "throttle_release_patterns"),
+    ):
+        patterns = item.get(field)
+        if isinstance(patterns, list) and patterns:
+            physical_anchor_types.append(label)
+
+    actionable_cue_count = item.get("actionable_cue_count")
+    if not isinstance(actionable_cue_count, int):
+        cues = item.get("driver_cues")
+        actionable_cue_count = len(cues) if isinstance(cues, list) else 0
+
+    return {
+        "kind": kind,
+        "comparison_count": max(comparison_count, 0),
+        "repeated": kind == "repeated_region",
+        "has_physical_anchor": bool(physical_anchor_types),
+        "physical_anchor_types": physical_anchor_types,
+        "actionable_cue_count": max(actionable_cue_count, 0),
+    }
+
+
 def _single_finding_plan_item(
     finding,
     label,

@@ -7,9 +7,9 @@ llama.cpp recovery and H5.3 review work described below.
 
 Validated baseline:
 
-- full pytest: `1315 PASS / 0 FAIL / 0 SKIP`;
+- full pytest: `1331 PASS / 0 FAIL / 0 SKIP`;
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP` (last analyzer-affecting checkpoint);
-- GUI: v1.18, section navigation + telemetry paned area + GPS zoom/pan + H5.3
+- GUI: v1.20, section navigation + telemetry paned area + GPS zoom/pan + H5.3
   presentation + status badges and side-by-side historical comparison +
   calibration status panel + plan-map-telemetry sync + telemetry playback +
   telemetry resolution (20 Hz default, 10-50 Hz) + scheduler-aware auto-refresh;
@@ -679,6 +679,21 @@ bajas reales. Conserva la sesión seleccionada, se suspende durante análisis pr
 y cancela su callback al cerrar. `HISTORY_READY` ahora informa que el debrief
 determinista puede completarse automáticamente. See
 `docs/RACE_ENGINEER_GUI_V1_18.md`.
+
+GUI v1.19 agrega salud observable del scheduler: START/END atómico del runner
+oculto y alertas read-only por ejecución atascada, heartbeat vencido, ciclo
+fallido o tres fallos repetidos del primer debrief pendiente. No aplica
+recuperación automática ni altera la cola FIFO. See
+`docs/RACE_ENGINEER_GUI_V1_19.md`.
+
+B3 incorpora un panel compacto al hacer clic en el indicador: muestra evidencia
+del ciclo y del elemento bloqueante, conserva `last_successful_at`, permite copiar
+el diagnóstico y abrir el log. Todas las acciones son de presentación.
+
+B4 permite posponer manualmente una sesión que acumuló tres fallos de debrief y
+reactivarla más tarde al final de la cola. Usa `DEBRIEF_DEFERRED`, conserva History
+y el error, exige confirmación y no escribe si el scheduler está RUNNING o el
+estado cambió durante la operación. See `docs/RACE_ENGINEER_GUI_V1_20.md`.
 
 Calibration batch orchestrator `1.5` requires the current History schema 4 contract,
 reports its runtime version consistently and has a regression test against schema drift.

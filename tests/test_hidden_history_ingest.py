@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import subprocess
 from pathlib import Path
 from types import SimpleNamespace
@@ -61,6 +62,7 @@ def test_hidden_maintenance_runs_nonblocking_review_maintenance_after_success(
         command=["python.exe", "history.py"],
         review_command=["python.exe", "review.py"],
         runner=runner,
+        runtime_path=tmp_path / "runtime.json",
     )
     assert result == 0
     assert calls == [
@@ -97,6 +99,7 @@ def test_run_hidden_maintenance_redirects_output_and_returns_child_code(
         log_path=log,
         command=["python.exe", "worker.py"],
         runner=runner,
+        runtime_path=tmp_path / "runtime.json",
     )
 
     assert result == 7
@@ -107,6 +110,9 @@ def test_run_hidden_maintenance_redirects_output_and_returns_child_code(
     assert "START hidden History maintenance" in text
     assert "child output" in text
     assert "END exit_code=7" in text
+    runtime = (tmp_path / "runtime.json").read_text(encoding="utf-8")
+    assert '"status": "FAILED"' in runtime
+    assert '"exit_code": 7' in runtime
 
 
 def test_run_hidden_maintenance_logs_unexpected_exception(tmp_path: Path):
@@ -118,9 +124,33 @@ def test_run_hidden_maintenance_logs_unexpected_exception(tmp_path: Path):
         log_path=log,
         command=["python.exe", "worker.py"],
         runner=runner,
+        runtime_path=tmp_path / "runtime.json",
     )
 
     assert result == 1
     text = log.read_text(encoding="utf-8")
     assert "RuntimeError: boom" in text
     assert "END exit_code=1" in text
+    assert '"status": "FAILED"' in (
+        tmp_path / "runtime.json"
+    ).read_text(encoding="utf-8")
+
+
+def test_runtime_state_preserves_last_success_across_failed_cycle(tmp_path: Path):
+    runtime_path = tmp_path / "runtime.json"
+    runtime_path.write_text(json.dumps({
+        "status": "PASS",
+        "last_successful_at": "2026-08-25T18:00:00+00:00",
+    }), encoding="utf-8")
+
+    result = hidden.run_hidden_maintenance(
+        log_path=tmp_path / "task.log",
+        runtime_path=runtime_path,
+        command=["python.exe", "worker.py"],
+        runner=lambda command, **kwargs: SimpleNamespace(returncode=4),
+    )
+
+    assert result == 4
+    runtime = json.loads(runtime_path.read_text(encoding="utf-8"))
+    assert runtime["status"] == "FAILED"
+    assert runtime["last_successful_at"] == "2026-08-25T18:00:00+00:00"

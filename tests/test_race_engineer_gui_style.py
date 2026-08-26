@@ -8,6 +8,7 @@ from race_engineer_gui import (
     calibration_status_color,
     calibration_status_tag,
     calibration_status_tooltip,
+    file_fingerprint,
     format_comparison_columns,
     session_status_color,
     session_status_tooltip,
@@ -74,7 +75,7 @@ def test_gui_v1_11_applies_flat_dark_control_chrome_without_opening_window():
 
     app._configure_style()
 
-    assert GUI_VERSION == "1.18"
+    assert GUI_VERSION == "1.20"
     assert style.theme == "clam"
     assert style.configurations["TEntry"]["fieldbackground"] == "#15181c"
     assert style.configurations["TCombobox"]["borderwidth"] == 0
@@ -173,6 +174,15 @@ def test_state_files_fingerprint_changes_only_for_run_state_files(tmp_path):
     assert state_files_fingerprint(runs) != with_second
 
 
+def test_optional_local_state_fingerprint_tracks_mtime_and_size(tmp_path):
+    path = tmp_path / "telemetry_auto_ingest.json"
+    assert file_fingerprint(path) is None
+    path.write_text("{}", encoding="utf-8")
+    baseline = file_fingerprint(path)
+    assert baseline is not None
+    path.write_text('{"files": {}}', encoding="utf-8")
+    assert file_fingerprint(path) != baseline
+
 def test_state_check_refreshes_only_after_change_and_reschedules(tmp_path):
     app = RaceEngineerApp.__new__(RaceEngineerApp)
     app.root = FakeRoot()
@@ -182,6 +192,10 @@ def test_state_check_refreshes_only_after_change_and_reschedules(tmp_path):
     app.analysis_running = False
     app._state_refresh_after_id = "current-check"
     app._state_files_fingerprint = state_files_fingerprint(app.runs_root)
+    app.telemetry_ingest_state_path = tmp_path / "telemetry_auto_ingest.json"
+    app.scheduler_runtime_path = tmp_path / "telemetry_scheduler_runtime.json"
+    app._scheduler_state_fingerprint = None
+    app._refresh_scheduler_status = lambda: None
     refreshes = []
     app.refresh = lambda: refreshes.append(True)
 
@@ -210,6 +224,10 @@ def test_state_check_does_not_refresh_during_gui_analysis(tmp_path):
     app.analysis_running = True
     app._state_refresh_after_id = "current-check"
     app._state_files_fingerprint = ()
+    app.telemetry_ingest_state_path = tmp_path / "telemetry_auto_ingest.json"
+    app.scheduler_runtime_path = tmp_path / "telemetry_scheduler_runtime.json"
+    app._scheduler_state_fingerprint = None
+    app._refresh_scheduler_status = lambda: None
     refreshes = []
     app.refresh = lambda: refreshes.append(True)
 
@@ -219,6 +237,34 @@ def test_state_check_does_not_refresh_during_gui_analysis(tmp_path):
 
     assert refreshes == []
     assert app._state_refresh_after_id == "after-1"
+
+
+def test_scheduler_state_change_updates_badge_without_full_refresh(tmp_path):
+    app = RaceEngineerApp.__new__(RaceEngineerApp)
+    app.root = FakeRoot()
+    app.runs_root = tmp_path / "runs"
+    app.runs_root.mkdir()
+    app.telemetry_ingest_state_path = tmp_path / "telemetry_auto_ingest.json"
+    app.scheduler_runtime_path = tmp_path / "telemetry_scheduler_runtime.json"
+    app.telemetry_ingest_state_path.write_text('{"files": {}}', encoding="utf-8")
+    app._closing = False
+    app.analysis_running = False
+    app._state_refresh_after_id = "current-check"
+    app._state_files_fingerprint = state_files_fingerprint(app.runs_root)
+    app._scheduler_state_fingerprint = None
+    full_refreshes = []
+    badge_refreshes = []
+    app.refresh = lambda: full_refreshes.append(True)
+    app._refresh_scheduler_status = lambda: badge_refreshes.append(True)
+
+    app._check_for_state_updates()
+
+    assert full_refreshes == []
+    assert badge_refreshes == [True]
+    assert app._scheduler_state_fingerprint == (
+        file_fingerprint(app.telemetry_ingest_state_path),
+        None,
+    )
 
 
 def test_format_comparison_columns_builds_side_by_side_view():

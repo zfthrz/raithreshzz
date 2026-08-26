@@ -21,6 +21,11 @@ from race_engineer_gui_settings import (
 from race_engineer_settings_gui import edit_settings
 from runtime_paths import history_db_default_path
 from race_engineer_h5_3_review_status import load_status as load_h5_3_review_status
+from race_engineer_scheduler_status import (
+    diagnostic_report as scheduler_diagnostic_report,
+    load_status as load_scheduler_status,
+)
+from scheduler_queue_actions import defer_blocking_debrief, resume_deferred_debrief
 
 from race_engineer_ui_model import (
     SessionDetail,
@@ -70,7 +75,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.18"
+GUI_VERSION = "1.20"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 STATE_REFRESH_INTERVAL_MS = 5_000
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -134,6 +139,15 @@ def _open_path(path: Path) -> None:
     raise RuntimeError("Abrir carpetas desde la GUI sólo está soportado en Windows.")
 
 
+def _open_file(path: Path) -> None:
+    if not path.is_file():
+        raise RuntimeError(f"El archivo todavía no existe: {path}")
+    if sys.platform == "win32":
+        os.startfile(str(path))  # type: ignore[attr-defined]
+        return
+    raise RuntimeError("Abrir archivos desde la GUI sólo está soportado en Windows.")
+
+
 def _clean_markdown_line(line: str) -> str:
     return line.replace("**", "").replace("_", "")
 
@@ -162,6 +176,15 @@ def state_files_fingerprint(runs_root: Path) -> tuple[tuple[str, int, int], ...]
             continue
         items.append((relative, stat.st_mtime_ns, stat.st_size))
     return tuple(sorted(items))
+
+
+def file_fingerprint(path: Path) -> tuple[int, int] | None:
+    """Return mtime/size for one optional local state file."""
+    try:
+        stat = Path(path).stat()
+    except OSError:
+        return None
+    return stat.st_mtime_ns, stat.st_size
 
 
 def session_summary_values(
@@ -335,8 +358,19 @@ class RaceEngineerApp:
         self.analysis_database: Path | None = None
         self.analysis_model: str | None = None
         self._state_files_fingerprint: tuple[tuple[str, int, int], ...] = ()
+        self._scheduler_state_fingerprint: tuple[tuple[int, int] | None, tuple[int, int] | None] | None = None
         self._state_refresh_after_id = None
         self._closing = False
+        self.telemetry_ingest_state_path = (
+            PROJECT_ROOT / "data" / "local" / "telemetry_auto_ingest.json"
+        )
+        self.scheduler_runtime_path = (
+            PROJECT_ROOT / "data" / "local" / "telemetry_scheduler_runtime.json"
+        )
+        self.scheduler_log_path = (
+            PROJECT_ROOT / "data" / "local" / "telemetry_auto_ingest_task.log"
+        )
+        self.scheduler_diagnostic_window = None
         self.settings_path = PROJECT_ROOT / "data" / "local" / "race_engineer_gui_settings.json"
         try:
             self.settings = load_settings(self.settings_path)
@@ -824,16 +858,6 @@ class RaceEngineerApp:
         ttk.Label(session_tools, textvariable=self.count_var, style="Metric.TLabel").pack(
             side="left"
         )
-        self.h5_3_review_state_path = (
-            PROJECT_ROOT / "data" / "local" / "h5_3_review_maintenance.json"
-        )
-        self.h5_3_review_var = tk.StringVar(value="H5.3 shadow · cargando…")
-        self.h5_3_review_label = ttk.Label(
-            session_tools,
-            textvariable=self.h5_3_review_var,
-            style="H53Muted.TLabel",
-        )
-        self.h5_3_review_label.pack(side="left", padx=(16, 0))
         self.session_filter_var = tk.StringVar(value="Todas")
         self.session_filter_combo = ttk.Combobox(
             session_tools,
@@ -855,6 +879,26 @@ class RaceEngineerApp:
         )
         self.session_filter_combo.bind("<<ComboboxSelected>>", self._apply_session_filters)
         self.session_query_var.trace_add("write", lambda *_: self._apply_session_filters())
+
+        automation_tools = ttk.Frame(left, style="Panel.TFrame")
+        automation_tools.pack(fill="x", pady=(0, 8))
+        self.scheduler_var = tk.StringVar(value="Scheduler · cargando…")
+        self.scheduler_label = ttk.Label(
+            automation_tools,
+            textvariable=self.scheduler_var,
+            style="H53Muted.TLabel",
+        )
+        self.scheduler_label.pack(side="left")
+        self.h5_3_review_state_path = (
+            PROJECT_ROOT / "data" / "local" / "h5_3_review_maintenance.json"
+        )
+        self.h5_3_review_var = tk.StringVar(value="H5.3 shadow · cargando…")
+        self.h5_3_review_label = ttk.Label(
+            automation_tools,
+            textvariable=self.h5_3_review_var,
+            style="H53Muted.TLabel",
+        )
+        self.h5_3_review_label.pack(side="right")
 
         columns = ("date", "track", "vehicle", "laps", "best", "status")
         self.tree = ttk.Treeview(left, columns=columns, show="headings", selectmode="browse")
@@ -2116,6 +2160,7 @@ class RaceEngineerApp:
 
     def refresh(self, *, preferred_database: Path | None = None):
         self._refresh_h5_3_review_status()
+        self._refresh_scheduler_status()
         previous = self.selected_record()
         previous_key = previous.session_key if previous else None
         self.all_sessions, errors = discover_sessions(self.runs_root)
@@ -2126,6 +2171,7 @@ class RaceEngineerApp:
             previous_key=previous_key,
         )
         self._state_files_fingerprint = state_files_fingerprint(self.runs_root)
+        self._scheduler_state_fingerprint = self._scheduler_fingerprint()
 
     def _schedule_state_refresh_check(self):
         if self._closing or self._state_refresh_after_id is not None:
@@ -2144,6 +2190,11 @@ class RaceEngineerApp:
                 current = state_files_fingerprint(self.runs_root)
                 if current != self._state_files_fingerprint:
                     self.refresh()
+                else:
+                    scheduler_current = self._scheduler_fingerprint()
+                    if scheduler_current != self._scheduler_state_fingerprint:
+                        self._refresh_scheduler_status()
+                        self._scheduler_state_fingerprint = scheduler_current
         finally:
             self._schedule_state_refresh_check()
 
@@ -2156,6 +2207,191 @@ class RaceEngineerApp:
             "<Button-1>",
             lambda _event, detail=status.detail: self.footer_var.set(detail),
         )
+
+    def _refresh_scheduler_status(self):
+        status = load_scheduler_status(
+            self.telemetry_ingest_state_path,
+            self.scheduler_runtime_path,
+        )
+        self.scheduler_var.set(status.text)
+        self.scheduler_label.configure(style=status.style, cursor="hand2")
+        self.scheduler_label.bind(
+            "<Button-1>",
+            self._show_scheduler_diagnostics,
+        )
+
+    def _scheduler_fingerprint(self):
+        return (
+            file_fingerprint(self.telemetry_ingest_state_path),
+            file_fingerprint(self.scheduler_runtime_path),
+        )
+
+    def _scheduler_diagnostic_text(self) -> str:
+        return scheduler_diagnostic_report(
+            self.telemetry_ingest_state_path,
+            self.scheduler_runtime_path,
+            self.scheduler_log_path,
+        )
+
+    def _show_scheduler_diagnostics(self, _event=None):
+        existing = self.scheduler_diagnostic_window
+        if existing is not None:
+            try:
+                if existing.winfo_exists():
+                    existing.lift()
+                    existing.focus_force()
+                    return
+            except self.tk.TclError:
+                pass
+
+        window = self.tk.Toplevel(self.root)
+        self.scheduler_diagnostic_window = window
+        window.title("Diagnóstico del scheduler")
+        window.geometry("820x560")
+        window.minsize(580, 380)
+        window.configure(background="#101010")
+        window.transient(self.root)
+
+        container = self.ttk.Frame(window, style="Panel.TFrame", padding=16)
+        container.pack(fill="both", expand=True)
+        self.ttk.Label(
+            container,
+            text="Scheduler e ingest automático",
+            style="Title.TLabel",
+        ).pack(anchor="w")
+        self.ttk.Label(
+            container,
+            text=(
+                "Diagnóstico de solo lectura. Ninguna acción de esta ventana "
+                "modifica la cola."
+            ),
+            style="Muted.TLabel",
+        ).pack(anchor="w", pady=(2, 10))
+
+        report = self._scheduler_diagnostic_text()
+        scheduler_status = load_scheduler_status(
+            self.telemetry_ingest_state_path,
+            self.scheduler_runtime_path,
+        )
+        text_widget = self.tk.Text(
+            container,
+            wrap="word",
+            background="#171717",
+            foreground="#e6edf3",
+            insertbackground="#e6edf3",
+            relief="flat",
+            padx=12,
+            pady=10,
+        )
+        text_widget.pack(fill="both", expand=True)
+        text_widget.insert("1.0", report)
+        text_widget.configure(state="disabled")
+
+        buttons = self.ttk.Frame(container, style="Panel.TFrame")
+        buttons.pack(fill="x", pady=(12, 0))
+        self.ttk.Button(
+            buttons,
+            text="Copiar diagnóstico",
+            command=lambda: self._copy_scheduler_diagnostics(report),
+        ).pack(side="left")
+        self.ttk.Button(
+            buttons,
+            text="Abrir log",
+            command=self._open_scheduler_log,
+        ).pack(side="left", padx=(8, 0))
+        if (
+            scheduler_status.blocked_path
+            and scheduler_status.code not in {"SCHEDULER_RUNNING", "SCHEDULER_STALLED"}
+        ):
+            self.ttk.Button(
+                buttons,
+                text="Posponer sesión bloqueante",
+                command=lambda path=scheduler_status.blocked_path: (
+                    self._defer_scheduler_session(path, window)
+                ),
+            ).pack(side="left", padx=(8, 0))
+        elif (
+            scheduler_status.deferred_paths
+            and scheduler_status.code not in {"SCHEDULER_RUNNING", "SCHEDULER_STALLED"}
+        ):
+            self.ttk.Button(
+                buttons,
+                text="Reactivar sesión pospuesta",
+                command=lambda path=scheduler_status.deferred_paths[0]: (
+                    self._resume_scheduler_session(path, window)
+                ),
+            ).pack(side="left", padx=(8, 0))
+        self.ttk.Button(
+            buttons,
+            text="Cerrar",
+            command=window.destroy,
+        ).pack(side="right")
+        window.protocol("WM_DELETE_WINDOW", window.destroy)
+
+    def _copy_scheduler_diagnostics(self, report: str):
+        self.root.clipboard_clear()
+        self.root.clipboard_append(report)
+        self.root.update_idletasks()
+        self.footer_var.set("Diagnóstico del scheduler copiado al portapapeles.")
+
+    def _open_scheduler_log(self):
+        from tkinter import messagebox
+
+        try:
+            _open_file(self.scheduler_log_path)
+        except (OSError, RuntimeError) as exc:
+            messagebox.showerror("Race Engineer", str(exc), parent=self.root)
+
+    def _defer_scheduler_session(self, database_path: str, window):
+        from tkinter import messagebox
+
+        if not messagebox.askyesno(
+            "Liberar cola del scheduler",
+            (
+                f"¿Posponer {Path(database_path).name}?\n\n"
+                "La sesión seguirá guardada en History y conservará el error. "
+                "El scheduler podrá continuar con la siguiente."
+            ),
+            parent=window,
+        ):
+            return
+        try:
+            defer_blocking_debrief(
+                self.telemetry_ingest_state_path,
+                database_path,
+                runtime_path=self.scheduler_runtime_path,
+            )
+        except (OSError, ValueError) as exc:
+            messagebox.showerror("Race Engineer", str(exc), parent=window)
+            return
+        window.destroy()
+        self.refresh()
+        self.footer_var.set("Sesión pospuesta; la cola puede continuar.")
+
+    def _resume_scheduler_session(self, database_path: str, window):
+        from tkinter import messagebox
+
+        if not messagebox.askyesno(
+            "Reactivar debrief",
+            (
+                f"¿Reactivar {Path(database_path).name}?\n\n"
+                "Volverá al final de la cola con sus errores anteriores conservados."
+            ),
+            parent=window,
+        ):
+            return
+        try:
+            resume_deferred_debrief(
+                self.telemetry_ingest_state_path,
+                database_path,
+                runtime_path=self.scheduler_runtime_path,
+            )
+        except (OSError, ValueError) as exc:
+            messagebox.showerror("Race Engineer", str(exc), parent=window)
+            return
+        window.destroy()
+        self.refresh()
+        self.footer_var.set("Sesión reactivada al final de la cola.")
 
     def _apply_session_filters(self, _event=None):
         previous = self.selected_record()

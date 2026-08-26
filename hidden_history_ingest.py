@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import os
 import subprocess
 import sys
@@ -14,7 +15,26 @@ LMU_TELEMETRY_DIR = Path(
     r"C:\Program Files (x86)\Steam\steamapps\common\Le Mans Ultimate\UserData\Telemetry"
 )
 DEFAULT_LOG_PATH = PROJECT_ROOT / "data" / "local" / "telemetry_auto_ingest_task.log"
+DEFAULT_RUNTIME_PATH = PROJECT_ROOT / "data" / "local" / "telemetry_scheduler_runtime.json"
 DEFAULT_MAX_LOG_BYTES = 2 * 1024 * 1024
+
+
+def write_runtime_state(path: Path, document: dict[str, object]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(
+        json.dumps(document, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    temporary.replace(path)
+
+
+def read_runtime_state(path: Path) -> dict[str, object]:
+    try:
+        document = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError, json.JSONDecodeError):
+        return {}
+    return document if isinstance(document, dict) else {}
 
 
 def console_python_executable(executable: Path | None = None) -> Path:
@@ -69,6 +89,7 @@ def run_hidden_maintenance(
     review_command: Sequence[str] | None = None,
     runner: Callable[..., object] = subprocess.run,
     max_log_bytes: int = DEFAULT_MAX_LOG_BYTES,
+    runtime_path: Path = DEFAULT_RUNTIME_PATH,
 ) -> int:
     log_path.parent.mkdir(parents=True, exist_ok=True)
     rotate_log(log_path, max_bytes=max_log_bytes)
@@ -82,6 +103,15 @@ def run_hidden_maintenance(
 
     with log_path.open("a", encoding="utf-8", errors="replace") as log:
         stamp = datetime.now(timezone.utc).isoformat()
+        previous_runtime = read_runtime_state(runtime_path)
+        running_state = {
+            "status": "RUNNING",
+            "started_at": stamp,
+            "pid": os.getpid(),
+        }
+        if previous_runtime.get("last_successful_at"):
+            running_state["last_successful_at"] = previous_runtime["last_successful_at"]
+        write_runtime_state(runtime_path, running_state)
         log.write(f"\n[{stamp}] START hidden History maintenance\n")
         log.flush()
         try:
@@ -117,6 +147,19 @@ def run_hidden_maintenance(
         finish = datetime.now(timezone.utc).isoformat()
         log.write(f"[{finish}] END exit_code={return_code}\n")
         log.flush()
+        finished_state = {
+            "status": "PASS" if return_code == 0 else "FAILED",
+            "started_at": stamp,
+            "finished_at": finish,
+            "exit_code": return_code,
+            "pid": os.getpid(),
+        }
+        last_successful_at = (
+            finish if return_code == 0 else previous_runtime.get("last_successful_at")
+        )
+        if last_successful_at:
+            finished_state["last_successful_at"] = last_successful_at
+        write_runtime_state(runtime_path, finished_state)
     return return_code
 
 

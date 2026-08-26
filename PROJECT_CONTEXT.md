@@ -1,7 +1,7 @@
 # Race Engineer — PROJECT_CONTEXT v1.0
 
 > Canonical end-to-end onboarding context for coding agents and LLMs working on the Race Engineer repository.
-> Baseline represented here: GUI v1.18, H5.4 P1–P11 and historical-shadow checkpoint 2026-08-25.
+> Baseline represented here: GUI v1.20, H5.4 P1–P11 and historical-shadow checkpoint 2026-08-26.
 > Project name: **Threshzz's Telemetry Analysis LMU** (= Race Engineer).
 >
 > This is the detailed mental model of the project. `AGENTS.md` should instruct coding agents to read this file before non-trivial work.
@@ -148,13 +148,13 @@ DeepSeek pseudo-labels/reviews are assistance and must never be silently mixed w
 
 # 4. Current operational baseline
 
-Checkpoint: **2026-08-25 GUI v1.18, H5.4 presentation and historical shadow** +
+Checkpoint: **2026-08-26 GUI v1.20, H5.4 presentation and historical shadow** +
 D3.x deterministic-first default and D2.9 production ranker (2026-08-25).
 
 | Component | Current operational baseline |
 |---|---|
 | `race_engineer.py` | orchestrator v0.3 |
-| `race_engineer_gui.py` | v1.18 / scheduler-aware auto-refresh |
+| `race_engineer_gui.py` | v1.20 / scheduler watchdog + reversible recovery |
 | `analyze_telemetry.py` | v3.8 + Objective Python v6 |
 | Brake point | 2.1 / schema 2.1 |
 | Throttle point | 1.2.1 / schema 1.2 |
@@ -180,7 +180,7 @@ D3.x deterministic-first default and D2.9 production ranker (2026-08-25).
 Validated checkpoints relevant to the current working tree:
 
 ```text
-full pytest (current working tree):  1315 PASS / 0 FAIL / 0 SKIP
+full pytest (current working tree):  1331 PASS / 0 FAIL / 0 SKIP
 Objective Python regressions:         55 PASS / 0 FAIL / 0 SKIP
 Objective recovery check:             READY
 ```
@@ -1381,6 +1381,23 @@ tamaño, pero sólo llama `refresh()` cuando el conjunto cambió. Conserva la se
 seleccionada, omite la recarga durante un análisis iniciado desde la GUI y cancela
 el callback al cerrar. No escribe estado ni reconstruye mapa/telemetría cuando no
 hay cambios. See `docs/RACE_ENGINEER_GUI_V1_18.md`.
+
+GUI v1.19 añade un watchdog read-only. El runner oculto publica de forma
+atómica `telemetry_scheduler_runtime.json` con RUNNING/PASS/FAILED, timestamps,
+PID y exit code. La GUI distingue un ciclo normal, uno RUNNING por más de 15
+minutos, heartbeat ausente por más de 5 minutos, último ciclo fallido y bloqueo
+FIFO por tres fallos del mismo debrief. No salta ni reordena la cola. See
+`docs/RACE_ENGINEER_GUI_V1_19.md`.
+
+Al pulsar el indicador se abre el panel B3 con diagnóstico completo, sesión
+bloqueante, intentos, último error, timestamps del ciclo, último éxito y accesos
+para copiar el reporte o abrir el log local. El panel sigue siendo read-only.
+
+GUI v1.20 añade B4 manual y reversible: una sesión con tres fallos confirmados
+puede pasar a `DEBRIEF_DEFERRED` para liberar la cola y luego reactivarse al final.
+History, intentos y último error se conservan. La acción exige confirmación,
+rechaza un scheduler RUNNING y aborta si el JSON cambia concurrentemente. See
+`docs/RACE_ENGINEER_GUI_V1_20.md`.
 
 The scheduled task must execute `hidden_history_ingest.py` through `pythonw.exe`.
 That wrapper preserves the same maintenance arguments, creates no console window and

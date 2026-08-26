@@ -13,8 +13,8 @@ current code/tests (source of truth; never infer from `legacy/`).
 ```text
 repository: zfthrz/raithreshzz
 branch: main (puede estar N commits ahead de origin; el usuario pushea)
-GUI: 1.18 — telemetry playback/resolution + scheduler-aware auto-refresh
-full pytest: 1315 passed (última corrida completa, GUI v1.18)
+GUI: 1.20 — scheduler watchdog + reversible manual queue recovery
+full pytest: 1331 passed (última corrida completa, GUI v1.20 B4)
 matcher: episode_pair_matcher.py v0.3 con CALIBRATIONS por contexto
 ```
 
@@ -65,6 +65,23 @@ matcher: episode_pair_matcher.py v0.3 con CALIBRATIONS por contexto
   five seconds; refresh only on a real set/mtime/size change, preserve selection,
   skip during GUI-owned analysis and cancel the callback on close. `HISTORY_READY`
   now describes the automatic deterministic debrief path.
+
+### GUI v1.19
+- `hidden_history_ingest.py` publishes atomic RUNNING/PASS/FAILED lifecycle
+  evidence in `data/local/telemetry_scheduler_runtime.json`.
+- The GUI reports current processing, RUNNING older than 15 minutes, heartbeat
+  older than 5 minutes, the last failed cycle, and FIFO blockage after three
+  failed attempts on the same pending debrief.
+- The watchdog is read-only and never skips, reorders or mutates queue entries.
+- Clicking the badge opens the B3 diagnostic panel with blocking session,
+  attempts/error, cycle timestamps, last success, copy-report and open-log actions.
+
+### GUI v1.20
+- B4 can explicitly move a confirmed three-failure item to `DEBRIEF_DEFERRED`,
+  allowing FIFO processing to continue without deleting History or error evidence.
+- The deferred item can be restored at the end of the queue with attempts reset.
+- Both actions require confirmation, reject RUNNING scheduler state and abort if
+  the ingest JSON changes concurrently.
 
 ### Matcher H2 v0.3 — calibración por contexto (`CALIBRATIONS`)
 - Spa LMP2_ELMS: `CALIBRATED_PROVISIONAL_SINGLE_CONTEXT` (72 labels, v0.3

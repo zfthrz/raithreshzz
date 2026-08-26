@@ -58,6 +58,8 @@ class SessionDetail:
     historical_comparison_text: str
     warnings: tuple[str, ...]
     historical_comparison_view: dict = field(default_factory=dict)
+    plan_items: tuple[dict[str, Any], ...] = ()
+    focus_plan_labels: tuple[str, ...] = ()
 
 
 def _dict(value: Any) -> dict[str, Any]:
@@ -691,6 +693,8 @@ def load_session_detail(record: SessionRecord) -> SessionDetail:
     warnings = []
     debrief = "Esta sesión todavía no tiene un debrief LLM validado."
     plan = "No hay un plan de próxima tanda disponible."
+    plan_items: tuple[dict[str, Any], ...] = ()
+    focus_plan_labels: tuple[str, ...] = ()
     laps = "No hay tiempos de vuelta disponibles en el análisis determinista."
     historical_reference = "Esta sesión todavía no tiene una selección H4 disponible."
     historical_comparison_raw: dict[str, Any] = {}
@@ -699,7 +703,23 @@ def load_session_detail(record: SessionRecord) -> SessionDetail:
         try:
             payload = _json(record.debrief_path)
             debrief = str(payload.get("global_analysis") or debrief)
-            plan = _plan_text(_dict(payload.get("session_coaching_facts")))
+            coaching_facts = _dict(payload.get("session_coaching_facts"))
+            plan = _plan_text(coaching_facts)
+
+            raw_plan_items = [
+                _dict(item)
+                for item in _list(coaching_facts.get("next_stint_plan"))
+                if isinstance(item, dict)
+            ]
+            plan_items = tuple(raw_plan_items[:3])
+
+            focus = _dict(coaching_facts.get("next_stint_focus"))
+            if focus.get("status") == "ACTIVE":
+                focus_plan_labels = tuple(
+                    str(_dict(item).get("plan_label"))
+                    for item in _list(focus.get("items"))
+                    if _dict(item).get("plan_label") is not None
+                )
         except (OSError, UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
             warnings.append(f"No se pudo leer el debrief: {exc}")
     if record.analysis_path:

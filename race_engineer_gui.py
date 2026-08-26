@@ -563,6 +563,154 @@ class RaceEngineerApp:
             background=[("active", "#343b42")],
             foreground=[("active", "#55decf")],
         )
+        style.configure(
+            "Inspector.TFrame",
+            background="#14191c",
+        )
+        style.configure(
+            "InspectorTitle.TLabel",
+            background="#14191c",
+            foreground="#f2f7fb",
+            font=("Segoe UI Semibold", 13),
+        )
+        style.configure(
+            "InspectorMeta.TLabel",
+            background="#14191c",
+            foreground="#7f929f",
+            font=("Segoe UI Semibold", 8),
+        )
+        style.configure(
+            "InspectorClose.TButton",
+            background="#14191c",
+            foreground="#91a6b8",
+            borderwidth=0,
+            relief="flat",
+            padding=(5, 2),
+            font=("Segoe UI Semibold", 12),
+        )
+        style.map(
+            "InspectorClose.TButton",
+            background=[
+                ("active", "#252d32"),
+                ("pressed", "#303940"),
+            ],
+            foreground=[
+                ("active", "#f2f7fb"),
+            ],
+        )
+
+        style.configure(
+            "PriorityCard.TFrame",
+            background="#1b2928",
+        )
+        style.configure(
+            "PriorityIndex.TLabel",
+            background="#1b2928",
+            foreground="#67e5d5",
+            font=("Segoe UI Semibold", 10),
+        )
+        style.configure(
+            "PriorityTitle.TLabel",
+            background="#1b2928",
+            foreground="#f2f7fb",
+            font=("Segoe UI Semibold", 11),
+        )
+        style.configure(
+            "PriorityCue.TLabel",
+            background="#1b2928",
+            foreground="#c5d3da",
+            font=("Segoe UI", 10),
+        )
+        style.configure(
+            "PriorityFocus.TLabel",
+            background="#253c39",
+            foreground="#7af1df",
+            font=("Segoe UI Semibold", 8),
+            padding=(7, 3),
+        )
+
+        style.configure(
+            "SummaryCard.TFrame",
+            background="#171a1d",
+        )
+        style.configure(
+            "SummaryAccentCard.TFrame",
+            background="#16201f",
+        )
+        style.configure(
+            "SummaryTitle.TLabel",
+            background="#171a1d",
+            foreground="#eef5f8",
+            font=("Segoe UI Semibold", 11),
+        )
+        style.configure(
+            "SummarySubtitle.TLabel",
+            background="#171a1d",
+            foreground="#7f929f",
+            font=("Segoe UI", 9),
+        )
+        style.configure(
+            "SummaryAccentTitle.TLabel",
+            background="#16201f",
+            foreground="#67e5d5",
+            font=("Segoe UI Semibold", 11),
+        )
+        style.configure(
+            "SummaryAccentSubtitle.TLabel",
+            background="#16201f",
+            foreground="#8eaaa5",
+            font=("Segoe UI", 9),
+        )
+
+        style.configure(
+            "Workspace.TFrame",
+            background="#171a1d",
+        )
+        style.configure(
+            "WorkspaceNav.TFrame",
+            background="#14171a",
+        )
+        style.configure(
+            "WorkspaceNav.TButton",
+            background="#14171a",
+            foreground="#91a6b8",
+            borderwidth=0,
+            relief="flat",
+            padding=(14, 10),
+            anchor="w",
+            font=("Segoe UI Semibold", 10),
+        )
+        style.map(
+            "WorkspaceNav.TButton",
+            background=[
+                ("active", "#20262b"),
+                ("pressed", "#252c31"),
+            ],
+            foreground=[
+                ("active", "#e4edf3"),
+            ],
+        )
+        style.configure(
+            "WorkspaceNavActive.TButton",
+            background="#253137",
+            foreground="#55decf",
+            borderwidth=0,
+            relief="flat",
+            padding=(14, 10),
+            anchor="w",
+            font=("Segoe UI Semibold", 10),
+        )
+        style.map(
+            "WorkspaceNavActive.TButton",
+            background=[
+                ("active", "#2b3a40"),
+                ("pressed", "#2b3a40"),
+            ],
+            foreground=[
+                ("active", "#67e5d5"),
+            ],
+        )
+
         style.configure("TNotebook", background="#1c1c1c", borderwidth=0)
         style.configure(
             "TNotebook.Tab",
@@ -782,29 +930,163 @@ class RaceEngineerApp:
                 style="CardValue.TLabel",
             ).pack(anchor="w", pady=(2, 0))
 
-        self.notebook = ttk.Notebook(right)
-        self.notebook.pack(fill="both", expand=True)
-        self.summary_notebook = self._section_tab(self.notebook, "Resumen")
-        self.debrief_text = self._text_tab(self.summary_notebook, "Debrief")
-        self.plan_text = self._text_tab(self.summary_notebook, "Próxima tanda")
-        self.laps_text = self._text_tab(self.summary_notebook, "Vueltas")
+        workspace_shell = ttk.Frame(right, style="Panel.TFrame")
+        workspace_shell.pack(fill="both", expand=True)
 
-        self.track_map_canvas = self._track_map_tab(
-            self.notebook,
-            label="Telemetría",
+        navigation = ttk.Frame(
+            workspace_shell,
+            style="WorkspaceNav.TFrame",
+            padding=(8, 12),
+        )
+        navigation.pack(side="left", fill="y", padx=(0, 10))
+
+        workspace = ttk.Frame(
+            workspace_shell,
+            style="Workspace.TFrame",
+        )
+        workspace.pack(side="left", fill="both", expand=True)
+
+        self.inspector_frame = ttk.Frame(
+            workspace_shell,
+            style="Inspector.TFrame",
+            padding=(16, 14),
+            width=290,
+        )
+        self.inspector_frame.pack_propagate(False)
+        self.inspector_visible = False
+
+        inspector_header = ttk.Frame(
+            self.inspector_frame,
+            style="Inspector.TFrame",
+        )
+        inspector_header.pack(fill="x", pady=(0, 12))
+
+        self.inspector_title_var = tk.StringVar(value="Detalle")
+        self.inspector_meta_var = tk.StringVar(value="")
+
+        ttk.Label(
+            inspector_header,
+            textvariable=self.inspector_title_var,
+            style="InspectorTitle.TLabel",
+        ).pack(side="left")
+
+        ttk.Button(
+            inspector_header,
+            text="×",
+            style="InspectorClose.TButton",
+            width=3,
+            command=self._hide_plan_inspector,
+        ).pack(side="right")
+
+        ttk.Label(
+            self.inspector_frame,
+            textvariable=self.inspector_meta_var,
+            style="InspectorMeta.TLabel",
+            wraplength=250,
+            justify="left",
+        ).pack(fill="x", pady=(0, 10))
+
+        self.inspector_text = tk.Text(
+            self.inspector_frame,
+            wrap="word",
+            background="#11171a",
+            foreground="#cbd8df",
+            insertbackground="#55decf",
+            relief="flat",
+            borderwidth=0,
+            highlightthickness=0,
+            padx=12,
+            pady=10,
+            font=("Segoe UI", 9),
+            spacing1=2,
+            spacing3=5,
+        )
+        self.inspector_text.tag_configure(
+            "section",
+            font=("Segoe UI Semibold", 9),
+            foreground="#67e5d5",
+            spacing1=10,
+            spacing3=4,
+        )
+        self.inspector_text.tag_configure(
+            "value",
+            font=("Segoe UI", 9),
+            foreground="#dce7ef",
+        )
+        self.inspector_text.pack(fill="both", expand=True)
+        self.inspector_text.configure(state="disabled")
+
+        self.primary_section_var = tk.StringVar(value="Resumen")
+        self.primary_section_frames = {}
+        self.primary_section_buttons = {}
+
+        for section in PRIMARY_SECTIONS:
+            button = ttk.Button(
+                navigation,
+                text=section,
+                style="WorkspaceNav.TButton",
+                command=lambda name=section: self._show_primary_section(name),
+            )
+            button.pack(fill="x", pady=(0, 6))
+            self.primary_section_buttons[section] = button
+
+            frame = ttk.Frame(
+                workspace,
+                style="Workspace.TFrame",
+            )
+            self.primary_section_frames[section] = frame
+
+        summary_frame = self.primary_section_frames["Resumen"]
+
+        summary_content = ttk.Frame(
+            summary_frame,
+            style="Workspace.TFrame",
+        )
+        summary_content.pack(fill="both", expand=True)
+
+        self.plan_cards_frame = self._build_next_stint_panel(
+            summary_content,
         )
 
-        history_notebook = self._section_tab(self.notebook, "Historial")
+        self.debrief_text = self._summary_text_panel(
+            summary_content,
+            "DEBRIEF",
+            subtitle="Lectura principal de la sesión",
+            height=16,
+            expand=True,
+        )
+
+        self.laps_text = self._summary_text_panel(
+            summary_content,
+            "VUELTAS",
+            subtitle="Contexto y resumen de vueltas válidas",
+            height=6,
+            expand=False,
+        )
+
+        telemetry_frame = self.primary_section_frames["Telemetría"]
+        self.track_map_canvas = self._track_map_tab(
+            telemetry_frame,
+            label=None,
+        )
+
+        history_frame = self.primary_section_frames["Historial"]
+        history_notebook = ttk.Notebook(history_frame)
+        history_notebook.pack(fill="both", expand=True)
         self.historical_reference_text = self._text_tab(
             history_notebook,
             "Referencia",
         )
         self._comparison_tab(history_notebook)
 
-        self.diagnostics_notebook = self._section_tab(self.notebook, "Diagnóstico")
+        diagnostics_frame = self.primary_section_frames["Diagnóstico"]
+        self.diagnostics_notebook = ttk.Notebook(diagnostics_frame)
+        self.diagnostics_notebook.pack(fill="both", expand=True)
         self.pipeline_text = self._text_tab(self.diagnostics_notebook, "Pipeline")
         self.execution_text = self._text_tab(self.diagnostics_notebook, "Ejecución")
         self._calibration_tab(self.diagnostics_notebook)
+
+        self._show_primary_section("Resumen")
 
         execution_bar = ttk.Frame(right, style="Panel.TFrame")
         execution_bar.pack(fill="x", pady=(10, 0))
@@ -828,12 +1110,25 @@ class RaceEngineerApp:
             anchor="w",
         ).pack(fill="x", padx=22, pady=(0, 10))
 
-    def _section_tab(self, notebook, label):
-        frame = self.ttk.Frame(notebook, style="Panel.TFrame", padding=(0, 6, 0, 0))
-        notebook.add(frame, text=label)
-        nested = self.ttk.Notebook(frame)
-        nested.pack(fill="both", expand=True)
-        return nested
+    def _show_primary_section(self, section):
+        if section not in self.primary_section_frames:
+            return
+
+        for name, frame in self.primary_section_frames.items():
+            frame.pack_forget()
+
+        frame = self.primary_section_frames[section]
+        frame.pack(fill="both", expand=True)
+        self.primary_section_var.set(section)
+
+        for name, button in self.primary_section_buttons.items():
+            button.configure(
+                style=(
+                    "WorkspaceNavActive.TButton"
+                    if name == section
+                    else "WorkspaceNav.TButton"
+                )
+            )
 
     def _comparison_tab(self, notebook):
         frame = self.ttk.Frame(notebook, style="Panel.TFrame", padding=5)
@@ -1065,6 +1360,491 @@ class RaceEngineerApp:
                 pass
             self._row_tooltip = None
 
+    def _hide_plan_inspector(self):
+        if not getattr(self, "inspector_visible", False):
+            return
+        self.inspector_frame.pack_forget()
+        self.inspector_visible = False
+
+    def _show_plan_inspector(self, item, index, focused=False):
+        if not isinstance(item, dict):
+            return
+
+        location = item.get("track_location")
+        if not isinstance(location, dict):
+            location = {}
+
+        title = str(
+            location.get("label")
+            or item.get("description")
+            or f"Prioridad {index}"
+        )
+
+        label = str(item.get("plan_label") or index)
+        kind = str(item.get("kind") or "plan_item")
+
+        self.inspector_title_var.set(title)
+
+        meta_parts = [f"P{index} · Zona {label}"]
+
+        if focused:
+            meta_parts.append("FOCUS")
+
+        if kind == "repeated_region":
+            meta_parts.append("PATRÓN REPETIDO")
+        else:
+            meta_parts.append(kind.replace("_", " ").upper())
+
+        self.inspector_meta_var.set(" · ".join(meta_parts))
+
+        lines = []
+
+        start = item.get("start_distance_m")
+        end = item.get("end_distance_m")
+
+        if isinstance(start, (int, float)) or isinstance(end, (int, float)):
+            lines.append(("section", "UBICACIÓN"))
+            if isinstance(start, (int, float)) and isinstance(end, (int, float)):
+                lines.append(("value", f"{start:.0f}–{end:.0f} m"))
+            elif isinstance(start, (int, float)):
+                lines.append(("value", f"Desde {start:.0f} m"))
+            else:
+                lines.append(("value", f"Hasta {end:.0f} m"))
+
+        comparison_count = item.get("comparison_count")
+        comparisons = item.get("comparisons")
+
+        if isinstance(comparison_count, int) and comparison_count > 0:
+            lines.append(("section", "SOPORTE"))
+            lines.append(
+                (
+                    "value",
+                    f"{comparison_count} comparación"
+                    if comparison_count == 1
+                    else f"{comparison_count} comparaciones",
+                )
+            )
+        elif isinstance(comparisons, list) and comparisons:
+            lines.append(("section", "SOPORTE"))
+            lines.append(
+                (
+                    "value",
+                    f"{len(comparisons)} comparación"
+                    if len(comparisons) == 1
+                    else f"{len(comparisons)} comparaciones",
+                )
+            )
+
+        cues = item.get("driver_cues")
+        if not isinstance(cues, list):
+            cues = []
+
+        cue_texts = []
+        for cue in cues:
+            if isinstance(cue, str):
+                value = cue.strip()
+            elif isinstance(cue, dict):
+                value = str(
+                    cue.get("text")
+                    or cue.get("description")
+                    or ""
+                ).strip()
+            else:
+                value = ""
+
+            if value:
+                cue_texts.append(value)
+
+        if cue_texts:
+            lines.append(("section", "CUES"))
+            for cue in cue_texts:
+                lines.append(("value", f"• {cue}"))
+
+        targets = item.get("targets")
+        if not isinstance(targets, list):
+            targets = []
+
+        physical_targets = [
+            item.get("braking_point_target"),
+            item.get("brake_release_target"),
+            item.get("throttle_onset_target"),
+            item.get("throttle_release_target"),
+        ]
+
+        all_targets = []
+        for target in [*targets, *physical_targets]:
+            value = str(target or "").strip()
+            if value and value not in all_targets:
+                all_targets.append(value)
+
+        if all_targets:
+            lines.append(("section", "TARGETS AUTORIZADOS"))
+            for target in all_targets:
+                lines.append(("value", f"• {target}"))
+
+        observations = item.get("observed_differences")
+        if not isinstance(observations, list):
+            observations = []
+
+        observations = [
+            str(value).strip()
+            for value in observations
+            if str(value or "").strip()
+        ]
+
+        if observations:
+            lines.append(("section", "OBSERVADO"))
+            for value in observations[:4]:
+                lines.append(("value", f"• {value}"))
+
+        pattern_fields = (
+            ("Punto de frenada", "braking_point_patterns"),
+            ("Liberación de freno", "brake_release_patterns"),
+            ("Inicio de acelerador", "throttle_onset_patterns"),
+            ("Levantada de acelerador", "throttle_release_patterns"),
+        )
+
+        pattern_lines = []
+
+        for label_text, field in pattern_fields:
+            patterns = item.get(field)
+            if isinstance(patterns, list) and patterns:
+                count = len(patterns)
+                pattern_lines.append(
+                    f"{label_text}: {count}"
+                )
+
+        if pattern_lines:
+            lines.append(("section", "PATRONES FÍSICOS"))
+            for value in pattern_lines:
+                lines.append(("value", value))
+
+        actionable_count = item.get("actionable_cue_count")
+
+        if isinstance(actionable_count, int):
+            lines.append(("section", "COACHING"))
+            lines.append(
+                (
+                    "value",
+                    f"{actionable_count} cue autorizado"
+                    if actionable_count == 1
+                    else f"{actionable_count} cues autorizados",
+                )
+            )
+
+        profiles = item.get("reference_action_profiles")
+        if isinstance(profiles, list) and profiles:
+            lines.append(("section", "REFERENCIA"))
+            lines.append(
+                (
+                    "value",
+                    f"{len(profiles)} perfil de acción de referencia"
+                    if len(profiles) == 1
+                    else f"{len(profiles)} perfiles de acción de referencia",
+                )
+            )
+
+        if not lines:
+            lines.append(
+                (
+                    "value",
+                    "No hay metadata adicional para esta prioridad.",
+                )
+            )
+
+        self.inspector_text.configure(state="normal")
+        self.inspector_text.delete("1.0", "end")
+
+        for tag, value in lines:
+            self.inspector_text.insert(
+                "end",
+                value + "\n",
+                tag,
+            )
+
+        self.inspector_text.configure(state="disabled")
+        self.inspector_text.yview_moveto(0)
+
+        if not self.inspector_visible:
+            self.inspector_frame.pack(
+                side="right",
+                fill="y",
+                padx=(10, 0),
+            )
+            self.inspector_visible = True
+
+    def _build_next_stint_panel(self, parent):
+        container = self.ttk.Frame(
+            parent,
+            style="SummaryAccentCard.TFrame",
+            padding=(16, 12),
+        )
+        container.pack(fill="x", pady=(0, 10))
+
+        self.ttk.Label(
+            container,
+            text="PRÓXIMA TANDA",
+            style="SummaryAccentTitle.TLabel",
+        ).pack(anchor="w")
+
+        self.ttk.Label(
+            container,
+            text="Qué llevar a pista en el próximo stint",
+            style="SummaryAccentSubtitle.TLabel",
+        ).pack(anchor="w", pady=(2, 10))
+
+        cards = self.ttk.Frame(
+            container,
+            style="SummaryAccentCard.TFrame",
+        )
+        cards.pack(fill="x")
+
+        self.plan_cards_host = cards
+        return container
+
+    def _render_next_stint_cards(self, detail):
+        self._hide_plan_inspector()
+
+        for child in self.plan_cards_host.winfo_children():
+            child.destroy()
+
+        items = tuple(detail.plan_items or ())
+
+        if not items:
+            self.ttk.Label(
+                self.plan_cards_host,
+                text=detail.plan_text or "No hay un plan de próxima tanda disponible.",
+                style="SummaryAccentSubtitle.TLabel",
+                wraplength=760,
+                justify="left",
+            ).pack(fill="x", pady=(4, 6))
+            return
+
+        focus_labels = set(detail.focus_plan_labels or ())
+
+        for index, item in enumerate(items[:3], start=1):
+            label = str(item.get("plan_label") or index)
+
+            location = item.get("track_location")
+            if not isinstance(location, dict):
+                location = {}
+
+            title = str(
+                location.get("label")
+                or item.get("description")
+                or "Zona sin nombre"
+            )
+
+            card = self.ttk.Frame(
+                self.plan_cards_host,
+                style="PriorityCard.TFrame",
+                padding=(12, 10),
+            )
+            card.pack(fill="x", pady=(0, 7))
+
+            is_focused = label in focus_labels
+
+            def open_inspector(_event=None, value=item, number=index, focus=is_focused):
+                self._show_plan_inspector(
+                    value,
+                    number,
+                    focused=focus,
+                )
+
+            card.bind("<Button-1>", open_inspector)
+            card.configure(cursor="hand2")
+
+            top = self.ttk.Frame(card, style="PriorityCard.TFrame")
+            top.bind("<Button-1>", open_inspector)
+            top.configure(cursor="hand2")
+            top.pack(fill="x")
+
+            index_label = self.ttk.Label(
+                top,
+                text=f"P{index}",
+                style="PriorityIndex.TLabel",
+                cursor="hand2",
+            )
+            index_label.pack(side="left")
+            index_label.bind("<Button-1>", open_inspector)
+
+            title_label = self.ttk.Label(
+                top,
+                text=title,
+                style="PriorityTitle.TLabel",
+                cursor="hand2",
+            )
+            title_label.pack(side="left", padx=(10, 0))
+            title_label.bind("<Button-1>", open_inspector)
+
+            if label in focus_labels:
+                focus_label = self.ttk.Label(
+                    top,
+                    text="FOCUS",
+                    style="PriorityFocus.TLabel",
+                    cursor="hand2",
+                )
+                focus_label.pack(side="right")
+                focus_label.bind("<Button-1>", open_inspector)
+
+            cues = item.get("driver_cues")
+            if not isinstance(cues, list):
+                cues = []
+
+            cue_texts = []
+            for cue in cues[:2]:
+                if isinstance(cue, str):
+                    value = cue.strip()
+                elif isinstance(cue, dict):
+                    value = str(
+                        cue.get("text")
+                        or cue.get("description")
+                        or ""
+                    ).strip()
+                else:
+                    value = ""
+
+                if value:
+                    cue_texts.append(value)
+
+            if not cue_texts:
+                cue_texts = ["Sin cue de conducción autorizado."]
+
+            for cue in cue_texts:
+                cue_label = self.ttk.Label(
+                    card,
+                    text=f"• {cue}",
+                    style="PriorityCue.TLabel",
+                    wraplength=760,
+                    justify="left",
+                    cursor="hand2",
+                )
+                cue_label.pack(anchor="w", pady=(5, 0))
+                cue_label.bind("<Button-1>", open_inspector)
+
+    def _summary_text_panel(
+        self,
+        parent,
+        header,
+        *,
+        subtitle="",
+        height=8,
+        expand=False,
+        accent=False,
+    ):
+        container = self.ttk.Frame(
+            parent,
+            style=(
+                "SummaryAccentCard.TFrame"
+                if accent
+                else "SummaryCard.TFrame"
+            ),
+            padding=(16, 12),
+        )
+        container.pack(
+            fill="both" if expand else "x",
+            expand=expand,
+            pady=(0, 10),
+        )
+
+        heading = self.ttk.Frame(
+            container,
+            style=(
+                "SummaryAccentCard.TFrame"
+                if accent
+                else "SummaryCard.TFrame"
+            ),
+        )
+        heading.pack(fill="x", pady=(0, 8))
+
+        self.ttk.Label(
+            heading,
+            text=header,
+            style=(
+                "SummaryAccentTitle.TLabel"
+                if accent
+                else "SummaryTitle.TLabel"
+            ),
+        ).pack(anchor="w")
+
+        if subtitle:
+            self.ttk.Label(
+                heading,
+                text=subtitle,
+                style=(
+                    "SummaryAccentSubtitle.TLabel"
+                    if accent
+                    else "SummarySubtitle.TLabel"
+                ),
+            ).pack(anchor="w", pady=(2, 0))
+
+        body = self.ttk.Frame(
+            container,
+            style=(
+                "SummaryAccentCard.TFrame"
+                if accent
+                else "SummaryCard.TFrame"
+            ),
+        )
+        body.pack(fill="both", expand=True)
+
+        text = self.tk.Text(
+            body,
+            wrap="word",
+            height=height,
+            background="#111418" if not accent else "#13201f",
+            foreground="#dce7ef",
+            insertbackground="#55decf",
+            selectbackground="#315b60",
+            selectforeground="#f4fbff",
+            relief="flat",
+            borderwidth=0,
+            highlightthickness=0,
+            padx=14,
+            pady=12,
+            font=("Segoe UI", 10),
+            spacing1=2,
+            spacing3=4,
+        )
+
+        text.tag_configure(
+            "h1",
+            font=("Segoe UI Semibold", 18),
+            foreground="#f2f7fb",
+            spacing3=12,
+        )
+        text.tag_configure(
+            "h2",
+            font=("Segoe UI Semibold", 14),
+            foreground="#55decf",
+            spacing1=12,
+            spacing3=7,
+        )
+        text.tag_configure(
+            "h3",
+            font=("Segoe UI Semibold", 11),
+            foreground="#f2f7fb",
+            spacing1=8,
+        )
+        text.tag_configure(
+            "bullet",
+            lmargin1=18,
+            lmargin2=32,
+        )
+
+        scrollbar = self.ttk.Scrollbar(
+            body,
+            orient="vertical",
+            command=text.yview,
+        )
+        text.configure(yscrollcommand=scrollbar.set)
+
+        scrollbar.pack(side="right", fill="y")
+        text.pack(side="left", fill="both", expand=True)
+        text.configure(state="disabled")
+
+        return text
+
     def _text_tab(self, notebook, label):
         frame = self.ttk.Frame(notebook, style="Panel.TFrame", padding=5)
         notebook.add(frame, text=label)
@@ -1096,9 +1876,12 @@ class RaceEngineerApp:
         text.configure(state="disabled")
         return text
 
-    def _track_map_tab(self, notebook, *, label="Mapa"):
-        frame = self.ttk.Frame(notebook, style="Panel.TFrame", padding=8)
-        notebook.add(frame, text=label)
+    def _track_map_tab(self, parent, *, label="Mapa"):
+        frame = self.ttk.Frame(parent, style="Panel.TFrame", padding=8)
+        if label is not None:
+            parent.add(frame, text=label)
+        else:
+            frame.pack(fill="both", expand=True)
         self.track_map_status = self.tk.StringVar(
             value="Seleccioná una sesión para reconstruir el mapa GPS."
         )
@@ -1478,7 +2261,7 @@ class RaceEngineerApp:
         self.summary_history_var.set(history_value)
         self.summary_status_var.set(status_value)
         self._set_text(self.debrief_text, detail.debrief_markdown, markdown=True)
-        self._set_text(self.plan_text, detail.plan_text)
+        self._render_next_stint_cards(detail)
         self._set_text(self.laps_text, detail.laps_text)
         self._set_text(self.historical_reference_text, detail.historical_reference_text)
         self._set_comparison_view(
@@ -1501,7 +2284,6 @@ class RaceEngineerApp:
         self.summary_status_var.set("—")
         for widget in (
             self.debrief_text,
-            self.plan_text,
             self.laps_text,
             self.historical_reference_text,
             self.pipeline_text,
@@ -2856,7 +3638,7 @@ class RaceEngineerApp:
             f"Modelo: {self.analysis_model or '—'}\n"
             f"Override espera 10 min: {'SÍ' if plan.skip_stability_wait else 'NO'}\n",
         )
-        self.notebook.select(self.diagnostics_notebook.master)
+        self._show_primary_section("Diagnóstico")
         self.diagnostics_notebook.select(self.execution_text.master)
 
         def worker():
@@ -2921,8 +3703,7 @@ class RaceEngineerApp:
             self.session_query_var.set("")
             self.session_filter_var.set("Todas")
             self.refresh(preferred_database=database)
-            self.notebook.select(self.summary_notebook.master)
-            self.summary_notebook.select(self.debrief_text.master)
+            self._show_primary_section("Resumen")
             messagebox.showinfo(
                 "Race Engineer",
                 "El análisis terminó correctamente y la lista fue actualizada.",
@@ -2939,8 +3720,7 @@ class RaceEngineerApp:
         elif outcome == "RECOVERED_VALID_DEBRIEF":
             self.execution_status.set("Debrief válido recuperado; pipeline incompleto")
             self._append_execution_line("\nGUI RESULT: RECOVERED_VALID_DEBRIEF")
-            self.notebook.select(self.summary_notebook.master)
-            self.summary_notebook.select(self.debrief_text.master)
+            self._show_primary_section("Resumen")
             messagebox.showwarning(
                 "Race Engineer",
                 "El proceso informó un error posterior, pero el debrief ya había sido "

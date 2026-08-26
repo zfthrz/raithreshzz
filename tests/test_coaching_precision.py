@@ -576,8 +576,9 @@ def test_p7_active_backends_have_sequence_integration_parity():
         source = Path(filename).read_text(encoding="utf-8")
         assert "enrich_plan_items_with_coaching_sequence" in source, filename
         assert "enrich_plan_items_with_coaching_sequence(next_stint_plan)" in source, filename
-        assert '"kind": "combined_spatial_sequence"' in source, filename
-        assert '"source": "deterministic_coaching_sequence"' in source, filename
+        shared_source = Path("deterministic_coaching.py").read_text(encoding="utf-8")
+        assert '"kind": "combined_spatial_sequence"' in shared_source, filename
+        assert '"source": "deterministic_coaching_sequence"' in shared_source, filename
 
 
 # ============================================================

@@ -88,6 +88,15 @@ Validated baseline:
   full 4/17 vs 7/17) → hypothesis refuted on current data; evidence supports
   defining product-principled deterministic policy instead of chasing the LLM.
   Shadow-only, production unchanged.
+- D2.9 product-principled ranker policy (2026-08-25): `audit_d2_9_product_policy.py`
+  implements Política 2 (order D2.1 + cut 55% con extensión strong+target
+  directo cap 3 + NO_ACCIONABLE sólo observacional/weak-negligible + tie-break
+  near-tie ≤5% por parent_zone_delta). Evaluado sobre 127 comparisons (26 shadow
+  + 101 derivados): 0 violaciones de política y 0 de contrato ranker; tie-break
+  activo en 25. **Congelado como candidato de producción; sin cutover ni más
+  sesiones de calibración por ahora.** Diff narrativo Imola/Spa/Fuji:
+  classification labels, listas secundarias y (al extender el cut) "Qué probar"
+  completo; el cierre de Lectura rápida y el summary determinista no cambiaron.
 - D3.x deterministic-first default (2026-08-25): D3.1 H5.2 non-blocking,
   D3.2 summary determinista, D3.3 global determinista y D3.4 episodio
   determinista implementados. Nuevo switch maestro

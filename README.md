@@ -200,7 +200,8 @@ La etapa LLM es **deterministic-first por default**: interpretación de
 episodios, summary por comparación y prosa global se construyen en Python sin
 llamar al transporte LLM. La **única llamada LLM que queda en el runtime
 default es el ranker de prioridad** (clasificación PRIORITARIO /
-SECUNDARIO / NO_ACCIONABLE), cuya política determinista permanece en shadow.
+SECUNDARIO / NO_ACCIONABLE), cuya política determinista D2.9 está congelada
+como candidato de producción (sin cutover todavía).
 
 Para volver al comportamiento LLM-first (temporal o por modo):
 

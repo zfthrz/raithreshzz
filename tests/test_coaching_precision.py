@@ -574,8 +574,12 @@ def test_p7_active_backends_have_sequence_integration_parity():
         "llm_analysis_llamacpp.py",
     ):
         source = Path(filename).read_text(encoding="utf-8")
-        assert "enrich_plan_items_with_coaching_sequence" in source, filename
-        assert "enrich_plan_items_with_coaching_sequence(next_stint_plan)" in source, filename
+        assert "build_session_coaching_facts" in source, filename
+
+        session_source = Path("session_coaching.py").read_text(encoding="utf-8")
+        assert "enrich_plan_items_with_coaching_sequence" in session_source
+        assert "enrich_plan_items_with_coaching_sequence(next_stint_plan)" in session_source
+
         shared_source = Path("deterministic_coaching.py").read_text(encoding="utf-8")
         assert '"kind": "combined_spatial_sequence"' in shared_source, filename
         assert '"source": "deterministic_coaching_sequence"' in shared_source, filename
@@ -700,7 +704,11 @@ def test_p8_backend_parity():
         "llm_analysis_llamacpp.py",
     ):
         source = Path(filename).read_text(encoding="utf-8")
-        assert "enrich_cues_with_deterministic_priority" in source, filename
+        assert "build_session_coaching_facts" in source, filename
+
+        session_source = Path("session_coaching.py").read_text(encoding="utf-8")
+        assert "enrich_cues_with_deterministic_priority" in session_source
+
         # Accept both one-line and multi-line call patterns.
         one_line = (
             'enrich_cues_with_deterministic_priority(item["driver_cues"])'
@@ -709,9 +717,9 @@ def test_p8_backend_parity():
             r'enrich_cues_with_deterministic_priority\(\s*item\["driver_cues"\]'
         )
         assert (
-            one_line in source
+            one_line in session_source
             or
-            re.search(multi_line, source) is not None
+            re.search(multi_line, session_source) is not None
         ), filename
 
 
@@ -854,8 +862,12 @@ def test_p9_backend_parity():
         "llm_analysis_llamacpp.py",
     ):
         source = Path(filename).read_text(encoding="utf-8")
-        assert "enrich_plan_with_p9_presentation_metadata" in source, filename
-        build_facts = source.split(
+        assert "build_session_coaching_facts" in source, filename
+
+        session_source = Path("session_coaching.py").read_text(encoding="utf-8")
+        assert "enrich_plan_with_p9_presentation_metadata" in session_source
+
+        build_facts = session_source.split(
             "def build_session_coaching_facts(",
             1,
         )[1].split("\ndef ", 1)[0]

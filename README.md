@@ -42,6 +42,7 @@ Componentes principales:
 | H5.3a-f + runtime 0.2 | shadow: candidatos, auditoría, selección unificada y render validado |
 | `race_engineer_gui.py` | v1.21 — recuperación y colas de calibración automáticas |
 | `maintain_calibration_queues.py` | Prepara una cola H2 modificada por ciclo, sin LLM ni labels automáticos |
+| `auto_calibrate_matcher.py` | Auditoría shadow de thresholds candidatos; nunca autoriza producción |
 
 Checkpoint de calibración H2 actual sobre **Spa + layout Spa + `LMP2_ELMS`**:
 

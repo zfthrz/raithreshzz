@@ -14,7 +14,7 @@ current code/tests (source of truth; never infer from `legacy/`).
 repository: zfthrz/raithreshzz
 branch: main (puede estar N commits ahead de origin; el usuario pushea)
 GUI: 1.21 — deterministic double-click + automatic H2 review queues
-full pytest: 1353 passed (última corrida completa, matcher aliases reconciliados)
+full pytest: 1354 passed (última corrida completa, H2 auto-calibration shadow)
 matcher: episode_pair_matcher.py v0.3 con CALIBRATIONS por contexto
 ```
 
@@ -104,6 +104,8 @@ matcher: episode_pair_matcher.py v0.3 con CALIBRATIONS por contexto
   `b0b0f526f9` (23 calibration pairs, 0 evaluation pairs).
 - Contextos sin calibración → fail-closed `NO_CALIBRATION_FOR_CONTEXT`.
 - Alias versionado `episode_pair_matcher_v0_3.py` source-idéntico.
+- `auto_calibrate_matcher.py` es sólo auditoría `SHADOW_ONLY`: todos sus contextos
+  llevan `authorized: false`, escribe bajo diagnostics y producción no lo consume.
 
 ### Calibración H2 (campaign 2026-08-23/24)
 - 8 batches labelados 24/24 (Imola LMP2_ELMS, Interlagos, Fuji, Sarthe

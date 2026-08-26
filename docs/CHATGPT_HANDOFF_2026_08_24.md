@@ -14,7 +14,7 @@ current code/tests (source of truth; never infer from `legacy/`).
 repository: zfthrz/raithreshzz
 branch: main (puede estar N commits ahead de origin; el usuario pushea)
 GUI: 1.21 — deterministic double-click + automatic H2 review queues
-full pytest: 1354 passed (última corrida completa, H2 auto-calibration shadow)
+full pytest: 1359 passed (última corrida completa, H2 batch retention gate)
 matcher: episode_pair_matcher.py v0.3 con CALIBRATIONS por contexto
 ```
 
@@ -106,6 +106,9 @@ matcher: episode_pair_matcher.py v0.3 con CALIBRATIONS por contexto
 - Alias versionado `episode_pair_matcher_v0_3.py` source-idéntico.
 - `auto_calibrate_matcher.py` es sólo auditoría `SHADOW_ONLY`: todos sus contextos
   llevan `authorized: false`, escribe bajo diagnostics y producción no lo consume.
+- El scheduler no crea otro batch si la cola humana más reciente del contexto está
+  pendiente. `audit_calibration_batch_retention.py` es read-only; el checkpoint
+  local detectó 9 batches unlabeled superseded / 984.0 MiB, sin borrar nada.
 
 ### Calibración H2 (campaign 2026-08-23/24)
 - 8 batches labelados 24/24 (Imola LMP2_ELMS, Interlagos, Fuji, Sarthe

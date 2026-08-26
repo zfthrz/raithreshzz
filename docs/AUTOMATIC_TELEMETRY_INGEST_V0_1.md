@@ -319,6 +319,11 @@ Este paso no llama modelos, no crea labels y no promueve calibraciones. Sus fall
 son warnings no bloqueantes para History. El estado local se guarda en
 `data/local/calibration_queue_maintenance.json`.
 
+Si el batch más reciente de un contexto todavía tiene una cola humana pendiente,
+el scheduler registra `WAITING_FOR_HUMAN_REVIEW` y no crea otro batch completo.
+Esto evita duplicar features grandes por cada nueva sesión. Los batches viejos se
+pueden inventariar sin cambios mediante `audit_calibration_batch_retention.py`.
+
 ## Automatización de Windows
 
 Primero se debe validar manualmente `baseline`, dos ejecuciones de `scan` y

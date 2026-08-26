@@ -7,7 +7,7 @@ llama.cpp recovery and H5.3 review work described below.
 
 Validated baseline:
 
-- full pytest: `1354 PASS / 0 FAIL / 0 SKIP`;
+- full pytest: `1359 PASS / 0 FAIL / 0 SKIP`;
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP` (last analyzer-affecting checkpoint);
 - GUI: v1.21, automatic calibration queues + deterministic double-click analysis
   presentation + status badges and side-by-side historical comparison +
@@ -64,6 +64,10 @@ Validated baseline:
 - Automatic H2 threshold derivation is available only as a shadow audit:
   `auto_calibrate_matcher.py` emits `authorized: false` candidates under
   `data/generated/diagnostics/`; no scheduler or production matcher consumes it.
+- H2 queue retention gate: a newest pending human queue blocks creation of another
+  full batch for that context. Read-only audit over the current workspace found
+  31 batches across 11 contexts and 9 superseded unlabeled candidates totaling
+  984.0 MiB; no files were moved or deleted.
 - Phase E H5.2 expansion (2026-08-23): first raw cross-session comparison for
   Spa LMP2_ELMS generated deterministically; Sarthe LMP2_WEC / Imola HYPER /
   Sarthe HYPER remain blocked by H4 gates (need new telemetry).

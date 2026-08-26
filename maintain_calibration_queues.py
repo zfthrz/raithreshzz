@@ -33,10 +33,49 @@ def session_ids(rows: list[dict[str, Any]]) -> list[int]:
     return sorted(int(row["session_id"]) for row in rows)
 
 
-def existing_batch_sessions(
+def _live_review_progress(
+    status_path: Path,
+    payload: dict[str, Any],
+) -> tuple[int, int]:
+    steps = payload.get("steps") if isinstance(payload.get("steps"), dict) else {}
+    review = steps.get("review_queue") if isinstance(steps.get("review_queue"), dict) else {}
+    human = steps.get("human_labels") if isinstance(steps.get("human_labels"), dict) else {}
+    batch_dir = status_path.parent
+    queue_path = Path(review.get("path") or batch_dir / "pair_review_queue.json")
+    labels_path = Path(human.get("labels_path") or batch_dir / "pair_labels.json")
+    if not queue_path.is_absolute():
+        queue_path = batch_dir / queue_path
+    if not labels_path.is_absolute():
+        labels_path = batch_dir / labels_path
+
+    queue_pairs = int(review.get("queue_pairs") or human.get("queue_pairs") or 0)
+    labeled_pairs = int(human.get("labeled_pairs") or 0)
+    try:
+        queue = json.loads(queue_path.read_text(encoding="utf-8")).get("queue")
+        if isinstance(queue, list):
+            queue_pairs = len(queue)
+    except (OSError, TypeError, json.JSONDecodeError):
+        pass
+    try:
+        labels = json.loads(labels_path.read_text(encoding="utf-8")).get("labels")
+        if isinstance(labels, list):
+            labeled_pairs = len({
+                item.get("pair_id")
+                for item in labels
+                if isinstance(item, dict)
+                and isinstance(item.get("pair_id"), str)
+                and item.get("human_label")
+                in {"SAME", "DIFFERENT", "AMBIGUOUS", "SKIP"}
+            })
+    except (OSError, TypeError, json.JSONDecodeError):
+        pass
+    return queue_pairs, labeled_pairs
+
+
+def existing_batch_inventory(
     batches_root: Path,
-) -> dict[tuple[str, str, str], set[tuple[int, ...]]]:
-    result: dict[tuple[str, str, str], set[tuple[int, ...]]] = {}
+) -> dict[tuple[str, str, str], list[dict[str, Any]]]:
+    result: dict[tuple[str, str, str], list[dict[str, Any]]] = {}
     if not batches_root.is_dir():
         return result
     for path in batches_root.glob("*/BATCH_STATUS.json"):
@@ -49,9 +88,16 @@ def existing_batch_sessions(
                 str(payload["vehicle_variant"]),
             )
             ids = tuple(sorted(int(value) for value in selection["session_ids"]))
+            queue_pairs, labeled_pairs = _live_review_progress(path, payload)
         except (OSError, ValueError, TypeError, KeyError, json.JSONDecodeError):
             continue
-        result.setdefault(context, set()).add(ids)
+        result.setdefault(context, []).append({
+            "batch_id": str(payload.get("batch_id") or path.parent.name),
+            "session_ids": ids,
+            "queue_pairs": queue_pairs,
+            "labeled_pairs": labeled_pairs,
+            "pending_review": queue_pairs > 0 and labeled_pairs < queue_pairs,
+        })
     return result
 
 
@@ -130,7 +176,7 @@ def maintain(
     grouped = group_history_by_context(rows)
     state = load_state(state_path)
     recorded = state["contexts"]
-    existing = existing_batch_sessions(batches_root)
+    existing = existing_batch_inventory(batches_root)
     stamp = (now or datetime.now(timezone.utc)).isoformat()
     pending: list[tuple[tuple[str, str, str], list[int]]] = []
 
@@ -139,7 +185,31 @@ def maintain(
             continue
         ids = session_ids(context_rows)
         key = context_key(context)
-        if tuple(ids) in existing.get(context, set()):
+        context_batches = existing.get(context, [])
+        latest_size = max(
+            (len(batch["session_ids"]) for batch in context_batches),
+            default=0,
+        )
+        latest_pending = [
+            batch
+            for batch in context_batches
+            if len(batch["session_ids"]) == latest_size and batch["pending_review"]
+        ]
+        if latest_pending:
+            active = sorted(latest_pending, key=lambda item: item["batch_id"])[-1]
+            recorded[key] = {
+                "session_ids": ids,
+                "status": "WAITING_FOR_HUMAN_REVIEW",
+                "active_batch_id": active["batch_id"],
+                "active_batch_session_ids": list(active["session_ids"]),
+                "labeled_pairs": active["labeled_pairs"],
+                "queue_pairs": active["queue_pairs"],
+                "updated_at": stamp,
+            }
+            continue
+        if tuple(ids) in {
+            batch["session_ids"] for batch in context_batches
+        }:
             recorded[key] = {
                 "session_ids": ids,
                 "status": "QUEUE_ALREADY_PREPARED",

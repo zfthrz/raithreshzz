@@ -180,7 +180,7 @@ D3.x deterministic-first default and D2.9 production ranker (2026-08-25).
 Validated checkpoints relevant to the current working tree:
 
 ```text
-full pytest (current working tree):  1354 PASS / 0 FAIL / 0 SKIP
+full pytest (current working tree):  1359 PASS / 0 FAIL / 0 SKIP
 Objective Python regressions:         55 PASS / 0 FAIL / 0 SKIP
 Objective recovery check:             READY
 ```
@@ -677,6 +677,10 @@ Human labels remain stronger than model-assisted labels.
 `auto_calibrate_matcher.py` aggregates those human labels only as a shadow audit.
 Its diagnostic contexts always use `authorized: false`; production matchers never
 read its generated report. Promotion remains an explicit reviewed source change.
+
+Queue maintenance does not create a new full batch while the newest batch for the
+same exact context still has a pending human queue. The read-only retention audit
+classifies old unlabeled batches without deleting or moving evidence.
 
 ---
 

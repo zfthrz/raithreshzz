@@ -43,6 +43,7 @@ Componentes principales:
 | `race_engineer_gui.py` | v1.21 — recuperación y colas de calibración automáticas |
 | `maintain_calibration_queues.py` | Prepara una cola H2 modificada por ciclo, sin LLM ni labels automáticos |
 | `auto_calibrate_matcher.py` | Auditoría shadow de thresholds candidatos; nunca autoriza producción |
+| `audit_calibration_batch_retention.py` | Inventario read-only de evidencia y batches regenerables |
 
 Checkpoint de calibración H2 actual sobre **Spa + layout Spa + `LMP2_ELMS`**:
 

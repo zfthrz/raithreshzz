@@ -557,3 +557,10 @@ python maintain_calibration_queues.py
 Procesa como máximo un contexto nuevo o modificado, reutiliza batches exactos y
 genera solamente la cola para labeling humano. No importa nuevamente History, no
 llama un LLM y no genera labels automáticos.
+
+Mientras la cola más reciente del contexto esté pendiente, no se crea otro batch.
+Para inspeccionar espacio y evidencia sin eliminar nada:
+
+```powershell
+python audit_calibration_batch_retention.py
+```

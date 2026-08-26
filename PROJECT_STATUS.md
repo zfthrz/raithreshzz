@@ -88,6 +88,13 @@ Validated baseline:
   full 4/17 vs 7/17) → hypothesis refuted on current data; evidence supports
   defining product-principled deterministic policy instead of chasing the LLM.
   Shadow-only, production unchanged.
+- D3.x deterministic-first default (2026-08-25): D3.1 H5.2 non-blocking,
+  D3.2 summary determinista, D3.3 global determinista y D3.4 episodio
+  determinista implementados. Nuevo switch maestro
+  `RACE_ENGINEER_DETERMINISTIC_FIRST` (default "1") en los 4 backends con
+  opt-out por flag. **El ranker LLM queda como única dependencia LLM del
+  runtime default.** Evidencia: 901/901 episodios del corpus reconstruibles;
+  validación real Spa PASS; suite completa 1288 PASS. Sin commit todavía.
 
 ### analyze_telemetry
 Current: `3.8`

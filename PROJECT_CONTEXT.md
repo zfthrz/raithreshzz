@@ -148,7 +148,8 @@ DeepSeek pseudo-labels/reviews are assistance and must never be silently mixed w
 
 # 4. Current operational baseline
 
-Checkpoint: **2026-08-23 GUI v1.17, H5.4 presentation and historical shadow**.
+Checkpoint: **2026-08-23 GUI v1.17, H5.4 presentation and historical shadow** +
+D3.x deterministic-first default (2026-08-25).
 
 | Component | Current operational baseline |
 |---|---|
@@ -179,7 +180,7 @@ Checkpoint: **2026-08-23 GUI v1.17, H5.4 presentation and historical shadow**.
 Validated checkpoints relevant to the current working tree:
 
 ```text
-full pytest (current working tree):  1047 PASS / 0 FAIL / 0 SKIP
+full pytest (current working tree):  1288 PASS / 0 FAIL / 0 SKIP
 Objective Python regressions:         55 PASS / 0 FAIL / 0 SKIP
 Objective recovery check:             READY
 ```
@@ -577,6 +578,35 @@ The LLM stage should write:
 Never restore the old behavior of mixing final outputs and debug prompts in tracked `*_llm/` directories.
 
 The output must pass `validate_llm_analysis_output.py` before downstream use.
+
+### 13.1 Deterministic-first default (D3.x, 2026-08-25)
+
+The LLM stage is **deterministic-first by default**:
+
+```text
+RACE_ENGINEER_DETERMINISTIC_FIRST   default "1"
+    -> episode interpretation, comparison summary and global prose are built
+       by Python without calling the LLM transport
+
+RACE_ENGINEER_EPISODE_DETERMINISTIC =0  opt-out per mode
+RACE_ENGINEER_SUMMARY_DETERMINISTIC =0
+RACE_ENGINEER_GLOBAL_DETERMINISTIC  =0
+
+RACE_ENGINEER_DETERMINISTIC_FIRST=0     disables the default globally;
+                                        a specific flag =1 still forces it
+```
+
+The **only LLM call left in the default runtime path is the priority ranker**
+(`get_validated_comparison_ranker_response`): it still owns the
+PRIORITARIO / SECUNDARIO / NO_ACCIONABLE classifications that feed the render
+and the deterministic summary ordering. Episode fallback
+(`build_deterministic_grounded_episode_fallback`) reconstructs the contract for
+901/901 real corpus episodes; genuinely interpretive episodes fail closed
+(REJECTED) instead of degrading silently.
+
+The H5.2 observational narrative (D3-L5) is non-blocking: a backend failure
+marks `h5_2_llm = SKIPPED_NOT_APPLICABLE` and the completed analysis still
+passes. Details: `docs/D3_LLM_RUNTIME_DEPENDENCY_AUDIT_V0_1.md`.
 
 ---
 
@@ -1051,11 +1081,16 @@ The project prefers preserving deterministic truth and repairing presentation ra
 
 Current behavior can include:
 
+- deterministic-first default for episode interpretation, comparison summary and
+  global prose (D3.2–D3.4) with per-mode opt-out via `RACE_ENGINEER_*_DETERMINISTIC=0`;
 - deterministic repair of badly anchored steering conclusions;
 - revalidation after repair;
 - deterministic global fallback derived from `next_stint_plan` if narrative output remains invalid.
 
 Again: validators should not be weakened for convenience.
+
+The H5.2 observational narrative is non-blocking (D3.1): it can be skipped
+without failing an otherwise complete analysis.
 
 ---
 
@@ -1174,13 +1209,18 @@ Completed after the integration checkpoint:
 3. Monza confirmed that exact vehicle/context isolation rejects Hypercar-to-LMP2_ELMS history while accepting two compatible Toyota Hypercar sessions.
 4. A first Monza Hypercar H2 batch completed human review and feature reporting, but its leakage-safe evaluation partition is empty; more independent sessions are required before matcher evaluation.
 5. A separate Monza `LMP2_ELMS` H2 batch completed 24 human reviews across 3 sessions; its independent evaluation partition is also empty and remains blocked by real data.
+7. D3.x is closed: the LLM stage is deterministic-first by default
+   (`RACE_ENGINEER_DETERMINISTIC_FIRST`, default "1"), the H5.2 narrative is
+   non-blocking, and **the priority ranker is the only remaining LLM dependency
+   in the default runtime path**.
 
 Current priority order:
 
-1. Continue debrief refinement, especially brake-vs-throttle actionability.
-2. Integrate H3 only when calibrated matcher provenance/applicability can be resolved for the current context.
-3. Expand H2 calibration beyond the current limited context before calling it general.
-4. Continue adding real H5.2 contexts without relaxing the track/layout/vehicle/car gates.
+1. Review the complete D3.x state and commit the deterministic-first default.
+2. Continue debrief refinement, especially brake-vs-throttle actionability.
+3. Integrate H3 only when calibrated matcher provenance/applicability can be resolved for the current context.
+4. Expand H2 calibration beyond the current limited context before calling it general.
+5. Continue adding real H5.2 contexts without relaxing the track/layout/vehicle/car gates.
 
 Episode prompt changes are isolated through `run_llm_prompt_shadow.py`.
 `assess_llm_prompt_shadow_promotion.py` accepts only exact A/B pairs with the
@@ -1478,3 +1518,7 @@ Historical details belong in versioned notes or `legacy/`.
 # 36. One-paragraph mental model
 
 Race Engineer takes an LMU DuckDB, extracts and validates deterministic lap/zone/action evidence in Python, asks an LLM only to prioritize and explain authorized evidence, validates that narrative, stores the deterministic session in a schema-4 History DB, optionally selects a context-compatible historical benchmark through H4, preserves current-session coaching authority through H5.1 dual reference, and compares both compatible raw reference laps deterministically through H5.2. A separate validated H5.2 LLM contract may select only Python-authorized zone and observation codes; Python renders every historical statement and number, while causal claims and driving recommendations remain impossible. H2/H3 are the calibrated cross-session pattern-learning path and remain context-limited rather than universal. The repo must stay clean: source/provenance is tracked, runtime telemetry/debug/results stay under ignored `telemetria/`, `data/generated/` and `data/local/` paths.
+
+Since 2026-08-25 the LLM layer is deterministic-first by default: episode
+interpretation, comparison summary and global prose are built by Python, and
+only the priority ranker still calls the LLM.

@@ -24,6 +24,20 @@ from coaching_precision import (
 )
 
 
+def deterministic_first_enabled(flag_name: str) -> bool:
+    """D3: modo deterministic-first por default.
+
+    RACE_ENGINEER_DETERMINISTIC_FIRST (default "1") habilita episodio, summary y
+    global deterministas sin llamada LLM salvo que su flag específico sea "0".
+    Con el master en "0", un flag específico "1" sigue habilitando sólo ese modo.
+    """
+    master = os.environ.get("RACE_ENGINEER_DETERMINISTIC_FIRST", "1") == "1"
+    value = os.environ.get(flag_name)
+    if value is None:
+        return master
+    return value == "1"
+
+
 # ============================================================
 # RACE ENGINEER - LLM ANALYSIS v3.10.8.5.4 / LLAMACPP provisional v1
 # ============================================================
@@ -6135,6 +6149,42 @@ def get_validated_episode_response(
     last_raw = None
     episode_id = episode["episode_id"]
 
+    deterministic_first = deterministic_first_enabled(
+        "RACE_ENGINEER_EPISODE_DETERMINISTIC"
+    )
+    if deterministic_first:
+        deterministic_fallback = build_deterministic_grounded_episode_fallback(
+            episode
+        )
+        if deterministic_fallback is not None:
+            fallback_errors = validate_single_episode_llm_response(
+                deterministic_fallback,
+                episode,
+            )
+            if not fallback_errors:
+                print(
+                    f"    Episodio {episode_id}: modo deterministic-first "
+                    "(default); sin llamada LLM."
+                )
+                return {
+                    "status": "VALID",
+                    "attempts": 0,
+                    "response": deterministic_fallback,
+                    "validation_errors": [],
+                    "deterministic": True,
+                    "deterministic_first": True,
+                    "fallback": "DETERMINISTIC_GROUNDED_EPISODE_TEXT",
+                }
+        return {
+            "status": "REJECTED",
+            "attempts": 0,
+            "response": None,
+            "validation_errors": [
+                "deterministic-first: el episodio es genuinamente interpretativo "
+                "y Python no puede reconstruir el contrato de forma segura"
+            ],
+        }
+
     for attempt in range(
         1,
         MAX_LLM_VALIDATION_ATTEMPTS + 1,
@@ -6158,10 +6208,18 @@ def get_validated_episode_response(
             )
             save_text(path, prompt)
 
-        raw = llamacpp_chat(
-            EPISODE_SYSTEM_PROMPT,
-            prompt,
-        )
+        try:
+            raw = llamacpp_chat(
+                EPISODE_SYSTEM_PROMPT,
+                prompt,
+            )
+        except Exception as exc:
+            errors = [f"transporte LLM falló: {exc}"]
+            print(
+                f"    Episodio {episode_id}: backend no disponible "
+                f"(intento {attempt})."
+            )
+            continue
         last_raw = raw
 
         try:
@@ -6276,6 +6334,27 @@ def get_validated_episode_response(
             "pruned_hypothesis_indexes": [],
             "original_validation_errors": errors or [],
         }
+
+    grounded_fallback = build_deterministic_grounded_episode_fallback(episode)
+    if grounded_fallback is not None:
+        grounded_errors = validate_single_episode_llm_response(
+            grounded_fallback,
+            episode,
+        )
+        if not grounded_errors:
+            print(
+                f"    Episodio {episode_id}: fallback factual mínimo "
+                "v3.10.8.5.4 aplicado tras backend no disponible."
+            )
+            return {
+                "status": "VALID",
+                "attempts": MAX_LLM_VALIDATION_ATTEMPTS,
+                "response": grounded_fallback,
+                "validation_errors": [],
+                "fallback": "DETERMINISTIC_GROUNDED_EPISODE_TEXT",
+                "pruned_hypothesis_indexes": [],
+                "original_validation_errors": errors or [],
+            }
 
     rejected_path = os.path.join(
         output_dir,
@@ -7111,6 +7190,36 @@ def get_validated_comparison_summary_response(
     errors = None
     last_raw = None
 
+    deterministic_first = deterministic_first_enabled(
+        "RACE_ENGINEER_SUMMARY_DETERMINISTIC"
+    )
+    if deterministic_first:
+        deterministic_summary = build_deterministic_comparison_summary(
+            episode_assessments,
+            episode_catalog,
+        )
+        if deterministic_summary is None:
+            return {
+                "status": "REJECTED",
+                "attempts": 0,
+                "response": None,
+                "validation_errors": [
+                    "deterministic-first: no hay resumen determinista disponible"
+                ],
+            }
+        print(
+            "    Resumen: modo deterministic-first "
+            "(default); sin llamada LLM."
+        )
+        return {
+            "status": "VALID",
+            "attempts": 0,
+            "response": deterministic_summary,
+            "validation_errors": [],
+            "deterministic": True,
+            "deterministic_first": True,
+        }
+
     for attempt in range(
         1,
         MAX_LLM_VALIDATION_ATTEMPTS + 1,
@@ -7131,10 +7240,17 @@ def get_validated_comparison_summary_response(
             )
             save_text(path, prompt)
 
-        raw = llamacpp_chat(
-            COMPARISON_SUMMARY_SYSTEM_PROMPT,
-            prompt,
-        )
+        try:
+            raw = llamacpp_chat(
+                COMPARISON_SUMMARY_SYSTEM_PROMPT,
+                prompt,
+            )
+        except Exception as exc:
+            errors = [f"transporte LLM falló: {exc}"]
+            print(
+                f"    Resumen: backend no disponible (intento {attempt})."
+            )
+            continue
         last_raw = raw
 
         try:
@@ -17044,6 +17160,43 @@ def get_validated_global_response(
     errors = None
     last_raw = None
 
+    deterministic_first = deterministic_first_enabled(
+        "RACE_ENGINEER_GLOBAL_DETERMINISTIC"
+    )
+    if deterministic_first:
+        fallback_response = build_deterministic_global_fallback(
+            session_coaching_facts
+        )
+        fallback_errors = validate_global_llm_response(
+            fallback_response,
+            valid_comparison_results,
+            session_coaching_facts,
+        )
+        if fallback_errors:
+            return {
+                "status": "REJECTED",
+                "attempts": 0,
+                "response": None,
+                "validation_errors": fallback_errors,
+            }
+        fallback_response["next_session_priorities"] = (
+            build_deterministic_next_session_priorities(
+                session_coaching_facts
+            )
+        )
+        print(
+            "Síntesis global: modo deterministic-first (default); "
+            "sin llamada LLM."
+        )
+        return {
+            "status": "VALID",
+            "attempts": 0,
+            "response": fallback_response,
+            "validation_errors": [],
+            "deterministic": True,
+            "deterministic_first": True,
+        }
+
     for attempt in range(
         1,
         MAX_GLOBAL_LLM_VALIDATION_ATTEMPTS + 1,
@@ -17066,13 +17219,20 @@ def get_validated_global_response(
                 prompt,
             )
 
-        raw = llamacpp_chat(
-            GLOBAL_SYSTEM_PROMPT,
-            prompt,
-            temperature=0.0,
-            seed=3815,
-            format_schema=GLOBAL_RESPONSE_SCHEMA,
-        )
+        try:
+            raw = llamacpp_chat(
+                GLOBAL_SYSTEM_PROMPT,
+                prompt,
+                temperature=0.0,
+                seed=3815,
+                format_schema=GLOBAL_RESPONSE_SCHEMA,
+            )
+        except Exception as exc:
+            errors = [f"transporte LLM falló: {exc}"]
+            print(
+                f"Síntesis global: backend no disponible (intento {attempt})."
+            )
+            continue
 
         last_raw = raw
 
@@ -18150,6 +18310,12 @@ def save_result(
 # ============================================================
 
 def main():
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
     reset_deepseek_usage()
 
     print_header(

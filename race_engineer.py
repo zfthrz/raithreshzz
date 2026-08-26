@@ -334,6 +334,19 @@ def print_stage(name: str, status: str, detail: str | None = None) -> None:
     print(f"[{name}] {status}{suffix}")
 
 
+def h5_2_llm_skip_on_failure(
+    stage_results: dict[str, str],
+) -> None:
+    """D3.1: la narrativa H5.2 es observacional y su falla no bloquea el análisis."""
+    stage_results["h5_2_llm"] = STATUS_SKIPPED
+    print_stage(
+        "h5_2_llm",
+        STATUS_SKIPPED,
+        "narrativa H5.2 no disponible (backend LLM falló); "
+        "el análisis continúa sin narrativa observacional",
+    )
+
+
 def analyze_command(args: argparse.Namespace) -> int:
     database = resolve_database(args.database)
     state_path = run_state_path(database)
@@ -905,26 +918,27 @@ def analyze_command(args: argparse.Namespace) -> int:
                                     str(h5_2_llm_output),
                                 ])
                             except subprocess.CalledProcessError:
-                                stage_results["h5_2_llm"] = STATUS_FAILED
-                                print_stage("h5_2_llm", STATUS_FAILED)
-                                return 1
-                            record_stage(
-                                state,
-                                "h5_2_llm",
-                                signature=h5_2_llm_signature,
-                                status=STATUS_RUN,
-                                output=str(h5_2_llm_output),
-                                details={
-                                    "h5_2_llm_sha256": sha256_file(h5_2_llm_output)
-                                },
-                            )
-                            save_state(state_path, state)
-                            stage_results["h5_2_llm"] = STATUS_RUN
-                            print_stage(
-                                "h5_2_llm",
-                                STATUS_RUN,
-                                str(h5_2_llm_output),
-                            )
+                                h5_2_llm_skip_on_failure(stage_results)
+                            else:
+                                record_stage(
+                                    state,
+                                    "h5_2_llm",
+                                    signature=h5_2_llm_signature,
+                                    status=STATUS_RUN,
+                                    output=str(h5_2_llm_output),
+                                    details={
+                                        "h5_2_llm_sha256": sha256_file(
+                                            h5_2_llm_output
+                                        )
+                                    },
+                                )
+                                save_state(state_path, state)
+                                stage_results["h5_2_llm"] = STATUS_RUN
+                                print_stage(
+                                    "h5_2_llm",
+                                    STATUS_RUN,
+                                    str(h5_2_llm_output),
+                                )
 
                     # ------------------------------------------
                     # H5.3 historical section (observational, deterministic)

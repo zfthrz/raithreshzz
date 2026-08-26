@@ -156,6 +156,9 @@ def test_history_only_session_is_not_presented_as_debrief_ready(tmp_path: Path):
     sessions, _ = discover_sessions(tmp_path / "runs")
 
     assert sessions[0].status == "HISTORY_READY"
+    assert sessions[0].status_detail == (
+        "Guardada en History; debrief automático pendiente"
+    )
     assert sessions[0].debrief_path is None
     assert sessions[0].has_validated_debrief is False
 

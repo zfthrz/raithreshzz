@@ -13,8 +13,8 @@ current code/tests (source of truth; never infer from `legacy/`).
 ```text
 repository: zfthrz/raithreshzz
 branch: main (puede estar N commits ahead de origin; el usuario pushea)
-GUI: 1.17 — telemetry playback + resolution (20 Hz default, 10-50 Hz)
-full pytest: 1114 passed (última corrida completa)
+GUI: 1.18 — telemetry playback/resolution + scheduler-aware auto-refresh
+full pytest: 1315 passed (última corrida completa, GUI v1.18)
 matcher: episode_pair_matcher.py v0.3 con CALIBRATIONS por contexto
 ```
 
@@ -52,7 +52,7 @@ matcher: episode_pair_matcher.py v0.3 con CALIBRATIONS por contexto
 
 ## Current state highlights
 
-### GUI v1.17
+### GUI v1.18
 - Section navigation (Resumen/Telemetría/Historial/Diagnóstico), compact cards,
   status badges + tooltips, side-by-side H5.2 comparison, calibration status
   panel (Diagnóstico → Calibración, dedupe por contexto, registry como fuente
@@ -61,6 +61,10 @@ matcher: episode_pair_matcher.py v0.3 con CALIBRATIONS por contexto
   (plan ↔ mapa ↔ telemetría sync), playback (`▶/⏸/⏮`, 1 índice/tick con
   intervalo 1000/Hz), resolution selector 10/20/50 Hz (default 20; native
   ~100 Hz), window default 1480x880.
+- Scheduler integration B1: read-only fingerprint of run `state.json` files every
+  five seconds; refresh only on a real set/mtime/size change, preserve selection,
+  skip during GUI-owned analysis and cancel the callback on close. `HISTORY_READY`
+  now describes the automatic deterministic debrief path.
 
 ### Matcher H2 v0.3 — calibración por contexto (`CALIBRATIONS`)
 - Spa LMP2_ELMS: `CALIBRATED_PROVISIONAL_SINGLE_CONTEXT` (72 labels, v0.3

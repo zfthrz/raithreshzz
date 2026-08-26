@@ -328,7 +328,12 @@ def test_maintenance_runs_one_backfill_when_scan_is_idle_and_cooldown_elapsed(
         None,
     )
     assert calls[1][0] == database
-    assert calls[1][1] == ["--backend", "deepseek", "--no-historical-context"]
+    assert calls[1][1] == [
+        "--backend",
+        "deepseek",
+        "--no-historical-context",
+        "--force-deterministic-debrief",
+    ]
     assert calls[1][2] is not None
     assert calls[1][2]["RACE_ENGINEER_DETERMINISTIC_FIRST"] == "1"
     assert calls[1][2]["RACE_ENGINEER_LLM_RANKER"] == "0"
@@ -686,6 +691,67 @@ def test_scan_skips_backfill_skipped_insufficient_valid_laps(tmp_path: Path):
     assert calls == []
 
 
+def test_scan_does_not_retry_unchanged_failed_file(tmp_path: Path):
+    telemetry = tmp_path / "telemetria"
+    database = make_db(telemetry)
+    state_path = tmp_path / "state.json"
+    state = ingest.empty_state()
+    state["files"][str(database)] = {
+        "status": ingest.STATUS_FAILED,
+        "signature": ingest.signature(database),
+        "stable_since": "2026-08-17T11:00:00Z",
+        "last_error": "RuntimeError: no usable laps",
+        "attempts": 1,
+    }
+    ingest.save_state(state_path, state)
+    calls: list[Path] = []
+
+    assert ingest.scan(
+        telemetry,
+        state_path,
+        settle_seconds=0,
+        now=NOW,
+        runner=lambda path, args: calls.append(path),
+        probe=lambda path: calls.append(path),
+    ) == 0
+
+    assert calls == []
+    entry = read_state(state_path)["files"][str(database)]
+    assert entry["status"] == ingest.STATUS_FAILED
+    assert entry["attempts"] == 1
+
+
+def test_changed_failed_file_returns_to_stability_and_can_retry(tmp_path: Path):
+    telemetry = tmp_path / "telemetria"
+    database = make_db(telemetry)
+    state_path = tmp_path / "state.json"
+    state = ingest.empty_state()
+    state["files"][str(database)] = {
+        "status": ingest.STATUS_FAILED,
+        "signature": ingest.signature(database),
+        "stable_since": "2026-08-17T11:00:00Z",
+        "last_error": "RuntimeError: incomplete",
+        "attempts": 1,
+    }
+    ingest.save_state(state_path, state)
+    database.write_bytes(b"duckdb-test-completed")
+    calls: list[tuple[Path, list[str]]] = []
+
+    assert ingest.scan(
+        telemetry,
+        state_path,
+        settle_seconds=0,
+        now=NOW,
+        runner=lambda path, args: calls.append((path, args)),
+        probe=lambda path: None,
+    ) == 0
+
+    assert calls == [(database, ["--no-llm", "--no-historical-context"])]
+    entry = read_state(state_path)["files"][str(database)]
+    assert entry["status"] == ingest.STATUS_HISTORY_READY
+    assert entry["attempts"] == 2
+
+
 def _maintenance_runner(
     calls: list,
 ):
@@ -742,13 +808,69 @@ def test_maintenance_generates_deterministic_debrief_after_ingest(
 
     assert calls == [(
         database,
-        ["--backend", "deepseek", "--no-historical-context"],
+        [
+            "--backend",
+            "deepseek",
+            "--no-historical-context",
+            "--force-deterministic-debrief",
+        ],
         ingest.deterministic_debrief_env(),
     )]
     entry = read_state(state_path)["files"][str(database)]
     assert entry["status"] == ingest.STATUS_DEBRIEF_READY
     assert entry["debrief_backend"] == "deepseek"
     assert entry["debrief_attempts"] == 1
+
+
+def test_maintenance_ignores_stale_failure_and_generates_pending_debrief(
+    tmp_path: Path,
+):
+    telemetry = tmp_path / "telemetria"
+    failed_database = make_db(telemetry, "failed.duckdb")
+    ready_database = make_db(telemetry, "ready.duckdb")
+    state_path = tmp_path / "state.json"
+    state = ingest.empty_state()
+    state["files"][str(failed_database)] = {
+        "status": ingest.STATUS_FAILED,
+        "signature": ingest.signature(failed_database),
+        "stable_since": "2026-08-17T10:00:00Z",
+        "last_error": "RuntimeError: no usable laps",
+        "attempts": 1,
+    }
+    state["files"][str(ready_database)] = {
+        "status": ingest.STATUS_HISTORY_READY,
+        "signature": ingest.signature(ready_database),
+        "history_ready_at": "2026-08-17T11:00:00Z",
+    }
+    ingest.save_state(state_path, state)
+    calls: list = []
+
+    assert ingest.maintenance(
+        telemetry,
+        state_path,
+        settle_seconds=600,
+        min_size_mb=0,
+        backfill_minutes=30,
+        now=NOW,
+        runner=_maintenance_runner(calls),
+        probe=lambda path: None,
+        pipeline_status_reader=lambda path: None,
+        game_running=lambda: False,
+    ) == 0
+
+    assert calls == [(
+        ready_database,
+        [
+            "--backend",
+            "deepseek",
+            "--no-historical-context",
+            "--force-deterministic-debrief",
+        ],
+        ingest.deterministic_debrief_env(),
+    )]
+    updated = read_state(state_path)["files"]
+    assert updated[str(failed_database)]["status"] == ingest.STATUS_FAILED
+    assert updated[str(ready_database)]["status"] == ingest.STATUS_DEBRIEF_READY
 
 
 def test_maintenance_debrief_failure_keeps_history_ready_for_retry(

@@ -13,7 +13,7 @@ Este README documenta el flujo operativo actual del proyecto: análisis de una s
 
 > Automatización de History: [`docs/AUTOMATIC_TELEMETRY_INGEST_V0_1.md`](docs/AUTOMATIC_TELEMETRY_INGEST_V0_1.md). Menú contextual seguro: [`docs/RACE_ENGINEER_CONTEXT_MENU.md`](docs/RACE_ENGINEER_CONTEXT_MENU.md).
 
-> Interfaz de escritorio: [`docs/RACE_ENGINEER_GUI_V1_17.md`](docs/RACE_ENGINEER_GUI_V1_17.md).
+> Interfaz de escritorio: [`docs/RACE_ENGINEER_GUI_V1_18.md`](docs/RACE_ENGINEER_GUI_V1_18.md).
 
 > Traspaso para continuar en ChatGPT actualizado al 23/08/2026: [`docs/CHATGPT_HANDOFF_2026_08_23.md`](docs/CHATGPT_HANDOFF_2026_08_23.md).
 
@@ -40,7 +40,7 @@ Componentes principales:
 | `analyze_telemetry_file.py` | v0.2 — launcher seguro con override explícito sólo para la espera de estabilidad |
 | `hidden_history_ingest.py` | runner sin consola con log local rotativo para la tarea programada |
 | H5.3a-f + runtime 0.2 | shadow: candidatos, auditoría, selección unificada y render validado |
-| `race_engineer_gui.py` | v1.17 — hub de sesiones con telemetría a 20 Hz (10-50 Hz) |
+| `race_engineer_gui.py` | v1.18 — hub con telemetría 10-50 Hz y auto-refresh del scheduler |
 
 Checkpoint de calibración H2 actual sobre **Spa + layout Spa + `LMP2_ELMS`**:
 

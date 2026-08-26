@@ -102,10 +102,13 @@ Al terminar el ingest/backfill (o al omitirlo), `maintenance` genera
 automáticamente el **debrief determinista de carrera** de la sesión
 `HISTORY_READY` más antigua — una sesión por corrida — forzando en el subproceso
 `RACE_ENGINEER_DETERMINISTIC_FIRST=1` y `RACE_ENGINEER_LLM_RANKER=0`, y pasando
-`--no-historical-context`. El debrief se produce sin ninguna llamada LLM y la
+`--no-historical-context --force-deterministic-debrief`. Este último modo sólo se
+acepta con DeepSeek y sin contexto histórico, fija el runtime deterministic-first,
+desactiva el ranker LLM y elimina `DEEPSEEK_API_KEY` del subproceso. Así puede
+reconstruir un render antiguo incompatible sin posibilidad de llamar al modelo. La
 narrativa histórica observacional (única pieza que todavía puede usar LLM) queda
-fuera del flujo desatendido. El paso no usa `--force`: si la sesión ya tiene
-debrief validado, se reconcilia sin regenerar (`DEBRIEF_READY`). Un fallo deja la
+fuera del flujo desatendido. Las sesiones ya marcadas `DEBRIEF_READY` no entran en
+la cola ni se regeneran. Un fallo deja la
 sesión en `HISTORY_READY` con `last_debrief_error` para reintentar en la próxima
 corrida; History no se toca.
 
@@ -284,7 +287,9 @@ Estados principales:
 - `DEBRIEF_READY`: flujo completo terminado.
 - `HISTORY_ONLY_INELIGIBLE`: está en History pero no cumple los filtros del debrief.
 - `HISTORY_ONLY_SUPERSEDED`: está en History y otra sesión más reciente recibió el debrief.
-- `FAILED`: falló análisis/importación y puede reintentarse con `scan`.
+- `FAILED`: falló análisis/importación. Un archivo sin cambios no se reintenta en
+  cada mantenimiento ni bloquea los debriefs pendientes; si su firma cambia vuelve
+  a `PENDING_STABILITY` y puede procesarse nuevamente.
 - `CHANGED_REVIEW_REQUIRED`: cambió después de procesarse; requiere revisión.
 
 El estado operativo se guarda en:
@@ -294,6 +299,12 @@ data/local/telemetry_auto_ingest.json
 ```
 
 No se versiona en Git.
+
+Validación real del modo fail-closed: una sesión Monza con render reutilizado
+obsoleto falló inicialmente por divergencia de `global_analysis`. La siguiente
+ejecución con `--force-deterministic-debrief` reconstruyó el JSON sin credenciales,
+pasó el validator con cero warnings y completó `HISTORY_READY -> DEBRIEF_READY`.
+La tarea terminó con código 0 y la cola continuó con la sesión siguiente.
 
 ## Automatización de Windows
 

@@ -70,8 +70,9 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.17"
+GUI_VERSION = "1.18"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
+STATE_REFRESH_INTERVAL_MS = 5_000
 PROJECT_ROOT = Path(__file__).resolve().parent
 BACKEND_LABELS = {
     "DeepSeek (remoto)": "deepseek",
@@ -147,6 +148,22 @@ def telemetry_canvas_ready(width_px: int, height_px: int) -> bool:
     return int(width_px) >= 180 and int(height_px) >= 120
 
 
+def state_files_fingerprint(runs_root: Path) -> tuple[tuple[str, int, int], ...]:
+    """Return a cheap, stable snapshot of orchestrator state files."""
+    root = Path(runs_root)
+    if not root.is_dir():
+        return ()
+    items: list[tuple[str, int, int]] = []
+    for path in root.rglob("state.json"):
+        try:
+            stat = path.stat()
+            relative = path.relative_to(root).as_posix()
+        except (OSError, ValueError):
+            continue
+        items.append((relative, stat.st_mtime_ns, stat.st_size))
+    return tuple(sorted(items))
+
+
 def session_summary_values(
     *,
     reference_time_s: float | None,
@@ -184,7 +201,10 @@ SESSION_STATUS_COLORS = {
 SESSION_STATUS_TOOLTIPS = {
     "DEBRIEF_READY": "Debrief validado y listo para revisar.",
     "DEBRIEF_UNVALIDATED": "Hay debrief, pero el validator no lo confirmó.",
-    "HISTORY_READY": "En History; falta generar el debrief (botón Analizar).",
+    "HISTORY_READY": (
+        "En History; el scheduler puede generar automáticamente el debrief "
+        "determinista, o podés iniciarlo manualmente con Analizar."
+    ),
     "ANALYZED": "Analizada y validada; falta importarla a History.",
     "PENDING_STABILITY": "Telemetría nueva; esperando estabilidad.",
     "INCOMPLETE": "Sesión incompleta o sin vueltas comparables.",
@@ -314,6 +334,9 @@ class RaceEngineerApp:
         self.analysis_running = False
         self.analysis_database: Path | None = None
         self.analysis_model: str | None = None
+        self._state_files_fingerprint: tuple[tuple[str, int, int], ...] = ()
+        self._state_refresh_after_id = None
+        self._closing = False
         self.settings_path = PROJECT_ROOT / "data" / "local" / "race_engineer_gui_settings.json"
         try:
             self.settings = load_settings(self.settings_path)
@@ -331,6 +354,7 @@ class RaceEngineerApp:
         self._configure_style()
         self._build_layout()
         self.refresh()
+        self._schedule_state_refresh_check()
 
     def _configure_style(self):
         style = self.ttk.Style(self.root)
@@ -1304,6 +1328,27 @@ class RaceEngineerApp:
             preferred_database=preferred_database,
             previous_key=previous_key,
         )
+        self._state_files_fingerprint = state_files_fingerprint(self.runs_root)
+
+    def _schedule_state_refresh_check(self):
+        if self._closing or self._state_refresh_after_id is not None:
+            return
+        self._state_refresh_after_id = self.root.after(
+            STATE_REFRESH_INTERVAL_MS,
+            self._check_for_state_updates,
+        )
+
+    def _check_for_state_updates(self):
+        self._state_refresh_after_id = None
+        if self._closing:
+            return
+        try:
+            if not self.analysis_running:
+                current = state_files_fingerprint(self.runs_root)
+                if current != self._state_files_fingerprint:
+                    self.refresh()
+        finally:
+            self._schedule_state_refresh_check()
 
     def _refresh_h5_3_review_status(self):
         status = load_h5_3_review_status(self.h5_3_review_state_path)
@@ -2925,6 +2970,13 @@ class RaceEngineerApp:
                 parent=self.root,
             )
             return
+        self._closing = True
+        if self._state_refresh_after_id is not None:
+            try:
+                self.root.after_cancel(self._state_refresh_after_id)
+            except Exception:
+                pass
+            self._state_refresh_after_id = None
         self.root.destroy()
 
 

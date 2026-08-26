@@ -234,7 +234,7 @@ def _overall_status(stages: tuple[tuple[str, str], ...]) -> tuple[str, str]:
     if values.get("llm") in READY_STAGE_STATUSES:
         return "DEBRIEF_UNVALIDATED", "Debrief generado; validación no confirmada"
     if values.get("history") in READY_STAGE_STATUSES:
-        return "HISTORY_READY", "Guardada en History; sin debrief LLM"
+        return "HISTORY_READY", "Guardada en History; debrief automático pendiente"
     if values.get("analyze") in READY_STAGE_STATUSES:
         return "ANALYZED", "Análisis determinista disponible"
     return "INCOMPLETE", "Ejecución incompleta"

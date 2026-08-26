@@ -130,10 +130,19 @@ def record_stage(
     state.setdefault("stages", {})[name] = payload
 
 
-def run_checked(args: list[str]) -> None:
+def run_checked(args: list[str], *, env: dict[str, str] | None = None) -> None:
     print()
     print("+ " + " ".join(_quote_for_display(x) for x in args))
-    subprocess.run(args, cwd=PROJECT_ROOT, check=True)
+    subprocess.run(args, cwd=PROJECT_ROOT, check=True, env=env)
+
+
+def deterministic_debrief_subprocess_env() -> dict[str, str]:
+    """Fail-closed environment for rebuilding a debrief without model access."""
+    env = os.environ.copy()
+    env["RACE_ENGINEER_DETERMINISTIC_FIRST"] = "1"
+    env["RACE_ENGINEER_LLM_RANKER"] = "0"
+    env.pop("DEEPSEEK_API_KEY", None)
+    return env
 
 
 def _quote_for_display(value: str) -> str:
@@ -348,6 +357,18 @@ def h5_2_llm_skip_on_failure(
 
 
 def analyze_command(args: argparse.Namespace) -> int:
+    if args.force_deterministic_debrief:
+        if args.backend != "deepseek" or not args.no_historical_context or args.no_llm:
+            raise ValueError(
+                "--force-deterministic-debrief exige --backend deepseek, "
+                "--no-historical-context y LLM stage habilitada."
+            )
+    force_llm_stage = args.force_llm or args.force_deterministic_debrief
+    llm_subprocess_env = (
+        deterministic_debrief_subprocess_env()
+        if args.force_deterministic_debrief
+        else None
+    )
     database = resolve_database(args.database)
     state_path = run_state_path(database)
     state = load_state(state_path)
@@ -470,7 +491,7 @@ def analyze_command(args: argparse.Namespace) -> int:
             }
             reusable_from_state = (
                 not args.force
-                and not args.force_llm
+                and not force_llm_stage
                 and stage_is_reusable(
                     state,
                     "llm",
@@ -480,7 +501,7 @@ def analyze_command(args: argparse.Namespace) -> int:
             )
             recover_existing_llm = (
                 not args.force
-                and not args.force_llm
+                and not force_llm_stage
                 and not reusable_from_state
                 and llm_artifact_matches_run(
                     llm_json,
@@ -512,11 +533,10 @@ def analyze_command(args: argparse.Namespace) -> int:
                     save_state(state_path, state)
             else:
                 try:
-                    run_checked([
-                        sys.executable,
-                        str(llm),
-                        str(analysis_json),
-                    ])
+                    run_checked(
+                        [sys.executable, str(llm), str(analysis_json)],
+                        env=llm_subprocess_env,
+                    )
                 except subprocess.CalledProcessError:
                     stage_results["llm"] = STATUS_FAILED
                     print_stage("llm", STATUS_FAILED)
@@ -1188,6 +1208,15 @@ def build_parser() -> argparse.ArgumentParser:
     analyze.add_argument("--force", action="store_true", help="Reejecutar todas las etapas aplicables.")
     analyze.add_argument("--force-analyze", action="store_true")
     analyze.add_argument("--force-llm", action="store_true")
+    analyze.add_argument(
+        "--force-deterministic-debrief",
+        action="store_true",
+        help=(
+            "Reconstruir sólo el debrief principal en modo Python fail-closed; "
+            "requiere deepseek + --no-historical-context y elimina la API key "
+            "del subproceso."
+        ),
+    )
     analyze.add_argument("--no-llm", action="store_true")
     analyze.add_argument("--no-history", action="store_true")
     analyze.add_argument("--no-historical-context", action="store_true")

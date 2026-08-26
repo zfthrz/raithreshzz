@@ -1,7 +1,7 @@
 # Race Engineer — PROJECT_CONTEXT v1.0
 
 > Canonical end-to-end onboarding context for coding agents and LLMs working on the Race Engineer repository.
-> Baseline represented here: GUI v1.17, H5.4 P1–P11 and historical-shadow checkpoint 2026-08-23.
+> Baseline represented here: GUI v1.18, H5.4 P1–P11 and historical-shadow checkpoint 2026-08-25.
 > Project name: **Threshzz's Telemetry Analysis LMU** (= Race Engineer).
 >
 > This is the detailed mental model of the project. `AGENTS.md` should instruct coding agents to read this file before non-trivial work.
@@ -148,13 +148,13 @@ DeepSeek pseudo-labels/reviews are assistance and must never be silently mixed w
 
 # 4. Current operational baseline
 
-Checkpoint: **2026-08-23 GUI v1.17, H5.4 presentation and historical shadow** +
+Checkpoint: **2026-08-25 GUI v1.18, H5.4 presentation and historical shadow** +
 D3.x deterministic-first default and D2.9 production ranker (2026-08-25).
 
 | Component | Current operational baseline |
 |---|---|
 | `race_engineer.py` | orchestrator v0.3 |
-| `race_engineer_gui.py` | v1.17 / telemetry resolution |
+| `race_engineer_gui.py` | v1.18 / scheduler-aware auto-refresh |
 | `analyze_telemetry.py` | v3.8 + Objective Python v6 |
 | Brake point | 2.1 / schema 2.1 |
 | Throttle point | 1.2.1 / schema 1.2 |
@@ -180,7 +180,7 @@ D3.x deterministic-first default and D2.9 production ranker (2026-08-25).
 Validated checkpoints relevant to the current working tree:
 
 ```text
-full pytest (current working tree):  1288 PASS / 0 FAIL / 0 SKIP
+full pytest (current working tree):  1315 PASS / 0 FAIL / 0 SKIP
 Objective Python regressions:         55 PASS / 0 FAIL / 0 SKIP
 Objective recovery check:             READY
 ```
@@ -1375,6 +1375,13 @@ GUI v1.17 mejora la resolución: alineación a 20 Hz por default (la nativa es
 se ajusta para mantener velocidad 1×. Presentación read-only. See
 `docs/RACE_ENGINEER_GUI_V1_17.md`.
 
+GUI v1.18 integra el scheduler con el catálogo abierto mediante un fingerprint
+read-only de los `state.json`. Cada cinco segundos comprueba ruta, `mtime_ns` y
+tamaño, pero sólo llama `refresh()` cuando el conjunto cambió. Conserva la sesión
+seleccionada, omite la recarga durante un análisis iniciado desde la GUI y cancela
+el callback al cerrar. No escribe estado ni reconstruye mapa/telemetría cuando no
+hay cambios. See `docs/RACE_ENGINEER_GUI_V1_18.md`.
+
 The scheduled task must execute `hidden_history_ingest.py` through `pythonw.exe`.
 That wrapper preserves the same maintenance arguments, creates no console window and
 redirects stdout/stderr to the ignored rotating local log
@@ -1389,9 +1396,14 @@ The scheduled `maintenance` contract is History-first:
 - run deterministic analysis and History import with `--no-llm --no-historical-context`;
 - after ingest/backfill, generate the deterministic race debrief (one session
   per run) forcing `RACE_ENGINEER_DETERMINISTIC_FIRST=1` and
-  `RACE_ENGINEER_LLM_RANKER=0` in the subprocess plus `--no-historical-context`
-  (zero LLM calls, no `--force`; failures keep `HISTORY_READY` for retry);
+  `RACE_ENGINEER_LLM_RANKER=0` in the subprocess plus
+  `--no-historical-context --force-deterministic-debrief`; the explicit mode
+  removes `DEEPSEEK_API_KEY`, rejects incompatible invocation and rebuilds stale
+  renders without model access (failures keep `HISTORY_READY` for retry);
 - process at most one backfill candidate per cooldown;
+- retain an unchanged `FAILED` entry without retrying it every minute, so an old
+  unusable recording cannot block pending deterministic debriefs; a signature
+  change returns that file to `PENDING_STABILITY`;
 - never use the 5 MiB threshold as proof that a recording is complete;
 - scope scan/backfill/debrief selection to the configured source directory.
 

@@ -12,6 +12,7 @@ from race_engineer_gui import (
     session_status_color,
     session_status_tooltip,
     session_summary_values,
+    state_files_fingerprint,
     status_wraplength,
     telemetry_canvas_ready,
 )
@@ -39,9 +40,22 @@ class FakeStyle:
 class FakeRoot:
     def __init__(self):
         self.options: dict[str, str] = {}
+        self.scheduled = []
+        self.cancelled = []
+        self.destroyed = False
 
     def option_add(self, pattern, value):
         self.options[pattern] = value
+
+    def after(self, delay, callback):
+        self.scheduled.append((delay, callback))
+        return f"after-{len(self.scheduled)}"
+
+    def after_cancel(self, identifier):
+        self.cancelled.append(identifier)
+
+    def destroy(self):
+        self.destroyed = True
 
 
 class FakeTtk:
@@ -60,7 +74,7 @@ def test_gui_v1_11_applies_flat_dark_control_chrome_without_opening_window():
 
     app._configure_style()
 
-    assert GUI_VERSION == "1.17"
+    assert GUI_VERSION == "1.18"
     assert style.theme == "clam"
     assert style.configurations["TEntry"]["fieldbackground"] == "#15181c"
     assert style.configurations["TCombobox"]["borderwidth"] == 0
@@ -129,6 +143,82 @@ def test_session_status_badges_have_explicit_color_and_tooltip():
     assert "Debrief validado" in session_status_tooltip("DEBRIEF_READY")
     assert "Falló en alguna etapa" in session_status_tooltip("FAILED")
     assert "no clasificado" in session_status_tooltip("UNKNOWN")
+    assert "scheduler" in session_status_tooltip("HISTORY_READY")
+
+
+def test_state_files_fingerprint_changes_only_for_run_state_files(tmp_path):
+    runs = tmp_path / "runs"
+    first = runs / "session-a" / "state.json"
+    first.parent.mkdir(parents=True)
+    first.write_text("{}", encoding="utf-8")
+
+    baseline = state_files_fingerprint(runs)
+    assert len(baseline) == 1
+    assert baseline[0][0] == "session-a/state.json"
+
+    unrelated = runs / "session-a" / "notes.txt"
+    unrelated.write_text("ignored", encoding="utf-8")
+    assert state_files_fingerprint(runs) == baseline
+
+    second = runs / "session-b" / "state.json"
+    second.parent.mkdir(parents=True)
+    second.write_text("{}", encoding="utf-8")
+    with_second = state_files_fingerprint(runs)
+    assert with_second != baseline
+
+    first.write_text('{"updated": true}', encoding="utf-8")
+    assert state_files_fingerprint(runs) != with_second
+
+    second.unlink()
+    assert state_files_fingerprint(runs) != with_second
+
+
+def test_state_check_refreshes_only_after_change_and_reschedules(tmp_path):
+    app = RaceEngineerApp.__new__(RaceEngineerApp)
+    app.root = FakeRoot()
+    app.runs_root = tmp_path / "runs"
+    app.runs_root.mkdir()
+    app._closing = False
+    app.analysis_running = False
+    app._state_refresh_after_id = "current-check"
+    app._state_files_fingerprint = state_files_fingerprint(app.runs_root)
+    refreshes = []
+    app.refresh = lambda: refreshes.append(True)
+
+    app._check_for_state_updates()
+
+    assert refreshes == []
+    assert app._state_refresh_after_id == "after-1"
+
+    state_path = app.runs_root / "new-session" / "state.json"
+    state_path.parent.mkdir()
+    state_path.write_text("{}", encoding="utf-8")
+    app._state_refresh_after_id = "current-check"
+
+    app._check_for_state_updates()
+
+    assert refreshes == [True]
+    assert app._state_refresh_after_id == "after-2"
+
+
+def test_state_check_does_not_refresh_during_gui_analysis(tmp_path):
+    app = RaceEngineerApp.__new__(RaceEngineerApp)
+    app.root = FakeRoot()
+    app.runs_root = tmp_path / "runs"
+    app.runs_root.mkdir()
+    app._closing = False
+    app.analysis_running = True
+    app._state_refresh_after_id = "current-check"
+    app._state_files_fingerprint = ()
+    refreshes = []
+    app.refresh = lambda: refreshes.append(True)
+
+    (app.runs_root / "session").mkdir()
+    (app.runs_root / "session" / "state.json").write_text("{}", encoding="utf-8")
+    app._check_for_state_updates()
+
+    assert refreshes == []
+    assert app._state_refresh_after_id == "after-1"
 
 
 def test_format_comparison_columns_builds_side_by_side_view():

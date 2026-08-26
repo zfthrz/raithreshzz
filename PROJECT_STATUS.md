@@ -7,12 +7,12 @@ llama.cpp recovery and H5.3 review work described below.
 
 Validated baseline:
 
-- full pytest: `1047 PASS / 0 FAIL / 0 SKIP`;
+- full pytest: `1315 PASS / 0 FAIL / 0 SKIP`;
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP` (last analyzer-affecting checkpoint);
-- GUI: v1.17, section navigation + telemetry paned area + GPS zoom/pan + H5.3
+- GUI: v1.18, section navigation + telemetry paned area + GPS zoom/pan + H5.3
   presentation + status badges and side-by-side historical comparison +
   calibration status panel + plan-map-telemetry sync + telemetry playback +
-  telemetry resolution (20 Hz default, 10-50 Hz);
+  telemetry resolution (20 Hz default, 10-50 Hz) + scheduler-aware auto-refresh;
 - H5.3: shadow implementation complete, production historical actions still disabled.
 - H5.3g: deterministic faster-lap withholding audit implemented; policy unchanged.
 - H5.3h: conservative local-loss hypothesis implemented in shadow; 1 unauthorized
@@ -104,7 +104,8 @@ Validated baseline:
   `RACE_ENGINEER_DETERMINISTIC_FIRST` (default "1") en los 4 backends con
   opt-out por flag. **Con el cutover D2.9 el runtime default es 100%
   determinista (cero llamadas LLM).** Evidencia: 901/901 episodios del corpus
-  reconstruibles; validación real Spa y Fuji PASS; suite completa 1300 PASS.
+  reconstruibles; validación real Spa y Fuji PASS; suite completa 1315 PASS en el
+  checkpoint GUI v1.18.
 
 ### analyze_telemetry
 Current: `3.8`
@@ -207,6 +208,12 @@ Implemented and validated on Windows:
 - serializes backlog processing and gives new telemetry priority;
 - keeps files below 5 MiB out of automatic backfill;
 - scopes maintenance and debrief selection to the active telemetry source.
+- keeps unchanged `FAILED` recordings as stable diagnostics instead of retrying
+  them every minute; changed files return to stability checking, while old failures
+  no longer block the deterministic debrief queue;
+- uses the fail-closed `--force-deterministic-debrief` mode for pending sessions:
+  stale renders are rebuilt with Python while the child process has no DeepSeek API
+  credential and cannot enable historical/model stages;
 - runs scheduled maintenance through `pythonw.exe` with no visible console;
 - redirects scheduled stdout/stderr to a 2 MiB rotating local log with one backup.
 
@@ -665,6 +672,13 @@ interactuar. Presentación únicamente. See `docs/RACE_ENGINEER_GUI_V1_16.md`.
 GUI v1.17 mejora la resolución de telemetría: alineación a 20 Hz por default
 (nativa ~100 Hz) con selector 10/20/50 Hz; el playback ajusta el paso para
 velocidad 1×. Presentación read-only. See `docs/RACE_ENGINEER_GUI_V1_17.md`.
+
+GUI v1.18 agrega integración read-only con el scheduler: fingerprint barato de
+`state.json` cada cinco segundos y recarga únicamente ante altas, modificaciones o
+bajas reales. Conserva la sesión seleccionada, se suspende durante análisis propios
+y cancela su callback al cerrar. `HISTORY_READY` ahora informa que el debrief
+determinista puede completarse automáticamente. See
+`docs/RACE_ENGINEER_GUI_V1_18.md`.
 
 Calibration batch orchestrator `1.5` requires the current History schema 4 contract,
 reports its runtime version consistently and has a regression test against schema drift.

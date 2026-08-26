@@ -425,6 +425,7 @@ def scan(
             STATUS_HISTORY_READY,
             STATUS_DEBRIEF_READY,
             STATUS_CHANGED_REVIEW_REQUIRED,
+            STATUS_FAILED,
         }:
             continue
 
@@ -698,8 +699,8 @@ def maintenance(
                 return backfill_result
 
     # Debrief determinista automático (D2.9/D3.x): una sesión por corrida,
-    # con env forzado (0 llamadas LLM). --no-historical-context mantiene la
-    # narrativa histórica observacional fuera del flujo desatendido.
+    # con env forzado (0 llamadas LLM). El flag explícito hace fail-closed el
+    # subproceso, quita la API key y evita reutilizar un render determinista viejo.
     return debrief_next(
         state_path,
         backend=backend,
@@ -707,7 +708,7 @@ def maintenance(
         telemetry_dir=telemetry_dir,
         runner=runner,
         env=deterministic_debrief_env(),
-        extra_args=["--no-historical-context"],
+        extra_args=["--no-historical-context", "--force-deterministic-debrief"],
     )
 
 

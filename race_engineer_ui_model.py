@@ -269,15 +269,23 @@ def load_calibration_summary(
                     ),
                 }
             )
-    # Por contexto, conservar el batch con más sesiones (el que supersede).
+    # Por contexto, conservar primero una revisión humana pendiente; a igualdad
+    # de estado, gana el batch con más sesiones (el que supersede).
     by_context: dict[tuple[str, str, str], dict[str, Any]] = {}
     for row in rows:
         key = (row["track"], row["track_layout"], row["vehicle_variant"])
         current = by_context.get(key)
+        row_pending = row["queue_pairs"] > row["labeled_pairs"]
+        current_pending = (
+            current is not None
+            and current["queue_pairs"] > current["labeled_pairs"]
+        )
         if current is None or (
+            row_pending,
             row["sessions"],
             row["batch_id"],
         ) > (
+            current_pending,
             current["sessions"],
             current["batch_id"],
         ):

@@ -1,0 +1,61 @@
+{
+  "orchestrator_version": "uncovered-review-v0.1",
+  "updated_at_utc": "2026-08-26T23:54:03.119052+00:00",
+  "overall_status": "READY_FOR_HUMAN_REVIEW",
+  "track": "Circuit de Spa-Francorchamps",
+  "track_layout": "Circuit de Spa-Francorchamps",
+  "vehicle_variant": "LMP2_ELMS",
+  "batch_id": "uncovered-9a7128b974",
+  "batch_dir": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\circuit-de-spa-francorchamps--lmp2-elms--uncovered-9a7128b974",
+  "steps": {
+    "vehicle_context_selection": {
+      "status": "PASS",
+      "session_count": 23,
+      "session_ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        24,
+        25,
+        45,
+        69,
+        70,
+        71,
+        78,
+        82,
+        85,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        94,
+        97
+      ]
+    },
+    "review_queue": {
+      "status": "READY",
+      "path": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\circuit-de-spa-francorchamps--lmp2-elms--uncovered-9a7128b974\\pair_review_queue.json",
+      "queue_pairs": 17
+    },
+    "human_labels": {
+      "status": "PENDING",
+      "labels_path": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\circuit-de-spa-francorchamps--lmp2-elms--uncovered-9a7128b974\\pair_labels.json",
+      "queue_pairs": 17,
+      "labeled_pairs": 0,
+      "unreviewed_pairs": 17,
+      "complete": false
+    },
+    "calibration_dataset": {
+      "status": "BLOCKED_BY_LABELS"
+    },
+    "evaluation_readiness": {
+      "status": "SHADOW_EVIDENCE_ONLY",
+      "evaluation_pairs": 0
+    }
+  }
+}

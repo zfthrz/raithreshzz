@@ -72,7 +72,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.21"
+GUI_VERSION = "1.36"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 STATE_REFRESH_INTERVAL_MS = 5_000
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -82,12 +82,20 @@ SESSION_FILTER_LABELS = {
     "Sólo History": "HISTORY_READY",
     "Fallidas": "FAILED",
 }
-PRIMARY_SECTIONS = ("Resumen", "Telemetría", "Historial", "Diagnóstico")
+PRIMARY_SECTIONS = ("Resumen", "Telemetría", "Historial", "Diagnóstico", "Calibración")
 SECTION_VIEWS = {
     "Resumen": ("Debrief", "Próxima tanda", "Vueltas"),
     "Telemetría": ("Mapa y canales",),
     "Historial": ("Referencia", "Comparación"),
-    "Diagnóstico": ("Pipeline", "Ejecución", "Calibración"),
+    "Diagnóstico": ("Pipeline", "Ejecución"),
+    "Calibración": ("Calibración",),
+}
+SECTION_DESCRIPTIONS = {
+    "Resumen": "Debrief, plan de próxima tanda y vueltas clave de la sesión seleccionada.",
+    "Telemetría": "Mapa del circuito y canales de telemetría de la sesión seleccionada.",
+    "Historial": "Referencia histórica y comparación contextual validada.",
+    "Diagnóstico": "Estado del pipeline, ejecución y automatización.",
+    "Calibración": "Cobertura y estado de calibración por contexto.",
 }
 
 SESSION_CHANGE_STATUS_LABELS = {
@@ -95,6 +103,27 @@ SESSION_CHANGE_STATUS_LABELS = {
     "NEW": "Nuevo",
     "RESOLVED": "Ya no aparece",
 }
+
+
+def compact_session_change_rows(view, *, max_groups: int = 3, max_changes: int = 3):
+    """Bound historical-change content for the Resumen inspector card."""
+    rows = session_change_rows(view)
+    compact = []
+    hidden_changes = 0
+    for group_index, group in enumerate(rows):
+        changes = list(group.get("changes") or ())
+        if group_index >= max_groups:
+            hidden_changes += len(changes)
+            continue
+        shown = changes[:max_changes]
+        hidden_changes += max(0, len(changes) - len(shown))
+        compact.append(
+            {
+                "location_label": group.get("location_label"),
+                "changes": shown,
+            }
+        )
+    return compact, hidden_changes
 
 
 def session_change_rows(view):
@@ -179,6 +208,62 @@ def _open_file(path: Path) -> None:
 
 def _clean_markdown_line(line: str) -> str:
     return line.replace("**", "").replace("_", "")
+
+
+def compact_debrief_markdown(value: str) -> str:
+    """Build a short dashboard view from existing debrief sections only."""
+    lines = value.splitlines()
+    if not lines:
+        return ""
+
+    wanted = ("resumen de la sesión", "foco principal")
+    sections: list[list[str]] = []
+    index = 0
+    while index < len(lines):
+        line = lines[index]
+        if line.startswith("## ") and line[3:].strip().casefold() in wanted:
+            block = [line]
+            index += 1
+            while index < len(lines) and not lines[index].startswith("## "):
+                block.append(lines[index])
+                index += 1
+            sections.append(block)
+            continue
+        index += 1
+
+    if not sections:
+        # Drop the oversized document title in dashboard mode but preserve source text.
+        trimmed = [line for line in lines if not line.startswith("# ")]
+        return "\n".join(trimmed[:18]).strip()
+
+    output: list[str] = []
+    for block in sections:
+        heading = block[0]
+        output.extend((heading, ""))
+        body = [line for line in block[1:] if line.strip()]
+        if heading[3:].strip().casefold() == "foco principal":
+            bullets = [line for line in body if line.lstrip().startswith("-")]
+            body = bullets[:2] if bullets else body[:4]
+        else:
+            body = body[:4]
+        output.extend(body)
+        output.append("")
+    return "\n".join(output).strip()
+
+
+def compact_laps_text(value: str, *, max_rows: int = 4) -> str:
+    """Keep the dashboard lap card scannable while preserving the full source elsewhere."""
+    lines = [line.strip() for line in value.splitlines() if line.strip()]
+    if len(lines) <= max_rows:
+        return "\n".join(lines)
+    reference = [line for line in lines if "REFERENCIA" in line.upper()]
+    selected = lines[:max_rows]
+    if reference and reference[0] not in selected:
+        selected[-1] = reference[0]
+    remaining = max(0, len(lines) - len(selected))
+    if remaining:
+        selected.append(f"+ {remaining} vueltas más en el detalle")
+    return "\n".join(selected)
 
 
 def status_wraplength(container_width_px: int) -> int:
@@ -381,7 +466,7 @@ class RaceEngineerApp:
         self._row_tooltip = None
         self.track_playback_active = False
         self.track_playback_after_id = None
-        self.track_resolution_hz = 20.0
+        self.track_resolution_hz = 10.0
         self.analysis_queue: queue.Queue[tuple[str, object]] = queue.Queue()
         self.track_map_queue: queue.Queue[tuple[int, str, object]] = queue.Queue()
         self.session_change_queue: queue.Queue[tuple[int, str, object]] = queue.Queue()
@@ -427,9 +512,9 @@ class RaceEngineerApp:
         self.settings_warning = ""
 
         root.title(f"Threshzz's Telemetry Analysis LMU v{GUI_VERSION}")
-        root.geometry("1480x880")
-        root.minsize(1120, 700)
-        root.configure(background="#101010")
+        root.geometry("1600x1040")
+        root.minsize(1240, 760)
+        root.configure(background="#0b1116")
         root.protocol("WM_DELETE_WINDOW", self._on_close)
 
         self._configure_style()
@@ -445,30 +530,30 @@ class RaceEngineerApp:
         self.root.option_add("*TCombobox*Listbox.foreground", "#dce7ef")
         self.root.option_add("*TCombobox*Listbox.selectBackground", "#315b60")
         self.root.option_add("*TCombobox*Listbox.selectForeground", "#f4fbff")
-        style.configure("App.TFrame", background="#101010")
-        style.configure("Panel.TFrame", background="#1c1c1c")
-        style.configure("TPanedwindow", background="#101010", sashwidth=6)
+        style.configure("App.TFrame", background="#0b1116")
+        style.configure("Panel.TFrame", background="#111820")
+        style.configure("TPanedwindow", background="#0b1116", sashwidth=6)
         style.configure(
             "Title.TLabel",
-            background="#101010",
+            background="#0b1116",
             foreground="#f2f7fb",
-            font=("Segoe UI Semibold", 22),
+            font=("Segoe UI Semibold", 16),
         )
         style.configure(
             "Subtitle.TLabel",
-            background="#101010",
+            background="#0b1116",
             foreground="#8fa5b8",
             font=("Segoe UI", 10),
         )
         style.configure(
             "Metric.TLabel",
-            background="#1c1c1c",
+            background="#111820",
             foreground="#e8f1f7",
             font=("Segoe UI Semibold", 11),
         )
         style.configure(
             "Muted.TLabel",
-            background="#1c1c1c",
+            background="#111820",
             foreground="#91a6b8",
             font=("Segoe UI", 9),
         )
@@ -682,23 +767,26 @@ class RaceEngineerApp:
 
         style.configure(
             "PriorityCard.TFrame",
-            background="#1b2928",
+            background="#172421",
+            borderwidth=1,
+            relief="solid",
+            bordercolor="#28403b",
         )
         style.configure(
             "PriorityIndex.TLabel",
-            background="#1b2928",
+            background="#172421",
             foreground="#67e5d5",
             font=("Segoe UI Semibold", 10),
         )
         style.configure(
             "PriorityTitle.TLabel",
-            background="#1b2928",
+            background="#172421",
             foreground="#f2f7fb",
             font=("Segoe UI Semibold", 11),
         )
         style.configure(
             "PriorityCue.TLabel",
-            background="#1b2928",
+            background="#172421",
             foreground="#c5d3da",
             font=("Segoe UI", 10),
         )
@@ -712,53 +800,59 @@ class RaceEngineerApp:
 
         style.configure(
             "SummaryCard.TFrame",
-            background="#171a1d",
+            background="#141c23",
+            borderwidth=1,
+            relief="solid",
+            bordercolor="#26343d",
         )
         style.configure(
             "SummaryAccentCard.TFrame",
-            background="#16201f",
+            background="#14211f",
+            borderwidth=1,
+            relief="solid",
+            bordercolor="#24413d",
         )
         style.configure(
             "SummaryTitle.TLabel",
-            background="#171a1d",
-            foreground="#eef5f8",
+            background="#141c23",
+            foreground="#67e5d5",
             font=("Segoe UI Semibold", 11),
         )
         style.configure(
             "SummarySubtitle.TLabel",
-            background="#171a1d",
-            foreground="#7f929f",
+            background="#141c23",
+            foreground="#8399a8",
             font=("Segoe UI", 9),
         )
         style.configure(
             "SummaryAccentTitle.TLabel",
-            background="#16201f",
+            background="#14211f",
             foreground="#67e5d5",
             font=("Segoe UI Semibold", 11),
         )
         style.configure(
             "SummaryAccentSubtitle.TLabel",
-            background="#16201f",
+            background="#14211f",
             foreground="#8eaaa5",
             font=("Segoe UI", 9),
         )
 
         style.configure(
             "Workspace.TFrame",
-            background="#171a1d",
+            background="#0d151b",
         )
         style.configure(
             "WorkspaceNav.TFrame",
-            background="#14171a",
+            background="#0f161d",
         )
         style.configure(
             "WorkspaceNav.TButton",
-            background="#14171a",
+            background="#0f161d",
             foreground="#91a6b8",
             borderwidth=0,
             relief="flat",
-            padding=(14, 10),
-            anchor="w",
+            padding=(14, 8),
+            anchor="center",
             font=("Segoe UI Semibold", 10),
         )
         style.map(
@@ -773,12 +867,12 @@ class RaceEngineerApp:
         )
         style.configure(
             "WorkspaceNavActive.TButton",
-            background="#253137",
+            background="#123138",
             foreground="#55decf",
             borderwidth=0,
             relief="flat",
-            padding=(14, 10),
-            anchor="w",
+            padding=(14, 8),
+            anchor="center",
             font=("Segoe UI Semibold", 10),
         )
         style.map(
@@ -790,6 +884,97 @@ class RaceEngineerApp:
             foreground=[
                 ("active", "#67e5d5"),
             ],
+        )
+
+        style.configure(
+            "Sidebar.TFrame",
+            background="#071018",
+        )
+        style.configure(
+            "SidebarBrand.TLabel",
+            background="#071018",
+            foreground="#f2f7fb",
+            font=("Segoe UI Semibold", 10),
+        )
+        style.configure(
+            "SidebarMeta.TLabel",
+            background="#071018",
+            foreground="#7f929f",
+            font=("Segoe UI", 8),
+        )
+        style.configure(
+            "SidebarStatus.TLabel",
+            background="#071018",
+            foreground="#67e5d5",
+            font=("Segoe UI Semibold", 8),
+        )
+        style.configure(
+            "SidebarSession.TLabel",
+            background="#071018",
+            foreground="#dce7ef",
+            font=("Segoe UI Semibold", 10),
+        )
+        style.configure(
+            "SidebarNav.TButton",
+            background="#071018",
+            foreground="#c6d3dc",
+            borderwidth=0,
+            relief="flat",
+            padding=(12, 10),
+            anchor="w",
+            font=("Segoe UI Semibold", 10),
+        )
+        style.map(
+            "SidebarNav.TButton",
+            background=[("active", "#101c24"), ("pressed", "#14242c")],
+            foreground=[("active", "#f2f7fb")],
+        )
+        style.configure(
+            "SidebarNavActive.TButton",
+            background="#0a3338",
+            foreground="#67e5d5",
+            borderwidth=0,
+            relief="flat",
+            padding=(12, 10),
+            anchor="w",
+            font=("Segoe UI Semibold", 10),
+        )
+        style.map(
+            "SidebarNavActive.TButton",
+            background=[("active", "#104148"), ("pressed", "#104148")],
+            foreground=[("active", "#7af1df")],
+        )
+        style.configure(
+            "WorkspaceHeader.TFrame",
+            background="#0b1116",
+        )
+        style.configure(
+            "WorkspaceTitle.TLabel",
+            background="#0b1116",
+            foreground="#f2f7fb",
+            font=("Segoe UI Semibold", 17),
+        )
+        style.configure(
+            "WorkspaceSubtitle.TLabel",
+            background="#0b1116",
+            foreground="#91a6b8",
+            font=("Segoe UI", 9),
+        )
+
+        style.configure(
+            "Link.TButton",
+            background="#151d24",
+            foreground="#67e5d5",
+            borderwidth=0,
+            relief="flat",
+            padding=(4, 3),
+            anchor="e",
+            font=("Segoe UI Semibold", 9),
+        )
+        style.map(
+            "Link.TButton",
+            background=[("active", "#151d24"), ("pressed", "#151d24")],
+            foreground=[("active", "#8cf5e7")],
         )
 
         style.configure("TNotebook", background="#1c1c1c", borderwidth=0)
@@ -840,216 +1025,182 @@ class RaceEngineerApp:
         ttk = self.ttk
         tk = self.tk
 
-        header = ttk.Frame(self.root, style="App.TFrame", padding=(22, 18, 22, 12))
-        header.pack(fill="x")
-        accent_bar = tk.Frame(self.root, background="#45d4c2", height=2)
-        accent_bar.pack(fill="x")
-        title_box = ttk.Frame(header, style="App.TFrame")
-        title_box.pack(side="left", fill="x", expand=True)
+        shell = ttk.Frame(self.root, style="App.TFrame")
+        shell.pack(fill="both", expand=True)
+
+        sidebar = ttk.Frame(shell, style="Sidebar.TFrame", width=258)
+        sidebar.pack(side="left", fill="y")
+        sidebar.pack_propagate(False)
+
+        main = ttk.Frame(shell, style="App.TFrame", padding=(22, 16, 20, 10))
+        main.pack(side="left", fill="both", expand=True)
+
+        brand = ttk.Frame(sidebar, style="Sidebar.TFrame", padding=(16, 16, 14, 10))
+        brand.pack(fill="x")
         ttk.Label(
-            title_box,
-            text="THRESHZZ'S TELEMETRY ANALYSIS LMU",
-            style="Title.TLabel",
+            brand,
+            text="Threshzz's Telemetry\nAnalysis Tool",
+            style="SidebarBrand.TLabel",
+            justify="left",
         ).pack(anchor="w")
+        self.scheduler_var = tk.StringVar(value="Sistema · cargando…")
+        self.scheduler_label = ttk.Label(brand, textvariable=self.scheduler_var, style="SidebarStatus.TLabel")
+        self.scheduler_label.pack(anchor="w", pady=(7, 0))
+
+        ttk.Separator(sidebar, orient="horizontal").pack(fill="x", padx=16, pady=(2, 8))
+
+        self.primary_section_var = tk.StringVar(value="Resumen")
+        self.primary_section_frames = {}
+        self.primary_section_buttons = {}
+        nav = ttk.Frame(sidebar, style="Sidebar.TFrame", padding=(8, 0, 8, 6))
+        nav.pack(fill="x")
+        for section in PRIMARY_SECTIONS:
+            button = ttk.Button(
+                nav,
+                text=section,
+                style="SidebarNav.TButton",
+                command=lambda name=section: self._show_primary_section(name),
+            )
+            button.pack(fill="x", pady=1)
+            self.primary_section_buttons[section] = button
+
+        ttk.Separator(sidebar, orient="horizontal").pack(fill="x", padx=16, pady=(6, 10))
+
+        selected_box = ttk.Frame(sidebar, style="Sidebar.TFrame", padding=(16, 0, 14, 8))
+        selected_box.pack(fill="x")
+        ttk.Label(selected_box, text="SESIÓN SELECCIONADA", style="SidebarMeta.TLabel").pack(anchor="w")
+        self.detail_title = tk.StringVar(value="Seleccioná una sesión")
+        self.detail_subtitle = tk.StringVar(value="")
         ttk.Label(
-            title_box,
-            text=(
-                "Race Engineer · Sesiones, History y debriefs en un solo lugar · "
-                "interfaz de solo lectura"
-            ),
-            style="Subtitle.TLabel",
-        ).pack(anchor="w", pady=(2, 0))
-        actions = ttk.Frame(header, style="App.TFrame")
-        actions.pack(side="right")
-        self.skip_stability_var = tk.BooleanVar(value=False)
-        self.skip_stability_check = ttk.Checkbutton(
-            actions,
-            text="Omitir espera 10 min",
-            variable=self.skip_stability_var,
+            selected_box,
+            textvariable=self.detail_title,
+            style="SidebarSession.TLabel",
+            wraplength=200,
+            justify="left",
+        ).pack(anchor="w", pady=(7, 0))
+        ttk.Label(
+            selected_box,
+            textvariable=self.detail_subtitle,
+            style="SidebarMeta.TLabel",
+            wraplength=200,
+            justify="left",
+        ).pack(anchor="w", pady=(3, 8))
+        self.open_button = ttk.Button(
+            selected_box,
+            text="Abrir carpeta de la sesión",
+            command=self._open_selected_folder,
+            state="disabled",
         )
-        self.skip_stability_check.pack(side="left", padx=(0, 8))
-        self.analyze_button = ttk.Button(
-            actions,
-            text="Elegir archivo…",
-            style="Analyze.TButton",
-            command=self._choose_analysis_file,
-        )
-        self.analyze_button.pack(side="left", padx=(0, 8))
-        self.refresh_button = ttk.Button(actions, text="Actualizar", command=self.refresh)
-        self.refresh_button.pack(side="left")
-        self.history_button = ttk.Button(actions, text="History", command=self._open_history)
-        self.history_button.pack(side="left", padx=(8, 0))
+        self.open_button.pack(fill="x")
 
-        content = ttk.Panedwindow(self.root, orient="horizontal")
-        content.pack(fill="both", expand=True, padx=18, pady=(0, 18))
+        ttk.Separator(sidebar, orient="horizontal").pack(fill="x", padx=16, pady=(4, 10))
 
-        left = ttk.Frame(content, style="Panel.TFrame", padding=12)
-        right = ttk.Frame(content, style="Panel.TFrame", padding=14)
-        content.add(left, weight=5)
-        content.add(right, weight=7)
-
-        session_tools = ttk.Frame(left, style="Panel.TFrame")
-        session_tools.pack(fill="x", pady=(0, 8))
+        browser = ttk.Frame(sidebar, style="Sidebar.TFrame", padding=(12, 0, 10, 0))
+        browser.pack(fill="both", expand=True)
         self.count_var = tk.StringVar(value="Buscando sesiones…")
-        ttk.Label(session_tools, textvariable=self.count_var, style="Metric.TLabel").pack(
-            side="left"
-        )
+        ttk.Label(browser, textvariable=self.count_var, style="SidebarMeta.TLabel").pack(anchor="w")
+        self.session_query_var = tk.StringVar()
+        self.session_query_entry = ttk.Entry(browser, textvariable=self.session_query_var)
+        self.session_query_entry.pack(fill="x", pady=(7, 6))
         self.session_filter_var = tk.StringVar(value="Todas")
         self.session_filter_combo = ttk.Combobox(
-            session_tools,
+            browser,
             textvariable=self.session_filter_var,
             values=tuple(SESSION_FILTER_LABELS),
             state="readonly",
-            width=15,
         )
-        self.session_filter_combo.pack(side="right", padx=(8, 0))
-        self.session_query_var = tk.StringVar()
-        self.session_query_entry = ttk.Entry(
-            session_tools,
-            textvariable=self.session_query_var,
-            width=24,
-        )
-        self.session_query_entry.pack(side="right")
-        ttk.Label(session_tools, text="Buscar:", style="Muted.TLabel").pack(
-            side="right", padx=(0, 6)
-        )
+        self.session_filter_combo.pack(fill="x", pady=(0, 8))
         self.session_filter_combo.bind("<<ComboboxSelected>>", self._apply_session_filters)
         self.session_query_var.trace_add("write", lambda *_: self._apply_session_filters())
 
-        automation_tools = ttk.Frame(left, style="Panel.TFrame")
-        automation_tools.pack(fill="x", pady=(0, 8))
-        self.scheduler_var = tk.StringVar(value="Scheduler · cargando…")
-        self.scheduler_label = ttk.Label(
-            automation_tools,
-            textvariable=self.scheduler_var,
-            style="H53Muted.TLabel",
-        )
-        self.scheduler_label.pack(side="left")
-        self.h5_3_review_state_path = (
-            PROJECT_ROOT / "data" / "local" / "h5_3_review_maintenance.json"
-        )
-        self.h5_3_review_var = tk.StringVar(value="H5.3 shadow · cargando…")
-        self.h5_3_review_label = ttk.Label(
-            automation_tools,
-            textvariable=self.h5_3_review_var,
-            style="H53Muted.TLabel",
-        )
-        self.h5_3_review_label.pack(side="right")
-
         columns = ("date", "track", "vehicle", "laps", "best", "status")
-        self.tree = ttk.Treeview(left, columns=columns, show="headings", selectmode="browse")
-        headings = {
-            "date": "Fecha",
-            "track": "Circuito",
-            "vehicle": "Vehículo",
-            "laps": "Vueltas",
-            "best": "Referencia",
-            "status": "Estado",
-        }
-        widths = {"date": 120, "track": 190, "vehicle": 190, "laps": 55, "best": 80, "status": 120}
-        for name in columns:
-            self.tree.heading(name, text=headings[name])
-            self.tree.column(name, width=widths[name], minwidth=45, stretch=name in {"track", "vehicle"})
-        scrollbar = ttk.Scrollbar(left, orient="vertical", command=self.tree.yview)
-        self.tree.configure(yscrollcommand=scrollbar.set)
-        scrollbar.pack(side="right", fill="y")
-        self.tree.pack(fill="both", expand=True)
+        self.tree = ttk.Treeview(
+            browser,
+            columns=columns,
+            displaycolumns=("date", "track", "status"),
+            show="headings",
+            selectmode="browse",
+        )
+        for name, text, width, stretch in (
+            ("date", "Fecha", 78, False),
+            ("track", "Circuito", 104, True),
+            ("status", "Estado", 48, False),
+        ):
+            self.tree.heading(name, text=text)
+            self.tree.column(name, width=width, minwidth=40, stretch=stretch)
+        for name in ("vehicle", "laps", "best"):
+            self.tree.column(name, width=0, minwidth=0, stretch=False)
+        tree_scrollbar = ttk.Scrollbar(browser, orient="vertical", command=self.tree.yview)
+        self.tree.configure(yscrollcommand=tree_scrollbar.set)
+        tree_scrollbar.pack(side="right", fill="y")
+        self.tree.pack(side="left", fill="both", expand=True)
         self.tree.bind("<<TreeviewSelect>>", self._on_select)
         self.tree.bind("<Double-1>", self._on_session_double_click)
         self.tree.bind("<Motion>", self._on_tree_motion)
         self.tree.bind("<Leave>", self._hide_row_tooltip)
+
+        sidebar_bottom = ttk.Frame(sidebar, style="Sidebar.TFrame", padding=(12, 9, 10, 12))
+        sidebar_bottom.pack(fill="x")
+        self.skip_stability_var = tk.BooleanVar(value=False)
+        self.skip_stability_check = ttk.Checkbutton(
+            sidebar_bottom,
+            text="Omitir espera 10 min",
+            variable=self.skip_stability_var,
+        )
+        self.skip_stability_check.pack(anchor="w", pady=(0, 6))
+        side_actions = ttk.Frame(sidebar_bottom, style="Sidebar.TFrame")
+        side_actions.pack(fill="x")
+        self.refresh_button = ttk.Button(side_actions, text="Actualizar", command=self.refresh)
+        self.refresh_button.pack(side="left", fill="x", expand=True)
+        self.history_button = ttk.Button(side_actions, text="History", command=self._open_history)
+        self.history_button.pack(side="left", fill="x", expand=True, padx=(6, 0))
+
+        header = ttk.Frame(main, style="WorkspaceHeader.TFrame")
+        header.pack(fill="x", pady=(0, 14))
+        header_labels = ttk.Frame(header, style="WorkspaceHeader.TFrame")
+        header_labels.pack(side="left", fill="x", expand=True)
+        self.workspace_title_var = tk.StringVar(value="Resumen")
+        self.workspace_subtitle_var = tk.StringVar(value=SECTION_DESCRIPTIONS["Resumen"])
+        ttk.Label(header_labels, textvariable=self.workspace_title_var, style="WorkspaceTitle.TLabel").pack(anchor="w")
         ttk.Label(
-            left,
-            text="Doble clic: generar el debrief determinista de esa sesión, sin LLM",
-            style="Muted.TLabel",
-        ).pack(anchor="w", pady=(8, 0))
-
-        detail_header = ttk.Frame(right, style="Panel.TFrame")
-        detail_header.pack(fill="x", pady=(0, 10))
-        labels = ttk.Frame(detail_header, style="Panel.TFrame")
-        labels.pack(side="left", fill="x", expand=True)
-        self.detail_title = tk.StringVar(value="Seleccioná una sesión")
-        self.detail_subtitle = tk.StringVar(value="")
-        ttk.Label(labels, textvariable=self.detail_title, style="Metric.TLabel").pack(anchor="w")
-        ttk.Label(labels, textvariable=self.detail_subtitle, style="Muted.TLabel").pack(
-            anchor="w", pady=(3, 0)
+            header_labels,
+            textvariable=self.workspace_subtitle_var,
+            style="WorkspaceSubtitle.TLabel",
+        ).pack(anchor="w", pady=(3, 0))
+        self.analyze_button = ttk.Button(
+            header,
+            text="Analizar sesión…",
+            style="Accent.TButton",
+            command=self._choose_analysis_file,
         )
-        self.open_button = ttk.Button(
-            detail_header,
-            text="Abrir carpeta",
-            command=self._open_selected_folder,
-            state="disabled",
-        )
-        self.open_button.pack(side="right")
+        self.analyze_button.pack(side="right")
 
-        summary_strip = ttk.Frame(right, style="Panel.TFrame")
-        summary_strip.pack(fill="x", pady=(0, 10))
+        # Estas métricas siguen disponibles para estado interno y otras vistas,
+        # pero no ocupan una fila propia en Resumen: la sesión seleccionada ya
+        # aporta ese contexto en el sidebar y el dashboard prioriza coaching.
         self.summary_reference_var = tk.StringVar(value="—")
         self.summary_laps_var = tk.StringVar(value="—")
         self.summary_history_var = tk.StringVar(value="—")
         self.summary_status_var = tk.StringVar(value="—")
-        for index, (label, variable) in enumerate(
-            (
-                ("REFERENCIA", self.summary_reference_var),
-                ("VUELTAS VÁLIDAS", self.summary_laps_var),
-                ("HISTORIAL", self.summary_history_var),
-                ("ESTADO", self.summary_status_var),
-            )
-        ):
-            card = ttk.Frame(summary_strip, style="MetricCard.TFrame", padding=(12, 8))
-            card.pack(
-                side="left",
-                fill="x",
-                expand=True,
-                padx=(0, 7) if index < 3 else 0,
-            )
-            ttk.Label(card, text=label, style="CardLabel.TLabel").pack(anchor="w")
-            ttk.Label(
-                card,
-                textvariable=variable,
-                style="CardValue.TLabel",
-            ).pack(anchor="w", pady=(2, 0))
 
-        workspace_shell = ttk.Frame(right, style="Panel.TFrame")
-        workspace_shell.pack(fill="both", expand=True)
-
-        navigation = ttk.Frame(
-            workspace_shell,
-            style="WorkspaceNav.TFrame",
-            padding=(8, 12),
-        )
-        navigation.pack(side="left", fill="y", padx=(0, 10))
-
-        workspace = ttk.Frame(
-            workspace_shell,
-            style="Workspace.TFrame",
-        )
+        workspace_body = ttk.Frame(main, style="Workspace.TFrame")
+        workspace_body.pack(fill="both", expand=True)
+        workspace = ttk.Frame(workspace_body, style="Workspace.TFrame")
         workspace.pack(side="left", fill="both", expand=True)
 
         self.inspector_frame = ttk.Frame(
-            workspace_shell,
+            workspace_body,
             style="Inspector.TFrame",
             padding=(16, 14),
             width=290,
         )
         self.inspector_frame.pack_propagate(False)
         self.inspector_visible = False
-
-        inspector_header = ttk.Frame(
-            self.inspector_frame,
-            style="Inspector.TFrame",
-        )
-        inspector_header.pack(fill="x", pady=(0, 12))
-
+        inspector_header = ttk.Frame(self.inspector_frame, style="Inspector.TFrame")
+        inspector_header.pack(fill="x", pady=(0, 14))
         self.inspector_title_var = tk.StringVar(value="Detalle")
         self.inspector_meta_var = tk.StringVar(value="")
-
-        ttk.Label(
-            inspector_header,
-            textvariable=self.inspector_title_var,
-            style="InspectorTitle.TLabel",
-        ).pack(side="left")
-
+        ttk.Label(inspector_header, textvariable=self.inspector_title_var, style="InspectorTitle.TLabel").pack(side="left")
         ttk.Button(
             inspector_header,
             text="×",
@@ -1057,7 +1208,6 @@ class RaceEngineerApp:
             width=3,
             command=self._hide_plan_inspector,
         ).pack(side="right")
-
         ttk.Label(
             self.inspector_frame,
             textvariable=self.inspector_meta_var,
@@ -1065,7 +1215,6 @@ class RaceEngineerApp:
             wraplength=250,
             justify="left",
         ).pack(fill="x", pady=(0, 10))
-
         self.inspector_text = tk.Text(
             self.inspector_frame,
             wrap="word",
@@ -1088,112 +1237,156 @@ class RaceEngineerApp:
             spacing1=10,
             spacing3=4,
         )
-        self.inspector_text.tag_configure(
-            "value",
-            font=("Segoe UI", 9),
-            foreground="#dce7ef",
-        )
+        self.inspector_text.tag_configure("value", font=("Segoe UI", 9), foreground="#dce7ef")
         self.inspector_text.pack(fill="both", expand=True)
         self.inspector_text.configure(state="disabled")
 
-        self.primary_section_var = tk.StringVar(value="Resumen")
-        self.primary_section_frames = {}
-        self.primary_section_buttons = {}
-
         for section in PRIMARY_SECTIONS:
-            button = ttk.Button(
-                navigation,
-                text=section,
-                style="WorkspaceNav.TButton",
-                command=lambda name=section: self._show_primary_section(name),
-            )
-            button.pack(fill="x", pady=(0, 6))
-            self.primary_section_buttons[section] = button
-
-            frame = ttk.Frame(
-                workspace,
-                style="Workspace.TFrame",
-            )
-            self.primary_section_frames[section] = frame
+            self.primary_section_frames[section] = ttk.Frame(workspace, style="Workspace.TFrame")
 
         summary_frame = self.primary_section_frames["Resumen"]
-
         self.summary_canvas = tk.Canvas(
             summary_frame,
-            background="#101010",
+            background="#0f161d",
             highlightthickness=0,
             borderwidth=0,
         )
-        summary_scrollbar = ttk.Scrollbar(
-            summary_frame,
-            orient="vertical",
-            command=self.summary_canvas.yview,
-        )
+        summary_scrollbar = ttk.Scrollbar(summary_frame, orient="vertical", command=self.summary_canvas.yview)
         self.summary_canvas.configure(yscrollcommand=summary_scrollbar.set)
         summary_scrollbar.pack(side="right", fill="y")
         self.summary_canvas.pack(side="left", fill="both", expand=True)
-
-        summary_content = ttk.Frame(
-            self.summary_canvas,
-            style="Workspace.TFrame",
-        )
+        summary_content = ttk.Frame(self.summary_canvas, style="Workspace.TFrame")
         self.summary_content = summary_content
-        self.summary_canvas_window = self.summary_canvas.create_window(
-            (0, 0),
-            window=summary_content,
-            anchor="nw",
-        )
-        summary_content.bind(
-            "<Configure>",
-            self._on_summary_content_configure,
-        )
-        self.summary_canvas.bind(
-            "<Configure>",
-            self._on_summary_canvas_configure,
-        )
-        self.summary_canvas.bind(
-            "<MouseWheel>",
-            self._on_summary_mousewheel,
-        )
+        self.summary_canvas_window = self.summary_canvas.create_window((0, 0), window=summary_content, anchor="nw")
+        summary_content.bind("<Configure>", self._on_summary_content_configure)
+        self.summary_canvas.bind("<Configure>", self._on_summary_canvas_configure)
+        self.summary_canvas.bind("<MouseWheel>", self._on_summary_mousewheel)
 
-        self.plan_cards_frame = self._build_next_stint_panel(
+        # v1.28: dashboard principal inspirado en una UI de ingeniería moderna.
+        # La fila superior concentra decisión y coaching; la visualización vive
+        # en una segunda fila más alta para evitar cuatro columnas de texto
+        # compitiendo por el mismo espacio.
+        summary_dashboard = ttk.Frame(
             summary_content,
+            style="Workspace.TFrame",
+            height=270,
         )
+        summary_dashboard.pack(fill="x", pady=(0, 10))
+        summary_dashboard.pack_propagate(False)
+        for column, weight in enumerate((25, 35, 18, 22)):
+            summary_dashboard.columnconfigure(
+                column,
+                weight=weight,
+                uniform="summary",
+            )
+        summary_dashboard.rowconfigure(0, weight=1)
+
+        debrief_column = ttk.Frame(summary_dashboard, style="Workspace.TFrame")
+        debrief_column.grid(row=0, column=0, sticky="nsew", padx=(0, 5))
+
+        plan_column = ttk.Frame(summary_dashboard, style="Workspace.TFrame")
+        plan_column.grid(row=0, column=1, sticky="nsew", padx=5)
+
+        laps_column = ttk.Frame(summary_dashboard, style="Workspace.TFrame")
+        laps_column.grid(row=0, column=2, sticky="nsew", padx=5)
+
+        changes_column = ttk.Frame(summary_dashboard, style="Workspace.TFrame")
+        changes_column.grid(row=0, column=3, sticky="nsew", padx=(5, 0))
 
         self.debrief_text = self._summary_text_panel(
-            summary_content,
+            debrief_column,
             "DEBRIEF",
-            subtitle="Lectura principal de la sesión",
-            height=16,
+            subtitle="Síntesis ejecutiva de la sesión",
+            height=12,
             expand=True,
+            compact=True,
         )
+        self.current_debrief_markdown = ""
+        self.ttk.Button(
+            self.debrief_text.master.master,
+            text="Ver debrief completo  →",
+            style="Link.TButton",
+            command=self._show_full_debrief,
+        ).pack(anchor="e", pady=(7, 0))
 
-        self.session_change_panel = self._build_session_change_panel(
-            summary_content,
+        self.plan_cards_frame = self._build_next_stint_panel(
+            plan_column,
+            compact=True,
         )
 
         self.laps_text = self._summary_text_panel(
-            summary_content,
-            "VUELTAS",
-            subtitle="Contexto y resumen de vueltas válidas",
-            height=6,
-            expand=False,
+            laps_column,
+            "VUELTAS CLAVE",
+            subtitle="Referencia, ritmo y consistencia",
+            height=12,
+            expand=True,
+            compact=True,
         )
         self.laps_panel = self.laps_text.master.master
+        self.current_laps_text = ""
+        self.ttk.Button(
+            self.laps_panel,
+            text="Ver vueltas  →",
+            style="Link.TButton",
+            command=self._show_full_laps,
+        ).pack(anchor="e", pady=(7, 0))
+
+        # Inspector contextual: por ahora resume la comparación histórica;
+        # las prioridades del plan continúan abriendo el inspector lateral de
+        # detalle. En una iteración posterior ambos contextos podrán converger.
+        self.session_change_panel = self._build_session_change_panel(
+            changes_column,
+            compact=True,
+        )
+        self.session_change_panel.pack(fill="both", expand=True)
+
+        # Segunda fila visual del Resumen. Son previews livianos alimentados por
+        # el mismo TrackMapData ya cargado por Telemetría; no existe un segundo
+        # pipeline ni una segunda lectura de archivos.
+        visual_row = ttk.Frame(
+            summary_content,
+            style="Workspace.TFrame",
+            height=420,
+        )
+        visual_row.pack(fill="x", pady=(0, 4))
+        visual_row.pack_propagate(False)
+        visual_row.columnconfigure(0, weight=48, uniform="summary_visual")
+        visual_row.columnconfigure(1, weight=52, uniform="summary_visual")
+        visual_row.rowconfigure(0, weight=1)
+
+        map_preview = self._build_summary_visual_card(
+            visual_row,
+            title="MAPA DEL CIRCUITO",
+            subtitle="Zonas, prioridades y contexto espacial",
+            column=0,
+            padx=(0, 5),
+        )
+        self.summary_map_canvas = self._summary_preview_canvas(map_preview)
+        self.summary_map_canvas.bind(
+            "<Button-1>",
+            lambda _event: self._show_primary_section("Telemetría"),
+        )
+
+        telemetry_preview = self._build_summary_visual_card(
+            visual_row,
+            title="TELEMETRÍA COMPARADA",
+            subtitle="Velocidad, acelerador y freno · vista rápida",
+            column=1,
+            padx=(5, 0),
+        )
+        self.summary_telemetry_canvas = self._summary_preview_canvas(telemetry_preview)
+        self.summary_telemetry_canvas.bind(
+            "<Button-1>",
+            lambda _event: self._show_primary_section("Telemetría"),
+        )
 
         telemetry_frame = self.primary_section_frames["Telemetría"]
-        self.track_map_canvas = self._track_map_tab(
-            telemetry_frame,
-            label=None,
-        )
+        self.track_map_canvas = self._track_map_tab(telemetry_frame, label=None)
 
         history_frame = self.primary_section_frames["Historial"]
         history_notebook = ttk.Notebook(history_frame)
         history_notebook.pack(fill="both", expand=True)
-        self.historical_reference_text = self._text_tab(
-            history_notebook,
-            "Referencia",
-        )
+        self.historical_reference_text = self._text_tab(history_notebook, "Referencia")
         self._comparison_tab(history_notebook)
 
         diagnostics_frame = self.primary_section_frames["Diagnóstico"]
@@ -1201,49 +1394,54 @@ class RaceEngineerApp:
         self.diagnostics_notebook.pack(fill="both", expand=True)
         self.pipeline_text = self._text_tab(self.diagnostics_notebook, "Pipeline")
         self.execution_text = self._text_tab(self.diagnostics_notebook, "Ejecución")
-        self._calibration_tab(self.diagnostics_notebook)
+
+        calibration_frame = self.primary_section_frames["Calibración"]
+        self._calibration_panel(calibration_frame)
 
         self._show_primary_section("Resumen")
 
-        execution_bar = ttk.Frame(right, style="Panel.TFrame")
-        execution_bar.pack(fill="x", pady=(10, 0))
+        execution_bar = ttk.Frame(main, style="App.TFrame")
+        execution_bar.pack(fill="x", pady=(8, 0))
         self.execution_status = tk.StringVar(value="Sin análisis en ejecución")
-        ttk.Label(
-            execution_bar,
-            textvariable=self.execution_status,
-            style="Muted.TLabel",
-        ).pack(side="left")
-        self.progress = ttk.Progressbar(execution_bar, mode="indeterminate", length=180)
+        ttk.Label(execution_bar, textvariable=self.execution_status, style="Subtitle.TLabel").pack(side="left")
+        self.progress = ttk.Progressbar(execution_bar, mode="indeterminate", length=150)
         self.progress.pack(side="right")
 
         footer = str(self.runs_root)
         if self.settings_warning:
             footer += " · " + self.settings_warning
         self.footer_var = tk.StringVar(value=footer)
-        ttk.Label(
-            self.root,
-            textvariable=self.footer_var,
-            style="Subtitle.TLabel",
-            anchor="w",
-        ).pack(fill="x", padx=22, pady=(0, 10))
+        ttk.Label(self.root, textvariable=self.footer_var, style="Subtitle.TLabel", anchor="w").pack(
+            fill="x", padx=18, pady=(0, 7)
+        )
+
+        self.h5_3_review_state_path = PROJECT_ROOT / "data" / "local" / "h5_3_review_maintenance.json"
+        self.h5_3_review_var = tk.StringVar(value="H5.3 shadow · cargando…")
+        self.h5_3_review_label = ttk.Label(
+            sidebar,
+            textvariable=self.h5_3_review_var,
+            style="H53Muted.TLabel",
+        )
 
     def _show_primary_section(self, section):
         if section not in self.primary_section_frames:
             return
 
-        for name, frame in self.primary_section_frames.items():
+        for _name, frame in self.primary_section_frames.items():
             frame.pack_forget()
 
         frame = self.primary_section_frames[section]
         frame.pack(fill="both", expand=True)
         self.primary_section_var.set(section)
+        self.workspace_title_var.set(section)
+        self.workspace_subtitle_var.set(SECTION_DESCRIPTIONS.get(section, ""))
 
         for name, button in self.primary_section_buttons.items():
             button.configure(
                 style=(
-                    "WorkspaceNavActive.TButton"
+                    "SidebarNavActive.TButton"
                     if name == section
-                    else "WorkspaceNav.TButton"
+                    else "SidebarNav.TButton"
                 )
             )
 
@@ -1266,6 +1464,164 @@ class RaceEngineerApp:
             "units",
         )
         return "break"
+
+    def _build_summary_visual_card(self, parent, *, title, subtitle, column, padx):
+        card = self.ttk.Frame(
+            parent,
+            style="SummaryCard.TFrame",
+            padding=(16, 13),
+        )
+        card.grid(row=0, column=column, sticky="nsew", padx=padx)
+        self.ttk.Label(
+            card,
+            text=title,
+            style="SummaryTitle.TLabel",
+        ).pack(anchor="w")
+        self.ttk.Label(
+            card,
+            text=subtitle,
+            style="SummarySubtitle.TLabel",
+        ).pack(anchor="w", pady=(2, 8))
+        return card
+
+    def _summary_preview_canvas(self, parent):
+        canvas = self.tk.Canvas(
+            parent,
+            background="#0d141a",
+            highlightthickness=1,
+            highlightbackground="#2b3943",
+            borderwidth=0,
+            cursor="hand2",
+        )
+        canvas.pack(fill="both", expand=True)
+        canvas.bind("<Configure>", lambda _event: self._render_summary_visual_previews())
+        return canvas
+
+    def _render_summary_visual_previews(self):
+        map_canvas = getattr(self, "summary_map_canvas", None)
+        telemetry_canvas = getattr(self, "summary_telemetry_canvas", None)
+        if map_canvas is None or telemetry_canvas is None:
+            return
+
+        for canvas in (map_canvas, telemetry_canvas):
+            canvas.delete("all")
+
+        data = self.current_track_map
+        if data is None or len(data.points) < 2:
+            for canvas, message in (
+                (map_canvas, "Seleccioná una sesión para ver el mapa del circuito."),
+                (telemetry_canvas, "La telemetría aparecerá cuando la sesión esté cargada."),
+            ):
+                width = max(canvas.winfo_width(), 120)
+                height = max(canvas.winfo_height(), 80)
+                canvas.create_text(
+                    width / 2,
+                    height / 2,
+                    text=message,
+                    fill="#7f929f",
+                    width=max(width - 48, 80),
+                    justify="center",
+                    font=("Segoe UI", 9),
+                )
+            return
+
+        # Preview del mapa: usa exactamente los puntos ya cargados y el helper
+        # de fitting del mapa completo. Es deliberadamente no interactivo.
+        map_width = max(map_canvas.winfo_width(), 160)
+        map_height = max(map_canvas.winfo_height(), 120)
+        fitted = fit_track_points(
+            data.points,
+            width_px=map_width,
+            height_px=map_height,
+            padding_px=24,
+        )
+        if len(fitted) >= 2:
+            coords = [coordinate for point in fitted for coordinate in point]
+            map_canvas.create_line(
+                *coords,
+                fill="#55decf",
+                width=4,
+                smooth=True,
+                capstyle="round",
+                joinstyle="round",
+            )
+            # Prioridades visibles como puntos cálidos sobre la traza.
+            for priority in self.current_track_priorities[:6]:
+                distance = getattr(priority, "center_distance_m", None)
+                if distance is None:
+                    start = getattr(priority, "start_distance_m", None)
+                    end = getattr(priority, "end_distance_m", None)
+                    if isinstance(start, (int, float)) and isinstance(end, (int, float)):
+                        distance = (start + end) / 2.0
+                if not isinstance(distance, (int, float)):
+                    continue
+                point_index = point_index_for_distance(data.points, distance)
+                if point_index is None or not (0 <= point_index < len(fitted)):
+                    continue
+                x, y = fitted[point_index]
+                radius = 5 if getattr(priority, "is_focus", False) else 4
+                map_canvas.create_oval(
+                    x - radius,
+                    y - radius,
+                    x + radius,
+                    y + radius,
+                    fill="#f0c674" if not getattr(priority, "is_focus", False) else "#ff7b72",
+                    outline="#0d141a",
+                    width=1,
+                )
+        map_canvas.create_text(
+            12,
+            map_height - 12,
+            text="Click para abrir Telemetría",
+            fill="#7f929f",
+            anchor="sw",
+            font=("Segoe UI", 8),
+        )
+
+        # Preview de canales: reutiliza build_track_telemetry_chart y reduce los
+        # tres canales a lanes compactos para lectura rápida en Resumen.
+        tel_width = max(telemetry_canvas.winfo_width(), 180)
+        tel_height = max(telemetry_canvas.winfo_height(), 120)
+        chart = build_track_telemetry_chart(
+            data.points,
+            width_px=tel_width,
+            height_px=tel_height,
+        )
+        if chart is None:
+            telemetry_canvas.create_text(
+                tel_width / 2,
+                tel_height / 2,
+                text="Canales de telemetría no disponibles.",
+                fill="#7f929f",
+                font=("Segoe UI", 9),
+            )
+            return
+
+        lane_height = (tel_height - 28) / 3.0
+        for lane in (1, 2):
+            y = 10 + lane * lane_height
+            telemetry_canvas.create_line(10, y, tel_width - 10, y, fill="#26323b")
+        for values, color in (
+            (chart.speed, "#55b7e8"),
+            (chart.throttle, "#45c98c"),
+            (chart.brake, "#e45a5a"),
+        ):
+            if len(values) >= 2:
+                coordinates = [coordinate for point in values for coordinate in point]
+                telemetry_canvas.create_line(
+                    *coordinates,
+                    fill=color,
+                    width=2,
+                    joinstyle="round",
+                )
+        telemetry_canvas.create_text(
+            12,
+            tel_height - 10,
+            text="Velocidad  ·  Acelerador  ·  Freno    ·    Click para ampliar",
+            fill="#7f929f",
+            anchor="sw",
+            font=("Segoe UI", 8),
+        )
 
     def _comparison_tab(self, notebook):
         frame = self.ttk.Frame(notebook, style="Panel.TFrame", padding=5)
@@ -1301,9 +1657,9 @@ class RaceEngineerApp:
         )
         return frame
 
-    def _calibration_tab(self, notebook):
-        frame = self.ttk.Frame(notebook, style="Panel.TFrame", padding=5)
-        notebook.add(frame, text="Calibración")
+    def _calibration_panel(self, parent):
+        frame = self.ttk.Frame(parent, style="Panel.TFrame", padding=5)
+        frame.pack(fill="both", expand=True)
         self.calibration_summary_var = self.tk.StringVar(value="")
         self.ttk.Label(
             frame,
@@ -1793,13 +2149,17 @@ class RaceEngineerApp:
             )
             self.inspector_visible = True
 
-    def _build_next_stint_panel(self, parent):
+    def _build_next_stint_panel(self, parent, *, compact=False):
         container = self.ttk.Frame(
             parent,
             style="SummaryAccentCard.TFrame",
-            padding=(16, 12),
+            padding=(14, 11) if compact else (16, 12),
         )
-        container.pack(fill="x", pady=(0, 10))
+        container.pack(
+            fill="both" if compact else "x",
+            expand=compact,
+            pady=(0, 0 if compact else 10),
+        )
 
         self.ttk.Label(
             container,
@@ -1820,52 +2180,118 @@ class RaceEngineerApp:
         cards.pack(fill="x")
 
         self.plan_cards_host = cards
+        self.plan_cards_compact = compact
         return container
 
-    def _build_session_change_panel(self, parent):
+    def _build_session_change_panel(self, parent, *, compact=False):
         container = self.ttk.Frame(
             parent,
             style="SummaryCard.TFrame",
-            padding=(16, 12),
+            padding=(12, 10) if compact else (16, 12),
         )
-        self.session_change_title_var = self.tk.StringVar(value="")
+        self.session_change_compact = compact
+        self.session_change_title_var = self.tk.StringVar(value="INSPECTOR")
         self.ttk.Label(
             container,
             textvariable=self.session_change_title_var,
             style="SummaryTitle.TLabel",
-            wraplength=760,
+            wraplength=250 if compact else 760,
             justify="left",
         ).pack(anchor="w")
         self.ttk.Label(
             container,
-            text="Comparación observacional; no cambia el plan de próxima tanda",
+            text=(
+                "Cambios vs. sesión comparable"
+                if compact
+                else "Contexto histórico de la sesión seleccionada"
+            ),
             style="SummarySubtitle.TLabel",
-        ).pack(anchor="w", pady=(2, 10))
-        self.session_change_host = self.ttk.Frame(
-            container,
-            style="SummaryCard.TFrame",
-        )
-        self.session_change_host.pack(fill="x")
+            wraplength=250 if compact else 760,
+            justify="left",
+        ).pack(anchor="w", pady=(2, 8 if compact else 10))
+
+        if compact:
+            body = self.ttk.Frame(container, style="SummaryCard.TFrame")
+            body.pack(fill="both", expand=True)
+
+            canvas = self.tk.Canvas(
+                body,
+                background="#151d24",
+                highlightthickness=0,
+                borderwidth=0,
+            )
+            scrollbar = self.ttk.Scrollbar(
+                body,
+                orient="vertical",
+                command=canvas.yview,
+            )
+            canvas.configure(yscrollcommand=scrollbar.set)
+            scrollbar.pack(side="right", fill="y")
+            canvas.pack(side="left", fill="both", expand=True)
+
+            host = self.ttk.Frame(canvas, style="SummaryCard.TFrame")
+            window = canvas.create_window((0, 0), window=host, anchor="nw")
+            host.bind(
+                "<Configure>",
+                lambda _event: canvas.configure(
+                    scrollregion=canvas.bbox("all"),
+                ),
+            )
+            canvas.bind(
+                "<Configure>",
+                lambda event: canvas.itemconfigure(window, width=event.width),
+            )
+            self.session_change_canvas = canvas
+            self.session_change_host = host
+        else:
+            self.session_change_canvas = None
+            self.session_change_host = self.ttk.Frame(
+                container,
+                style="SummaryCard.TFrame",
+            )
+            self.session_change_host.pack(fill="x")
+
         return container
 
     def _render_session_changes(self, view):
         for child in self.session_change_host.winfo_children():
             child.destroy()
 
-        rows = session_change_rows(view)
+        if self.session_change_compact:
+            rows, hidden_changes = compact_session_change_rows(view)
+        else:
+            rows = session_change_rows(view)
+            hidden_changes = 0
+        self.session_change_title_var.set("INSPECTOR")
+        self.session_change_panel.pack(
+            fill="both" if self.session_change_compact else "x",
+            expand=self.session_change_compact,
+            pady=(0, 0 if self.session_change_compact else 10),
+        )
         if not rows:
-            self.session_change_title_var.set("")
-            self.session_change_panel.pack_forget()
+            self.ttk.Label(
+                self.session_change_host,
+                text=(
+                    "Seleccioná una prioridad para abrir su detalle.\n\n"
+                    "No hay una comparación histórica contextual disponible "
+                    "para esta sesión."
+                ),
+                style="SummarySubtitle.TLabel",
+                wraplength=230 if self.session_change_compact else 760,
+                justify="left",
+            ).pack(anchor="w", pady=(6, 0))
             return
 
-        self.session_change_title_var.set(
-            str(view.get("title") or "Cambios vs. última sesión comparable")
+        comparison_title = str(
+            view.get("title") or "Cambios vs. última sesión comparable"
         )
-        self.session_change_panel.pack(
-            fill="x",
-            pady=(0, 10),
-            before=self.laps_panel,
-        )
+        self.ttk.Label(
+            self.session_change_host,
+            text=comparison_title,
+            style="CardValue.TLabel",
+            wraplength=230 if self.session_change_compact else 760,
+            justify="left",
+        ).pack(anchor="w", pady=(0, 8))
 
         for group_index, group in enumerate(rows):
             if group_index:
@@ -1891,9 +2317,28 @@ class RaceEngineerApp:
                         if change["structured"]
                         else "SummarySubtitle.TLabel"
                     ),
-                    wraplength=760,
+                    wraplength=230 if self.session_change_compact else 760,
                     justify="left",
-                ).pack(anchor="w", padx=(12, 0), pady=(1, 1))
+                ).pack(
+                    anchor="w",
+                    padx=(8 if self.session_change_compact else 12, 0),
+                    pady=(1, 1),
+                )
+
+        if hidden_changes:
+            self.ttk.Label(
+                self.session_change_host,
+                text=f"+ {hidden_changes} cambios más en Historial",
+                style="SummaryAccentSubtitle.TLabel",
+                justify="left",
+            ).pack(anchor="w", pady=(9, 2))
+
+        if self.session_change_canvas is not None:
+            self.session_change_canvas.update_idletasks()
+            self.session_change_canvas.configure(
+                scrollregion=self.session_change_canvas.bbox("all"),
+            )
+            self.session_change_canvas.yview_moveto(0.0)
 
     def _cancel_session_change_request(self):
         self.session_change_token += 1
@@ -1995,7 +2440,11 @@ class RaceEngineerApp:
             card = self.ttk.Frame(
                 self.plan_cards_host,
                 style="PriorityCard.TFrame",
-                padding=(12, 10),
+                padding=(
+                    (10, 7)
+                    if getattr(self, "plan_cards_compact", False)
+                    else (12, 10)
+                ),
             )
             card.pack(fill="x", pady=(0, 7))
 
@@ -2049,7 +2498,8 @@ class RaceEngineerApp:
                 cues = []
 
             cue_texts = []
-            for cue in cues[:2]:
+            cue_limit = 1 if getattr(self, "plan_cards_compact", False) else 2
+            for cue in cues[:cue_limit]:
                 if isinstance(cue, str):
                     value = cue.strip()
                 elif isinstance(cue, dict):
@@ -2088,6 +2538,7 @@ class RaceEngineerApp:
         height=8,
         expand=False,
         accent=False,
+        compact=False,
     ):
         container = self.ttk.Frame(
             parent,
@@ -2096,12 +2547,12 @@ class RaceEngineerApp:
                 if accent
                 else "SummaryCard.TFrame"
             ),
-            padding=(16, 12),
+            padding=(14, 11) if compact else (16, 12),
         )
         container.pack(
             fill="both" if expand else "x",
             expand=expand,
-            pady=(0, 10),
+            pady=(0, 0 if compact else 10),
         )
 
         heading = self.ttk.Frame(
@@ -2149,7 +2600,7 @@ class RaceEngineerApp:
             body,
             wrap="word",
             height=height,
-            background="#111418" if not accent else "#13201f",
+            background="#141c23" if not accent else "#14211f",
             foreground="#dce7ef",
             insertbackground="#55decf",
             selectbackground="#315b60",
@@ -2157,11 +2608,11 @@ class RaceEngineerApp:
             relief="flat",
             borderwidth=0,
             highlightthickness=0,
-            padx=14,
-            pady=12,
-            font=("Segoe UI", 10),
-            spacing1=2,
-            spacing3=4,
+            padx=10 if compact else 14,
+            pady=8 if compact else 12,
+            font=("Segoe UI", 9 if compact else 10),
+            spacing1=1 if compact else 2,
+            spacing3=3 if compact else 4,
         )
 
         text.tag_configure(
@@ -2172,10 +2623,10 @@ class RaceEngineerApp:
         )
         text.tag_configure(
             "h2",
-            font=("Segoe UI Semibold", 14),
+            font=("Segoe UI Semibold", 12 if compact else 14),
             foreground="#55decf",
-            spacing1=12,
-            spacing3=7,
+            spacing1=9 if compact else 12,
+            spacing3=5 if compact else 7,
         )
         text.tag_configure(
             "h3",
@@ -2189,14 +2640,15 @@ class RaceEngineerApp:
             lmargin2=32,
         )
 
-        scrollbar = self.ttk.Scrollbar(
-            body,
-            orient="vertical",
-            command=text.yview,
-        )
-        text.configure(yscrollcommand=scrollbar.set)
+        if not compact:
+            scrollbar = self.ttk.Scrollbar(
+                body,
+                orient="vertical",
+                command=text.yview,
+            )
+            text.configure(yscrollcommand=scrollbar.set)
+            scrollbar.pack(side="right", fill="y")
 
-        scrollbar.pack(side="right", fill="y")
         text.pack(side="left", fill="both", expand=True)
         text.configure(state="disabled")
 
@@ -2430,6 +2882,54 @@ class RaceEngineerApp:
         wraplength = status_wraplength(event.width)
         self.track_map_zone_label.configure(wraplength=wraplength)
         self.track_map_telemetry_label.configure(wraplength=wraplength)
+
+    def _show_dashboard_text_detail(self, title: str, value: str, *, markdown: bool = False):
+        window = self.tk.Toplevel(self.root)
+        window.title(title)
+        window.geometry("820x700")
+        window.minsize(620, 440)
+        window.configure(background="#0b1116")
+        frame = self.ttk.Frame(window, style="Panel.TFrame", padding=16)
+        frame.pack(fill="both", expand=True)
+        self.ttk.Label(frame, text=title, style="Title.TLabel").pack(anchor="w", pady=(0, 10))
+        text = self.tk.Text(
+            frame,
+            wrap="word",
+            background="#141c23",
+            foreground="#dce7ef",
+            insertbackground="#55decf",
+            relief="flat",
+            borderwidth=0,
+            highlightthickness=0,
+            padx=16,
+            pady=14,
+            font=("Segoe UI", 10),
+            spacing1=2,
+            spacing3=4,
+        )
+        text.tag_configure("h1", font=("Segoe UI Semibold", 18), foreground="#f2f7fb", spacing3=12)
+        text.tag_configure("h2", font=("Segoe UI Semibold", 14), foreground="#55decf", spacing1=12, spacing3=7)
+        text.tag_configure("h3", font=("Segoe UI Semibold", 11), foreground="#f2f7fb", spacing1=8)
+        text.tag_configure("bullet", lmargin1=18, lmargin2=32)
+        scrollbar = self.ttk.Scrollbar(frame, orient="vertical", command=text.yview)
+        text.configure(yscrollcommand=scrollbar.set)
+        scrollbar.pack(side="right", fill="y")
+        text.pack(fill="both", expand=True)
+        self._set_text(text, value, markdown=markdown)
+        return window
+
+    def _show_full_debrief(self):
+        self._show_dashboard_text_detail(
+            "Debrief completo",
+            self.current_debrief_markdown or "No hay debrief disponible.",
+            markdown=True,
+        )
+
+    def _show_full_laps(self):
+        self._show_dashboard_text_detail(
+            "Análisis de vueltas",
+            self.current_laps_text or "No hay análisis de vueltas disponible.",
+        )
 
     def _set_text(self, widget, value: str, *, markdown: bool = False):
         widget.configure(state="normal")
@@ -2817,11 +3317,17 @@ class RaceEngineerApp:
         self.summary_laps_var.set(laps_value)
         self.summary_history_var.set(history_value)
         self.summary_status_var.set(status_value)
-        self._set_text(self.debrief_text, detail.debrief_markdown, markdown=True)
+        self.current_debrief_markdown = detail.debrief_markdown or ""
+        self._set_text(
+            self.debrief_text,
+            compact_debrief_markdown(self.current_debrief_markdown),
+            markdown=True,
+        )
         self._render_next_stint_cards(detail)
         self._render_session_changes(detail.session_change_view)
         self._request_session_change_view(record)
-        self._set_text(self.laps_text, detail.laps_text)
+        self.current_laps_text = detail.laps_text or ""
+        self._set_text(self.laps_text, compact_laps_text(self.current_laps_text))
         self._set_text(self.historical_reference_text, detail.historical_reference_text)
         self._set_comparison_view(
             detail.historical_comparison_view,
@@ -2841,6 +3347,8 @@ class RaceEngineerApp:
         self.summary_laps_var.set("—")
         self.summary_history_var.set("—")
         self.summary_status_var.set("—")
+        self.current_debrief_markdown = ""
+        self.current_laps_text = ""
         self._cancel_session_change_request()
         self._render_session_changes({"status": "UNAVAILABLE"})
         for widget in (
@@ -3719,6 +4227,7 @@ class RaceEngineerApp:
                 width=2,
             )
         self._render_track_telemetry_chart()
+        self._render_summary_visual_previews()
 
     def _on_track_map_mousewheel(self, event):
         if self.current_track_map is None or not getattr(event, "delta", 0):

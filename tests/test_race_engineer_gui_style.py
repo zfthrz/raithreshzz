@@ -71,7 +71,7 @@ class FakeTtk:
         return self.style
 
 
-def test_gui_v1_11_applies_flat_dark_control_chrome_without_opening_window():
+def test_gui_applies_sidebar_dashboard_chrome_without_opening_window():
     style = FakeStyle()
     app = RaceEngineerApp.__new__(RaceEngineerApp)
     app.root = FakeRoot()
@@ -79,7 +79,11 @@ def test_gui_v1_11_applies_flat_dark_control_chrome_without_opening_window():
 
     app._configure_style()
 
-    assert GUI_VERSION == "1.21"
+    assert style.configurations["App.TFrame"]["background"] == "#0b1116"
+    assert style.configurations["Panel.TFrame"]["background"] == "#111820"
+    assert style.configurations["Sidebar.TFrame"]["background"] == "#071018"
+    assert style.configurations["SidebarNavActive.TButton"]["foreground"] == "#67e5d5"
+    assert style.configurations["WorkspaceTitle.TLabel"]["font"] == ("Segoe UI Semibold", 17)
     assert style.theme == "clam"
     assert style.configurations["TEntry"]["fieldbackground"] == "#15181c"
     assert style.configurations["TCombobox"]["borderwidth"] == 0
@@ -118,10 +122,25 @@ def test_primary_navigation_groups_technical_views_by_user_task():
         "Telemetría",
         "Historial",
         "Diagnóstico",
+        "Calibración",
     )
     assert SECTION_VIEWS["Resumen"] == ("Debrief", "Próxima tanda", "Vueltas")
     assert SECTION_VIEWS["Historial"] == ("Referencia", "Comparación")
-    assert SECTION_VIEWS["Diagnóstico"] == ("Pipeline", "Ejecución", "Calibración")
+    assert SECTION_VIEWS["Diagnóstico"] == ("Pipeline", "Ejecución")
+    assert SECTION_VIEWS["Calibración"] == ("Calibración",)
+
+
+def test_v1_23_layout_uses_fixed_sidebar_and_workspace_header():
+    build_source = inspect.getsource(RaceEngineerApp._build_layout)
+    show_source = inspect.getsource(RaceEngineerApp._show_primary_section)
+
+    assert 'style="Sidebar.TFrame", width=252' in build_source
+    assert 'displaycolumns=("date", "track", "status")' in build_source
+    assert 'text="RACE ENGINEER"' in build_source
+    assert 'self.workspace_title_var = tk.StringVar(value="Resumen")' in build_source
+    assert 'self._calibration_panel(calibration_frame)' in build_source
+    assert '"SidebarNavActive.TButton"' in show_source
+    assert 'self.workspace_title_var.set(section)' in show_source
 
 
 def test_summary_uses_one_vertical_scroll_container_for_all_blocks():
@@ -172,22 +191,22 @@ def test_available_session_change_view_preserves_model_order_and_labels():
                 {
                     "status": "REPEATED",
                     "match_basis": "physical_action_atom",
-                    "presentation_label": "frenada más tarde",
+                    "presentation_label": "frenada mÃƒÂ¡s tarde",
                 },
                 {
                     "status": "NEW",
                     "match_basis": "physical_action_atom",
-                    "presentation_label": "liberación de freno más temprano",
+                    "presentation_label": "liberaciÃƒÂ³n de freno mÃƒÂ¡s temprano",
                 },
                 {
                     "status": "RESOLVED",
                     "match_basis": "physical_action_atom",
-                    "presentation_label": "liberación de freno más tarde",
+                    "presentation_label": "liberaciÃƒÂ³n de freno mÃƒÂ¡s tarde",
                 },
                 {
                     "status": "REPEATED",
                     "match_basis": "reference_action_profile",
-                    "presentation_label": "patrón de acelerador repetido",
+                    "presentation_label": "patrÃƒÂ³n de acelerador repetido",
                 },
             ],
         }],
@@ -200,22 +219,22 @@ def test_available_session_change_view_preserves_model_order_and_labels():
         "changes": [
             {
                 "status_label": "Se mantiene",
-                "presentation_label": "frenada más tarde",
+                "presentation_label": "frenada mÃƒÂ¡s tarde",
                 "structured": False,
             },
             {
                 "status_label": "Nuevo",
-                "presentation_label": "liberación de freno más temprano",
+                "presentation_label": "liberaciÃƒÂ³n de freno mÃƒÂ¡s temprano",
                 "structured": False,
             },
             {
                 "status_label": "Ya no aparece",
-                "presentation_label": "liberación de freno más tarde",
+                "presentation_label": "liberaciÃƒÂ³n de freno mÃƒÂ¡s tarde",
                 "structured": False,
             },
             {
                 "status_label": "Se mantiene",
-                "presentation_label": "patrón de acelerador repetido",
+                "presentation_label": "patrÃƒÂ³n de acelerador repetido",
                 "structured": True,
             },
         ],
@@ -299,7 +318,7 @@ def test_calibration_fingerprint_tracks_only_batch_status_files(tmp_path):
 
 def test_analysis_start_no_longer_warns_about_model_or_remote_cost():
     source = inspect.getsource(RaceEngineerApp._confirm_analysis)
-    assert "Confirmar análisis" not in source
+    assert "Confirmar anÃƒÂ¡lisis" not in source
     assert "DeepSeek usa la API" not in source
     assert "Modelo:" not in source
 
@@ -468,3 +487,19 @@ def test_calibration_status_colors_and_tags():
     ).lower()
     assert "labelar" in calibration_status_tooltip("NO_CALIBRATION_FOR_CONTEXT")
     assert "legacy" in calibration_status_tooltip("BLOCKED_BY_REAL_DATA").lower()
+
+
+def test_summary_dashboard_uses_three_simultaneous_columns_before_change_tracking():
+    build_source = inspect.getsource(RaceEngineerApp._build_layout)
+    assert 'summary_dashboard = ttk.Frame' in build_source
+    assert 'debrief_column = ttk.Frame' in build_source
+    assert 'plan_column = ttk.Frame' in build_source
+    assert 'laps_column = ttk.Frame' in build_source
+    assert '"VUELTAS CLAVE"' in build_source
+    assert 'compact=True' in build_source
+    assert build_source.index('self.debrief_text =') < build_source.index('self.session_change_panel =')
+    assert build_source.index('self.plan_cards_frame =') < build_source.index('self.session_change_panel =')
+    assert build_source.index('self.laps_text =') < build_source.index('self.session_change_panel =')
+
+
+

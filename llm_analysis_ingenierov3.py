@@ -10487,7 +10487,7 @@ def render_global_analysis(
     # ----------------------------------------------------------
     # Lectura primero: debe poder entenderse sin mirar el apéndice.
     # ----------------------------------------------------------
-    lines.append("## Lectura de la sesión")
+    lines.append("## Resumen de la sesión")
     lines.append("")
 
     if reference_lap is not None and reference_time is not None:
@@ -10549,10 +10549,70 @@ def render_global_analysis(
                 f"{len(plan)} {zone_word}."
             )
 
-    session_focus = _deterministic_session_focus(plan)
-    if session_focus:
-        lines.append("")
-        lines.append(session_focus)
+    # ----------------------------------------------------------
+    # Foco principal driver-facing.
+    #
+    # P11 es la autoridad de presentación cuando está disponible. El foco
+    # determinista legacy queda únicamente como fallback para debriefs o
+    # payloads anteriores que todavía no traigan P11.
+    # ----------------------------------------------------------
+    next_stint_focus = session_coaching_facts.get("next_stint_focus", {}) or {}
+    focus_items = (
+        next_stint_focus.get("items", []) or []
+        if next_stint_focus.get("status") == "ACTIVE"
+        else []
+    )
+
+    rendered_focus = False
+
+    if focus_items:
+        focus_lines = []
+
+        for focus_item in focus_items[:2]:
+            if not isinstance(focus_item, dict):
+                continue
+
+            label = str(focus_item.get("plan_label") or "").strip()
+            location = track_location_label(focus_item)
+
+            prefix = ""
+            if label and location:
+                prefix = f"Zona {label} — {location}: "
+            elif label:
+                prefix = f"Zona {label}: "
+            elif location:
+                prefix = f"{location}: "
+
+            cues = [
+                cue
+                for cue in (focus_item.get("driver_cues", []) or [])
+                if isinstance(cue, dict)
+                and str(cue.get("text") or "").strip()
+            ]
+
+            if not cues:
+                continue
+
+            cue_text = "; ".join(
+                str(cue.get("text") or "").strip()
+                for cue in cues[:2]
+            )
+
+            if cue_text:
+                focus_lines.append(f"- {prefix}{prose(cue_text)}")
+
+        if focus_lines:
+            lines.append("")
+            lines.append("## Foco principal")
+            lines.append("")
+            lines.extend(focus_lines)
+            rendered_focus = True
+
+    if not rendered_focus:
+        session_focus = _deterministic_session_focus(plan)
+        if session_focus:
+            lines.append("")
+            lines.append(session_focus)
 
     quality_gate = session_coaching_facts.get("comparison_quality_gate", {}) or {}
     excluded_comparisons = quality_gate.get("excluded_comparisons", []) or []
@@ -10914,115 +10974,9 @@ def render_global_analysis(
         comparison_text = ", ".join(comparison_parts)
         lines.append(f"**Comparaciones:** {comparison_text}.")
 
-    point_summaries = []
-
-    def current_plan_label_for_pattern(pattern):
-        """
-        v3.10.8 presentation-only.
-
-        Un patrón físico repetido puede ser promovido/re-etiquetado por el
-        plan de recurrencia. El apéndice debe mostrar la etiqueta ACTUAL del
-        plan, no la etiqueta de región previa al ranking.
-        """
-        if not isinstance(pattern, dict):
-            return None
-
-        matches = [
-            item
-            for item in plan[:3]
-            if isinstance(item, dict)
-            and _same_plan_region(
-                item,
-                pattern,
-            )
-        ]
-
-        if not matches:
-            return None
-
-        matches.sort(
-            key=lambda item: _plan_overlap_m(
-                item,
-                pattern,
-            ),
-            reverse=True,
-        )
-
-        return (
-            matches[0].get("plan_label")
-            or pattern.get("region_label")
-        )
-
-    for pattern in braking_patterns[:3]:
-        label = current_plan_label_for_pattern(pattern)
-        location = track_location_label(pattern)
-        prefix = (
-            f"Zona {label}"
-            if label
-            else location or "Patrón de frenada"
-        )
-        magnitude = safe_int(pattern.get("coaching_magnitude_m"))
-        direction = pattern.get("coaching_direction")
-        if magnitude is not None:
-            move = "más tarde" if direction == "later" else "más temprano"
-            point_summaries.append(
-                f"{prefix}: inicio de frenada {magnitude} m {move}"
-            )
-
-    for pattern in brake_release_patterns[:3]:
-        label = current_plan_label_for_pattern(pattern)
-        location = track_location_label(pattern)
-        prefix = (
-            f"Zona {label}"
-            if label
-            else location or "Patrón de frenada"
-        )
-        magnitude = safe_int(pattern.get("coaching_magnitude_m"))
-        direction = pattern.get("coaching_direction")
-        if magnitude is not None:
-            move = "más tarde" if direction == "later" else "más temprano"
-            point_summaries.append(
-                f"{prefix}: liberación de freno {magnitude} m {move}"
-            )
-
-    for pattern in throttle_onset_patterns[:3]:
-        label = current_plan_label_for_pattern(pattern)
-        location = track_location_label(pattern)
-        prefix = (
-            f"Zona {label}"
-            if label
-            else location or "Patrón de acelerador"
-        )
-        magnitude = safe_int(pattern.get("coaching_magnitude_m"))
-        direction = pattern.get("coaching_direction")
-        if magnitude is not None:
-            move = "más tarde" if direction == "later" else "más temprano"
-            point_summaries.append(
-                f"{prefix}: reaplicación de acelerador {magnitude} m {move}"
-            )
-
-    for pattern in throttle_release_patterns[:3]:
-        label = current_plan_label_for_pattern(pattern)
-        location = track_location_label(pattern)
-        prefix = (
-            f"Zona {label}"
-            if label
-            else location or "Patrón de acelerador"
-        )
-        magnitude = safe_int(pattern.get("coaching_magnitude_m"))
-        direction = pattern.get("coaching_direction")
-        if magnitude is not None:
-            move = "más tarde" if direction == "later" else "más temprano"
-            point_summaries.append(
-                f"{prefix}: liberación de acelerador {magnitude} m {move}"
-            )
-
-    if point_summaries:
-        lines.append("")
-        lines.append("**Objetivos espaciales repetidos:**")
-        for item in point_summaries:
-            lines.append(f"- {item}.")
-
+    # Los objetivos físicos repetidos ya están presentados en el plan principal
+    # o, si quedaron fuera del foco, en "Patrón repetido fuera del foco principal".
+    # El respaldo técnico evita volver a enumerar las mismas acciones.
     technical_zone_observations = []
     for item in plan[:3]:
         quantitative = [

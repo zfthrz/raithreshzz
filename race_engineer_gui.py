@@ -48,6 +48,7 @@ from race_engineer_track_map import (
     TrackMapPoint,
     TrackMapTurn,
     TrackTelemetrySummary,
+    TrackTelemetryChart,
     TrackMapZone,
     build_historical_telemetry_comparison,
     build_track_telemetry_chart,
@@ -67,6 +68,7 @@ from race_engineer_track_map import (
     priority_for_distance,
     summarize_track_interval,
     telemetry_chart_x_for_distance,
+    telemetry_chart_distance_for_x,
     telemetry_speed_scale,
     telemetry_gear_scale,
     historical_telemetry_sample_at_distance,
@@ -575,6 +577,7 @@ class RaceEngineerApp:
         self.selected_track_overlay: tuple[str, str] | None = None
         self.selected_track_point_index: int | None = None
         self.track_map_dragging = False
+        self.telemetry_chart_dragging = False
         self.telemetry_zoom_range: tuple[float, float] | None = None
         self.track_map_zoom_scale = 1.0
         self.track_map_zoom_offset = (0.0, 0.0)
@@ -3046,6 +3049,9 @@ class RaceEngineerApp:
         telemetry_canvas.bind(
             "<Configure>", lambda _event: self._render_track_telemetry_chart()
         )
+        telemetry_canvas.bind("<ButtonPress-1>", self._on_telemetry_press)
+        telemetry_canvas.bind("<B1-Motion>", self._on_telemetry_drag)
+        telemetry_canvas.bind("<ButtonRelease-1>", self._on_telemetry_release)
         telemetry_canvas.bind("<MouseWheel>", self._on_telemetry_mousewheel)
         self.track_telemetry_canvas = telemetry_canvas
         zoom_controls = self.ttk.Frame(channels_panel, style="Panel.TFrame")
@@ -5195,6 +5201,47 @@ class RaceEngineerApp:
         self._set_telemetry_zoom_status()
         self._render_track_telemetry_chart()
         return "break"
+
+    def _on_telemetry_press(self, event):
+        self._stop_track_playback()
+        self.telemetry_chart_dragging = self._select_telemetry_point(event.x)
+
+    def _on_telemetry_drag(self, event):
+        if self.telemetry_chart_dragging:
+            self._select_telemetry_point(event.x)
+
+    def _on_telemetry_release(self, event):
+        if self.telemetry_chart_dragging:
+            self._select_telemetry_point(event.x)
+        self.telemetry_chart_dragging = False
+
+    def _select_telemetry_point(self, x_px: float) -> bool:
+        data = self.current_track_map
+        bounds = self._track_distance_bounds()
+        if data is None or bounds is None:
+            return False
+        start, end = self.telemetry_zoom_range or bounds
+        width = self.track_telemetry_canvas.winfo_width()
+        chart_axis = TrackTelemetryChart(
+            speed_max_kmh=100.0,
+            speed=(),
+            throttle=(),
+            brake=(),
+            distance_min_m=start,
+            distance_max_m=end,
+        )
+        distance = telemetry_chart_distance_for_x(
+            chart_axis,
+            x_px,
+            width_px=width,
+        )
+        if distance is None:
+            return False
+        index = point_index_for_distance(data.points, distance)
+        if index is None:
+            return False
+        self._apply_track_point_selection(index)
+        return True
 
     def _reset_telemetry_zoom(self):
         self.telemetry_zoom_range = None

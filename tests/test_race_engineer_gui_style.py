@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import inspect
+from types import SimpleNamespace
 
 from race_engineer_gui import (
     GUI_VERSION,
@@ -21,6 +22,26 @@ from race_engineer_gui import (
     status_wraplength,
     telemetry_canvas_ready,
 )
+from race_engineer_track_map import TrackMapPoint
+
+
+def test_telemetry_pointer_selects_nearest_map_point_on_visible_axis():
+    app = RaceEngineerApp.__new__(RaceEngineerApp)
+    app.current_track_map = SimpleNamespace(
+        points=tuple(
+            TrackMapPoint(0.0, 0.0, distance)
+            for distance in (25.0, 75.0, 125.0)
+        )
+    )
+    app.telemetry_zoom_range = (25.0, 125.0)
+    app.track_telemetry_canvas = SimpleNamespace(winfo_width=lambda: 200)
+    selected = []
+    app._apply_track_point_selection = selected.append
+
+    assert app._select_telemetry_point(128.0) is True
+    assert selected == [1]
+    assert app._select_telemetry_point(40.0) is False
+    assert selected == [1]
 
 
 class FakeStyle:

@@ -31,6 +31,7 @@ from race_engineer_track_map import (
     priority_for_distance,
     summarize_track_interval,
     telemetry_chart_x_for_distance,
+    telemetry_chart_distance_for_x,
     telemetry_speed_scale,
     turn_for_number,
     zoom_distance_window,
@@ -380,6 +381,21 @@ def test_telemetry_chart_uses_shared_distance_axis_and_three_fixed_lanes():
     assert chart.throttle == ((74.0, 84.0), (182.0, 48.0))
     assert chart.brake == ((74.0, 84.0), (182.0, 120.0))
     assert telemetry_chart_x_for_distance(chart, 50.0, width_px=200) == 128.0
+
+
+def test_telemetry_chart_maps_pointer_x_back_to_visible_distance():
+    points = (
+        TrackMapPoint(0.0, 0.0, 25.0, 100.0, 50.0, 0.0),
+        TrackMapPoint(1.0, 0.0, 125.0, 200.0, 100.0, 20.0),
+    )
+    chart = build_track_telemetry_chart(points, width_px=200, height_px=132)
+
+    assert chart is not None
+    assert telemetry_chart_distance_for_x(chart, 74.0, width_px=200) == 25.0
+    assert telemetry_chart_distance_for_x(chart, 128.0, width_px=200) == 75.0
+    assert telemetry_chart_distance_for_x(chart, 182.0, width_px=200) == 125.0
+    assert telemetry_chart_distance_for_x(chart, 73.0, width_px=200) is None
+    assert telemetry_chart_distance_for_x(chart, 183.0, width_px=200) is None
 
 
 def test_telemetry_chart_adds_discrete_fourth_gear_lane_only_when_requested():

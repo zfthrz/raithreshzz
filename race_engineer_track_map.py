@@ -1038,6 +1038,24 @@ def telemetry_chart_x_for_distance(
     )
 
 
+def telemetry_chart_distance_for_x(
+    chart: TrackTelemetryChart,
+    x_px: float,
+    *,
+    width_px: int,
+    left_px: int = 74,
+    right_px: int = 18,
+) -> float | None:
+    """Map a pointer x coordinate back to distance on the visible chart axis."""
+
+    usable_width = width_px - left_px - right_px
+    span = chart.distance_max_m - chart.distance_min_m
+    if usable_width <= 0 or span <= 0 or not left_px <= x_px <= width_px - right_px:
+        return None
+    ratio = (float(x_px) - left_px) / usable_width
+    return chart.distance_min_m + ratio * span
+
+
 def zoom_distance_window(
     current_start_m: float,
     current_end_m: float,

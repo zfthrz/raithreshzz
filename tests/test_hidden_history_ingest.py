@@ -56,6 +56,16 @@ def test_build_calibration_queue_command_uses_hidden_runner_python(tmp_path: Pat
     ]
 
 
+def test_build_mixed_cue_review_command_uses_hidden_runner_python(tmp_path: Path):
+    python = tmp_path / "python.exe"
+    assert hidden.build_mixed_cue_review_command(python_executable=python) == [
+        str(python.resolve()),
+        str(hidden.PROJECT_ROOT / "maintain_mixed_cue_review.py"),
+        "--state",
+        str(hidden.PROJECT_ROOT / "data" / "local" / "mixed_cue_review_maintenance.json"),
+    ]
+
+
 def test_hidden_maintenance_runs_nonblocking_review_maintenance_after_success(
     tmp_path: Path,
 ):
@@ -70,6 +80,7 @@ def test_hidden_maintenance_runs_nonblocking_review_maintenance_after_success(
         command=["python.exe", "history.py"],
         review_command=["python.exe", "review.py"],
         calibration_command=["python.exe", "calibration.py"],
+        mixed_cue_command=["python.exe", "mixed.py"],
         runner=runner,
         runtime_path=tmp_path / "runtime.json",
     )
@@ -78,8 +89,10 @@ def test_hidden_maintenance_runs_nonblocking_review_maintenance_after_success(
         ["python.exe", "history.py"],
         ["python.exe", "review.py"],
         ["python.exe", "calibration.py"],
+        ["python.exe", "mixed.py"],
     ]
     assert "H5.3 REVIEW WARNING" in (tmp_path / "task.log").read_text(encoding="utf-8")
+    assert "MIXED CUE REVIEW WARNING" in (tmp_path / "task.log").read_text(encoding="utf-8")
 
 
 def test_rotate_log_keeps_one_previous_copy(tmp_path: Path):

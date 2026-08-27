@@ -49,6 +49,12 @@ Validated baseline:
   A source-hashed builder renders those four production-vs-focused comparisons
   separately and preserves the full throttle reference profile. This remains
   corpus-dependent presentation evidence and does not modify production.
+- Mixed-cue review maintenance v0.1 creates numbered local queue/label revisions
+  only when the exact candidate snapshots change. It migrates labels exclusively
+  by exact `review_id + item_snapshot`, leaves every new/changed case pending and
+  invents zero decisions. The hidden History task runs it after successful History,
+  H5.3 and H2 maintenance as a non-blocking shadow step. Real initialization:
+  v001, 9/9 labels migrated, 0 pending; immediate rerun `UP_TO_DATE`.
 - Calibration campaign (2026-08-23): 5 new H2 batches ready for human review
   (Imola LMP2_ELMS, Interlagos LMP2_ELMS, Fuji LMP2_ELMS, Sarthe LMP2_WEC,
   Imola HYPER; 24 pairs each). The matcher now has six exact provisional

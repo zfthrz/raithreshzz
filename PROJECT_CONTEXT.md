@@ -570,6 +570,15 @@ general channel rule. `build_mixed_cue_presentation_ab.py` reconstructs these ca
 from exact source/queue/label hashes and emits a separate A/B artifact while keeping
 production and `next_stint_plan` unchanged.
 
+`maintain_mixed_cue_review.py` accumulates future evidence in numbered local
+revisions. It creates a revision only when the exact review-item set changes and
+migrates a human decision only when both `review_id` and the complete item snapshot
+remain identical. New or changed cases stay pending; labels are never inferred. The
+hidden History runner invokes this after a successful primary cycle as a non-blocking
+shadow maintenance step, so a review-maintenance failure cannot invalidate History.
+The first real revision migrated all 9 reviewed labels and an immediate rerun was
+idempotent (`UP_TO_DATE`, 0 pending).
+
 ---
 
 # 13. LLM layer

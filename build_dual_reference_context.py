@@ -210,7 +210,7 @@ def build_dual_reference(
 
     selection_meta = selection.get("metadata") or {}
     selector_version = norm_text(selection_meta.get("selector_version"))
-    if selector_version not in {"0.1", "0.2"}:
+    if selector_version not in {"0.1", "0.2", "0.3"}:
         raise ValueError(f"H4 selector_version no soportada: {selector_version!r}")
 
     context, target, session_ref = validate_selection_target_against_analysis(

@@ -10,7 +10,7 @@ from typing import Any
 
 import duckdb
 
-SELECTOR_VERSION = "0.2"
+SELECTOR_VERSION = "0.3"
 EXPECTED_HISTORY_SCHEMA_VERSION = 4
 DEFAULT_DB_NAME = "race_engineer_history.duckdb"
 DEFAULT_MIN_VALID_LAPS = 3
@@ -307,7 +307,7 @@ def validate_reference_lap(lap: dict[str, Any] | None) -> list[str]:
 
 def target_gate_errors(target: dict[str, Any], target_lap: dict[str, Any] | None, min_valid_laps: int) -> list[str]:
     errors: list[str] = []
-    for field in ("track", "lmu_track_layout", "vehicle_variant", "car_name_raw"):
+    for field in ("track", "lmu_track_layout", "vehicle_variant"):
         if not norm_text(target.get(field)):
             errors.append(f"TARGET_{field.upper()}_MISSING")
     if target.get("vehicle_supported_domain") is not True:
@@ -350,8 +350,6 @@ def evaluate_candidate(
         reasons.append("LAYOUT_MISMATCH")
     if norm_text(candidate.get("vehicle_variant")) != norm_text(target.get("vehicle_variant")):
         reasons.append("VEHICLE_VARIANT_MISMATCH")
-    if norm_text(candidate.get("car_name_raw")) != norm_text(target.get("car_name_raw")):
-        reasons.append("CAR_NAME_MISMATCH")
     if candidate.get("vehicle_supported_domain") is not True:
         reasons.append("VEHICLE_DOMAIN_UNSUPPORTED")
     if norm_text(candidate.get("temporal_validation_status")) != "OK":
@@ -407,6 +405,10 @@ def evaluate_candidate(
         "compatibility_observations": {
             "same_session_type": norm_text(candidate.get("session_type")) == norm_text(target.get("session_type")),
             "same_lmu_session_type": norm_text(candidate.get("lmu_session_type")) == norm_text(target.get("lmu_session_type")),
+            "same_car_name_raw": (
+                norm_text(target.get("car_name_raw")) is not None
+                and norm_text(candidate.get("car_name_raw")) == norm_text(target.get("car_name_raw"))
+            ),
             "same_setup_sha256": (
                 norm_text(target.get("setup_sha256")) is not None
                 and norm_text(candidate.get("setup_sha256")) == norm_text(target.get("setup_sha256"))
@@ -538,6 +540,7 @@ def main() -> int:
                     "session_type",
                     "lmu_session_type",
                     "setup_sha256",
+                    "car_name_raw",
                 ],
                 "policy": (
                     "Deterministic H4 selection only. Does not alter coaching. "

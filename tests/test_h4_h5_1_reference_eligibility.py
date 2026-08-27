@@ -78,13 +78,18 @@ def test_h4_requires_exact_vehicle_variant_and_preserves_lmp2_elms_boundary():
     assert "VEHICLE_VARIANT_MISMATCH" in family_variant["rejection_reasons"]
 
 
-def test_h4_rejects_different_car_context_even_with_same_vehicle_family():
-    candidate = _session(session_id=2, car_name="Different car #99:ELMS25")
+def test_h4_accepts_different_car_name_inside_same_vehicle_variant():
+    candidate = _session(
+        session_id=2,
+        car_name="Inter Europol Competition #34:ELMS25",
+        vehicle_variant="LMP2_ELMS",
+    )
 
     result = _evaluate(candidate)
 
-    assert result["eligibility"] == "REJECTED"
-    assert result["rejection_reasons"] == ["CAR_NAME_MISMATCH"]
+    assert result["eligibility"] == "ELIGIBLE"
+    assert "CAR_NAME_MISMATCH" not in result["rejection_reasons"]
+    assert result["compatibility_observations"]["same_car_name_raw"] is False
 
 
 def test_h4_track_and_layout_are_hard_gates_without_alias_normalization():
@@ -159,7 +164,7 @@ def _selection(*, status: str, historical: dict | None = None) -> dict:
         "session_reference": {"lap": 3, "duration_s": 90.0},
     }
     return {
-        "metadata": {"selector_version": "0.2"},
+        "metadata": {"selector_version": "0.3"},
         "selection_status": status,
         "target_session": target,
         "selected_historical_reference": historical,

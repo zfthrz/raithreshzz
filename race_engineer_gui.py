@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import queue
 import sys
@@ -63,6 +64,7 @@ from race_engineer_track_map import (
     priority_for_distance,
     summarize_track_interval,
     telemetry_chart_x_for_distance,
+    telemetry_speed_scale,
     transform_fitted_track_points,
     turn_for_number,
     zoom_distance_window,
@@ -451,6 +453,81 @@ def format_comparison_columns(view: dict) -> tuple[str, str, str, str]:
     return summary, hist_text, current_text, detail_text
 
 
+def resolve_historical_telemetry_reference(
+    reference_selection_path: Path | None,
+    sessions: list[SessionRecord],
+) -> dict | None:
+    """Resolve H4's selected reference to an existing source DuckDB, read-only."""
+    if reference_selection_path is None or not reference_selection_path.is_file():
+        return None
+    try:
+        payload = json.loads(reference_selection_path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+        return None
+    selected = payload.get("selected_historical_reference")
+    if not isinstance(selected, dict):
+        return None
+    source_value = selected.get("source_json_path")
+    if not isinstance(source_value, str) or not source_value.strip():
+        return None
+    try:
+        source_path = Path(source_value).expanduser().resolve()
+    except OSError:
+        return None
+
+    database_path = None
+    for candidate in sessions:
+        analysis_path = candidate.analysis_path
+        if analysis_path is None:
+            continue
+        try:
+            same_source = analysis_path.expanduser().resolve() == source_path
+        except OSError:
+            same_source = False
+        if same_source:
+            database_path = candidate.database_path
+            break
+
+    if database_path is None:
+        state_path = source_path.parent / "state.json"
+        try:
+            state = json.loads(state_path.read_text(encoding="utf-8"))
+            value = state.get("database")
+            if isinstance(value, str) and value.strip():
+                database_path = Path(value)
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+            pass
+
+    if database_path is None:
+        return None
+    try:
+        database_path = database_path.expanduser().resolve()
+    except OSError:
+        return None
+    if not database_path.is_file():
+        return None
+
+    try:
+        lap = int(selected.get("lap"))
+    except (TypeError, ValueError):
+        lap = None
+    try:
+        duration_s = float(selected.get("duration_s"))
+    except (TypeError, ValueError):
+        duration_s = None
+    try:
+        session_id = int(selected.get("session_id"))
+    except (TypeError, ValueError):
+        session_id = None
+
+    return {
+        "database_path": database_path,
+        "lap": lap,
+        "duration_s": duration_s,
+        "session_id": session_id,
+    }
+
+
 class RaceEngineerApp:
     def __init__(self, root, runs_root: Path):
         import tkinter as tk
@@ -476,6 +553,9 @@ class RaceEngineerApp:
         self.track_map_token = 0
         self.track_map_loading = False
         self.current_track_map: TrackMapData | None = None
+        self.current_historical_track_map: TrackMapData | None = None
+        self.current_historical_track_label = ""
+        self.historical_track_map_loading = False
         self.current_track_zones: tuple[TrackMapZone, ...] = ()
         self.current_track_priorities: tuple[TrackMapPriority, ...] = ()
         self.current_track_profile: dict | None = None
@@ -3419,6 +3499,9 @@ class RaceEngineerApp:
         self.track_map_token += 1
         self.track_map_loading = False
         self.current_track_map = None
+        self.current_historical_track_map = None
+        self.current_historical_track_label = ""
+        self.historical_track_map_loading = False
         self.current_track_zones = ()
         self.current_track_priorities = ()
         self.current_track_profile = None
@@ -3445,11 +3528,76 @@ class RaceEngineerApp:
         self._set_track_map_zoom_status()
         self.open_button.configure(state="disabled")
 
+    def _start_historical_telemetry_request(
+        self,
+        record: SessionRecord,
+        token: int,
+    ) -> None:
+        request = resolve_historical_telemetry_reference(
+            record.reference_selection_path,
+            self.all_sessions,
+        )
+        if request is None:
+            return
+        database = request["database_path"]
+        try:
+            modified_ns = database.stat().st_mtime_ns
+        except OSError:
+            return
+        duration = request.get("duration_s")
+        duration_key = (
+            None if duration is None else int(round(float(duration) * 1000.0))
+        )
+        cache_key = (
+            str(database),
+            modified_ns,
+            request.get("lap"),
+            duration_key,
+            self.track_resolution_hz,
+        )
+        label = (
+            f"History #{request['session_id']} · vuelta {request['lap']}"
+            if request.get("session_id") is not None and request.get("lap") is not None
+            else "Referencia histórica H4"
+        )
+        cached = self.track_map_cache.get(cache_key)
+        if cached is not None:
+            self.current_historical_track_map = cached
+            self.current_historical_track_label = label
+            return
+
+        self.historical_track_map_loading = True
+
+        def worker():
+            try:
+                data = load_track_map(
+                    database,
+                    preferred_lap=request.get("lap"),
+                    preferred_duration_s=duration,
+                    target_hz=self.track_resolution_hz,
+                )
+                self.track_map_queue.put(
+                    (token, "historical_done", (cache_key, data, label))
+                )
+            except Exception as exc:
+                self.track_map_queue.put(
+                    (token, "historical_error", f"{type(exc).__name__}: {exc}")
+                )
+
+        threading.Thread(
+            target=worker,
+            name="race-engineer-historical-telemetry",
+            daemon=True,
+        ).start()
+
     def _request_track_map(self, record: SessionRecord):
         self.track_map_token += 1
         token = self.track_map_token
         self.track_map_loading = False
         self.current_track_map = None
+        self.current_historical_track_map = None
+        self.current_historical_track_label = ""
+        self.historical_track_map_loading = False
         self.current_track_zones = ()
         self.current_track_priorities = ()
         self.current_track_profile = None
@@ -3473,6 +3621,10 @@ class RaceEngineerApp:
         )
         self._set_telemetry_zoom_status()
         self._set_track_map_zoom_status()
+
+        # Iniciar la referencia histórica sólo después de limpiar todo el estado.
+        self._start_historical_telemetry_request(record, token)
+
         database = record.database_path
         if database is None:
             self.track_map_status.set("La sesión no registra su DuckDB original.")
@@ -3536,6 +3688,8 @@ class RaceEngineerApp:
                 )
             )
             self._render_track_map()
+            if self.historical_track_map_loading:
+                self.root.after(100, self._poll_track_map_queue)
             return
 
         self.track_map_loading = True
@@ -3596,6 +3750,20 @@ class RaceEngineerApp:
                 break
             if token != self.track_map_token:
                 continue
+            if kind == "historical_done":
+                cache_key, historical_data, historical_label = value
+                self.historical_track_map_loading = False
+                self.track_map_cache[cache_key] = historical_data
+                self.current_historical_track_map = historical_data
+                self.current_historical_track_label = historical_label
+                if self.current_track_map is not None:
+                    self._render_track_telemetry_chart()
+                continue
+            if kind == "historical_error":
+                self.historical_track_map_loading = False
+                self.current_historical_track_map = None
+                self.current_historical_track_label = ""
+                continue
             current_completed = True
             self.track_map_loading = False
             if kind == "done":
@@ -3632,7 +3800,7 @@ class RaceEngineerApp:
                 self.track_telemetry_canvas.delete("all")
                 self.track_map_status.set(f"Mapa GPS no disponible: {value}")
                 self.track_map_zone_status.set("Sin mapa GPS para superponer zonas.")
-        if self.track_map_loading and not current_completed:
+        if self.track_map_loading or self.historical_track_map_loading:
             self.root.after(100, self._poll_track_map_queue)
 
     @staticmethod
@@ -4381,16 +4549,25 @@ class RaceEngineerApp:
                 font=("Segoe UI", 9),
             )
             return
+
+        historical = self.current_historical_track_map
+        shared_speed_max = telemetry_speed_scale(
+            data.points,
+            historical.points if historical is not None else (),
+        )
+        zoom_start = (
+            None if self.telemetry_zoom_range is None else self.telemetry_zoom_range[0]
+        )
+        zoom_end = (
+            None if self.telemetry_zoom_range is None else self.telemetry_zoom_range[1]
+        )
         chart = build_track_telemetry_chart(
             data.points,
             width_px=width,
             height_px=height,
-            start_distance_m=(
-                None if self.telemetry_zoom_range is None else self.telemetry_zoom_range[0]
-            ),
-            end_distance_m=(
-                None if self.telemetry_zoom_range is None else self.telemetry_zoom_range[1]
-            ),
+            start_distance_m=zoom_start,
+            end_distance_m=zoom_end,
+            speed_max_kmh=shared_speed_max,
         )
         if chart is None:
             canvas.create_text(
@@ -4402,6 +4579,19 @@ class RaceEngineerApp:
                 font=("Segoe UI", 9),
             )
             return
+
+        historical_chart = None
+        if historical is not None:
+            historical_chart = build_track_telemetry_chart(
+                historical.points,
+                width_px=width,
+                height_px=height,
+                start_distance_m=chart.distance_min_m,
+                end_distance_m=chart.distance_max_m,
+                axis_start_distance_m=chart.distance_min_m,
+                axis_end_distance_m=chart.distance_max_m,
+                speed_max_kmh=shared_speed_max,
+            )
 
         lane_height = (height - 24) / 3.0
         for lane in (1, 2):
@@ -4445,6 +4635,24 @@ class RaceEngineerApp:
                 font=("Segoe UI", 8),
             )
 
+        if historical_chart is not None:
+            for values, color in (
+                (historical_chart.speed, "#7393a3"),
+                (historical_chart.throttle, "#6f9b84"),
+                (historical_chart.brake, "#a06f6f"),
+            ):
+                if len(values) >= 2:
+                    coordinates = [
+                        coordinate for point in values for coordinate in point
+                    ]
+                    canvas.create_line(
+                        *coordinates,
+                        fill=color,
+                        width=2,
+                        dash=(6, 4),
+                        joinstyle="round",
+                    )
+
         for values, color in (
             (chart.speed, "#55b7e8"),
             (chart.throttle, "#45c98c"),
@@ -4458,6 +4666,26 @@ class RaceEngineerApp:
                     width=2,
                     joinstyle="round",
                 )
+
+        if historical_chart is not None:
+            legend_x = max(width - 230, 84)
+            canvas.create_line(
+                legend_x,
+                19,
+                legend_x + 28,
+                19,
+                fill="#9aabb5",
+                width=2,
+                dash=(6, 4),
+            )
+            canvas.create_text(
+                legend_x + 35,
+                19,
+                text=self.current_historical_track_label or "Referencia histórica H4",
+                fill="#9aabb5",
+                anchor="w",
+                font=("Segoe UI", 8),
+            )
 
         if (
             self.selected_track_point_index is not None

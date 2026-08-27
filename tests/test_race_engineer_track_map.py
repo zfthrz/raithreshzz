@@ -27,6 +27,7 @@ from race_engineer_track_map import (
     priority_for_distance,
     summarize_track_interval,
     telemetry_chart_x_for_distance,
+    telemetry_speed_scale,
     turn_for_number,
     zoom_distance_window,
     zoom_track_canvas_view,
@@ -724,3 +725,59 @@ def test_validated_next_stint_priorities_map_to_gps_intervals(tmp_path: Path):
     assert priority_for_distance(priorities, 400) is None
     assert zone_point_ranges(points, priorities[0]) == ((1, 3),)
     assert zone_point_ranges(points, priorities[1]) == ((5, 7),)
+
+
+def test_telemetry_speed_scale_can_be_shared_between_two_laps():
+    current = (
+        TrackMapPoint(0.0, 0.0, 0.0, 245.0, 100.0, 0.0),
+        TrackMapPoint(1.0, 0.0, 100.0, 260.0, 80.0, 20.0),
+    )
+    historical = (
+        TrackMapPoint(0.0, 0.0, 0.0, 305.0, 100.0, 0.0),
+        TrackMapPoint(1.0, 0.0, 100.0, 315.0, 70.0, 30.0),
+    )
+
+    shared = telemetry_speed_scale(current, historical)
+
+    assert shared == 350.0
+    current_chart = build_track_telemetry_chart(
+        current,
+        width_px=200,
+        height_px=132,
+        speed_max_kmh=shared,
+    )
+    historical_chart = build_track_telemetry_chart(
+        historical,
+        width_px=200,
+        height_px=132,
+        speed_max_kmh=shared,
+        axis_start_distance_m=0.0,
+        axis_end_distance_m=100.0,
+    )
+    assert current_chart is not None
+    assert historical_chart is not None
+    assert current_chart.speed_max_kmh == historical_chart.speed_max_kmh == 350.0
+
+
+def test_telemetry_chart_can_project_historical_samples_on_current_axis():
+    historical = (
+        TrackMapPoint(0.0, 0.0, 5.0, 200.0, 100.0, 0.0),
+        TrackMapPoint(1.0, 0.0, 95.0, 210.0, 50.0, 20.0),
+    )
+
+    chart = build_track_telemetry_chart(
+        historical,
+        width_px=200,
+        height_px=132,
+        start_distance_m=0.0,
+        end_distance_m=100.0,
+        axis_start_distance_m=0.0,
+        axis_end_distance_m=100.0,
+        speed_max_kmh=300.0,
+    )
+
+    assert chart is not None
+    assert chart.distance_min_m == 0.0
+    assert chart.distance_max_m == 100.0
+    assert chart.speed[0][0] > 74.0
+    assert chart.speed[-1][0] < 182.0

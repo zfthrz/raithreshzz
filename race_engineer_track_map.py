@@ -527,6 +527,20 @@ def nearest_fitted_point_index(
     return index
 
 
+def telemetry_speed_scale(
+    *point_sets: tuple[TrackMapPoint, ...],
+) -> float:
+    """Return one deterministic speed ceiling shared by multiple laps."""
+    speeds = [
+        float(point.speed_kmh)
+        for points in point_sets
+        for point in points
+        if point.speed_kmh is not None and math.isfinite(point.speed_kmh)
+    ]
+    observed = max(speeds, default=0.0)
+    return max(100.0, math.ceil(observed / 50.0) * 50.0)
+
+
 def build_track_telemetry_chart(
     points: tuple[TrackMapPoint, ...],
     *,
@@ -538,6 +552,9 @@ def build_track_telemetry_chart(
     bottom_px: int = 12,
     start_distance_m: float | None = None,
     end_distance_m: float | None = None,
+    speed_max_kmh: float | None = None,
+    axis_start_distance_m: float | None = None,
+    axis_end_distance_m: float | None = None,
 ) -> TrackTelemetryChart | None:
     """Fit native channels into three deterministic distance-based chart lanes."""
 
@@ -552,15 +569,25 @@ def build_track_telemetry_chart(
     full_distance_max = max(valid_distances)
     if full_distance_max <= full_distance_min:
         return None
-    distance_min = (
+    requested_start = (
         full_distance_min
         if start_distance_m is None
         else max(full_distance_min, float(start_distance_m))
     )
-    distance_max = (
+    requested_end = (
         full_distance_max
         if end_distance_m is None
         else min(full_distance_max, float(end_distance_m))
+    )
+    distance_min = (
+        requested_start
+        if axis_start_distance_m is None
+        else float(axis_start_distance_m)
+    )
+    distance_max = (
+        requested_end
+        if axis_end_distance_m is None
+        else float(axis_end_distance_m)
     )
     if not math.isfinite(distance_min) or not math.isfinite(distance_max):
         return None
@@ -572,7 +599,15 @@ def build_track_telemetry_chart(
         if point.speed_kmh is not None and math.isfinite(point.speed_kmh)
     ]
     observed_speed_max = max(speeds, default=0.0)
-    speed_max = max(100.0, math.ceil(observed_speed_max / 50.0) * 50.0)
+    automatic_speed_max = max(
+        100.0,
+        math.ceil(observed_speed_max / 50.0) * 50.0,
+    )
+    speed_max = (
+        automatic_speed_max
+        if speed_max_kmh is None
+        else max(100.0, float(speed_max_kmh))
+    )
     usable_width = float(width_px - left_px - right_px)
     usable_height = float(height_px - top_px - bottom_px)
     lane_height = usable_height / 3.0
@@ -606,7 +641,7 @@ def build_track_telemetry_chart(
             if distance in seen_distances:
                 continue
             seen_distances.add(distance)
-            if not distance_min <= distance <= distance_max:
+            if not requested_start <= distance <= requested_end:
                 continue
             normalized = min(max(float(value) / maximum, 0.0), 1.0)
             result.append((x_for(distance), lane_top + (1.0 - normalized) * lane_height))

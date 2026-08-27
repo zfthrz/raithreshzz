@@ -752,8 +752,16 @@ track/layout/vehicle context with an imported pattern run, it selects only the
 current session's stored `session_id + episode_pk` memberships from the latest
 compatible snapshot. It does not spatially rematch new episodes, add
 tolerances, authorize historical actions, alter `next_stint_plan`, or affect
-ranking. A newer session absent from that snapshot fails closed as
-`NO_PATTERN_MEMBERSHIP` until a future calibrated matcher run includes it.
+ranking. Exact membership is never inferred for a newer session absent from
+that snapshot.
+
+H3.2 extends that fail-closed path for sessions absent from the snapshot. It
+builds the existing neutral H2 pair features against each recurrent pattern's
+stored representative episode and calls the unchanged matcher `0.3`. Only an
+automatic `MATCH` is emitted as a projected observational edge; `AMBIGUOUS`,
+`REJECT`, missing representatives and non-automatic results remain withheld.
+The projection is not persisted as pattern membership and has no coaching or
+ranking authority.
 
 Normal `race_engineer.py analyze` reports `H3 = RUN` only when H3.1 can
 materialize the latest compatible snapshot. Contexts without an imported run

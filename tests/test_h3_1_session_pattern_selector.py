@@ -60,6 +60,7 @@ def _insert_pattern_member(connection, run_id: int, *, session_id: int = 10):
             pattern_pk, pattern_run_id, pattern_id, state,
             track, track_layout, vehicle_variant,
             observation_count, independent_session_count,
+            representative_session_id, representative_episode_pk,
             direct_match_edge_count, internal_ambiguous_pair_count,
             internal_reject_pair_count, possible_cross_session_pair_count,
             observed_internal_cross_session_pair_count,
@@ -67,11 +68,11 @@ def _insert_pattern_member(connection, run_id: int, *, session_id: int = 10):
             transitively_resolved_ambiguous_pair_count,
             common_action_channels_json, union_action_channels_json,
             session_ids_json, raw_pattern_json
-        ) VALUES (?, ?, ?, 'persistent_pattern', ?, ?, ?, 3, 3,
+        ) VALUES (?, ?, ?, 'persistent_pattern', ?, ?, ?, 3, 3, ?, ?,
                   2, 0, 0, 3, 2, 1, 0, '["brake"]', '["brake"]',
                   '[8,9,10]', '{}')
         """,
-        [run_id, run_id, f"pat_{run_id}", *CONTEXT],
+        [run_id, run_id, f"pat_{run_id}", *CONTEXT, session_id, 500 + run_id],
     )
     connection.execute(
         """
@@ -103,17 +104,86 @@ def test_selects_exact_membership_from_latest_compatible_run(tmp_path: Path):
     connection.close()
 
 
-def test_latest_snapshot_without_membership_fails_closed(tmp_path: Path):
+def test_latest_snapshot_without_membership_uses_only_calibrated_match(
+    tmp_path: Path,
+    monkeypatch,
+):
     connection = _connection(tmp_path)
     _insert_run(connection, 1)
     _insert_pattern_member(connection, 1)
     _insert_run(connection, 2)
+    _insert_pattern_member(connection, 2, session_id=20)
+
+    representative = {"episode_pk": 502, "session_id": 20}
+    current = {"episode_pk": 900, "session_id": 10, "episode_id": 7}
+    import episode_pair_features
+    import episode_pair_matcher
+
+    monkeypatch.setattr(
+        episode_pair_features,
+        "load_episodes",
+        lambda *args, **kwargs: [representative, current],
+    )
+    monkeypatch.setattr(episode_pair_features, "load_episode_channels", lambda *_: {})
+    monkeypatch.setattr(episode_pair_features, "load_channel_metrics", lambda *_: {})
+    monkeypatch.setattr(
+        episode_pair_features,
+        "build_pair_record",
+        lambda *args, **kwargs: {"track": CONTEXT[0]},
+    )
+    monkeypatch.setattr(
+        episode_pair_matcher,
+        "classify_pair",
+        lambda pair: {
+            "decision": "MATCH",
+            "automatic": True,
+            "rule_id": "CORE_SPATIAL_MATCH",
+            "reasons": ["calibrated"],
+        },
+    )
 
     document = select_session_patterns(connection, 10)
 
-    assert document["metadata"]["status"] == "NO_PATTERN_MEMBERSHIP"
+    assert document["metadata"]["status"] == "MATCHED_CALIBRATED_PROJECTION"
     assert document["summary"]["matched_pattern_count"] == 0
     assert document["matched_patterns"] == []
+    assert document["summary"]["projected_pattern_count"] == 1
+    projected = document["projected_pattern_matches"][0]
+    assert projected["pattern_id"] == "pat_2"
+    assert projected["matcher_decision"]["automatic"] is True
+    assert projected["match_basis"] == "calibrated_h2_match_to_pattern_representative"
+    connection.close()
+
+
+def test_ambiguous_projection_fails_closed(tmp_path: Path, monkeypatch):
+    connection = _connection(tmp_path)
+    _insert_run(connection, 1)
+    _insert_pattern_member(connection, 1, session_id=20)
+    import episode_pair_features
+    import episode_pair_matcher
+
+    monkeypatch.setattr(
+        episode_pair_features,
+        "load_episodes",
+        lambda *args, **kwargs: [
+            {"episode_pk": 501, "session_id": 20},
+            {"episode_pk": 900, "session_id": 10},
+        ],
+    )
+    monkeypatch.setattr(episode_pair_features, "load_episode_channels", lambda *_: {})
+    monkeypatch.setattr(episode_pair_features, "load_channel_metrics", lambda *_: {})
+    monkeypatch.setattr(episode_pair_features, "build_pair_record", lambda *a, **k: {})
+    monkeypatch.setattr(
+        episode_pair_matcher,
+        "classify_pair",
+        lambda pair: {"decision": "AMBIGUOUS", "automatic": False},
+    )
+
+    document = select_session_patterns(connection, 10)
+
+    assert document["metadata"]["status"] == "NO_CALIBRATED_PATTERN_MATCH"
+    assert document["projected_pattern_matches"] == []
+    assert document["projection_diagnostics"]["ambiguous_count"] == 1
     connection.close()
 
 

@@ -102,6 +102,12 @@ Validated baseline:
   provenance. Matching is exact stored `session_id + episode_pk` membership;
   sessions absent from the snapshot fail closed. Output remains observational
   only and cannot affect coaching, ranking, H4 or H5.
+- H3.2 calibrated projection (2026-08-27): sessions absent from an imported
+  snapshot are compared read-only with recurrent pattern representatives using
+  the unchanged H2 neutral features and matcher `0.3`. Only automatic `MATCH`
+  decisions are exposed as observational projections; nothing is written back
+  as membership. Read-only corpus audit covered 14/14 eligible post-snapshot
+  sessions (Spa 13/13, Interlagos 1/1; Imola had none pending).
 - Phase J golden set (2026-08-23): `golden_set_semantic_regression.py` +
   `golden_set/golden_set_v0_1.json` with 6 SEED records (Imola, Monza,
   Interlagos, Fuji, Spa, Sarthe). Semantic regression (region, action families,

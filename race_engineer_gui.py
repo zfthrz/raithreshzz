@@ -1266,11 +1266,12 @@ class RaceEngineerApp:
         # La fila superior concentra decisión y coaching; la visualización vive
         # en una segunda fila más alta para evitar cuatro columnas de texto
         # compitiendo por el mismo espacio.
-        summary_dashboard = ttk.Frame(
+        self.summary_dashboard = ttk.Frame(
             summary_content,
             style="Workspace.TFrame",
             height=270,
         )
+        summary_dashboard = self.summary_dashboard
         summary_dashboard.pack(fill="x", pady=(0, 10))
         summary_dashboard.pack_propagate(False)
         for column, weight in enumerate((25, 35, 18, 22)):
@@ -1343,12 +1344,13 @@ class RaceEngineerApp:
         # Segunda fila visual del Resumen. Son previews livianos alimentados por
         # el mismo TrackMapData ya cargado por Telemetría; no existe un segundo
         # pipeline ni una segunda lectura de archivos.
-        visual_row = ttk.Frame(
+        self.summary_visual_row = ttk.Frame(
             summary_content,
             style="Workspace.TFrame",
             height=420,
         )
-        visual_row.pack(fill="x", pady=(0, 4))
+        visual_row = self.summary_visual_row
+        visual_row.pack(fill="both", expand=True, pady=(0, 0))
         visual_row.pack_propagate(False)
         visual_row.columnconfigure(0, weight=48, uniform="summary_visual")
         visual_row.columnconfigure(1, weight=52, uniform="summary_visual")
@@ -1451,9 +1453,31 @@ class RaceEngineerApp:
         )
 
     def _on_summary_canvas_configure(self, event):
+        # El frame interno ocupa siempre como mínimo todo el viewport visible.
+        # Si la ventana baja de tamaño, conserva un mínimo y el Canvas hace
+        # scroll. La fila visual usa pack(expand=True), por lo que absorbe de
+        # forma nativa todo el espacio restante sin dejar una franja vacía.
+        minimum_content_height = 650
+        content_height = max(int(event.height), minimum_content_height)
+
         self.summary_canvas.itemconfigure(
             self.summary_canvas_window,
             width=event.width,
+            height=content_height,
+        )
+
+        dashboard = getattr(self, "summary_dashboard", None)
+        if dashboard is not None:
+            # Coaching: proporcional en ventanas medianas, con límites para no
+            # robar espacio al mapa/telemetría.
+            dashboard_height = round(content_height * 0.43)
+            dashboard_height = max(270, min(dashboard_height, 360))
+            dashboard.configure(height=dashboard_height)
+
+        # No fijamos la altura de summary_visual_row: expand=True la hace
+        # ocupar exactamente todo lo que queda debajo del dashboard.
+        self.summary_canvas.configure(
+            scrollregion=self.summary_canvas.bbox("all"),
         )
 
     def _on_summary_mousewheel(self, event):
@@ -1540,11 +1564,41 @@ class RaceEngineerApp:
             map_canvas.create_line(
                 *coords,
                 fill="#55decf",
-                width=4,
+                width=3,
                 smooth=True,
                 capstyle="round",
                 joinstyle="round",
             )
+
+            # Reproduce en Resumen la misma lectura visual de zonas que usa
+            # Telemetría: pérdida=rojo, ganancia=verde y observación=ámbar.
+            # Se dibujan encima de la traza base para identificar rápidamente
+            # qué partes del circuito fueron analizadas.
+            zone_colors = {
+                "loss": "#e45a5a",
+                "gain": "#45c98c",
+                "observation": "#d5a94f",
+            }
+            for zone in self.current_track_zones:
+                color = zone_colors.get(zone.kind, "#d5a94f")
+                for start_index, end_index in zone_point_ranges(data.points, zone):
+                    segment = fitted[start_index : end_index + 1]
+                    if len(segment) < 2:
+                        continue
+                    segment_coordinates = [
+                        value
+                        for point in segment
+                        for value in point
+                    ]
+                    map_canvas.create_line(
+                        *segment_coordinates,
+                        fill=color,
+                        width=6,
+                        smooth=True,
+                        capstyle="round",
+                        joinstyle="round",
+                    )
+
             # Prioridades visibles como puntos cálidos sobre la traza.
             for priority in self.current_track_priorities[:6]:
                 distance = getattr(priority, "center_distance_m", None)

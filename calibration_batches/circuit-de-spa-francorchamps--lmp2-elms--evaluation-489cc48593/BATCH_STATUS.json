@@ -1,0 +1,64 @@
+{
+  "orchestrator_version": "evaluation-review-v0.1",
+  "updated_at_utc": "2026-08-27T00:01:24.367633+00:00",
+  "overall_status": "READY_FOR_HUMAN_REVIEW",
+  "track": "Circuit de Spa-Francorchamps",
+  "track_layout": "Circuit de Spa-Francorchamps",
+  "vehicle_variant": "LMP2_ELMS",
+  "batch_id": "evaluation-489cc48593",
+  "batch_dir": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\circuit-de-spa-francorchamps--lmp2-elms--evaluation-489cc48593",
+  "steps": {
+    "vehicle_context_selection": {
+      "status": "PASS",
+      "session_count": 19,
+      "session_ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        24,
+        25,
+        45,
+        69,
+        70,
+        71,
+        78,
+        82,
+        88,
+        89,
+        91,
+        92,
+        94
+      ],
+      "evaluation_session_ids": [
+        1,
+        4,
+        5,
+        70,
+        88
+      ]
+    },
+    "review_queue": {
+      "status": "READY",
+      "path": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\circuit-de-spa-francorchamps--lmp2-elms--evaluation-489cc48593\\pair_review_queue.json",
+      "queue_pairs": 18
+    },
+    "human_labels": {
+      "status": "PENDING",
+      "labels_path": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\calibration_batches\\circuit-de-spa-francorchamps--lmp2-elms--evaluation-489cc48593\\pair_labels.json",
+      "queue_pairs": 18,
+      "labeled_pairs": 0,
+      "unreviewed_pairs": 18,
+      "complete": false
+    },
+    "calibration_dataset": {
+      "status": "BLOCKED_BY_LABELS"
+    },
+    "evaluation_readiness": {
+      "status": "TARGETED_HUMAN_REVIEW",
+      "evaluation_pairs": 0
+    }
+  }
+}

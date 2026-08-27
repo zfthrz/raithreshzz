@@ -121,11 +121,11 @@ def format_timestamp(value: str, fallback_timestamp: float) -> str:
     return datetime.fromtimestamp(fallback_timestamp).strftime("%d/%m/%Y %H:%M")
 
 
-def _live_calibration_label_counts(
+def _calibration_artifact_paths(
     status_path: Path,
     payload: dict[str, Any],
     steps: dict[str, Any],
-) -> tuple[int | None, int | None]:
+) -> tuple[Path, Path]:
     review_queue = _dict(steps.get("review_queue"))
     human = _dict(steps.get("human_labels"))
 
@@ -156,14 +156,32 @@ def _live_calibration_label_counts(
     if not labels_path.is_absolute():
         labels_path = (batch_dir / labels_path).resolve()
 
+    return queue_path, labels_path
+
+
+def _live_calibration_label_counts(
+    status_path: Path,
+    payload: dict[str, Any],
+    steps: dict[str, Any],
+    covered_pair_ids: set[str] | None = None,
+) -> tuple[int | None, int | None]:
+    queue_path, labels_path = _calibration_artifact_paths(status_path, payload, steps)
     queue_pairs = None
     labeled_pairs = None
+    queue_ids: set[str] = set()
 
     try:
         queue_payload = _json(queue_path)
         queue = queue_payload.get("queue")
         if isinstance(queue, list):
             queue_pairs = len(queue)
+            queue_ids = {
+                item.get("pair_id")
+                for item in queue
+                if isinstance(item, dict)
+                and isinstance(item.get("pair_id"), str)
+                and item.get("pair_id")
+            }
     except Exception:
         pass
 
@@ -190,6 +208,9 @@ def _live_calibration_label_counts(
     except Exception:
         pass
 
+    if covered_pair_ids is not None and queue_pairs is not None:
+        labeled_pairs = len(queue_ids & covered_pair_ids)
+
     return queue_pairs, labeled_pairs
 
 
@@ -205,18 +226,52 @@ def load_calibration_summary(
     batches_root = base_dir or (PROJECT_ROOT / "calibration_batches")
     rows: list[dict[str, Any]] = []
     if batches_root.is_dir():
+        statuses: list[tuple[Path, dict[str, Any]]] = []
+        coverage: dict[tuple[str, str, str], set[str]] = {}
         for status_path in sorted(batches_root.glob("*/BATCH_STATUS.json")):
             try:
                 payload = _json(status_path)
             except (OSError, ValueError, json.JSONDecodeError):
                 continue
+            statuses.append((status_path, payload))
+            steps = _dict(payload.get("steps"))
+            _queue_path, labels_path = _calibration_artifact_paths(
+                status_path, payload, steps
+            )
+            try:
+                labels = _json(labels_path).get("labels")
+            except Exception:
+                continue
+            if not isinstance(labels, list):
+                continue
+            key = (
+                str(payload.get("track") or "—"),
+                str(payload.get("track_layout") or "—"),
+                str(payload.get("vehicle_variant") or "—"),
+            )
+            covered = coverage.setdefault(key, set())
+            for item in labels:
+                if (
+                    isinstance(item, dict)
+                    and isinstance(item.get("pair_id"), str)
+                    and item.get("human_label") in {"SAME", "DIFFERENT", "AMBIGUOUS", "SKIP"}
+                ):
+                    covered.add(item["pair_id"])
+
+        for status_path, payload in statuses:
             steps = _dict(payload.get("steps"))
             context_sel = _dict(steps.get("vehicle_context_selection"))
             human = _dict(steps.get("human_labels"))
+            context_key = (
+                str(payload.get("track") or "—"),
+                str(payload.get("track_layout") or "—"),
+                str(payload.get("vehicle_variant") or "—"),
+            )
             live_queue_pairs, live_labeled_pairs = _live_calibration_label_counts(
                 status_path,
                 payload,
                 steps,
+                coverage.get(context_key, set()),
             )
             eval_step = _dict(steps.get("evaluation_readiness"))
             dataset = _dict(steps.get("calibration_dataset"))

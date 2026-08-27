@@ -113,3 +113,11 @@ def test_fully_covered_context_has_empty_queue(tmp_path: Path):
     write_batch(tmp_path, "complete", ["a"], {"a": "DIFFERENT"}, [1, 2])
     result = collect_uncovered(tmp_path, CONTEXT)
     assert result["queue"] == []
+
+
+def test_gui_counts_labels_from_newer_batch_as_global_context_coverage(tmp_path: Path):
+    write_batch(tmp_path, "old", ["a", "b"], {}, [1, 2])
+    write_batch(tmp_path, "new", ["a", "b"], {"a": "SAME", "b": "DIFFERENT"}, [1, 2])
+    rows = load_calibration_summary(tmp_path)["rows"]
+    assert len(rows) == 1
+    assert (rows[0]["labeled_pairs"], rows[0]["queue_pairs"]) == (2, 2)

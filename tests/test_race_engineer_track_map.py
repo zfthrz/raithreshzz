@@ -955,6 +955,28 @@ def test_historical_comparison_fails_closed_without_common_distance():
     assert comparison.samples == ()
 
 
+def test_historical_comparison_skips_one_leading_previous_lap_boundary_sample():
+    current = (
+        TrackMapPoint(0.0, 0.0, 7000.0, 180.0),
+        TrackMapPoint(0.0, 0.0, 5.0, 180.0),
+        TrackMapPoint(0.0, 0.0, 100.0, 180.0),
+        TrackMapPoint(0.0, 0.0, 200.0, 180.0),
+    )
+    reference = (
+        TrackMapPoint(0.0, 0.0, 6998.0, 200.0),
+        TrackMapPoint(0.0, 0.0, 6.0, 200.0),
+        TrackMapPoint(0.0, 0.0, 100.0, 200.0),
+        TrackMapPoint(0.0, 0.0, 200.0, 200.0),
+    )
+
+    comparison = build_historical_telemetry_comparison(current, reference)
+
+    assert comparison.status == "PARTIAL_COMMON_COVERAGE"
+    assert comparison.common_start_distance_m == 6.0
+    assert comparison.common_end_distance_m == 200.0
+    assert [sample.distance_m for sample in comparison.samples] == [100.0, 200.0]
+
+
 def test_historical_overlay_reports_only_visible_uncovered_ranges():
     current = tuple(
         TrackMapPoint(0.0, 0.0, distance, 180.0)

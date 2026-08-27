@@ -670,9 +670,9 @@ def telemetry_speed_scale(
 def _monotonic_telemetry_points(
     points: tuple[TrackMapPoint, ...],
 ) -> tuple[TrackMapPoint, ...]:
-    """Keep the first temporal lap pass and one sample per distance."""
+    """Keep the widest monotonic lap segment and one sample per distance."""
 
-    result = []
+    segments = [[]]
     seen_distances = set()
     previous_distance = None
     for point in points:
@@ -683,15 +683,29 @@ def _monotonic_telemetry_points(
         if previous_distance is not None:
             backward_jump = previous_distance - distance
             if backward_jump > LAP_DISTANCE_RESET_THRESHOLD_M or backward_jump > 5.0:
-                break
-            if backward_jump > 0.0:
+                # LMU can prepend one or more repaired boundary samples from the
+                # prior lap. Preserve segments, then select physical coverage.
+                segments.append([])
+                seen_distances.clear()
+                previous_distance = None
+            elif backward_jump > 0.0:
                 continue
         previous_distance = distance
         if distance in seen_distances:
             continue
         seen_distances.add(distance)
-        result.append(point)
-    return tuple(result)
+        segments[-1].append(point)
+    populated = [segment for segment in segments if segment]
+    if not populated:
+        return ()
+    widest = max(
+        populated,
+        key=lambda segment: (
+            float(segment[-1].lap_distance_m) - float(segment[0].lap_distance_m),
+            len(segment),
+        ),
+    )
+    return tuple(widest)
 
 
 def _linear_value(

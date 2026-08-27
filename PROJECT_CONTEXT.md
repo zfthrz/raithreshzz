@@ -560,6 +560,16 @@ channel and preserves the profile there, while 22/31 fail closed to the producti
 sequence. These counts do not authorize promotion or a global brake/throttle
 preference.
 
+The subsequent exact-queue human review completed 9/9 cases: 5 favored focused
+channel + profile, 3 favored the combined sequence and 1 was ambiguous. Support
+margin alone did not explain the decisions. The only unanimous structural subgroup
+was a uniquely dominant channel with at least two physical events: 4/4 favored the
+focused presentation. In the current corpus all four are brake onset+release cases;
+there is no reviewed multi-event throttle case, so this is not evidence for a
+general channel rule. `build_mixed_cue_presentation_ab.py` reconstructs these cases
+from exact source/queue/label hashes and emits a separate A/B artifact while keeping
+production and `next_stint_plan` unchanged.
+
 ---
 
 # 13. LLM layer

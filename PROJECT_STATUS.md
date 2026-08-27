@@ -42,6 +42,13 @@ Validated baseline:
   and identifies only 9 cases where one channel has uniquely stronger explicit
   physical-point support while the reference profile can be preserved. This is
   presentation evidence only; no channel preference, plan or authority changed.
+- Mixed-cue human review + A/B shadow (2026-08-27): all 9 dominant-channel
+  candidates were reviewed (`FOCUSED_PLUS_PROFILE_BETTER` 5, `COMBINED_BETTER`
+  3, `AMBIGUOUS` 1). The only exact structural subgroup with unanimous evidence
+  is dominant-channel multi-event: 4/4 favorable, all brake onset+release cases.
+  A source-hashed builder renders those four production-vs-focused comparisons
+  separately and preserves the full throttle reference profile. This remains
+  corpus-dependent presentation evidence and does not modify production.
 - Calibration campaign (2026-08-23): 5 new H2 batches ready for human review
   (Imola LMP2_ELMS, Interlagos LMP2_ELMS, Fuji LMP2_ELMS, Sarthe LMP2_WEC,
   Imola HYPER; 24 pairs each). The matcher now has six exact provisional

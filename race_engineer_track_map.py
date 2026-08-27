@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import math
+from bisect import bisect_right
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
@@ -125,6 +126,37 @@ class TrackTelemetryChart:
     distance_max_m: float
     gear: tuple[tuple[float, float], ...] = ()
     gear_max: int = 1
+
+
+@dataclass(frozen=True)
+class AlignedTelemetrySample:
+    distance_m: float
+    current_speed_kmh: float | None
+    reference_speed_kmh: float | None
+    speed_delta_kmh: float | None
+    current_throttle_percent: float | None
+    reference_throttle_percent: float | None
+    throttle_delta_percent: float | None
+    current_brake_percent: float | None
+    reference_brake_percent: float | None
+    brake_delta_percent: float | None
+    current_gear: int | None
+    reference_gear: int | None
+    accumulated_delta_s: float | None
+
+
+@dataclass(frozen=True)
+class HistoricalTelemetryComparison:
+    status: str
+    current_start_distance_m: float | None
+    current_end_distance_m: float | None
+    reference_start_distance_m: float | None
+    reference_end_distance_m: float | None
+    common_start_distance_m: float | None
+    common_end_distance_m: float | None
+    current_coverage_ratio: float
+    reference_coverage_ratio: float
+    samples: tuple[AlignedTelemetrySample, ...]
 
 
 def list_track_map_laps(
@@ -633,6 +665,152 @@ def telemetry_speed_scale(
     ]
     observed = max(speeds, default=0.0)
     return max(100.0, math.ceil(observed / 50.0) * 50.0)
+
+
+def _monotonic_telemetry_points(
+    points: tuple[TrackMapPoint, ...],
+) -> tuple[TrackMapPoint, ...]:
+    """Keep the first temporal lap pass and one sample per distance."""
+
+    result = []
+    seen_distances = set()
+    previous_distance = None
+    for point in points:
+        distance = point.lap_distance_m
+        if distance is None or not math.isfinite(distance):
+            continue
+        distance = float(distance)
+        if previous_distance is not None:
+            backward_jump = previous_distance - distance
+            if backward_jump > LAP_DISTANCE_RESET_THRESHOLD_M or backward_jump > 5.0:
+                break
+            if backward_jump > 0.0:
+                continue
+        previous_distance = distance
+        if distance in seen_distances:
+            continue
+        seen_distances.add(distance)
+        result.append(point)
+    return tuple(result)
+
+
+def _linear_value(
+    left: TrackMapPoint,
+    right: TrackMapPoint,
+    distance_m: float,
+    attribute: str,
+) -> float | None:
+    left_value = getattr(left, attribute)
+    right_value = getattr(right, attribute)
+    if (
+        left_value is None
+        or right_value is None
+        or not math.isfinite(left_value)
+        or not math.isfinite(right_value)
+    ):
+        return None
+    left_distance = float(left.lap_distance_m)
+    right_distance = float(right.lap_distance_m)
+    if right_distance <= left_distance:
+        return float(left_value)
+    ratio = (distance_m - left_distance) / (right_distance - left_distance)
+    return float(left_value) + ratio * (float(right_value) - float(left_value))
+
+
+def _difference(current: float | None, reference: float | None) -> float | None:
+    if current is None or reference is None:
+        return None
+    return current - reference
+
+
+def build_historical_telemetry_comparison(
+    current_points: tuple[TrackMapPoint, ...],
+    reference_points: tuple[TrackMapPoint, ...],
+) -> HistoricalTelemetryComparison:
+    """Align laps without extrapolating beyond observed distance coverage.
+
+    Current native distances form the grid. Continuous reference channels are
+    linearly interpolated; gear holds the preceding discrete reference value.
+    Accumulated delta integrates ``dt = 3.6 * dx / speed_kmh`` trapezoidally.
+    """
+
+    current = _monotonic_telemetry_points(current_points)
+    reference = _monotonic_telemetry_points(reference_points)
+    if len(current) < 2 or len(reference) < 2:
+        return HistoricalTelemetryComparison(
+            "NO_COMMON_COVERAGE", None, None, None, None, None, None, 0.0, 0.0, ()
+        )
+    current_start = float(current[0].lap_distance_m)
+    current_end = float(current[-1].lap_distance_m)
+    reference_start = float(reference[0].lap_distance_m)
+    reference_end = float(reference[-1].lap_distance_m)
+    common_start = max(current_start, reference_start)
+    common_end = min(current_end, reference_end)
+    if common_end <= common_start:
+        return HistoricalTelemetryComparison(
+            "NO_COMMON_COVERAGE", current_start, current_end,
+            reference_start, reference_end, None, None, 0.0, 0.0, (),
+        )
+
+    current_span = current_end - current_start
+    reference_span = reference_end - reference_start
+    common_span = common_end - common_start
+    current_ratio = common_span / current_span if current_span > 0 else 0.0
+    reference_ratio = common_span / reference_span if reference_span > 0 else 0.0
+    status = (
+        "FULL_COMMON_COVERAGE"
+        if math.isclose(current_ratio, 1.0) and math.isclose(reference_ratio, 1.0)
+        else "PARTIAL_COMMON_COVERAGE"
+    )
+    reference_distances = [float(point.lap_distance_m) for point in reference]
+    aligned = []
+    accumulated_delta = 0.0
+    previous = None
+    for point in current:
+        distance = float(point.lap_distance_m)
+        if not common_start <= distance <= common_end:
+            continue
+        right_index = bisect_right(reference_distances, distance)
+        if right_index == 0:
+            continue
+        if right_index == len(reference):
+            if not math.isclose(distance, reference_end):
+                continue
+            left = right = reference[-1]
+        else:
+            left = reference[right_index - 1]
+            right = reference[right_index]
+        reference_speed = _linear_value(left, right, distance, "speed_kmh")
+        reference_throttle = _linear_value(left, right, distance, "throttle_percent")
+        reference_brake = _linear_value(left, right, distance, "brake_percent")
+        current_speed = float(point.speed_kmh) if point.speed_kmh is not None and math.isfinite(point.speed_kmh) else None
+        current_throttle = float(point.throttle_percent) if point.throttle_percent is not None and math.isfinite(point.throttle_percent) else None
+        current_brake = float(point.brake_percent) if point.brake_percent is not None and math.isfinite(point.brake_percent) else None
+        delta_value = 0.0 if previous is None else None
+        if previous is not None:
+            dx = distance - previous[0]
+            speeds = (previous[1], current_speed, previous[2], reference_speed)
+            if dx >= 0 and all(value is not None and value > 0 for value in speeds):
+                current_dt = 3.6 * dx * (1.0 / previous[1] + 1.0 / current_speed) / 2.0
+                reference_dt = 3.6 * dx * (1.0 / previous[2] + 1.0 / reference_speed) / 2.0
+                accumulated_delta += current_dt - reference_dt
+                delta_value = accumulated_delta
+        aligned.append(
+            AlignedTelemetrySample(
+                distance, current_speed, reference_speed,
+                _difference(current_speed, reference_speed),
+                current_throttle, reference_throttle,
+                _difference(current_throttle, reference_throttle),
+                current_brake, reference_brake,
+                _difference(current_brake, reference_brake),
+                point.gear, left.gear, delta_value,
+            )
+        )
+        previous = (distance, current_speed, reference_speed)
+    return HistoricalTelemetryComparison(
+        status, current_start, current_end, reference_start, reference_end,
+        common_start, common_end, current_ratio, reference_ratio, tuple(aligned),
+    )
 
 
 def build_track_telemetry_chart(

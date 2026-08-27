@@ -10,10 +10,12 @@ import pytest
 
 from race_engineer_track_map import (
     TrackMapPoint,
+    build_historical_telemetry_comparison,
     build_track_telemetry_chart,
     fit_track_points,
     focus_track_canvas_view,
     transform_fitted_track_points,
+    list_track_map_laps,
     load_track_map,
     load_track_profile,
     load_track_priorities,
@@ -80,6 +82,7 @@ def make_gps_database(path: Path) -> Path:
             "Ground Speed",
             "Throttle Pos",
             "Brake Pos",
+            "Gear",
         ):
             connection.execute(f'CREATE TABLE "{table}"(ts DOUBLE, value DOUBLE)')
         rows = []
@@ -121,6 +124,10 @@ def make_gps_database(path: Path) -> Path:
             'INSERT INTO "Brake Pos" VALUES (?, ?)',
             [(time, 25.0 if 45.0 <= time <= 50.0 else 0.0) for time, *_ in rows],
         )
+        connection.executemany(
+            'INSERT INTO "Gear" VALUES (?, ?)',
+            [(time, 2.0 + float((int(time) // 10) % 4)) for time, *_ in rows],
+        )
         connection.execute('CREATE TABLE "Lap"(ts DOUBLE)')
         connection.executemany('INSERT INTO "Lap" VALUES (?)', [(0.0,), (40.0,), (80.0,)])
     finally:
@@ -147,6 +154,20 @@ def test_load_track_map_reconstructs_preferred_lap_read_only(tmp_path: Path):
     assert all(point.speed_kmh is not None for point in result.points)
     assert all(point.throttle_percent is not None for point in result.points)
     assert all(point.brake_percent is not None for point in result.points)
+    assert all(point.gear in {2, 3, 4, 5} for point in result.points)
+    assert database.stat().st_size == size_before
+
+
+def test_list_track_map_laps_returns_only_complete_sorted_laps_read_only(
+    tmp_path: Path,
+):
+    database = make_gps_database(tmp_path / "session.duckdb")
+    size_before = database.stat().st_size
+
+    options = list_track_map_laps(database, target_hz=5.0)
+
+    assert [option.lap for option in options] == [0, 1]
+    assert all(option.duration_s == pytest.approx(39.8) for option in options)
     assert database.stat().st_size == size_before
 
 
@@ -357,6 +378,58 @@ def test_telemetry_chart_uses_shared_distance_axis_and_three_fixed_lanes():
     assert chart.throttle == ((74.0, 84.0), (182.0, 48.0))
     assert chart.brake == ((74.0, 84.0), (182.0, 120.0))
     assert telemetry_chart_x_for_distance(chart, 50.0, width_px=200) == 128.0
+
+
+def test_telemetry_chart_adds_discrete_fourth_gear_lane_only_when_requested():
+    points = (
+        TrackMapPoint(0.0, 0.0, 0.0, 100.0, 0.0, 100.0, 2),
+        TrackMapPoint(1.0, 0.0, 50.0, 150.0, 50.0, 50.0, 3),
+        TrackMapPoint(2.0, 0.0, 100.0, 200.0, 100.0, 0.0, 4),
+    )
+
+    three_lane = build_track_telemetry_chart(
+        points,
+        width_px=200,
+        height_px=132,
+    )
+    four_lane = build_track_telemetry_chart(
+        points,
+        width_px=200,
+        height_px=132,
+        include_gear=True,
+    )
+
+    assert three_lane is not None
+    assert three_lane.gear == ()
+    assert four_lane is not None
+    assert four_lane.gear_max == 4
+    assert len(four_lane.gear) == 5
+    assert [x for x, _ in four_lane.gear] == [74.0, 128.0, 128.0, 182.0, 182.0]
+    assert all(y >= 93.0 for _, y in four_lane.gear)
+    assert all(y <= 120.0 for _, y in four_lane.gear)
+    assert max(y for _, y in four_lane.brake) <= 93.0
+
+
+def test_gear_step_series_stops_at_lap_distance_reset():
+    points = (
+        TrackMapPoint(0.0, 0.0, 0.0, gear=2),
+        TrackMapPoint(1.0, 0.0, 100.0, gear=3),
+        TrackMapPoint(2.0, 0.0, 4050.0, gear=6),
+        TrackMapPoint(3.0, 0.0, 0.0, gear=1),
+        TrackMapPoint(4.0, 0.0, 100.0, gear=2),
+    )
+
+    chart = build_track_telemetry_chart(
+        points,
+        width_px=200,
+        height_px=132,
+        include_gear=True,
+    )
+
+    assert chart is not None
+    assert [x for x, _ in chart.gear] == sorted(x for x, _ in chart.gear)
+    assert len(chart.gear) == 5
+    assert chart.gear[-1][0] == 182.0
 
 
 def test_telemetry_chart_keeps_one_pass_without_duplicate_distances():
@@ -781,3 +854,84 @@ def test_telemetry_chart_can_project_historical_samples_on_current_axis():
     assert chart.distance_max_m == 100.0
     assert chart.speed[0][0] > 74.0
     assert chart.speed[-1][0] < 182.0
+
+
+def test_historical_comparison_exposes_partial_coverage_without_extrapolation():
+    current = tuple(
+        TrackMapPoint(0.0, 0.0, distance, 180.0, 50.0, 10.0, 3)
+        for distance in (0.0, 50.0, 100.0, 150.0, 200.0)
+    )
+    reference = (
+        TrackMapPoint(0.0, 0.0, 50.0, 200.0, 60.0, 0.0, 4),
+        TrackMapPoint(0.0, 0.0, 150.0, 220.0, 80.0, 20.0, 5),
+    )
+
+    comparison = build_historical_telemetry_comparison(current, reference)
+
+    assert comparison.status == "PARTIAL_COMMON_COVERAGE"
+    assert comparison.common_start_distance_m == 50.0
+    assert comparison.common_end_distance_m == 150.0
+    assert comparison.current_coverage_ratio == pytest.approx(0.5)
+    assert comparison.reference_coverage_ratio == pytest.approx(1.0)
+    assert [sample.distance_m for sample in comparison.samples] == [50.0, 100.0, 150.0]
+    assert all(sample.distance_m >= 50.0 for sample in comparison.samples)
+
+
+def test_historical_comparison_interpolates_channels_and_keeps_gear_discrete():
+    current = (
+        TrackMapPoint(0.0, 0.0, 0.0, 190.0, 40.0, 20.0, 3),
+        TrackMapPoint(0.0, 0.0, 50.0, 210.0, 70.0, 10.0, 4),
+        TrackMapPoint(0.0, 0.0, 100.0, 230.0, 100.0, 0.0, 5),
+    )
+    reference = (
+        TrackMapPoint(0.0, 0.0, 0.0, 200.0, 50.0, 10.0, 3),
+        TrackMapPoint(0.0, 0.0, 100.0, 220.0, 90.0, 30.0, 5),
+    )
+
+    comparison = build_historical_telemetry_comparison(current, reference)
+    middle = comparison.samples[1]
+
+    assert comparison.status == "FULL_COMMON_COVERAGE"
+    assert middle.reference_speed_kmh == pytest.approx(210.0)
+    assert middle.reference_throttle_percent == pytest.approx(70.0)
+    assert middle.reference_brake_percent == pytest.approx(20.0)
+    assert middle.speed_delta_kmh == pytest.approx(0.0)
+    assert middle.throttle_delta_percent == pytest.approx(0.0)
+    assert middle.brake_delta_percent == pytest.approx(-10.0)
+    assert middle.reference_gear == 3
+
+
+def test_historical_comparison_accumulates_time_delta_and_does_not_mutate_inputs():
+    current = (
+        TrackMapPoint(0.0, 0.0, 0.0, 180.0, 100.0, 0.0),
+        TrackMapPoint(0.0, 0.0, 100.0, 180.0, 100.0, 0.0),
+    )
+    reference = (
+        TrackMapPoint(0.0, 0.0, 0.0, 200.0, 100.0, 0.0),
+        TrackMapPoint(0.0, 0.0, 100.0, 200.0, 100.0, 0.0),
+    )
+    current_before = tuple(current)
+    reference_before = tuple(reference)
+
+    comparison = build_historical_telemetry_comparison(current, reference)
+
+    assert comparison.samples[0].accumulated_delta_s == 0.0
+    assert comparison.samples[-1].accumulated_delta_s == pytest.approx(0.2)
+    assert current == current_before
+    assert reference == reference_before
+
+
+def test_historical_comparison_fails_closed_without_common_distance():
+    current = (
+        TrackMapPoint(0.0, 0.0, 0.0, 180.0),
+        TrackMapPoint(0.0, 0.0, 100.0, 180.0),
+    )
+    reference = (
+        TrackMapPoint(0.0, 0.0, 200.0, 200.0),
+        TrackMapPoint(0.0, 0.0, 300.0, 200.0),
+    )
+
+    comparison = build_historical_telemetry_comparison(current, reference)
+
+    assert comparison.status == "NO_COMMON_COVERAGE"
+    assert comparison.samples == ()

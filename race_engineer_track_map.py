@@ -42,6 +42,7 @@ class TrackMapPoint:
     speed_kmh: float | None = None
     throttle_percent: float | None = None
     brake_percent: float | None = None
+    gear: int | None = None
 
 
 @dataclass(frozen=True)
@@ -122,6 +123,8 @@ class TrackTelemetryChart:
     brake: tuple[tuple[float, float], ...]
     distance_min_m: float
     distance_max_m: float
+    gear: tuple[tuple[float, float], ...] = ()
+    gear_max: int = 1
 
 
 def list_track_map_laps(
@@ -218,6 +221,7 @@ def load_track_map(
             "GPS Speed",
             "Throttle Pos",
             "Brake Pos",
+            "Gear",
         )
         channels = {
             name: read_value_table(connection, name)
@@ -245,6 +249,9 @@ def load_track_map(
         )
         brake = align_channel(
             channels.get("Brake Pos"), master_times, gps_time_reference
+        )
+        gear = align_channel(
+            channels.get("Gear"), master_times, gps_time_reference
         )
         boundaries = read_lap_event_times(connection, tables)
         laps = (
@@ -297,6 +304,7 @@ def load_track_map(
                     speed_kmh=_finite_at(speed, master_index),
                     throttle_percent=_finite_at(throttle, master_index),
                     brake_percent=_finite_at(brake, master_index),
+                    gear=_gear_at(gear, master_index),
                 )
             )
         points = tuple(points)
@@ -327,6 +335,24 @@ def _finite_at(values: list[float | None], index: int | None) -> float | None:
         return None
     result = float(value)
     return result if math.isfinite(result) else None
+
+
+def _gear_at(values: list[float | None], index: int | None) -> int | None:
+    value = _finite_at(values, index)
+    if value is None:
+        return None
+    gear = int(round(value))
+    return gear if 0 <= gear <= 20 else None
+
+
+def telemetry_gear_scale(*point_sets: tuple[TrackMapPoint, ...]) -> int:
+    gears = [
+        int(point.gear)
+        for points in point_sets
+        for point in points
+        if point.gear is not None and 0 <= int(point.gear) <= 20
+    ]
+    return max(1, max(gears, default=1))
 
 
 def summarize_track_interval(
@@ -623,6 +649,8 @@ def build_track_telemetry_chart(
     speed_max_kmh: float | None = None,
     axis_start_distance_m: float | None = None,
     axis_end_distance_m: float | None = None,
+    include_gear: bool = False,
+    gear_max: int | None = None,
 ) -> TrackTelemetryChart | None:
     """Fit native channels into three deterministic distance-based chart lanes."""
 
@@ -678,7 +706,13 @@ def build_track_telemetry_chart(
     )
     usable_width = float(width_px - left_px - right_px)
     usable_height = float(height_px - top_px - bottom_px)
-    lane_height = usable_height / 3.0
+    lane_count = 4 if include_gear else 3
+    lane_height = usable_height / float(lane_count)
+    resolved_gear_max = (
+        telemetry_gear_scale(points)
+        if gear_max is None
+        else max(1, int(gear_max))
+    )
 
     def x_for(distance: float) -> float:
         return left_px + (distance - distance_min) / (distance_max - distance_min) * usable_width
@@ -695,13 +729,14 @@ def build_track_telemetry_chart(
             if distance is None or not math.isfinite(distance):
                 continue
             distance = float(distance)
-            if (
-                previous_distance is not None
-                and previous_distance - distance > LAP_DISTANCE_RESET_THRESHOLD_M
-            ):
-                break
-            if previous_distance is not None and distance < previous_distance:
-                continue
+            if previous_distance is not None:
+                backward_jump = previous_distance - distance
+                if backward_jump > LAP_DISTANCE_RESET_THRESHOLD_M:
+                    break
+                if backward_jump > 5.0:
+                    break
+                if backward_jump > 0.0:
+                    continue
             previous_distance = distance
             value = getattr(point, attribute)
             if value is None or not math.isfinite(value):
@@ -715,6 +750,41 @@ def build_track_telemetry_chart(
             result.append((x_for(distance), lane_top + (1.0 - normalized) * lane_height))
         return tuple(result)
 
+    gear_points = ()
+    if include_gear:
+        result = []
+        lane_top = top_px + 3 * lane_height
+        previous_distance = None
+        previous_y = None
+        seen_distances = set()
+        for point in points:
+            distance = point.lap_distance_m
+            if distance is None or not math.isfinite(distance):
+                continue
+            distance = float(distance)
+            if previous_distance is not None:
+                backward_jump = previous_distance - distance
+                if backward_jump > LAP_DISTANCE_RESET_THRESHOLD_M:
+                    break
+                if backward_jump > 5.0:
+                    break
+                if backward_jump > 0.0:
+                    continue
+            previous_distance = distance
+            if distance in seen_distances:
+                continue
+            seen_distances.add(distance)
+            if not requested_start <= distance <= requested_end or point.gear is None:
+                continue
+            gear_value = min(max(int(point.gear), 0), resolved_gear_max)
+            x = x_for(distance)
+            y = lane_top + (1.0 - gear_value / resolved_gear_max) * lane_height
+            if previous_y is not None:
+                result.append((x, previous_y))
+            result.append((x, y))
+            previous_y = y
+        gear_points = tuple(result)
+
     return TrackTelemetryChart(
         speed_max_kmh=speed_max,
         speed=series("speed_kmh", 0, speed_max),
@@ -722,6 +792,8 @@ def build_track_telemetry_chart(
         brake=series("brake_percent", 2, 100.0),
         distance_min_m=distance_min,
         distance_max_m=distance_max,
+        gear=gear_points,
+        gear_max=resolved_gear_max,
     )
 
 

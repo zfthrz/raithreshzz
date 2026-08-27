@@ -67,6 +67,7 @@ from race_engineer_track_map import (
     summarize_track_interval,
     telemetry_chart_x_for_distance,
     telemetry_speed_scale,
+    telemetry_gear_scale,
     transform_fitted_track_points,
     turn_for_number,
     zoom_distance_window,
@@ -2988,6 +2989,24 @@ class RaceEngineerApp:
             textvariable=self.track_reference_lap_var,
             style="Muted.TLabel",
         ).pack(side="left")
+        self.ttk.Label(
+            lap_controls,
+            text="Comparar con:",
+            style="Muted.TLabel",
+        ).pack(side="left", padx=(24, 6))
+        self.track_comparison_var = self.tk.StringVar(value="Referencia sesión")
+        self.track_comparison_selector = self.ttk.Combobox(
+            lap_controls,
+            textvariable=self.track_comparison_var,
+            values=("Referencia sesión", "History H4", "Sin comparación"),
+            state="readonly",
+            width=19,
+        )
+        self.track_comparison_selector.pack(side="left")
+        self.track_comparison_selector.bind(
+            "<<ComboboxSelected>>",
+            self._on_track_comparison_changed,
+        )
 
         self.track_map_zone_status = self.tk.StringVar(
             value="Sin zonas H5.2 para esta sesión."
@@ -3095,6 +3114,9 @@ class RaceEngineerApp:
             self.track_lap_selector.configure(values=(), state="disabled")
             self.track_lap_selector_var.set("—")
             self.track_reference_lap_var.set("Referencia: —")
+
+    def _on_track_comparison_changed(self, _event=None):
+        self._render_track_telemetry_chart()
 
     def _on_track_lap_selected(self, _event=None):
         option = self.track_lap_lookup.get(self.track_lap_selector_var.get())
@@ -4502,10 +4524,11 @@ class RaceEngineerApp:
         throttle = (
             "—" if point.throttle_percent is None else f"{point.throttle_percent:.0f}%"
         )
+        gear = "—" if point.gear is None else ("N" if point.gear == 0 else str(point.gear))
         label = "Telemetría · " if prefix else ""
         return (
             f"{label}{distance} · velocidad {speed} · "
-            f"freno {brake} · acelerador {throttle}"
+            f"freno {brake} · acelerador {throttle} · marcha {gear}"
         )
 
     @staticmethod
@@ -4813,23 +4836,39 @@ class RaceEngineerApp:
             )
             return
 
-        historical = self.current_historical_track_map
+        comparison_mode = (
+            self.track_comparison_var.get()
+            if hasattr(self, "track_comparison_var")
+            else "Referencia sesión"
+        )
         session_reference = self.current_session_reference_track_map
         reference_overlay = (
             session_reference
-            if session_reference is not None
+            if comparison_mode == "Referencia sesión"
+            and session_reference is not None
             and (
                 session_reference.database_path != data.database_path
                 or session_reference.lap != data.lap
             )
             else None
         )
+        historical = (
+            self.current_historical_track_map
+            if comparison_mode == "History H4"
+            else None
+        )
         comparison_points = (
-            tuple(reference_overlay.points) if reference_overlay is not None else ()
-        ) + (
-            tuple(historical.points) if historical is not None else ()
+            tuple(reference_overlay.points)
+            if reference_overlay is not None
+            else tuple(historical.points)
+            if historical is not None
+            else ()
         )
         shared_speed_max = telemetry_speed_scale(
+            data.points,
+            comparison_points,
+        )
+        shared_gear_max = telemetry_gear_scale(
             data.points,
             comparison_points,
         )
@@ -4846,6 +4885,8 @@ class RaceEngineerApp:
             start_distance_m=zoom_start,
             end_distance_m=zoom_end,
             speed_max_kmh=shared_speed_max,
+            include_gear=True,
+            gear_max=shared_gear_max,
         )
         if chart is None:
             canvas.create_text(
@@ -4869,7 +4910,10 @@ class RaceEngineerApp:
                 axis_start_distance_m=chart.distance_min_m,
                 axis_end_distance_m=chart.distance_max_m,
                 speed_max_kmh=shared_speed_max,
-            )
+            
+                include_gear=True,
+                gear_max=shared_gear_max,
+)
 
         historical_chart = None
         if historical is not None:
@@ -4882,10 +4926,13 @@ class RaceEngineerApp:
                 axis_start_distance_m=chart.distance_min_m,
                 axis_end_distance_m=chart.distance_max_m,
                 speed_max_kmh=shared_speed_max,
-            )
+            
+                include_gear=True,
+                gear_max=shared_gear_max,
+)
 
-        lane_height = (height - 24) / 3.0
-        for lane in (1, 2):
+        lane_height = (height - 24) / 4.0
+        for lane in (1, 2, 3):
             y = 12 + lane * lane_height
             canvas.create_line(74, y, width - 18, y, fill="#303030", width=1)
 
@@ -4915,6 +4962,7 @@ class RaceEngineerApp:
             (f"Velocidad\n0–{chart.speed_max_kmh:.0f}", "#55b7e8"),
             ("Acelerador\n0–100%", "#45c98c"),
             ("Freno\n0–100%", "#e45a5a"),
+            (f"Marcha\nN–{chart.gear_max}", "#d5a94f"),
         )
         for lane, (label, color) in enumerate(lane_labels):
             canvas.create_text(
@@ -4931,6 +4979,7 @@ class RaceEngineerApp:
                 (historical_chart.speed, "#7393a3"),
                 (historical_chart.throttle, "#6f9b84"),
                 (historical_chart.brake, "#a06f6f"),
+                (historical_chart.gear, "#9a8a63"),
             ):
                 if len(values) >= 2:
                     coordinates = [
@@ -4949,6 +4998,7 @@ class RaceEngineerApp:
                 (reference_chart.speed, "#8bcbed"),
                 (reference_chart.throttle, "#76d6a8"),
                 (reference_chart.brake, "#ea8b8b"),
+                (reference_chart.gear, "#e0bf68"),
             ):
                 if len(values) >= 2:
                     coordinates = [
@@ -4957,8 +5007,8 @@ class RaceEngineerApp:
                     canvas.create_line(
                         *coordinates,
                         fill=color,
-                        width=2,
-                        dash=(3, 3),
+                        width=1,
+                        dash=(2, 4),
                         joinstyle="round",
                     )
 
@@ -4966,6 +5016,7 @@ class RaceEngineerApp:
             (chart.speed, "#55b7e8"),
             (chart.throttle, "#45c98c"),
             (chart.brake, "#e45a5a"),
+            (chart.gear, "#d5a94f"),
         ):
             if len(values) >= 2:
                 coordinates = [coordinate for point in values for coordinate in point]
@@ -4975,6 +5026,31 @@ class RaceEngineerApp:
                     width=2,
                     joinstyle="round",
                 )
+
+        if reference_chart is not None:
+            reference_legend_x = max(width - 470, 84)
+            canvas.create_line(
+                reference_legend_x,
+                19,
+                reference_legend_x + 28,
+                19,
+                fill="#a9dff5",
+                width=1,
+                dash=(2, 4),
+            )
+            reference_label = (
+                "Referencia de sesión"
+                if session_reference is None
+                else f"Referencia sesión · V{session_reference.lap}"
+            )
+            canvas.create_text(
+                reference_legend_x + 35,
+                19,
+                text=reference_label,
+                fill="#a9dff5",
+                anchor="w",
+                font=("Segoe UI", 8),
+            )
 
         if historical_chart is not None:
             legend_x = max(width - 230, 84)

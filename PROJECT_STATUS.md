@@ -35,6 +35,13 @@ Validated baseline:
   channel (sequence order preserved). Over 27 zones it removes all 8 mixed
   primary channels and converts 8 combined cues into per-channel spatial cues;
   loses ordered sequence context. Hypothesis only, production unchanged.
+- Shadow mixed-cue presentation v0.2 (2026-08-27): the current-state audit covers
+  53 validated debriefs / 156 plan zones and finds 31 combined brake+throttle
+  zones. A naive two-channel split displaces an existing reference action profile
+  in all 31. The conservative comparison keeps the combined sequence in 22 cases
+  and identifies only 9 cases where one channel has uniquely stronger explicit
+  physical-point support while the reference profile can be preserved. This is
+  presentation evidence only; no channel preference, plan or authority changed.
 - Calibration campaign (2026-08-23): 5 new H2 batches ready for human review
   (Imola LMP2_ELMS, Interlagos LMP2_ELMS, Fuji LMP2_ELMS, Sarthe LMP2_WEC,
   Imola HYPER; 24 pairs each). The matcher now has six exact provisional

@@ -549,6 +549,17 @@ visible for traceability.
 
 This is an active product-quality topic, not a settled algorithmic rule.
 
+The read-only mixed-cue presentation audit v0.2 compares the production combined
+sequence against two alternatives without changing the plan. Across 53 current
+validated debriefs it found 31 combined brake+throttle zones. Splitting both channels
+into the two available cue slots would displace a structured reference action profile
+in every case. A channel-neutral, threshold-free comparison based on the strongest
+explicit physical-point `comparison_count` keeps the combined sequence when support
+ties or no profile is available; it identifies 9/31 cases with one uniquely stronger
+channel and preserves the profile there, while 22/31 fail closed to the production
+sequence. These counts do not authorize promotion or a global brake/throttle
+preference.
+
 ---
 
 # 13. LLM layer

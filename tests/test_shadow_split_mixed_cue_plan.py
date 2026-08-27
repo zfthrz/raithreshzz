@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from copy import deepcopy
 from pathlib import Path
 
 import pytest
@@ -9,6 +10,8 @@ from shadow_split_mixed_cue_plan import (
     audit_document,
     build_summary,
     compare_item,
+    compare_presentations,
+    current_validated_debrief_paths,
     split_combined_cues,
 )
 
@@ -52,6 +55,19 @@ def plan_item() -> dict:
         "throttle_release_patterns": [{"status": "SINGLE", "comparison_count": 1}],
         "driver_cues": [combined_cue()],
     }
+
+
+def item_with_profile() -> dict:
+    item = plan_item()
+    item["driver_cues"].append(
+        {
+            "channel": "throttle",
+            "kind": "reference_action_profile",
+            "text": "reaplicá y sostené como en la referencia",
+            "source": "deterministic_reference_action_profile",
+        }
+    )
+    return item
 
 
 def document_with_plan(items: list[dict]) -> dict:
@@ -102,6 +118,61 @@ def test_compare_item_marks_combined_and_reports_channels():
     assert comparison["split_cue_count"] == 2
 
 
+def test_v0_2_prefers_stronger_supported_channel_and_preserves_profile():
+    item = item_with_profile()
+    item["braking_point_patterns"][0]["comparison_count"] = 3
+    item["throttle_release_patterns"][0]["comparison_count"] = 1
+    original = deepcopy(item)
+
+    comparison = compare_presentations(item)
+
+    assert comparison is not None
+    assert comparison["dominant_channel"] == "brake"
+    assert comparison["preferred_shadow_presentation"] == (
+        "supported_channel_plus_profile"
+    )
+    candidate = comparison["candidates"]["supported_channel_plus_profile"]
+    assert candidate["physical_channels_preserved"] == ["brake"]
+    assert candidate["reference_profile_preserved"] is True
+    assert comparison["production_input_mutated"] is False
+    assert item == original
+
+
+def test_v0_2_support_tie_keeps_combined_sequence_fail_closed():
+    item = item_with_profile()
+    item["braking_point_patterns"][0]["comparison_count"] = 2
+    item["throttle_release_patterns"][0]["comparison_count"] = 2
+
+    comparison = compare_presentations(item)
+
+    assert comparison is not None
+    assert comparison["dominant_channel"] is None
+    assert comparison["preferred_shadow_presentation"] == "combined_sequence"
+    assert comparison["preference_reason"] == (
+        "no_unique_stronger_channel_fail_closed"
+    )
+
+
+def test_v0_2_split_reports_profile_displacement_and_sequence_context():
+    comparison = compare_presentations(item_with_profile())
+
+    assert comparison is not None
+    split = comparison["candidates"]["split_channels_with_sequence_context"]
+    assert split["physical_channels_preserved"] == ["throttle", "brake"]
+    assert split["full_sequence_attached_as_context"] is True
+    assert split["reference_profile_preserved"] is False
+
+
+def test_v0_2_does_not_choose_a_channel_without_a_profile():
+    item = plan_item()
+    item["braking_point_patterns"][0]["comparison_count"] = 3
+
+    comparison = compare_presentations(item)
+
+    assert comparison is not None
+    assert comparison["preferred_shadow_presentation"] == "combined_sequence"
+
+
 def test_build_summary_aggregates_counts():
     results = [
         {
@@ -116,6 +187,19 @@ def test_build_summary_aggregates_counts():
     assert summary["combined_cue_zones"] == 1
     assert summary["production_primary_channel_counts"] == {"brake+throttle": 1}
     assert summary["split_primary_channel_counts"] == {"throttle": 1}
+    assert summary["preferred_shadow_presentation_counts"] == {
+        "combined_sequence": 1
+    }
+    assert summary["dominant_channel_counts"] == {"none": 1}
+    assert summary["split_profile_displacement_count"] == 0
+
+
+def test_v0_2_summary_counts_profile_displacement():
+    summary = build_summary(
+        [{"zone_count": 1, "zones": [compare_item(item_with_profile())]}]
+    )
+
+    assert summary["split_profile_displacement_count"] == 1
 
 
 def test_audit_document_requires_plan(tmp_path: Path):
@@ -137,3 +221,36 @@ def test_audit_document_walks_plan(tmp_path: Path):
 
     assert audit["zone_count"] == 1
     assert audit["zones"][0]["plan_label"] == "A"
+
+
+def test_current_runs_resolves_only_validated_current_outputs(tmp_path: Path):
+    output = tmp_path / "debrief.json"
+    output.write_text("{}", encoding="utf-8")
+    valid_run = tmp_path / "valid"
+    valid_run.mkdir()
+    (valid_run / "state.json").write_text(
+        json.dumps(
+            {
+                "stages": {
+                    "llm": {"status": "RUN", "output": str(output)},
+                    "llm_validator": {"status": "REUSED"},
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    invalid_run = tmp_path / "invalid"
+    invalid_run.mkdir()
+    (invalid_run / "state.json").write_text(
+        json.dumps(
+            {
+                "stages": {
+                    "llm": {"status": "RUN", "output": str(output)},
+                    "llm_validator": {"status": "FAILED"},
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    assert current_validated_debrief_paths(tmp_path) == [output.resolve()]

@@ -12,7 +12,11 @@ from extract_lmu_track_gps import (
     lap_metrics,
     repair_lap_distance_boundary_sample,
 )
-from race_engineer_track_map import _complete_lap_metrics, _select_map_lap
+from race_engineer_track_map import (
+    _complete_lap_metrics,
+    _duration_match_available,
+    _select_map_lap,
+)
 
 
 def test_assign_laps_from_boundaries_uses_exact_boundary_as_new_lap():
@@ -136,6 +140,19 @@ def test_select_map_lap_falls_back_deterministically_when_preferred_lap_missing(
         1,
         "AUTOMATIC_COMPLETE_LAP",
     )
+
+
+def test_duration_match_available_supports_conservative_distance_reset_fallback():
+    stale_event_metrics = {0: {"duration_s": 219.85}}
+    distance_reset_metrics = {
+        0: {"duration_s": 131.65},
+        1: {"duration_s": 103.15},
+        2: {"duration_s": 102.45},
+    }
+
+    assert not _duration_match_available(stale_event_metrics, 102.52)
+    assert _duration_match_available(distance_reset_metrics, 102.52)
+    assert not _duration_match_available(distance_reset_metrics, None)
 
 
 def test_choose_default_lap_prefers_the_highest_deterministic_score():

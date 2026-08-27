@@ -286,21 +286,52 @@ def load_track_map(
             channels.get("Gear"), master_times, gps_time_reference
         )
         boundaries = read_lap_event_times(connection, tables)
-        laps = (
+        event_laps = (
             assign_laps_from_boundaries(master_times, boundaries)
             if boundaries
             else detect_laps_from_distance(lap_distance)
         )
-        groups = group_indices_by_lap(laps)
-        if not groups:
+        event_groups = group_indices_by_lap(event_laps)
+        if not event_groups:
             raise ValueError("No se pudieron reconstruir vueltas GPS.")
-        for indices in groups.values():
+        for indices in event_groups.values():
             repair_lap_distance_boundary_sample(indices, lap_distance)
-        metrics = {
+        event_metrics = {
             lap: lap_metrics(indices, latitude, longitude, lap_distance, master_times)
-            for lap, indices in groups.items()
+            for lap, indices in event_groups.items()
         }
-        complete_metrics = _complete_lap_metrics(metrics)
+        complete_event_metrics = _complete_lap_metrics(event_metrics)
+        groups = event_groups
+        metrics = event_metrics
+        complete_metrics = complete_event_metrics
+        grouping_basis = "lap_events" if boundaries else "lap_distance_resets"
+
+        # Some LMU Race recordings expose stale/incomplete Lap.ts boundaries even
+        # though Lap Dist contains valid resets. Only use that fallback when the
+        # event grouping cannot resolve the deterministic requested duration and
+        # the distance grouping can; never substitute an arbitrary automatic lap.
+        if boundaries and preferred_duration_s is not None:
+            distance_groups = group_indices_by_lap(
+                detect_laps_from_distance(lap_distance)
+            )
+            for indices in distance_groups.values():
+                repair_lap_distance_boundary_sample(indices, lap_distance)
+            distance_metrics = {
+                lap: lap_metrics(
+                    indices, latitude, longitude, lap_distance, master_times
+                )
+                for lap, indices in distance_groups.items()
+            }
+            complete_distance_metrics = _complete_lap_metrics(distance_metrics)
+            if _duration_match_available(
+                complete_distance_metrics, preferred_duration_s
+            ) and not _duration_match_available(
+                complete_event_metrics, preferred_duration_s
+            ):
+                groups = distance_groups
+                metrics = distance_metrics
+                complete_metrics = complete_distance_metrics
+                grouping_basis = "lap_distance_resets_fallback"
         if not complete_metrics:
             raise ValueError(
                 "No hay una vuelta GPS geométricamente completa en esta telemetría."
@@ -310,6 +341,8 @@ def load_track_map(
             preferred_lap=preferred_lap,
             preferred_duration_s=preferred_duration_s,
         )
+        if grouping_basis == "lap_distance_resets_fallback":
+            selection_reason += "_DISTANCE_RESET_FALLBACK"
         rows = csv_rows_for_lap(
             groups[selected_lap],
             master_times,
@@ -484,6 +517,21 @@ def _select_map_lap(
     if preferred_lap is not None and preferred_lap in complete_metrics:
         return preferred_lap, "EXACT_GPS_LAP"
     return choose_default_lap(complete_metrics), "AUTOMATIC_COMPLETE_LAP"
+
+
+def _duration_match_available(
+    complete_metrics: dict[int, dict],
+    preferred_duration_s: float | None,
+) -> bool:
+    """Whether an existing complete group matches deterministic lap duration."""
+
+    if not complete_metrics or preferred_duration_s is None or preferred_duration_s <= 0:
+        return False
+    tolerance = max(3.0, preferred_duration_s * 0.05)
+    return any(
+        abs(float(values["duration_s"]) - preferred_duration_s) <= tolerance
+        for values in complete_metrics.values()
+    )
 
 
 def fit_track_points(

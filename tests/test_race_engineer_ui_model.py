@@ -355,6 +355,22 @@ def test_session_change_view_does_not_mutate_core_result(tmp_path: Path, monkeyp
     assert result == before
 
 
+def test_legacy_detail_load_skips_expensive_change_tracking(tmp_path: Path, monkeypatch):
+    make_session(tmp_path, "session")
+    record = discover_sessions(tmp_path / "runs")[0][0]
+    monkeypatch.setattr(
+        "race_engineer_ui_model.build_session_change_view",
+        lambda *args, **kwargs: (_ for _ in ()).throw(
+            AssertionError("change tracking must be deferred")
+        ),
+    )
+
+    detail = load_session_detail(record)
+
+    assert detail.session_change_view["status"] == "UNAVAILABLE"
+    assert detail.session_change_view["reason"] == "session_catalog_not_provided"
+
+
 def test_detail_renders_deterministic_lap_times_and_reference_delta(tmp_path: Path):
     make_session(tmp_path, "session-laps")
     record = discover_sessions(tmp_path / "runs")[0][0]

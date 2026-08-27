@@ -124,6 +124,18 @@ def test_primary_navigation_groups_technical_views_by_user_task():
     assert SECTION_VIEWS["Diagnóstico"] == ("Pipeline", "Ejecución", "Calibración")
 
 
+def test_summary_uses_one_vertical_scroll_container_for_all_blocks():
+    build_source = inspect.getsource(RaceEngineerApp._build_layout)
+    resize_source = inspect.getsource(RaceEngineerApp._on_summary_canvas_configure)
+    content_source = inspect.getsource(RaceEngineerApp._on_summary_content_configure)
+
+    assert "self.summary_canvas = tk.Canvas" in build_source
+    assert "command=self.summary_canvas.yview" in build_source
+    assert "window=summary_content" in build_source
+    assert "width=event.width" in resize_source
+    assert 'scrollregion=self.summary_canvas.bbox("all")' in content_source
+
+
 def test_session_summary_uses_existing_status_and_history_availability_only():
     assert session_summary_values(
         reference_time_s=90.94,
@@ -224,12 +236,18 @@ def test_unavailable_session_change_view_has_no_visual_rows():
     }) == []
 
 
-def test_detail_uses_existing_full_catalog_without_discovery_scan():
+def test_detail_defers_change_tracking_and_reuses_existing_full_catalog():
     source = inspect.getsource(RaceEngineerApp._show_detail)
+    request_source = inspect.getsource(RaceEngineerApp._request_session_change_view)
+    double_click_source = inspect.getsource(RaceEngineerApp._on_session_double_click)
 
-    assert "load_session_detail(record, self.all_sessions)" in source
+    assert "load_session_detail(record)" in source
+    assert "_request_session_change_view(record)" in source
     assert "discover_sessions" not in source
     assert "_render_session_changes(detail.session_change_view)" in source
+    assert "list(self.all_sessions)" in request_source
+    assert "discover_sessions" not in request_source
+    assert "_cancel_session_change_request()" in double_click_source
 
 
 def test_state_files_fingerprint_changes_only_for_run_state_files(tmp_path):

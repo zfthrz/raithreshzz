@@ -1029,6 +1029,24 @@ def build_session_change_view(
     return view
 
 
+def unavailable_session_change_view(
+    reason: str = "session_catalog_not_provided",
+) -> dict[str, Any]:
+    return {
+        "status": "UNAVAILABLE",
+        "reason": reason,
+        "previous_session_key": None,
+        "previous_timestamp_utc": None,
+        "previous_timestamp_label": None,
+        "title": "Cambios vs. última sesión comparable",
+        "change_counts": {},
+        "grouped_changes": [],
+        "observational_only": True,
+        "affects_next_stint_plan": False,
+        "historical_actions_authorized": False,
+    }
+
+
 def load_session_detail(
     record: SessionRecord,
     sessions: list[SessionRecord] | None = None,
@@ -1092,9 +1110,10 @@ def load_session_detail(
         historical_comparison_llm,
         stage_status=stage_status,
     )
-    session_change_view = build_session_change_view(
-        record,
-        sessions if sessions is not None else [record],
+    session_change_view = (
+        build_session_change_view(record, sessions)
+        if sessions is not None
+        else unavailable_session_change_view()
     )
     return SessionDetail(
         record=record,

@@ -26,6 +26,7 @@ from scheduler_queue_actions import defer_blocking_debrief, resume_deferred_debr
 from race_engineer_ui_model import (
     SessionDetail,
     SessionRecord,
+    build_session_change_view,
     discover_sessions,
     filter_sessions,
     format_lap_time,
@@ -383,6 +384,10 @@ class RaceEngineerApp:
         self.track_resolution_hz = 20.0
         self.analysis_queue: queue.Queue[tuple[str, object]] = queue.Queue()
         self.track_map_queue: queue.Queue[tuple[int, str, object]] = queue.Queue()
+        self.session_change_queue: queue.Queue[tuple[int, str, object]] = queue.Queue()
+        self.session_change_token = 0
+        self.session_change_after_id = None
+        self.session_change_cache: dict[str, dict] = {}
         self.track_map_token = 0
         self.track_map_loading = False
         self.current_track_map: TrackMapData | None = None
@@ -1113,11 +1118,43 @@ class RaceEngineerApp:
 
         summary_frame = self.primary_section_frames["Resumen"]
 
-        summary_content = ttk.Frame(
+        self.summary_canvas = tk.Canvas(
             summary_frame,
+            background="#101010",
+            highlightthickness=0,
+            borderwidth=0,
+        )
+        summary_scrollbar = ttk.Scrollbar(
+            summary_frame,
+            orient="vertical",
+            command=self.summary_canvas.yview,
+        )
+        self.summary_canvas.configure(yscrollcommand=summary_scrollbar.set)
+        summary_scrollbar.pack(side="right", fill="y")
+        self.summary_canvas.pack(side="left", fill="both", expand=True)
+
+        summary_content = ttk.Frame(
+            self.summary_canvas,
             style="Workspace.TFrame",
         )
-        summary_content.pack(fill="both", expand=True)
+        self.summary_content = summary_content
+        self.summary_canvas_window = self.summary_canvas.create_window(
+            (0, 0),
+            window=summary_content,
+            anchor="nw",
+        )
+        summary_content.bind(
+            "<Configure>",
+            self._on_summary_content_configure,
+        )
+        self.summary_canvas.bind(
+            "<Configure>",
+            self._on_summary_canvas_configure,
+        )
+        self.summary_canvas.bind(
+            "<MouseWheel>",
+            self._on_summary_mousewheel,
+        )
 
         self.plan_cards_frame = self._build_next_stint_panel(
             summary_content,
@@ -1209,6 +1246,26 @@ class RaceEngineerApp:
                     else "WorkspaceNav.TButton"
                 )
             )
+
+    def _on_summary_content_configure(self, _event=None):
+        self.summary_canvas.configure(
+            scrollregion=self.summary_canvas.bbox("all"),
+        )
+
+    def _on_summary_canvas_configure(self, event):
+        self.summary_canvas.itemconfigure(
+            self.summary_canvas_window,
+            width=event.width,
+        )
+
+    def _on_summary_mousewheel(self, event):
+        if event.delta == 0:
+            return "break"
+        self.summary_canvas.yview_scroll(
+            -3 if event.delta > 0 else 3,
+            "units",
+        )
+        return "break"
 
     def _comparison_tab(self, notebook):
         frame = self.ttk.Frame(notebook, style="Panel.TFrame", padding=5)
@@ -1838,6 +1895,70 @@ class RaceEngineerApp:
                     justify="left",
                 ).pack(anchor="w", padx=(12, 0), pady=(1, 1))
 
+    def _cancel_session_change_request(self):
+        self.session_change_token += 1
+        after_id = self.session_change_after_id
+        self.session_change_after_id = None
+        if after_id is not None:
+            try:
+                self.root.after_cancel(after_id)
+            except Exception:
+                pass
+
+    def _request_session_change_view(self, record):
+        self._cancel_session_change_request()
+        cached = self.session_change_cache.get(record.session_key)
+        if cached is not None:
+            self._render_session_changes(cached)
+            return
+
+        token = self.session_change_token
+        sessions = list(self.all_sessions)
+        self.session_change_after_id = self.root.after(
+            180,
+            lambda: self._start_session_change_worker(
+                token,
+                record,
+                sessions,
+            ),
+        )
+
+    def _start_session_change_worker(self, token, record, sessions):
+        self.session_change_after_id = None
+        if self._closing or token != self.session_change_token:
+            return
+
+        def worker():
+            try:
+                view = build_session_change_view(record, sessions)
+                self.session_change_queue.put((token, record.session_key, view))
+            except Exception as exc:
+                self.session_change_queue.put((token, "error", exc))
+
+        threading.Thread(
+            target=worker,
+            name="race-engineer-session-change",
+            daemon=True,
+        ).start()
+        self.root.after(50, lambda: self._poll_session_change_queue(token))
+
+    def _poll_session_change_queue(self, token):
+        if self._closing or token != self.session_change_token:
+            return
+        try:
+            result_token, session_key, value = self.session_change_queue.get_nowait()
+        except queue.Empty:
+            self.root.after(50, lambda: self._poll_session_change_queue(token))
+            return
+        if result_token != token:
+            self.root.after(0, lambda: self._poll_session_change_queue(token))
+            return
+        if session_key == "error":
+            self._render_session_changes({"status": "UNAVAILABLE"})
+            return
+        self.session_change_cache[session_key] = value
+        self._render_session_changes(value)
+
     def _render_next_stint_cards(self, detail):
         self._hide_plan_inspector()
 
@@ -2343,6 +2464,8 @@ class RaceEngineerApp:
         previous = self.selected_record()
         previous_key = previous.session_key if previous else None
         self.all_sessions, errors = discover_sessions(self.runs_root)
+        self._cancel_session_change_request()
+        self.session_change_cache.clear()
         self.session_read_errors = errors
         self._populate_session_tree(
             errors=errors,
@@ -2673,7 +2796,7 @@ class RaceEngineerApp:
             self._show_detail(record)
 
     def _show_detail(self, record: SessionRecord):
-        detail: SessionDetail = load_session_detail(record, self.all_sessions)
+        detail: SessionDetail = load_session_detail(record)
         self.detail_title.set(f"{record.track} · {format_lap_time(record.reference_time_s)}")
         self.detail_subtitle.set(
             f"{record.vehicle} · {record.valid_lap_count} vueltas válidas · {record.status_detail}"
@@ -2697,6 +2820,7 @@ class RaceEngineerApp:
         self._set_text(self.debrief_text, detail.debrief_markdown, markdown=True)
         self._render_next_stint_cards(detail)
         self._render_session_changes(detail.session_change_view)
+        self._request_session_change_view(record)
         self._set_text(self.laps_text, detail.laps_text)
         self._set_text(self.historical_reference_text, detail.historical_reference_text)
         self._set_comparison_view(
@@ -2717,6 +2841,7 @@ class RaceEngineerApp:
         self.summary_laps_var.set("—")
         self.summary_history_var.set("—")
         self.summary_status_var.set("—")
+        self._cancel_session_change_request()
         self._render_session_changes({"status": "UNAVAILABLE"})
         for widget in (
             self.debrief_text,
@@ -3954,6 +4079,7 @@ class RaceEngineerApp:
     def _on_session_double_click(self, event):
         from tkinter import messagebox
 
+        self._cancel_session_change_request()
         if self.tree.identify_region(event.x, event.y) != "cell":
             return
         row = self.tree.identify_row(event.y)
@@ -4131,6 +4257,7 @@ class RaceEngineerApp:
             )
             return
         self._closing = True
+        self._cancel_session_change_request()
         if self._state_refresh_after_id is not None:
             try:
                 self.root.after_cancel(self._state_refresh_after_id)

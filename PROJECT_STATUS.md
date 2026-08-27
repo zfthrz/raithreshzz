@@ -96,6 +96,12 @@ Validated baseline:
   9) and imported into History (runs 3-4). Orchestrator `h3` stage now reports
   `SKIPPED_NOT_APPLICABLE` with a context-aware reason (calibrated + pattern
   runs / calibrated / uncalibrated). H3 is never forced per session.
+- H3.1 session materialization (2026-08-27):
+  `select_session_persistent_patterns.py` reads the latest exact compatible
+  imported pattern snapshot and emits per-session membership with full H3/H2
+  provenance. Matching is exact stored `session_id + episode_pk` membership;
+  sessions absent from the snapshot fail closed. Output remains observational
+  only and cannot affect coaching, ranking, H4 or H5.
 - Phase J golden set (2026-08-23): `golden_set_semantic_regression.py` +
   `golden_set/golden_set_v0_1.json` with 6 SEED records (Imola, Monza,
   Interlagos, Fuji, Spa, Sarthe). Semantic regression (region, action families,

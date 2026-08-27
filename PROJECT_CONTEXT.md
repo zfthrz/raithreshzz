@@ -746,7 +746,18 @@ expected matcher = 0.3
 
 H3 is derived from a calibrated H2 matcher run. It is **not** forced on every new telemetry session.
 
-Normal `race_engineer.py analyze` therefore currently reports:
+H3.1 adds a per-session observational materialization step through
+`select_session_persistent_patterns.py`. For an exact calibrated
+track/layout/vehicle context with an imported pattern run, it selects only the
+current session's stored `session_id + episode_pk` memberships from the latest
+compatible snapshot. It does not spatially rematch new episodes, add
+tolerances, authorize historical actions, alter `next_stint_plan`, or affect
+ranking. A newer session absent from that snapshot fails closed as
+`NO_PATTERN_MEMBERSHIP` until a future calibrated matcher run includes it.
+
+Normal `race_engineer.py analyze` reports `H3 = RUN` only when H3.1 can
+materialize the latest compatible snapshot. Contexts without an imported run
+remain:
 
 ```text
 H3 = SKIPPED_NOT_APPLICABLE

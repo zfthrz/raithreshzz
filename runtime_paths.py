@@ -79,6 +79,12 @@ def historical_reference_output_path(
     return stage_output_dir(database_path, "h4") / "historical_reference_selection.json"
 
 
+def persistent_pattern_selection_output_path(
+    database_path: str | os.PathLike[str],
+) -> Path:
+    return stage_output_dir(database_path, "h3_1") / "persistent_pattern_selection.json"
+
+
 def dual_reference_output_path(
     database_path: str | os.PathLike[str],
 ) -> Path:

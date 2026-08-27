@@ -96,7 +96,7 @@ def test_h3_calibrated_context_with_pattern_runs(tmp_path: Path):
 
     applicable, reasons = h3_applicability(analysis, db)
 
-    assert applicable is False
+    assert applicable is True
     assert any("1 pattern run" in reason for reason in reasons)
 
 

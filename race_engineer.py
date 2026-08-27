@@ -21,6 +21,7 @@ from runtime_paths import (
     historical_reference_output_path,
     history_db_default_path,
     llm_result_dir,
+    persistent_pattern_selection_output_path,
     run_state_path,
 )
 from cross_session_context import (
@@ -329,13 +330,13 @@ def h3_applicability(
     if calibrated and pattern_runs:
         reasons = [
             f"contexto calibrado con {pattern_runs} pattern run(s) en History; "
-            "H3 no se fuerza por sesión"
+            "H3.1 puede resolver membresía del snapshot"
         ]
     elif calibrated:
         reasons = ["contexto calibrado sin pattern runs H3 importados"]
     else:
         reasons = ["contexto sin calibración H2 para H3"]
-    return False, reasons
+    return bool(calibrated and pattern_runs), reasons
 
 
 def print_stage(name: str, status: str, detail: str | None = None) -> None:
@@ -377,6 +378,7 @@ def analyze_command(args: argparse.Namespace) -> int:
     analyzer = PROJECT_ROOT / "analyze_telemetry.py"
     validator = PROJECT_ROOT / "validate_llm_analysis_output.py"
     history_script = PROJECT_ROOT / "session_history.py"
+    h3_script = PROJECT_ROOT / "select_session_persistent_patterns.py"
     h4_script = PROJECT_ROOT / "select_historical_reference.py"
     h5_script = PROJECT_ROOT / "build_dual_reference_context.py"
     h5_2_script = PROJECT_ROOT / "build_cross_session_comparison.py"
@@ -666,17 +668,61 @@ def analyze_command(args: argparse.Namespace) -> int:
                 f"{result.get('status')} / session_id={current_session_id}",
             )
 
-        # H3 remains a calibration/batch-derived layer, not a mandatory per-session stage.
-        _h3_applicable, h3_reasons = h3_applicability(
-            analysis_json,
-            db_path,
-        )
-        stage_results["h3"] = STATUS_SKIPPED
-        print_stage(
-            "h3",
-            STATUS_SKIPPED,
-            "; ".join(h3_reasons),
-        )
+        # H3.1 materializes exact membership in the latest compatible imported
+        # pattern snapshot. It remains observational and cannot affect coaching.
+        if args.no_historical_context:
+            stage_results["h3"] = STATUS_SKIPPED
+            print_stage("h3", STATUS_SKIPPED, "--no-historical-context")
+        else:
+            h3_applicable, h3_reasons = h3_applicability(analysis_json, db_path)
+            if not h3_applicable:
+                stage_results["h3"] = STATUS_SKIPPED
+                print_stage("h3", STATUS_SKIPPED, "; ".join(h3_reasons))
+            else:
+                h3_output = persistent_pattern_selection_output_path(database)
+                h3_signature = {
+                    "session_id": current_session_id,
+                    "history_db": stat_signature(db_path),
+                    "selector": script_signature(h3_script),
+                }
+                reuse_h3 = (
+                    not args.force
+                    and stage_is_reusable(
+                        state,
+                        "h3",
+                        h3_signature,
+                        required_paths=(h3_output,),
+                    )
+                )
+                if reuse_h3:
+                    stage_results["h3"] = STATUS_REUSED
+                    print_stage("h3", STATUS_REUSED, str(h3_output))
+                else:
+                    try:
+                        run_checked([
+                            sys.executable,
+                            str(h3_script),
+                            str(current_session_id),
+                            "--db",
+                            str(db_path),
+                            "--output",
+                            str(h3_output),
+                        ])
+                    except subprocess.CalledProcessError:
+                        stage_results["h3"] = STATUS_FAILED
+                        print_stage("h3", STATUS_FAILED)
+                        return 1
+                    record_stage(
+                        state,
+                        "h3",
+                        signature=h3_signature,
+                        status=STATUS_RUN,
+                        output=str(h3_output),
+                        details={"h3_sha256": sha256_file(h3_output)},
+                    )
+                    save_state(state_path, state)
+                    stage_results["h3"] = STATUS_RUN
+                    print_stage("h3", STATUS_RUN, str(h3_output))
 
         # ----------------------------------------------------
         # H4 historical reference

@@ -15,6 +15,7 @@ from race_engineer_gui import (
     format_comparison_columns,
     session_status_color,
     session_status_tooltip,
+    session_change_rows,
     session_summary_values,
     state_files_fingerprint,
     status_wraplength,
@@ -148,6 +149,87 @@ def test_session_status_badges_have_explicit_color_and_tooltip():
     assert "Falló en alguna etapa" in session_status_tooltip("FAILED")
     assert "no clasificado" in session_status_tooltip("UNKNOWN")
     assert "scheduler" in session_status_tooltip("HISTORY_READY")
+
+
+def test_available_session_change_view_preserves_model_order_and_labels():
+    view = {
+        "status": "AVAILABLE",
+        "grouped_changes": [{
+            "location_label": "T1 — La Source",
+            "changes": [
+                {
+                    "status": "REPEATED",
+                    "match_basis": "physical_action_atom",
+                    "presentation_label": "frenada más tarde",
+                },
+                {
+                    "status": "NEW",
+                    "match_basis": "physical_action_atom",
+                    "presentation_label": "liberación de freno más temprano",
+                },
+                {
+                    "status": "RESOLVED",
+                    "match_basis": "physical_action_atom",
+                    "presentation_label": "liberación de freno más tarde",
+                },
+                {
+                    "status": "REPEATED",
+                    "match_basis": "reference_action_profile",
+                    "presentation_label": "patrón de acelerador repetido",
+                },
+            ],
+        }],
+    }
+
+    rows = session_change_rows(view)
+
+    assert rows == [{
+        "location_label": "T1 — La Source",
+        "changes": [
+            {
+                "status_label": "Se mantiene",
+                "presentation_label": "frenada más tarde",
+                "structured": False,
+            },
+            {
+                "status_label": "Nuevo",
+                "presentation_label": "liberación de freno más temprano",
+                "structured": False,
+            },
+            {
+                "status_label": "Ya no aparece",
+                "presentation_label": "liberación de freno más tarde",
+                "structured": False,
+            },
+            {
+                "status_label": "Se mantiene",
+                "presentation_label": "patrón de acelerador repetido",
+                "structured": True,
+            },
+        ],
+    }]
+    rendered = " ".join(
+        change["presentation_label"]
+        for change in rows[0]["changes"]
+    )
+    assert "IMPROVED" not in rendered
+    assert "WORSENED" not in rendered
+
+
+def test_unavailable_session_change_view_has_no_visual_rows():
+    assert session_change_rows({
+        "status": "UNAVAILABLE",
+        "reason": "no_previous_compatible_session",
+        "grouped_changes": [{"location_label": "must not render"}],
+    }) == []
+
+
+def test_detail_uses_existing_full_catalog_without_discovery_scan():
+    source = inspect.getsource(RaceEngineerApp._show_detail)
+
+    assert "load_session_detail(record, self.all_sessions)" in source
+    assert "discover_sessions" not in source
+    assert "_render_session_changes(detail.session_change_view)" in source
 
 
 def test_state_files_fingerprint_changes_only_for_run_state_files(tmp_path):

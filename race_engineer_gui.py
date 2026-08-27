@@ -89,6 +89,43 @@ SECTION_VIEWS = {
     "Diagnóstico": ("Pipeline", "Ejecución", "Calibración"),
 }
 
+SESSION_CHANGE_STATUS_LABELS = {
+    "REPEATED": "Se mantiene",
+    "NEW": "Nuevo",
+    "RESOLVED": "Ya no aparece",
+}
+
+
+def session_change_rows(view):
+    if not isinstance(view, dict) or view.get("status") != "AVAILABLE":
+        return []
+
+    rows = []
+    for group in view.get("grouped_changes") or []:
+        if not isinstance(group, dict):
+            continue
+        changes = []
+        for change in group.get("changes") or []:
+            if not isinstance(change, dict):
+                continue
+            label = str(change.get("presentation_label") or "").strip()
+            status_label = SESSION_CHANGE_STATUS_LABELS.get(change.get("status"))
+            if not label or status_label is None:
+                continue
+            changes.append({
+                "status_label": status_label,
+                "presentation_label": label,
+                "structured": change.get("match_basis") != "physical_action_atom",
+            })
+        if changes:
+            rows.append({
+                "location_label": str(
+                    group.get("location_label") or "Ubicación sin etiqueta"
+                ),
+                "changes": changes,
+            })
+    return rows
+
 CALIBRATION_STATUS_COLORS = {
     "CALIBRATED": "#67e5d5",
     "PROVISIONAL": "#f0c674",
@@ -1094,6 +1131,10 @@ class RaceEngineerApp:
             expand=True,
         )
 
+        self.session_change_panel = self._build_session_change_panel(
+            summary_content,
+        )
+
         self.laps_text = self._summary_text_panel(
             summary_content,
             "VUELTAS",
@@ -1101,6 +1142,7 @@ class RaceEngineerApp:
             height=6,
             expand=False,
         )
+        self.laps_panel = self.laps_text.master.master
 
         telemetry_frame = self.primary_section_frames["Telemetría"]
         self.track_map_canvas = self._track_map_tab(
@@ -1722,6 +1764,79 @@ class RaceEngineerApp:
 
         self.plan_cards_host = cards
         return container
+
+    def _build_session_change_panel(self, parent):
+        container = self.ttk.Frame(
+            parent,
+            style="SummaryCard.TFrame",
+            padding=(16, 12),
+        )
+        self.session_change_title_var = self.tk.StringVar(value="")
+        self.ttk.Label(
+            container,
+            textvariable=self.session_change_title_var,
+            style="SummaryTitle.TLabel",
+            wraplength=760,
+            justify="left",
+        ).pack(anchor="w")
+        self.ttk.Label(
+            container,
+            text="Comparación observacional; no cambia el plan de próxima tanda",
+            style="SummarySubtitle.TLabel",
+        ).pack(anchor="w", pady=(2, 10))
+        self.session_change_host = self.ttk.Frame(
+            container,
+            style="SummaryCard.TFrame",
+        )
+        self.session_change_host.pack(fill="x")
+        return container
+
+    def _render_session_changes(self, view):
+        for child in self.session_change_host.winfo_children():
+            child.destroy()
+
+        rows = session_change_rows(view)
+        if not rows:
+            self.session_change_title_var.set("")
+            self.session_change_panel.pack_forget()
+            return
+
+        self.session_change_title_var.set(
+            str(view.get("title") or "Cambios vs. última sesión comparable")
+        )
+        self.session_change_panel.pack(
+            fill="x",
+            pady=(0, 10),
+            before=self.laps_panel,
+        )
+
+        for group_index, group in enumerate(rows):
+            if group_index:
+                self.ttk.Separator(
+                    self.session_change_host,
+                    orient="horizontal",
+                ).pack(fill="x", pady=(8, 8))
+
+            self.ttk.Label(
+                self.session_change_host,
+                text=group["location_label"],
+                style="CardValue.TLabel",
+            ).pack(anchor="w", pady=(0, 3))
+
+            for change in group["changes"]:
+                prefix = change["status_label"]
+                label = change["presentation_label"]
+                self.ttk.Label(
+                    self.session_change_host,
+                    text=f"{prefix} · {label}",
+                    style=(
+                        "Muted.TLabel"
+                        if change["structured"]
+                        else "SummarySubtitle.TLabel"
+                    ),
+                    wraplength=760,
+                    justify="left",
+                ).pack(anchor="w", padx=(12, 0), pady=(1, 1))
 
     def _render_next_stint_cards(self, detail):
         self._hide_plan_inspector()
@@ -2558,7 +2673,7 @@ class RaceEngineerApp:
             self._show_detail(record)
 
     def _show_detail(self, record: SessionRecord):
-        detail: SessionDetail = load_session_detail(record)
+        detail: SessionDetail = load_session_detail(record, self.all_sessions)
         self.detail_title.set(f"{record.track} · {format_lap_time(record.reference_time_s)}")
         self.detail_subtitle.set(
             f"{record.vehicle} · {record.valid_lap_count} vueltas válidas · {record.status_detail}"
@@ -2581,6 +2696,7 @@ class RaceEngineerApp:
         self.summary_status_var.set(status_value)
         self._set_text(self.debrief_text, detail.debrief_markdown, markdown=True)
         self._render_next_stint_cards(detail)
+        self._render_session_changes(detail.session_change_view)
         self._set_text(self.laps_text, detail.laps_text)
         self._set_text(self.historical_reference_text, detail.historical_reference_text)
         self._set_comparison_view(
@@ -2601,6 +2717,7 @@ class RaceEngineerApp:
         self.summary_laps_var.set("—")
         self.summary_history_var.set("—")
         self.summary_status_var.set("—")
+        self._render_session_changes({"status": "UNAVAILABLE"})
         for widget in (
             self.debrief_text,
             self.laps_text,

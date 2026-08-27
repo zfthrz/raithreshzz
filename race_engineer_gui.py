@@ -49,6 +49,7 @@ from race_engineer_track_map import (
     TrackMapTurn,
     TrackTelemetrySummary,
     TrackMapZone,
+    build_historical_telemetry_comparison,
     build_track_telemetry_chart,
     fit_track_points,
     focus_track_canvas_view,
@@ -68,6 +69,8 @@ from race_engineer_track_map import (
     telemetry_chart_x_for_distance,
     telemetry_speed_scale,
     telemetry_gear_scale,
+    historical_telemetry_sample_at_distance,
+    historical_telemetry_uncovered_ranges,
     transform_fitted_track_points,
     turn_for_number,
     zoom_distance_window,
@@ -77,7 +80,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.36"
+GUI_VERSION = "1.37"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 STATE_REFRESH_INTERVAL_MS = 5_000
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -162,7 +165,7 @@ def session_change_rows(view):
     return rows
 
 CALIBRATION_STATUS_COLORS = {
-    "CALIBRATED": "#67e5d5",
+    "CALIBRATED": "#00FFA6",
     "PROVISIONAL": "#f0c674",
     "NO_CALIBRATION": "#9aa5ad",
     "LEGACY": "#9aa5ad",
@@ -349,7 +352,7 @@ def session_summary_values(
 
 
 SESSION_STATUS_COLORS = {
-    "DEBRIEF_READY": "#67e5d5",
+    "DEBRIEF_READY": "#00FFA6",
     "DEBRIEF_UNVALIDATED": "#d2b36e",
     "HISTORY_READY": "#f0c674",
     "ANALYZED": "#7fb3e3",
@@ -648,7 +651,7 @@ class RaceEngineerApp:
         style.configure(
             "H53Ready.TLabel",
             background="#1c1c1c",
-            foreground="#67e5d5",
+            foreground="#00FFA6",
             font=("Segoe UI Semibold", 9),
         )
         style.configure(
@@ -684,12 +687,12 @@ class RaceEngineerApp:
             "Accent.TButton",
             font=("Segoe UI Semibold", 10),
             foreground="#061014",
-            background="#45d4c2",
+            background="#00FFA6",
             padding=(12, 7),
         )
         style.map(
             "Accent.TButton",
-            background=[("pressed", "#2aa999"), ("active", "#67e5d5"), ("disabled", "#31504f")],
+            background=[("pressed", "#2aa999"), ("active", "#00FFA6"), ("disabled", "#31504f")],
             foreground=[("disabled", "#809390")],
         )
         style.configure(
@@ -714,7 +717,7 @@ class RaceEngineerApp:
             "TCheckbutton",
             background=[("active", "#101010")],
             foreground=[("disabled", "#666f77")],
-            indicatorcolor=[("selected", "#45d4c2"), ("!selected", "#30363c")],
+            indicatorcolor=[("selected", "#00FFA6"), ("!selected", "#30363c")],
         )
         style.configure(
             "TButton",
@@ -722,7 +725,7 @@ class RaceEngineerApp:
             foreground="#dce7ef",
             borderwidth=0,
             focusthickness=1,
-            focuscolor="#45d4c2",
+            focuscolor="#00FFA6",
             padding=(10, 7),
             relief="flat",
             font=("Segoe UI", 10),
@@ -739,13 +742,13 @@ class RaceEngineerApp:
             bordercolor="#343b42",
             lightcolor="#343b42",
             darkcolor="#343b42",
-            insertcolor="#55decf",
+            insertcolor="#00FFA6",
             padding=(8, 7),
             relief="flat",
         )
         style.map(
             "TEntry",
-            bordercolor=[("focus", "#45d4c2"), ("disabled", "#252a2f")],
+            bordercolor=[("focus", "#00FFA6"), ("disabled", "#252a2f")],
             fieldbackground=[("disabled", "#202327")],
             foreground=[("disabled", "#69747d")],
         )
@@ -767,8 +770,8 @@ class RaceEngineerApp:
             fieldbackground=[("readonly", "#15181c"), ("disabled", "#202327")],
             background=[("active", "#343b42"), ("readonly", "#252a2f"), ("disabled", "#202327")],
             foreground=[("readonly", "#e4edf3"), ("disabled", "#69747d")],
-            arrowcolor=[("active", "#55decf"), ("disabled", "#69747d")],
-            bordercolor=[("focus", "#45d4c2")],
+            arrowcolor=[("active", "#00FFA6"), ("disabled", "#69747d")],
+            bordercolor=[("focus", "#00FFA6")],
         )
         scrollbar_options = {
             "background": "#39434b",
@@ -785,7 +788,7 @@ class RaceEngineerApp:
             style.configure(scrollbar_style, **scrollbar_options)
             style.map(
                 scrollbar_style,
-                background=[("pressed", "#55decf"), ("active", "#53616b")],
+                background=[("pressed", "#00FFA6"), ("active", "#53616b")],
                 arrowcolor=[("active", "#e4edf3")],
             )
         style.configure(
@@ -815,7 +818,7 @@ class RaceEngineerApp:
         style.map(
             "Treeview.Heading",
             background=[("active", "#343b42")],
-            foreground=[("active", "#55decf")],
+            foreground=[("active", "#00FFA6")],
         )
         style.configure(
             "Inspector.TFrame",
@@ -863,7 +866,7 @@ class RaceEngineerApp:
         style.configure(
             "PriorityIndex.TLabel",
             background="#172421",
-            foreground="#67e5d5",
+            foreground="#00FFA6",
             font=("Segoe UI Semibold", 10),
         )
         style.configure(
@@ -903,7 +906,7 @@ class RaceEngineerApp:
         style.configure(
             "SummaryTitle.TLabel",
             background="#141c23",
-            foreground="#67e5d5",
+            foreground="#00FFA6",
             font=("Segoe UI Semibold", 11),
         )
         style.configure(
@@ -915,7 +918,7 @@ class RaceEngineerApp:
         style.configure(
             "SummaryAccentTitle.TLabel",
             background="#14211f",
-            foreground="#67e5d5",
+            foreground="#00FFA6",
             font=("Segoe UI Semibold", 11),
         )
         style.configure(
@@ -956,7 +959,7 @@ class RaceEngineerApp:
         style.configure(
             "WorkspaceNavActive.TButton",
             background="#123138",
-            foreground="#55decf",
+            foreground="#00FFA6",
             borderwidth=0,
             relief="flat",
             padding=(14, 8),
@@ -970,7 +973,7 @@ class RaceEngineerApp:
                 ("pressed", "#2b3a40"),
             ],
             foreground=[
-                ("active", "#67e5d5"),
+                ("active", "#00FFA6"),
             ],
         )
 
@@ -993,7 +996,7 @@ class RaceEngineerApp:
         style.configure(
             "SidebarStatus.TLabel",
             background="#071018",
-            foreground="#67e5d5",
+            foreground="#00FFA6",
             font=("Segoe UI Semibold", 8),
         )
         style.configure(
@@ -1020,7 +1023,7 @@ class RaceEngineerApp:
         style.configure(
             "SidebarNavActive.TButton",
             background="#0a3338",
-            foreground="#67e5d5",
+            foreground="#00FFA6",
             borderwidth=0,
             relief="flat",
             padding=(12, 10),
@@ -1052,7 +1055,7 @@ class RaceEngineerApp:
         style.configure(
             "Link.TButton",
             background="#151d24",
-            foreground="#67e5d5",
+            foreground="#00FFA6",
             borderwidth=0,
             relief="flat",
             padding=(4, 3),
@@ -1078,15 +1081,15 @@ class RaceEngineerApp:
         style.map(
             "TNotebook.Tab",
             background=[("selected", "#22282e"), ("active", "#2c363b"), ("disabled", "#202327")],
-            foreground=[("selected", "#55decf"), ("active", "#e4edf3"), ("disabled", "#69747d")],
+            foreground=[("selected", "#00FFA6"), ("active", "#e4edf3"), ("disabled", "#69747d")],
         )
         style.configure(
             "Horizontal.TProgressbar",
-            background="#45d4c2",
+            background="#00FFA6",
             troughcolor="#252a2f",
             bordercolor="#252a2f",
-            lightcolor="#45d4c2",
-            darkcolor="#45d4c2",
+            lightcolor="#00FFA6",
+            darkcolor="#00FFA6",
             borderwidth=0,
             thickness=5,
         )
@@ -1308,7 +1311,7 @@ class RaceEngineerApp:
             wrap="word",
             background="#11171a",
             foreground="#cbd8df",
-            insertbackground="#55decf",
+            insertbackground="#00FFA6",
             relief="flat",
             borderwidth=0,
             highlightthickness=0,
@@ -1321,7 +1324,7 @@ class RaceEngineerApp:
         self.inspector_text.tag_configure(
             "section",
             font=("Segoe UI Semibold", 9),
-            foreground="#67e5d5",
+            foreground="#00FFA6",
             spacing1=10,
             spacing3=4,
         )
@@ -1651,7 +1654,7 @@ class RaceEngineerApp:
             coords = [coordinate for point in fitted for coordinate in point]
             map_canvas.create_line(
                 *coords,
-                fill="#55decf",
+                fill="#00FFA6",
                 width=3,
                 smooth=True,
                 capstyle="round",
@@ -2744,7 +2747,7 @@ class RaceEngineerApp:
             height=height,
             background="#141c23" if not accent else "#14211f",
             foreground="#dce7ef",
-            insertbackground="#55decf",
+            insertbackground="#00FFA6",
             selectbackground="#315b60",
             selectforeground="#f4fbff",
             relief="flat",
@@ -2766,7 +2769,7 @@ class RaceEngineerApp:
         text.tag_configure(
             "h2",
             font=("Segoe UI Semibold", 12 if compact else 14),
-            foreground="#55decf",
+            foreground="#00FFA6",
             spacing1=9 if compact else 12,
             spacing3=5 if compact else 7,
         )
@@ -2804,7 +2807,7 @@ class RaceEngineerApp:
             wrap="word",
             background="#15181c",
             foreground="#dce7ef",
-            insertbackground="#55decf",
+            insertbackground="#00FFA6",
             selectbackground="#315b60",
             selectforeground="#f4fbff",
             relief="flat",
@@ -2817,7 +2820,7 @@ class RaceEngineerApp:
             spacing3=4,
         )
         text.tag_configure("h1", font=("Segoe UI Semibold", 18), foreground="#f2f7fb", spacing3=12)
-        text.tag_configure("h2", font=("Segoe UI Semibold", 14), foreground="#55decf", spacing1=12, spacing3=7)
+        text.tag_configure("h2", font=("Segoe UI Semibold", 14), foreground="#00FFA6", spacing1=12, spacing3=7)
         text.tag_configure("h3", font=("Segoe UI Semibold", 11), foreground="#f2f7fb", spacing1=8)
         text.tag_configure("bullet", lmargin1=18, lmargin2=32)
         scrollbar = self.ttk.Scrollbar(frame, orient="vertical", command=text.yview)
@@ -3234,7 +3237,7 @@ class RaceEngineerApp:
             wrap="word",
             background="#141c23",
             foreground="#dce7ef",
-            insertbackground="#55decf",
+            insertbackground="#00FFA6",
             relief="flat",
             borderwidth=0,
             highlightthickness=0,
@@ -3245,7 +3248,7 @@ class RaceEngineerApp:
             spacing3=4,
         )
         text.tag_configure("h1", font=("Segoe UI Semibold", 18), foreground="#f2f7fb", spacing3=12)
-        text.tag_configure("h2", font=("Segoe UI Semibold", 14), foreground="#55decf", spacing1=12, spacing3=7)
+        text.tag_configure("h2", font=("Segoe UI Semibold", 14), foreground="#00FFA6", spacing1=12, spacing3=7)
         text.tag_configure("h3", font=("Segoe UI Semibold", 11), foreground="#f2f7fb", spacing1=8)
         text.tag_configure("bullet", lmargin1=18, lmargin2=32)
         scrollbar = self.ttk.Scrollbar(frame, orient="vertical", command=text.yview)
@@ -4864,6 +4867,11 @@ class RaceEngineerApp:
             if historical is not None
             else ()
         )
+        telemetry_comparison = (
+            build_historical_telemetry_comparison(data.points, comparison_points)
+            if comparison_points
+            else None
+        )
         shared_speed_max = telemetry_speed_scale(
             data.points,
             comparison_points,
@@ -4930,6 +4938,28 @@ class RaceEngineerApp:
                 include_gear=True,
                 gear_max=shared_gear_max,
 )
+
+        if telemetry_comparison is not None:
+            for uncovered_start, uncovered_end in historical_telemetry_uncovered_ranges(
+                telemetry_comparison,
+                axis_start_distance_m=chart.distance_min_m,
+                axis_end_distance_m=chart.distance_max_m,
+            ):
+                start_x = telemetry_chart_x_for_distance(
+                    chart, uncovered_start, width_px=width
+                )
+                end_x = telemetry_chart_x_for_distance(
+                    chart, uncovered_end, width_px=width
+                )
+                canvas.create_rectangle(
+                    start_x,
+                    12,
+                    end_x,
+                    height - 12,
+                    fill="#171717",
+                    outline="",
+                    stipple="gray50",
+                )
 
         lane_height = (height - 24) / 4.0
         for lane in (1, 2, 3):
@@ -5066,7 +5096,14 @@ class RaceEngineerApp:
             canvas.create_text(
                 legend_x + 35,
                 19,
-                text=self.current_historical_track_label or "Referencia histórica H4",
+                text=(
+                    self.current_historical_track_label or "Referencia histórica H4"
+                )
+                + (
+                    f" · cobertura {telemetry_comparison.current_coverage_ratio:.0%}"
+                    if telemetry_comparison is not None
+                    else ""
+                ),
                 fill="#9aabb5",
                 anchor="w",
                 font=("Segoe UI", 8),
@@ -5091,6 +5128,23 @@ class RaceEngineerApp:
                     fill="#f2f7fb",
                     width=2,
                 )
+                if telemetry_comparison is not None:
+                    aligned_sample = historical_telemetry_sample_at_distance(
+                        telemetry_comparison,
+                        float(point.lap_distance_m),
+                    )
+                    if (
+                        aligned_sample is not None
+                        and aligned_sample.accumulated_delta_s is not None
+                    ):
+                        canvas.create_text(
+                            min(marker_x + 8, width - 10),
+                            12 + 2.5 * lane_height,
+                            text=f"Delta {aligned_sample.accumulated_delta_s:+.3f} s",
+                            fill="#00FFA6",
+                            anchor="e" if marker_x > width * 0.75 else "w",
+                            font=("Segoe UI", 8, "bold"),
+                        )
 
     def _track_distance_bounds(self) -> tuple[float, float] | None:
         data = self.current_track_map

@@ -14,6 +14,8 @@ from race_engineer_track_map import (
     build_track_telemetry_chart,
     fit_track_points,
     focus_track_canvas_view,
+    historical_telemetry_sample_at_distance,
+    historical_telemetry_uncovered_ranges,
     transform_fitted_track_points,
     list_track_map_laps,
     load_track_map,
@@ -935,3 +937,42 @@ def test_historical_comparison_fails_closed_without_common_distance():
 
     assert comparison.status == "NO_COMMON_COVERAGE"
     assert comparison.samples == ()
+
+
+def test_historical_overlay_reports_only_visible_uncovered_ranges():
+    current = tuple(
+        TrackMapPoint(0.0, 0.0, distance, 180.0)
+        for distance in (0.0, 50.0, 100.0, 150.0, 200.0)
+    )
+    reference = (
+        TrackMapPoint(0.0, 0.0, 50.0, 200.0),
+        TrackMapPoint(0.0, 0.0, 150.0, 200.0),
+    )
+    comparison = build_historical_telemetry_comparison(current, reference)
+
+    assert historical_telemetry_uncovered_ranges(
+        comparison,
+        axis_start_distance_m=25.0,
+        axis_end_distance_m=175.0,
+    ) == ((25.0, 50.0), (150.0, 175.0))
+    assert historical_telemetry_uncovered_ranges(
+        comparison,
+        axis_start_distance_m=75.0,
+        axis_end_distance_m=125.0,
+    ) == ()
+
+
+def test_historical_overlay_nearest_sample_fails_closed_outside_coverage():
+    current = tuple(
+        TrackMapPoint(0.0, 0.0, distance, 180.0)
+        for distance in (0.0, 50.0, 100.0, 150.0)
+    )
+    reference = (
+        TrackMapPoint(0.0, 0.0, 50.0, 200.0),
+        TrackMapPoint(0.0, 0.0, 150.0, 200.0),
+    )
+    comparison = build_historical_telemetry_comparison(current, reference)
+
+    assert historical_telemetry_sample_at_distance(comparison, 49.0) is None
+    assert historical_telemetry_sample_at_distance(comparison, 151.0) is None
+    assert historical_telemetry_sample_at_distance(comparison, 112.0).distance_m == 100.0

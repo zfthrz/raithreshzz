@@ -82,7 +82,7 @@ def test_gui_applies_sidebar_dashboard_chrome_without_opening_window():
     assert style.configurations["App.TFrame"]["background"] == "#0b1116"
     assert style.configurations["Panel.TFrame"]["background"] == "#111820"
     assert style.configurations["Sidebar.TFrame"]["background"] == "#071018"
-    assert style.configurations["SidebarNavActive.TButton"]["foreground"] == "#67e5d5"
+    assert style.configurations["SidebarNavActive.TButton"]["foreground"] == "#00FFA6"
     assert style.configurations["WorkspaceTitle.TLabel"]["font"] == ("Segoe UI Semibold", 17)
     assert style.theme == "clam"
     assert style.configurations["TEntry"]["fieldbackground"] == "#15181c"
@@ -95,11 +95,11 @@ def test_gui_applies_sidebar_dashboard_chrome_without_opening_window():
     assert style.configurations["Treeview.Heading"]["relief"] == "flat"
     assert style.configurations["Treeview.Heading"]["foreground"] == "#9fb3c8"
     assert style.configurations["Horizontal.TProgressbar"]["thickness"] == 5
-    assert style.configurations["H53Ready.TLabel"]["foreground"] == "#67e5d5"
+    assert style.configurations["H53Ready.TLabel"]["foreground"] == "#00FFA6"
     assert style.configurations["H53Pending.TLabel"]["foreground"] == "#f0c674"
     assert style.configurations["H53Error.TLabel"]["foreground"] == "#ff7b72"
     assert ("selected", "#315b60") in style.maps["Treeview"]["background"]
-    assert ("selected", "#55decf") in style.maps["TNotebook.Tab"]["foreground"]
+    assert ("selected", "#00FFA6") in style.maps["TNotebook.Tab"]["foreground"]
     assert ("selected", "#22282e") in style.maps["TNotebook.Tab"]["background"]
     assert app.root.options["*TCombobox*Listbox.background"] == "#15181c"
 
@@ -175,7 +175,7 @@ def test_session_summary_uses_existing_status_and_history_availability_only():
 
 
 def test_session_status_badges_have_explicit_color_and_tooltip():
-    assert session_status_color("DEBRIEF_READY") == "#67e5d5"
+    assert session_status_color("DEBRIEF_READY") == "#00FFA6"
     assert session_status_color("FAILED") == "#ff7b72"
     assert session_status_color("UNKNOWN") == "#9aa5ad"
     assert "Debrief validado" in session_status_tooltip("DEBRIEF_READY")

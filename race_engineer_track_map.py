@@ -813,6 +813,50 @@ def build_historical_telemetry_comparison(
     )
 
 
+def historical_telemetry_uncovered_ranges(
+    comparison: HistoricalTelemetryComparison,
+    *,
+    axis_start_distance_m: float,
+    axis_end_distance_m: float,
+) -> tuple[tuple[float, float], ...]:
+    """Return visible axis intervals lacking historical telemetry coverage."""
+
+    if axis_end_distance_m <= axis_start_distance_m:
+        return ()
+    common_start = comparison.common_start_distance_m
+    common_end = comparison.common_end_distance_m
+    if common_start is None or common_end is None:
+        return ((axis_start_distance_m, axis_end_distance_m),)
+    visible_start = max(axis_start_distance_m, common_start)
+    visible_end = min(axis_end_distance_m, common_end)
+    if visible_end <= visible_start:
+        return ((axis_start_distance_m, axis_end_distance_m),)
+    ranges = []
+    if axis_start_distance_m < visible_start:
+        ranges.append((axis_start_distance_m, visible_start))
+    if visible_end < axis_end_distance_m:
+        ranges.append((visible_end, axis_end_distance_m))
+    return tuple(ranges)
+
+
+def historical_telemetry_sample_at_distance(
+    comparison: HistoricalTelemetryComparison,
+    distance_m: float,
+) -> AlignedTelemetrySample | None:
+    """Return the closest aligned sample, but never outside common coverage."""
+
+    if (
+        comparison.common_start_distance_m is None
+        or comparison.common_end_distance_m is None
+        or not comparison.common_start_distance_m
+        <= distance_m
+        <= comparison.common_end_distance_m
+        or not comparison.samples
+    ):
+        return None
+    return min(comparison.samples, key=lambda sample: abs(sample.distance_m - distance_m))
+
+
 def build_track_telemetry_chart(
     points: tuple[TrackMapPoint, ...],
     *,

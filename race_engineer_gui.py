@@ -43,6 +43,7 @@ from race_engineer_ui_analysis import (
 )
 from race_engineer_track_map import (
     TrackMapData,
+    TrackMapLapOption,
     TrackMapPriority,
     TrackMapPoint,
     TrackMapTurn,
@@ -52,6 +53,7 @@ from race_engineer_track_map import (
     fit_track_points,
     focus_track_canvas_view,
     load_track_map,
+    list_track_map_laps,
     load_track_profile,
     load_track_priorities,
     load_track_zones,
@@ -553,6 +555,11 @@ class RaceEngineerApp:
         self.track_map_token = 0
         self.track_map_loading = False
         self.current_track_map: TrackMapData | None = None
+        self.current_session_reference_track_map: TrackMapData | None = None
+        self.current_track_lap_options: tuple[TrackMapLapOption, ...] = ()
+        self.track_lap_lookup: dict[str, TrackMapLapOption] = {}
+        self.current_track_record: SessionRecord | None = None
+        self.manual_track_map_loading = False
         self.current_historical_track_map: TrackMapData | None = None
         self.current_historical_track_label = ""
         self.historical_track_map_loading = False
@@ -2956,6 +2963,32 @@ class RaceEngineerApp:
             "<<ComboboxSelected>>",
             self._on_track_resolution_changed,
         )
+        lap_controls = self.ttk.Frame(channels_panel, style="Panel.TFrame")
+        lap_controls.pack(fill="x", padx=8, pady=(8, 2))
+        self.ttk.Label(
+            lap_controls,
+            text="Vuelta mostrada:",
+            style="Muted.TLabel",
+        ).pack(side="left")
+        self.track_lap_selector_var = self.tk.StringVar(value="—")
+        self.track_lap_selector = self.ttk.Combobox(
+            lap_controls,
+            textvariable=self.track_lap_selector_var,
+            state="disabled",
+            width=20,
+        )
+        self.track_lap_selector.pack(side="left", padx=(8, 16))
+        self.track_lap_selector.bind(
+            "<<ComboboxSelected>>",
+            self._on_track_lap_selected,
+        )
+        self.track_reference_lap_var = self.tk.StringVar(value="Referencia: —")
+        self.ttk.Label(
+            lap_controls,
+            textvariable=self.track_reference_lap_var,
+            style="Muted.TLabel",
+        ).pack(side="left")
+
         self.track_map_zone_status = self.tk.StringVar(
             value="Sin zonas H5.2 para esta sesión."
         )
@@ -3011,6 +3044,154 @@ class RaceEngineerApp:
         )
         self.telemetry_zoom_reset_button.pack(side="right")
         return canvas
+
+    def _set_track_lap_options(
+        self,
+        options: tuple[TrackMapLapOption, ...],
+        *,
+        reference_lap: int | None,
+        selected_lap: int | None = None,
+    ) -> None:
+        self.current_track_lap_options = tuple(options)
+        self.track_lap_lookup = {
+            f"V{option.lap} · {format_lap_time(option.duration_s)}": option
+            for option in options
+        }
+        values = tuple(self.track_lap_lookup)
+        self.track_lap_selector.configure(
+            values=values,
+            state="readonly" if values else "disabled",
+        )
+        target_lap = selected_lap if selected_lap is not None else reference_lap
+        selected_label = next(
+            (
+                label
+                for label, option in self.track_lap_lookup.items()
+                if option.lap == target_lap
+            ),
+            values[0] if values else "—",
+        )
+        self.track_lap_selector_var.set(selected_label)
+        reference_option = next(
+            (option for option in options if option.lap == reference_lap),
+            None,
+        )
+        if reference_option is None:
+            self.track_reference_lap_var.set(
+                f"Referencia: V{reference_lap}"
+                if reference_lap is not None
+                else "Referencia: —"
+            )
+        else:
+            self.track_reference_lap_var.set(
+                f"Referencia: V{reference_option.lap} · "
+                f"{format_lap_time(reference_option.duration_s)}"
+            )
+
+    def _clear_track_lap_options(self) -> None:
+        self.current_track_lap_options = ()
+        self.track_lap_lookup = {}
+        if hasattr(self, "track_lap_selector"):
+            self.track_lap_selector.configure(values=(), state="disabled")
+            self.track_lap_selector_var.set("—")
+            self.track_reference_lap_var.set("Referencia: —")
+
+    def _on_track_lap_selected(self, _event=None):
+        option = self.track_lap_lookup.get(self.track_lap_selector_var.get())
+        record = self.current_track_record
+        reference = self.current_session_reference_track_map
+        if option is None or record is None or record.database_path is None:
+            return
+        reference_lap = (
+            None
+            if reference is None
+            else (reference.requested_lap or reference.lap)
+        )
+        if reference is not None and option.lap == reference_lap:
+            self.manual_track_map_loading = False
+            self.current_track_map = reference
+            self.selected_track_point_index = None
+            self.telemetry_zoom_range = None
+            self.track_map_zoom_scale = 1.0
+            self.track_map_zoom_offset = (0.0, 0.0)
+            self._set_telemetry_zoom_status()
+            self._set_track_map_zoom_status()
+            self.track_map_status.set(
+                self._track_map_status_text(
+                    reference,
+                    resolution_hz=self.track_resolution_hz,
+                )
+            )
+            self._render_track_map()
+            return
+        self._start_manual_track_lap_request(record, option)
+
+    def _start_manual_track_lap_request(
+        self,
+        record: SessionRecord,
+        option: TrackMapLapOption,
+    ) -> None:
+        database = record.database_path
+        if database is None:
+            return
+        try:
+            resolved = database.expanduser().resolve()
+            modified_ns = resolved.stat().st_mtime_ns
+        except OSError:
+            return
+        token = self.track_map_token
+        cache_key = (
+            str(resolved),
+            modified_ns,
+            option.lap,
+            None,
+            self.track_resolution_hz,
+        )
+        cached = self.track_map_cache.get(cache_key)
+        if cached is not None:
+            self.current_track_map = cached
+            self.manual_track_map_loading = False
+            self.selected_track_point_index = None
+            self.telemetry_zoom_range = None
+            self.track_map_zoom_scale = 1.0
+            self.track_map_zoom_offset = (0.0, 0.0)
+            self._set_telemetry_zoom_status()
+            self._set_track_map_zoom_status()
+            self.track_map_status.set(
+                f"Vuelta seleccionada V{option.lap} · "
+                f"{format_lap_time(cached.duration_s)} · "
+                f"{self.track_resolution_hz:.0f} Hz"
+            )
+            self._render_track_map()
+            return
+
+        self.manual_track_map_loading = True
+        self.track_map_status.set(
+            f"Cargando vuelta V{option.lap} para comparar con la referencia…"
+        )
+
+        def worker():
+            try:
+                data = load_track_map(
+                    resolved,
+                    preferred_lap=option.lap,
+                    preferred_duration_s=None,
+                    target_hz=self.track_resolution_hz,
+                )
+                self.track_map_queue.put(
+                    (token, "manual_lap_done", (cache_key, data, option))
+                )
+            except Exception as exc:
+                self.track_map_queue.put(
+                    (token, "manual_lap_error", f"{type(exc).__name__}: {exc}")
+                )
+
+        threading.Thread(
+            target=worker,
+            name="race-engineer-manual-track-lap",
+            daemon=True,
+        ).start()
+        self.root.after(100, self._poll_track_map_queue)
 
     def _on_track_detail_resize(self, event):
         wraplength = status_wraplength(event.width)
@@ -3499,6 +3680,10 @@ class RaceEngineerApp:
         self.track_map_token += 1
         self.track_map_loading = False
         self.current_track_map = None
+        self.current_session_reference_track_map = None
+        self.current_track_record = None
+        self.manual_track_map_loading = False
+        self._clear_track_lap_options()
         self.current_historical_track_map = None
         self.current_historical_track_label = ""
         self.historical_track_map_loading = False
@@ -3595,6 +3780,10 @@ class RaceEngineerApp:
         token = self.track_map_token
         self.track_map_loading = False
         self.current_track_map = None
+        self.current_session_reference_track_map = None
+        self.current_track_record = record
+        self.manual_track_map_loading = False
+        self._clear_track_lap_options()
         self.current_historical_track_map = None
         self.current_historical_track_label = ""
         self.historical_track_map_loading = False
@@ -3652,6 +3841,24 @@ class RaceEngineerApp:
         cached = self.track_map_cache.get(cache_key)
         if cached is not None:
             self.current_track_map = cached
+            self.current_session_reference_track_map = cached
+            try:
+                lap_options = list_track_map_laps(
+                    resolved,
+                    target_hz=self.track_resolution_hz,
+                )
+            except (OSError, ValueError):
+                lap_options = (
+                    TrackMapLapOption(
+                        lap=int(cached.requested_lap or cached.lap),
+                        duration_s=float(cached.duration_s),
+                    ),
+                )
+            self._set_track_lap_options(
+                lap_options,
+                reference_lap=record.reference_lap,
+                selected_lap=record.reference_lap,
+            )
             layer_errors = []
             try:
                 self.current_track_profile = load_track_profile(
@@ -3703,6 +3910,10 @@ class RaceEngineerApp:
                     preferred_duration_s=record.reference_time_s,
                     target_hz=self.track_resolution_hz,
                 )
+                lap_options = list_track_map_laps(
+                    resolved,
+                    target_hz=self.track_resolution_hz,
+                )
                 try:
                     zones = load_track_zones(record.cross_session_path)
                     layer_errors = []
@@ -3730,7 +3941,15 @@ class RaceEngineerApp:
                     (
                         token,
                         "done",
-                        (cache_key, data, zones, priorities, profile, tuple(layer_errors)),
+                        (
+                            cache_key,
+                            data,
+                            zones,
+                            priorities,
+                            profile,
+                            tuple(layer_errors),
+                            lap_options,
+                        ),
                     )
                 )
             except Exception as exc:
@@ -3764,12 +3983,52 @@ class RaceEngineerApp:
                 self.current_historical_track_map = None
                 self.current_historical_track_label = ""
                 continue
+            if kind == "manual_lap_done":
+                cache_key, selected_data, option = value
+                self.manual_track_map_loading = False
+                self.track_map_cache[cache_key] = selected_data
+                self.current_track_map = selected_data
+                self.selected_track_point_index = None
+                self.telemetry_zoom_range = None
+                self.track_map_zoom_scale = 1.0
+                self.track_map_zoom_offset = (0.0, 0.0)
+                self._set_telemetry_zoom_status()
+                self._set_track_map_zoom_status()
+                self.track_map_status.set(
+                    f"Vuelta seleccionada V{option.lap} · "
+                    f"{format_lap_time(selected_data.duration_s)} · "
+                    f"{self.track_resolution_hz:.0f} Hz"
+                )
+                self._render_track_map()
+                continue
+            if kind == "manual_lap_error":
+                self.manual_track_map_loading = False
+                self.track_map_status.set(
+                    f"No se pudo cargar la vuelta seleccionada: {value}"
+                )
+                continue
             current_completed = True
             self.track_map_loading = False
             if kind == "done":
-                cache_key, data, zones, priorities, profile, layer_errors = value
+                (
+                    cache_key,
+                    data,
+                    zones,
+                    priorities,
+                    profile,
+                    layer_errors,
+                    lap_options,
+                ) = value
                 self.track_map_cache[cache_key] = data
                 self.current_track_map = data
+                self.current_session_reference_track_map = data
+                self._set_track_lap_options(
+                    lap_options,
+                    reference_lap=self.current_track_record.reference_lap
+                    if self.current_track_record is not None
+                    else data.requested_lap,
+                    selected_lap=data.requested_lap,
+                )
                 self.current_track_zones = zones
                 self.current_track_priorities = priorities
                 self.current_track_profile = profile
@@ -3800,7 +4059,11 @@ class RaceEngineerApp:
                 self.track_telemetry_canvas.delete("all")
                 self.track_map_status.set(f"Mapa GPS no disponible: {value}")
                 self.track_map_zone_status.set("Sin mapa GPS para superponer zonas.")
-        if self.track_map_loading or self.historical_track_map_loading:
+        if (
+            self.track_map_loading
+            or self.historical_track_map_loading
+            or self.manual_track_map_loading
+        ):
             self.root.after(100, self._poll_track_map_queue)
 
     @staticmethod
@@ -4551,9 +4814,24 @@ class RaceEngineerApp:
             return
 
         historical = self.current_historical_track_map
+        session_reference = self.current_session_reference_track_map
+        reference_overlay = (
+            session_reference
+            if session_reference is not None
+            and (
+                session_reference.database_path != data.database_path
+                or session_reference.lap != data.lap
+            )
+            else None
+        )
+        comparison_points = (
+            tuple(reference_overlay.points) if reference_overlay is not None else ()
+        ) + (
+            tuple(historical.points) if historical is not None else ()
+        )
         shared_speed_max = telemetry_speed_scale(
             data.points,
-            historical.points if historical is not None else (),
+            comparison_points,
         )
         zoom_start = (
             None if self.telemetry_zoom_range is None else self.telemetry_zoom_range[0]
@@ -4579,6 +4857,19 @@ class RaceEngineerApp:
                 font=("Segoe UI", 9),
             )
             return
+
+        reference_chart = None
+        if reference_overlay is not None:
+            reference_chart = build_track_telemetry_chart(
+                reference_overlay.points,
+                width_px=width,
+                height_px=height,
+                start_distance_m=chart.distance_min_m,
+                end_distance_m=chart.distance_max_m,
+                axis_start_distance_m=chart.distance_min_m,
+                axis_end_distance_m=chart.distance_max_m,
+                speed_max_kmh=shared_speed_max,
+            )
 
         historical_chart = None
         if historical is not None:
@@ -4650,6 +4941,24 @@ class RaceEngineerApp:
                         fill=color,
                         width=2,
                         dash=(6, 4),
+                        joinstyle="round",
+                    )
+
+        if reference_chart is not None:
+            for values, color in (
+                (reference_chart.speed, "#8bcbed"),
+                (reference_chart.throttle, "#76d6a8"),
+                (reference_chart.brake, "#ea8b8b"),
+            ):
+                if len(values) >= 2:
+                    coordinates = [
+                        coordinate for point in values for coordinate in point
+                    ]
+                    canvas.create_line(
+                        *coordinates,
+                        fill=color,
+                        width=2,
+                        dash=(3, 3),
                         joinstyle="round",
                     )
 

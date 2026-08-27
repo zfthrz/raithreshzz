@@ -45,6 +45,12 @@ class TrackMapPoint:
 
 
 @dataclass(frozen=True)
+class TrackMapLapOption:
+    lap: int
+    duration_s: float
+
+
+@dataclass(frozen=True)
 class TrackMapData:
     database_path: Path
     track: str
@@ -116,6 +122,68 @@ class TrackTelemetryChart:
     brake: tuple[tuple[float, float], ...]
     distance_min_m: float
     distance_max_m: float
+
+
+def list_track_map_laps(
+    database_path: Path,
+    *,
+    target_hz: float = 20.0,
+    connect_factory: Callable = duckdb.connect,
+) -> tuple[TrackMapLapOption, ...]:
+    database = Path(database_path).expanduser().resolve()
+    if not database.is_file():
+        raise FileNotFoundError(database)
+    if target_hz <= 0 or target_hz > 50:
+        raise ValueError("La frecuencia del mapa debe estar entre 0 y 50 Hz.")
+
+    connection = connect_factory(str(database), read_only=True)
+    try:
+        tables = table_names(connection)
+        missing = [name for name in REQUIRED_GPS_TABLES if name not in tables]
+        if missing:
+            raise ValueError("Faltan canales GPS: " + ", ".join(missing))
+        channels = {
+            name: read_value_table(connection, name)
+            for name in ("GPS Time", "GPS Latitude", "GPS Longitude", "Lap Dist")
+            if name in tables
+        }
+        master_times, _ = build_master_times(channels, target_hz)
+        gps_time_reference = [
+            float(value)
+            for value in channels.get("GPS Time", {}).get("values", [])
+        ] or master_times
+        latitude = align_channel(
+            channels.get("GPS Latitude"), master_times, gps_time_reference
+        )
+        longitude = align_channel(
+            channels.get("GPS Longitude"), master_times, gps_time_reference
+        )
+        lap_distance = align_channel(
+            channels.get("Lap Dist"), master_times, gps_time_reference
+        )
+        boundaries = read_lap_event_times(connection, tables)
+        laps = (
+            assign_laps_from_boundaries(master_times, boundaries)
+            if boundaries
+            else detect_laps_from_distance(lap_distance)
+        )
+        groups = group_indices_by_lap(laps)
+        for indices in groups.values():
+            repair_lap_distance_boundary_sample(indices, lap_distance)
+        metrics = {
+            lap: lap_metrics(indices, latitude, longitude, lap_distance, master_times)
+            for lap, indices in groups.items()
+        }
+        complete = _complete_lap_metrics(metrics)
+        return tuple(
+            TrackMapLapOption(
+                lap=int(lap),
+                duration_s=float(complete[lap]["duration_s"]),
+            )
+            for lap in sorted(complete)
+        )
+    finally:
+        connection.close()
 
 
 def load_track_map(

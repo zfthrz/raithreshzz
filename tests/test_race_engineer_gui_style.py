@@ -130,13 +130,15 @@ def test_primary_navigation_groups_technical_views_by_user_task():
     assert SECTION_VIEWS["Calibración"] == ("Calibración",)
 
 
-def test_v1_23_layout_uses_fixed_sidebar_and_workspace_header():
+def test_layout_uses_fixed_sidebar_and_workspace_header():
     build_source = inspect.getsource(RaceEngineerApp._build_layout)
     show_source = inspect.getsource(RaceEngineerApp._show_primary_section)
 
-    assert 'style="Sidebar.TFrame", width=252' in build_source
+    assert 'style="Sidebar.TFrame"' in build_source
+    assert "sidebar.pack_propagate(False)" in build_source
     assert 'displaycolumns=("date", "track", "status")' in build_source
-    assert 'text="RACE ENGINEER"' in build_source
+    assert "Threshzz's Telemetry" in build_source
+    assert "Analysis Tool" in build_source
     assert 'self.workspace_title_var = tk.StringVar(value="Resumen")' in build_source
     assert 'self._calibration_panel(calibration_frame)' in build_source
     assert '"SidebarNavActive.TButton"' in show_source

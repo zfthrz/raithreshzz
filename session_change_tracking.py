@@ -5,10 +5,14 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from deterministic_coaching import safe_float
+from deterministic_coaching import (
+    _explicit_command_direction_map,
+    _steering_direct_action_present,
+    safe_float,
+)
 
 
-CHANGE_TRACKING_VERSION = "0.1"
+CHANGE_TRACKING_VERSION = "0.2"
 
 STATUS_AVAILABLE = "AVAILABLE"
 STATUS_UNAVAILABLE = "UNAVAILABLE"
@@ -16,6 +20,11 @@ STATUS_UNAVAILABLE = "UNAVAILABLE"
 CHANGE_NEW = "NEW"
 CHANGE_REPEATED = "REPEATED"
 CHANGE_RESOLVED = "RESOLVED"
+
+MATCH_BASIS_PHYSICAL = "physical_action_atom"
+MATCH_BASIS_REFERENCE_PROFILE = "reference_action_profile"
+MATCH_BASIS_QUALITATIVE = "qualitative_brake_throttle_action"
+MATCH_BASIS_STEERING = "validated_steering_action"
 
 _ACTION_PATTERN_FIELDS = (
     ("braking_point_patterns", "braking_point"),
@@ -219,6 +228,187 @@ def _public_action_atoms(
     ]
 
 
+def _reference_profile_actions(
+    item: dict[str, Any],
+) -> dict[tuple[Any, ...], dict[str, Any]]:
+    """Identity: channel + shape_sequence; fallback: steps.kind + steps.shape.
+
+    Numeric distances and free-form summary fields are deliberately excluded.
+    """
+    actions: dict[tuple[Any, ...], dict[str, Any]] = {}
+    for profile in _list(item.get("reference_action_profiles")):
+        if not isinstance(profile, dict):
+            continue
+        channel = profile.get("channel")
+        if channel not in {"brake", "throttle"}:
+            continue
+        sequence = tuple(
+            value.strip()
+            for value in _list(profile.get("shape_sequence"))
+            if isinstance(value, str) and value.strip()
+        )
+        structure_kind = "shape_sequence"
+        structure: tuple[Any, ...] = sequence
+        if not structure:
+            steps = []
+            for step in _list(profile.get("steps")):
+                if not isinstance(step, dict):
+                    continue
+                kind = step.get("kind")
+                shape = step.get("shape")
+                if (
+                    isinstance(kind, str)
+                    and kind.strip()
+                    and isinstance(shape, str)
+                    and shape.strip()
+                ):
+                    steps.append((kind.strip(), shape.strip()))
+            structure_kind = "steps"
+            structure = tuple(steps)
+        if not structure:
+            continue
+        identity = (channel, structure_kind, structure)
+        actions[identity] = {
+            "channel": channel,
+            "structure_kind": structure_kind,
+            "shape_structure": list(structure),
+        }
+    return actions
+
+
+def _qualitative_actions(
+    item: dict[str, Any],
+) -> dict[tuple[str, str], dict[str, Any]]:
+    """Validate cue contract; derive direction from canonical structured targets."""
+    validated_channels: set[str] = set()
+    for cue in _list(item.get("driver_cues")):
+        if not isinstance(cue, dict):
+            continue
+        if cue.get("kind") != "qualitative_reference_level":
+            continue
+        if cue.get("source") != "deterministic_observed_level_to_reference":
+            continue
+        channels = _list(cue.get("channels"))
+        if not channels and cue.get("channel") in {"brake", "throttle"}:
+            channels = [cue.get("channel")]
+        validated_channels.update(
+            channel
+            for channel in channels
+            if channel in {"brake", "throttle"}
+        )
+
+    directions: dict[str, set[str]] = {}
+    for target in _list(item.get("targets")):
+        for channel, direction in _explicit_command_direction_map(target).items():
+            if channel in validated_channels:
+                directions.setdefault(channel, set()).add(direction)
+
+    actions = {}
+    for channel, values in directions.items():
+        if len(values) != 1:
+            continue
+        direction = next(iter(values))
+        actions[(channel, direction)] = {
+            "channel": channel,
+            "coaching_direction": direction,
+        }
+    return actions
+
+
+def _validated_steering_actions(
+    item: dict[str, Any],
+) -> dict[tuple[str], dict[str, Any]]:
+    if item.get("steering_coaching_requested") is not True:
+        return {}
+    recommendation = item.get("validated_recommendation")
+    if (
+        not isinstance(recommendation, str)
+        or not recommendation.strip()
+        or not _steering_direct_action_present(recommendation)
+    ):
+        return {}
+    direction = item.get("steering_direction")
+    if direction not in {"higher_in_comparison_lap", "lower_in_comparison_lap"}:
+        return {}
+    valid_cue = any(
+        isinstance(cue, dict)
+        and cue.get("kind") == "validated_llm_steering"
+        and cue.get("source") == "validated_llm_recommendation+python_direction"
+        and cue.get("channel") == "steering_magnitude"
+        for cue in _list(item.get("driver_cues"))
+    )
+    if not valid_cue:
+        return {}
+    return {
+        (direction,): {
+            "channel": "steering_magnitude",
+            "steering_direction": direction,
+        }
+    }
+
+
+_STRUCTURED_ACTION_EXTRACTORS = (
+    (MATCH_BASIS_REFERENCE_PROFILE, _reference_profile_actions),
+    (MATCH_BASIS_QUALITATIVE, _qualitative_actions),
+    (MATCH_BASIS_STEERING, _validated_steering_actions),
+)
+
+
+def _append_change(
+    changes,
+    *,
+    status,
+    action,
+    match_basis,
+    current_item,
+    previous_item,
+):
+    changes.append({
+        "status": status,
+        "match_basis": match_basis,
+        "action": action,
+        "current_item": (
+            _public_item(current_item) if current_item is not None else None
+        ),
+        "previous_item": (
+            _public_item(previous_item) if previous_item is not None else None
+        ),
+    })
+
+
+def _append_structured_changes(changes, current_item, previous_item):
+    for match_basis, extractor in _STRUCTURED_ACTION_EXTRACTORS:
+        current_actions = extractor(current_item) if current_item is not None else {}
+        previous_actions = extractor(previous_item) if previous_item is not None else {}
+        for identity in sorted(current_actions.keys() & previous_actions.keys()):
+            _append_change(
+                changes,
+                status=CHANGE_REPEATED,
+                action=current_actions[identity],
+                match_basis=match_basis,
+                current_item=current_item,
+                previous_item=previous_item,
+            )
+        for identity in sorted(current_actions.keys() - previous_actions.keys()):
+            _append_change(
+                changes,
+                status=CHANGE_NEW,
+                action=current_actions[identity],
+                match_basis=match_basis,
+                current_item=current_item,
+                previous_item=previous_item,
+            )
+        for identity in sorted(previous_actions.keys() - current_actions.keys()):
+            _append_change(
+                changes,
+                status=CHANGE_RESOLVED,
+                action=previous_actions[identity],
+                match_basis=match_basis,
+                current_item=current_item,
+                previous_item=previous_item,
+            )
+
+
 
 def same_observational_action(
     current: dict[str, Any],
@@ -288,15 +478,18 @@ def compare_plans(
             for family, direction in sorted(
                 _action_signatures(current_item)
             ):
-                changes.append({
-                    "status": CHANGE_NEW,
-                    "action": _action_atom(
+                _append_change(
+                    changes,
+                    status=CHANGE_NEW,
+                    match_basis=MATCH_BASIS_PHYSICAL,
+                    action=_action_atom(
                         family=family,
                         direction=direction,
                     ),
-                    "current_item": _public_item(current_item),
-                    "previous_item": None,
-                })
+                    current_item=current_item,
+                    previous_item=None,
+                )
+            _append_structured_changes(changes, current_item, None)
             continue
 
         # Un único plan item previo puede representar la misma zona física.
@@ -312,41 +505,49 @@ def compare_plans(
         for family, direction in sorted(
             current_actions & previous_actions
         ):
-            changes.append({
-                "status": CHANGE_REPEATED,
-                "action": _action_atom(
+            _append_change(
+                changes,
+                status=CHANGE_REPEATED,
+                match_basis=MATCH_BASIS_PHYSICAL,
+                action=_action_atom(
                     family=family,
                     direction=direction,
                 ),
-                "current_item": _public_item(current_item),
-                "previous_item": _public_item(previous_item),
-            })
+                current_item=current_item,
+                previous_item=previous_item,
+            )
 
         for family, direction in sorted(
             current_actions - previous_actions
         ):
-            changes.append({
-                "status": CHANGE_NEW,
-                "action": _action_atom(
+            _append_change(
+                changes,
+                status=CHANGE_NEW,
+                match_basis=MATCH_BASIS_PHYSICAL,
+                action=_action_atom(
                     family=family,
                     direction=direction,
                 ),
-                "current_item": _public_item(current_item),
-                "previous_item": _public_item(previous_item),
-            })
+                current_item=current_item,
+                previous_item=previous_item,
+            )
 
         for family, direction in sorted(
             previous_actions - current_actions
         ):
-            changes.append({
-                "status": CHANGE_RESOLVED,
-                "action": _action_atom(
+            _append_change(
+                changes,
+                status=CHANGE_RESOLVED,
+                match_basis=MATCH_BASIS_PHYSICAL,
+                action=_action_atom(
                     family=family,
                     direction=direction,
                 ),
-                "current_item": _public_item(current_item),
-                "previous_item": _public_item(previous_item),
-            })
+                current_item=current_item,
+                previous_item=previous_item,
+            )
+
+        _append_structured_changes(changes, current_item, previous_item)
 
     for previous_index, previous_item in enumerate(previous_items):
         if previous_index in used_previous:
@@ -355,15 +556,18 @@ def compare_plans(
         for family, direction in sorted(
             _action_signatures(previous_item)
         ):
-            changes.append({
-                "status": CHANGE_RESOLVED,
-                "action": _action_atom(
+            _append_change(
+                changes,
+                status=CHANGE_RESOLVED,
+                match_basis=MATCH_BASIS_PHYSICAL,
+                action=_action_atom(
                     family=family,
                     direction=direction,
                 ),
-                "current_item": None,
-                "previous_item": _public_item(previous_item),
-            })
+                current_item=None,
+                previous_item=previous_item,
+            )
+        _append_structured_changes(changes, None, previous_item)
 
     return {
         "status": STATUS_AVAILABLE,

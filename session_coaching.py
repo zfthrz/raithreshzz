@@ -36,6 +36,7 @@ from session_coaching_patterns import (
 from session_coaching_plan import (
     _build_next_stint_plan,
     build_plan_priority_reason,
+    dedupe_semantic_next_stint_plan,
 )
 from session_coaching_priority import _build_priority_regions
 from session_coaching_quality import build_session_comparison_quality_gate
@@ -762,6 +763,12 @@ def build_session_coaching_facts(
             item["driver_cues"],
         )
         item["actionable_cue_count"] = len(item["driver_cues"])
+
+    # Deterministic semantic dedupe of already-authorized physical actions.
+    # Presentation/ranking layers below must see the compacted plan.
+    next_stint_plan = dedupe_semantic_next_stint_plan(
+        next_stint_plan,
+    )
 
     # H5.4/P9 — deterministic cross-zone driver-plan diversity ordering
     next_stint_plan = enrich_plan_with_p9_presentation_metadata(

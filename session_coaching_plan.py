@@ -269,6 +269,228 @@ def _build_next_stint_plan(
 
     return plan
 
+
+def _pattern_action_signature(item):
+    """
+    Firma estructurada de acciones físicas autorizadas ya presentes
+    en un item del next_stint_plan.
+
+    No usa texto libre ni crea nuevas acciones.
+    """
+    if not isinstance(item, dict):
+        return {}
+
+    specs = (
+        ("braking_point", "braking_point_patterns", "reference_onset_m"),
+        ("brake_release", "brake_release_patterns", "reference_release_m"),
+        ("throttle_onset", "throttle_onset_patterns", "reference_onset_m"),
+        ("throttle_release", "throttle_release_patterns", "reference_release_m"),
+    )
+
+    signatures = {}
+
+    for action_kind, field, point_key in specs:
+        values = []
+
+        for pattern in item.get(field, []) or []:
+            if not isinstance(pattern, dict):
+                continue
+
+            direction = pattern.get("coaching_direction")
+            point = safe_float(pattern.get(point_key))
+
+            if direction is None or point is None:
+                continue
+
+            values.append({
+                "direction": direction,
+                "point_m": point,
+            })
+
+        if values:
+            signatures[action_kind] = values
+
+    return signatures
+
+
+def _intervals_materially_overlap(a, b):
+    if not isinstance(a, dict) or not isinstance(b, dict):
+        return False
+
+    a_start = safe_float(a.get("start_distance_m"))
+    a_end = safe_float(a.get("end_distance_m"))
+    b_start = safe_float(b.get("start_distance_m"))
+    b_end = safe_float(b.get("end_distance_m"))
+
+    if None in (a_start, a_end, b_start, b_end):
+        return False
+
+    if a_end < a_start:
+        a_start, a_end = a_end, a_start
+
+    if b_end < b_start:
+        b_start, b_end = b_end, b_start
+
+    overlap = max(
+        0.0,
+        min(a_end, b_end) - max(a_start, b_start),
+    )
+
+    shorter = min(
+        max(0.0, a_end - a_start),
+        max(0.0, b_end - b_start),
+    )
+
+    if shorter <= 0.0:
+        return False
+
+    return (overlap / shorter) >= 0.5
+
+
+def _shared_semantic_action_kinds(a, b, point_tolerance_m=12.0):
+    if not _intervals_materially_overlap(a, b):
+        return []
+
+    a_signatures = _pattern_action_signature(a)
+    b_signatures = _pattern_action_signature(b)
+
+    a_kinds = set(a_signatures)
+    b_kinds = set(b_signatures)
+
+    # Conservative rule: a partial overlap of physical actions is not enough.
+    # Both plan items must describe the same complete structured action chain.
+    if not a_kinds or a_kinds != b_kinds:
+        return []
+
+    shared = []
+
+    for action_kind in (
+        "braking_point",
+        "brake_release",
+        "throttle_onset",
+        "throttle_release",
+    ):
+        if action_kind not in a_kinds:
+            continue
+
+        left = list(a_signatures.get(action_kind) or [])
+        right = list(b_signatures.get(action_kind) or [])
+
+        if len(left) != len(right):
+            return []
+
+        unmatched = list(right)
+
+        for lhs in left:
+            matched_index = None
+
+            for index, rhs in enumerate(unmatched):
+                if lhs["direction"] != rhs["direction"]:
+                    continue
+
+                if abs(lhs["point_m"] - rhs["point_m"]) > point_tolerance_m:
+                    continue
+
+                matched_index = index
+                break
+
+            if matched_index is None:
+                return []
+
+            unmatched.pop(matched_index)
+
+        if unmatched:
+            return []
+
+        shared.append(action_kind)
+
+    return shared
+
+
+def dedupe_semantic_next_stint_plan(plan):
+    """
+    Deduplicación conservadora del plan ya autorizado.
+
+    - mantiene siempre el primer item como survivor;
+    - no rerankea;
+    - no crea targets ni driver cues;
+    - sólo fusiona cuando existe una misma acción física estructurada,
+      con misma dirección, punto compatible y región espacial compatible.
+    """
+    if not isinstance(plan, list):
+        return plan
+
+    deduped = []
+
+    for item in plan:
+        if not isinstance(item, dict):
+            deduped.append(item)
+            continue
+
+        merged = False
+
+        for survivor in deduped:
+            if not isinstance(survivor, dict):
+                continue
+
+            shared_action_kinds = _shared_semantic_action_kinds(
+                survivor,
+                item,
+            )
+
+            if not shared_action_kinds:
+                continue
+
+            source_labels = []
+
+            existing_meta = survivor.get("semantic_dedupe")
+            if isinstance(existing_meta, dict):
+                source_labels.extend(
+                    existing_meta.get("source_plan_labels", []) or []
+                )
+
+            if not source_labels and survivor.get("plan_label"):
+                source_labels.append(survivor.get("plan_label"))
+
+            incoming_label = item.get("plan_label")
+            if incoming_label and incoming_label not in source_labels:
+                source_labels.append(incoming_label)
+
+            comparisons = []
+            for comparison in (
+                list(survivor.get("comparisons", []) or [])
+                + list(item.get("comparisons", []) or [])
+            ):
+                if comparison not in comparisons:
+                    comparisons.append(comparison)
+
+            survivor["comparisons"] = comparisons
+            survivor["comparison_count"] = max(
+                safe_int(survivor.get("comparison_count")) or 0,
+                len(comparisons),
+                safe_int(item.get("comparison_count")) or 0,
+            )
+
+            survivor["semantic_dedupe"] = {
+                "merged": True,
+                "source_plan_labels": source_labels,
+                "reason": "same_physical_action_chain",
+                "shared_action_kinds": shared_action_kinds,
+            }
+
+            merged = True
+            break
+
+        if not merged:
+            deduped.append(item)
+
+    for index, item in enumerate(deduped):
+        if isinstance(item, dict):
+            item["plan_label"] = _alpha_label(index)
+
+    return deduped
+
+
 def _format_aggregate_quantitative_observation(
     repeated_difference,
 ):

@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any
 
 from build_calibration_dataset import assign_sessions, collect_sessions, label_counts, partition_records
+from episode_pair_matcher import classify_pair
 from validate_pair_labels import validate as validate_pair_labels
 
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -200,6 +201,111 @@ def derive_thresholds(calibration: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
+def evaluate_thresholds(
+    evaluation: list[dict[str, Any]],
+    thresholds: dict[str, Any],
+) -> dict[str, Any]:
+    confusion = {
+        label: {decision: 0 for decision in ("MATCH", "AMBIGUOUS", "REJECT")}
+        for label in ("SAME", "AMBIGUOUS", "DIFFERENT")
+    }
+    decisions = []
+
+    for record in evaluation:
+        result = classify_pair(
+            record["features"],
+            calibration_override={"thresholds": thresholds},
+        )
+        decision = str(result.get("decision") or "AMBIGUOUS")
+        label = record["human_label"]
+
+        confusion[label][decision] += 1
+
+        decisions.append({
+            "pair_id": record.get("pair_id"),
+            "human_label": label,
+            "decision": decision,
+            "rule_id": result.get("rule_id"),
+            "automatic": bool(result.get("automatic")),
+        })
+
+    def ratio(numerator: int, denominator: int) -> float | None:
+        return round(numerator / denominator, 6) if denominator else None
+
+    predicted_match = sum(
+        1 for item in decisions if item["decision"] == "MATCH"
+    )
+    predicted_reject = sum(
+        1 for item in decisions if item["decision"] == "REJECT"
+    )
+    same_total = sum(
+        1 for item in decisions if item["human_label"] == "SAME"
+    )
+    different_total = sum(
+        1 for item in decisions if item["human_label"] == "DIFFERENT"
+    )
+
+    correct_match = confusion["SAME"]["MATCH"]
+    correct_reject = confusion["DIFFERENT"]["REJECT"]
+
+    dangerous_false_matches = [
+        item
+        for item in decisions
+        if item["human_label"] == "DIFFERENT"
+        and item["decision"] == "MATCH"
+    ]
+    dangerous_false_rejects = [
+        item
+        for item in decisions
+        if item["human_label"] == "SAME"
+        and item["decision"] == "REJECT"
+    ]
+
+    misclassified_pairs = [
+        item
+        for item in decisions
+        if (
+            (item["human_label"] == "SAME" and item["decision"] != "MATCH")
+            or (
+                item["human_label"] == "DIFFERENT"
+                and item["decision"] != "REJECT"
+            )
+            or (
+                item["human_label"] == "AMBIGUOUS"
+                and item["decision"] != "AMBIGUOUS"
+            )
+        )
+    ]
+
+    return {
+        "pairs": len(decisions),
+        "confusion": confusion,
+        "automatic_coverage": ratio(
+            predicted_match + predicted_reject,
+            len(decisions),
+        ),
+        "exact_three_way_accuracy": ratio(
+            correct_match
+            + confusion["AMBIGUOUS"]["AMBIGUOUS"]
+            + correct_reject,
+            len(decisions),
+        ),
+        "match_precision": ratio(correct_match, predicted_match),
+        "match_recall": ratio(correct_match, same_total),
+        "reject_precision": ratio(correct_reject, predicted_reject),
+        "reject_recall": ratio(correct_reject, different_total),
+        "dangerous_cross_class_errors": (
+            len(dangerous_false_matches)
+            + len(dangerous_false_rejects)
+        ),
+        "dangerous_false_matches": dangerous_false_matches,
+        "dangerous_false_rejects": dangerous_false_rejects,
+        "misclassified_pairs": misclassified_pairs,
+        "decisions": decisions,
+        "promotion_authorized": False,
+    }
+
+
 def choose_status(records, sessions, calibration, evaluation, cal_counts, eval_counts, thresholds):
     if len(records) < PROVISIONAL_MIN_LABELS:
         return None, ["insufficient_labels"]
@@ -253,6 +359,7 @@ def build_registry(batches_root: Path) -> dict[str, Any]:
         cal_counts = label_counts(calibration)
         eval_counts = label_counts(evaluation)
         thresholds = derive_thresholds(calibration)
+        evaluation_metrics = evaluate_thresholds(evaluation, thresholds)
         status, reasons = choose_status(
             records, sessions, calibration, evaluation, cal_counts, eval_counts, thresholds
         )
@@ -272,6 +379,7 @@ def build_registry(batches_root: Path) -> dict[str, Any]:
                 "cross_split_pairs_excluded": len(cross_split),
                 "calibration_labels": cal_counts,
                 "evaluation_labels": eval_counts,
+                "evaluation_metrics": evaluation_metrics,
                 "all_labels": dict(Counter(r["human_label"] for r in records)),
                 "gate_reasons": reasons,
             },

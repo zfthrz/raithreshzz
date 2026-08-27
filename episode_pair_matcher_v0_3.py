@@ -343,7 +343,11 @@ def weak_shape_conflict_veto(
     )
 
 
-def classify_pair(pair: dict[str, Any]) -> dict[str, Any]:
+def classify_pair(
+    pair: dict[str, Any],
+    *,
+    calibration_override: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     context_ok, context_reasons = context_check(pair)
     if not context_ok:
         return {
@@ -353,7 +357,11 @@ def classify_pair(pair: dict[str, Any]) -> dict[str, Any]:
             "automatic": False,
         }
 
-    calibration = resolve_calibration(pair)
+    calibration = (
+        resolve_calibration(pair)
+        if calibration_override is None
+        else calibration_override
+    )
     if calibration is None:
         return {
             "decision": "AMBIGUOUS",

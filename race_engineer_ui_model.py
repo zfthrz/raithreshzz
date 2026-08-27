@@ -8,6 +8,19 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from session_change_tracking import (
+    CHANGE_NEW,
+    CHANGE_REPEATED,
+    CHANGE_RESOLVED,
+    MATCH_BASIS_PHYSICAL,
+    MATCH_BASIS_QUALITATIVE,
+    MATCH_BASIS_REFERENCE_PROFILE,
+    MATCH_BASIS_STEERING,
+    STATUS_AVAILABLE,
+    analysis_context,
+    build_session_change_tracking,
+)
+
 
 PROJECT_ROOT = Path(__file__).resolve().parent
 UI_MODEL_VERSION = "0.5"
@@ -58,6 +71,7 @@ class SessionDetail:
     historical_comparison_text: str
     warnings: tuple[str, ...]
     historical_comparison_view: dict = field(default_factory=dict)
+    session_change_view: dict = field(default_factory=dict)
     plan_items: tuple[dict[str, Any], ...] = ()
     focus_plan_labels: tuple[str, ...] = ()
 
@@ -837,7 +851,188 @@ def _historical_comparison_structured(
     }
 
 
-def load_session_detail(record: SessionRecord) -> SessionDetail:
+_PHYSICAL_CHANGE_LABELS = {
+    ("braking_point", "later"): "frenada más tarde",
+    ("braking_point", "earlier"): "frenada más temprano",
+    ("brake_release", "later"): "liberación de freno más tarde",
+    ("brake_release", "earlier"): "liberación de freno más temprano",
+    ("throttle_onset", "later"): "reaplicación de acelerador más tarde",
+    ("throttle_onset", "earlier"): "reaplicación de acelerador más temprano",
+    ("throttle_release", "later"): "levantada de acelerador más tarde",
+    ("throttle_release", "earlier"): "levantada de acelerador más temprano",
+}
+
+_CHANNEL_LABELS = {
+    "brake": "freno",
+    "throttle": "acelerador",
+    "steering_magnitude": "volante",
+}
+
+
+def _change_presentation_label(change: dict[str, Any]) -> str:
+    action = _dict(change.get("action"))
+    basis = change.get("match_basis")
+    status = change.get("status")
+
+    if basis == MATCH_BASIS_PHYSICAL:
+        identity = (action.get("family"), action.get("coaching_direction"))
+        return _PHYSICAL_CHANGE_LABELS.get(identity, "acción física observada")
+
+    channel = _CHANNEL_LABELS.get(
+        str(action.get("channel") or ""),
+        "freno/acelerador",
+    )
+    if basis == MATCH_BASIS_REFERENCE_PROFILE:
+        labels = {
+            CHANGE_REPEATED: f"patrón de {channel} repetido",
+            CHANGE_NEW: f"nuevo patrón de {channel}",
+            CHANGE_RESOLVED: f"patrón de {channel} ya no observado",
+        }
+        return labels.get(status, f"patrón de {channel}")
+    if basis == MATCH_BASIS_QUALITATIVE:
+        labels = {
+            CHANGE_REPEATED: f"acción cualitativa de {channel} repetida",
+            CHANGE_NEW: f"nueva acción cualitativa de {channel}",
+            CHANGE_RESOLVED: f"acción cualitativa de {channel} ya no observada",
+        }
+        return labels.get(status, f"acción cualitativa de {channel}")
+    if basis == MATCH_BASIS_STEERING:
+        labels = {
+            CHANGE_REPEATED: "acción de volante repetida",
+            CHANGE_NEW: "nueva acción de volante",
+            CHANGE_RESOLVED: "acción de volante ya no observada",
+        }
+        return labels.get(status, "acción de volante")
+    return "cambio observacional"
+
+
+def _change_location(change: dict[str, Any]) -> tuple[tuple[Any, ...], str]:
+    item = _dict(change.get("current_item")) or _dict(change.get("previous_item"))
+    track_location = _dict(item.get("track_location"))
+    start = _number(item.get("start_distance_m"))
+    end = _number(item.get("end_distance_m"))
+    if start is None or end is None:
+        start = _number(track_location.get("start_m"))
+        end = _number(track_location.get("end_m"))
+    if start is not None and end is not None and end < start:
+        start, end = end, start
+
+    label = str(track_location.get("label") or "").strip()
+    if not label and start is not None and end is not None:
+        label = f"{start:.0f}–{end:.0f} m"
+    if not label:
+        label = "Ubicación sin etiqueta"
+    return (start, end), label
+
+
+def _change_presentation_order(change: dict[str, Any]) -> tuple[int, str, str]:
+    basis = change.get("match_basis")
+    status = change.get("status")
+    if basis == MATCH_BASIS_PHYSICAL:
+        rank = {
+            CHANGE_REPEATED: 0,
+            CHANGE_NEW: 1,
+            CHANGE_RESOLVED: 2,
+        }.get(status, 2)
+    else:
+        rank = 3 if status == CHANGE_REPEATED else 4
+    identity = ":".join(
+        str(change.get(field) or "")
+        for field in (
+            "action_family",
+            "channel",
+            "coaching_direction",
+            "presentation_label",
+        )
+    )
+    return rank, str(basis or ""), identity
+
+
+def build_session_change_view(
+    record: SessionRecord,
+    sessions: list[SessionRecord],
+) -> dict[str, Any]:
+    result = build_session_change_tracking(record, sessions)
+    view = {
+        "status": result.get("status"),
+        "reason": result.get("reason"),
+        "previous_session_key": result.get("previous_session_key"),
+        "previous_timestamp_utc": None,
+        "previous_timestamp_label": None,
+        "title": "Cambios vs. última sesión comparable",
+        "change_counts": dict(_dict(result.get("change_counts"))),
+        "grouped_changes": [],
+        "observational_only": bool(result.get("observational_only", True)),
+        "affects_next_stint_plan": bool(
+            result.get("affects_next_stint_plan", False)
+        ),
+        "historical_actions_authorized": bool(
+            result.get("historical_actions_authorized", False)
+        ),
+    }
+    if result.get("status") != STATUS_AVAILABLE:
+        return view
+
+    previous = next(
+        (
+            candidate
+            for candidate in sessions
+            if candidate.session_key == result.get("previous_session_key")
+        ),
+        None,
+    )
+    if previous is not None and previous.analysis_path is not None:
+        try:
+            context = analysis_context(previous.analysis_path)
+            timestamp_utc = context.get("timestamp_utc")
+            view["previous_timestamp_utc"] = timestamp_utc
+            view["previous_timestamp_label"] = format_timestamp(
+                str(timestamp_utc or ""),
+                previous.modified_timestamp,
+            )
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError, ValueError):
+            pass
+    if view["previous_timestamp_label"]:
+        view["title"] += f" — {view['previous_timestamp_label']}"
+
+    groups: dict[tuple[Any, ...], dict[str, Any]] = {}
+    for raw_change in _list(result.get("changes")):
+        if not isinstance(raw_change, dict):
+            continue
+        location_key, location_label = _change_location(raw_change)
+        group = groups.setdefault(
+            location_key,
+            {
+                "location_label": location_label,
+                "start_distance_m": location_key[0],
+                "end_distance_m": location_key[1],
+                "changes": [],
+            },
+        )
+        action = _dict(raw_change.get("action"))
+        group["changes"].append({
+            "status": raw_change.get("status"),
+            "match_basis": raw_change.get("match_basis"),
+            "action_family": action.get("family"),
+            "coaching_direction": (
+                action.get("coaching_direction")
+                or action.get("steering_direction")
+            ),
+            "channel": action.get("channel"),
+            "presentation_label": _change_presentation_label(raw_change),
+        })
+
+    grouped_changes = list(groups.values())
+    for group in grouped_changes:
+        group["changes"].sort(key=_change_presentation_order)
+    view["grouped_changes"] = grouped_changes
+    return view
+
+
+def load_session_detail(
+    record: SessionRecord,
+    sessions: list[SessionRecord] | None = None,
+) -> SessionDetail:
     warnings = []
     debrief = "Esta sesión todavía no tiene un debrief LLM validado."
     plan = "No hay un plan de próxima tanda disponible."
@@ -897,6 +1092,10 @@ def load_session_detail(record: SessionRecord) -> SessionDetail:
         historical_comparison_llm,
         stage_status=stage_status,
     )
+    session_change_view = build_session_change_view(
+        record,
+        sessions if sessions is not None else [record],
+    )
     return SessionDetail(
         record=record,
         debrief_markdown=debrief,
@@ -906,5 +1105,6 @@ def load_session_detail(record: SessionRecord) -> SessionDetail:
         historical_reference_text=historical_reference,
         historical_comparison_text=historical_comparison,
         historical_comparison_view=historical_comparison_view,
+        session_change_view=session_change_view,
         warnings=tuple(warnings),
     )

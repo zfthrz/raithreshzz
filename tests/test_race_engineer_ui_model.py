@@ -6,11 +6,19 @@ from pathlib import Path
 
 from race_engineer_ui_model import (
     _plan_text,
+    build_session_change_view,
     discover_sessions,
     filter_sessions,
     format_lap_time,
     load_calibration_summary,
     load_session_detail,
+)
+from session_change_tracking import (
+    CHANGE_NEW,
+    CHANGE_REPEATED,
+    CHANGE_RESOLVED,
+    MATCH_BASIS_PHYSICAL,
+    MATCH_BASIS_REFERENCE_PROFILE,
 )
 
 
@@ -163,6 +171,57 @@ def test_history_only_session_is_not_presented_as_debrief_ready(tmp_path: Path):
     assert sessions[0].has_validated_debrief is False
 
 
+def make_change_session(
+    tmp_path: Path,
+    name: str,
+    *,
+    timestamp: str,
+    plan: list[dict],
+) -> Path:
+    state_path = make_session(tmp_path, name)
+    state = json.loads(state_path.read_text(encoding="utf-8"))
+    analysis_path = Path(state["stages"]["analyze"]["output"])
+    analysis = json.loads(analysis_path.read_text(encoding="utf-8"))
+    metadata = analysis["metadata"]
+    metadata["timestamp_utc"] = timestamp
+    metadata["session_context"] = {
+        "lmu_track_name": "Fuji Speedway",
+        "lmu_track_layout": "Fuji Speedway",
+    }
+    analysis_path.write_text(json.dumps(analysis), encoding="utf-8")
+
+    debrief_path = Path(state["stages"]["llm"]["output"])
+    debrief = json.loads(debrief_path.read_text(encoding="utf-8"))
+    debrief["session_coaching_facts"]["next_stint_plan"] = plan
+    debrief_path.write_text(json.dumps(debrief), encoding="utf-8")
+    return state_path
+
+
+def change_item(*, current: bool) -> dict:
+    item = {
+        "plan_label": "A" if current else "B",
+        "start_distance_m": 100.0 if current else 90.0,
+        "end_distance_m": 180.0 if current else 170.0,
+        "track_location": {
+            "label": "T1 — First Corner",
+            "start_m": 90.0,
+            "end_m": 180.0,
+        },
+        "braking_point_patterns": [{"coaching_direction": "later"}],
+        "brake_release_patterns": [{
+            "coaching_direction": "earlier" if current else "later"
+        }],
+        "reference_action_profiles": [{
+            "channel": "throttle",
+            "shape_sequence": ["reaplicación sostenida"],
+            "shape_summary": "presentation text is not an identity",
+        }],
+    }
+    if current:
+        item["throttle_onset_patterns"] = [{"coaching_direction": "earlier"}]
+    return item
+
+
 def test_late_pipeline_failure_does_not_hide_validated_debrief_artifact(tmp_path: Path):
     state_path = make_session(tmp_path, "session-late-failure")
     state = json.loads(state_path.read_text(encoding="utf-8"))
@@ -186,6 +245,114 @@ def test_detail_reads_debrief_and_authorized_plan(tmp_path: Path):
     assert "Zona A — T1" in detail.plan_text
     assert "Frená 10 m más tarde" in detail.plan_text
     assert "llm_validator" in detail.pipeline_text
+
+
+def test_session_change_view_is_safely_unavailable_without_previous(tmp_path: Path):
+    make_change_session(
+        tmp_path,
+        "only-session",
+        timestamp="2026-08-27T12:00:00Z",
+        plan=[change_item(current=True)],
+    )
+    sessions, _ = discover_sessions(tmp_path / "runs")
+
+    view = load_session_detail(sessions[0], sessions).session_change_view
+
+    assert view["status"] == "UNAVAILABLE"
+    assert view["reason"] == "no_previous_compatible_session"
+    assert view["previous_session_key"] is None
+    assert view["previous_timestamp_utc"] is None
+    assert view["previous_timestamp_label"] is None
+    assert view["grouped_changes"] == []
+
+
+def test_session_change_view_groups_and_orders_spa_style_changes(tmp_path: Path):
+    previous_timestamp = "2026-08-26T04:03:26Z"
+    make_change_session(
+        tmp_path,
+        "previous",
+        timestamp=previous_timestamp,
+        plan=[change_item(current=False)],
+    )
+    make_change_session(
+        tmp_path,
+        "current",
+        timestamp="2026-08-27T04:12:53Z",
+        plan=[change_item(current=True)],
+    )
+    sessions, _ = discover_sessions(tmp_path / "runs")
+    current = next(item for item in sessions if item.session_key == "current")
+
+    view = load_session_detail(current, sessions).session_change_view
+
+    assert view["status"] == "AVAILABLE"
+    assert view["previous_session_key"] == "previous"
+    assert view["previous_timestamp_utc"] == previous_timestamp
+    assert view["previous_timestamp_label"] in view["title"]
+    assert "última sesión comparable" in view["title"]
+    assert len(view["grouped_changes"]) == 1
+    group = view["grouped_changes"][0]
+    assert group["location_label"] == "T1 — First Corner"
+    assert [
+        (change["status"], change["match_basis"])
+        for change in group["changes"]
+    ] == [
+        (CHANGE_REPEATED, MATCH_BASIS_PHYSICAL),
+        (CHANGE_NEW, MATCH_BASIS_PHYSICAL),
+        (CHANGE_NEW, MATCH_BASIS_PHYSICAL),
+        (CHANGE_RESOLVED, MATCH_BASIS_PHYSICAL),
+        (CHANGE_REPEATED, MATCH_BASIS_REFERENCE_PROFILE),
+    ]
+    assert [change["presentation_label"] for change in group["changes"]] == [
+        "frenada más tarde",
+        "liberación de freno más temprano",
+        "reaplicación de acelerador más temprano",
+        "liberación de freno más tarde",
+        "patrón de acelerador repetido",
+    ]
+    assert group["changes"][-1]["action_family"] is None
+    assert "más tarde" not in group["changes"][-1]["presentation_label"]
+    assert view["observational_only"] is True
+    assert view["affects_next_stint_plan"] is False
+    assert view["historical_actions_authorized"] is False
+
+
+def test_session_change_view_does_not_mutate_core_result(tmp_path: Path, monkeypatch):
+    import copy
+
+    make_session(tmp_path, "session")
+    record = discover_sessions(tmp_path / "runs")[0][0]
+    result = {
+        "status": "AVAILABLE",
+        "previous_session_key": None,
+        "change_counts": {"NEW": 1, "REPEATED": 0, "RESOLVED": 0},
+        "observational_only": True,
+        "affects_next_stint_plan": False,
+        "historical_actions_authorized": False,
+        "changes": [{
+            "status": CHANGE_NEW,
+            "match_basis": MATCH_BASIS_PHYSICAL,
+            "action": {
+                "family": "braking_point",
+                "coaching_direction": "later",
+            },
+            "current_item": {
+                "start_distance_m": 100.0,
+                "end_distance_m": 150.0,
+                "track_location": {"label": "T1"},
+            },
+            "previous_item": None,
+        }],
+    }
+    before = copy.deepcopy(result)
+    monkeypatch.setattr(
+        "race_engineer_ui_model.build_session_change_tracking",
+        lambda current_record, all_sessions: result,
+    )
+
+    build_session_change_view(record, [record])
+
+    assert result == before
 
 
 def test_detail_renders_deterministic_lap_times_and_reference_delta(tmp_path: Path):

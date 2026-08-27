@@ -1257,6 +1257,7 @@ H3 persistent pattern types
 H4 historical benchmark selector
 H5.1 dual reference
 H5.2 raw cross-session comparison     <- disponible en modo observacional
+H5.2 interval telemetry evidence      <- determinista, observacional y validada
 H5.2 LLM historical narrative         <- observacional y validada
 H5.3 historical coaching debrief       <- roadmap productivo; H5.3a-f implementadas en shadow
 ```
@@ -1278,6 +1279,13 @@ matcher ni H3. Detalles: `docs/H2_MONZA_LMP2_ELMS_CALIBRATION_V0_1.md`.
 H4 selecciona una `historical_reference` compatible y H5.1 conserva separadas la referencia de la sesión y la histórica.
 
 H5.2 v0.2 compara ambas vueltas desde sus DuckDB raw cuando están disponibles. La comparación es determinista, valida el delta temporal y conserva las tendencias amplias para auditoría. Con un track profile validado exacto, divide esas tendencias en zonas localizadas por límites del perfil antes de exponerlas al LLM. Si no existe un perfil exacto, declara un fallback no localizado; si falta cualquiera de los dos DuckDB, la etapa queda `SKIPPED_NOT_APPLICABLE`.
+
+Cuando H5.2 dispone de ambos DuckDB, el orquestador genera además
+`h5_2_telemetry_evidence`: una evidencia validada por intervalo que alinea ambas
+vueltas sobre la cobertura común de `Lap Dist` y conserva velocidad, acelerador,
+freno, marcha discreta y delta acumulado. Se reutiliza por firma, falla de forma no
+bloqueante y queda bajo `data/generated/h5_2_telemetry_evidence/`. Es material de
+inspección observacional: no cambia el plan, el ranking ni la autoridad de coaching.
 
 El contrato LLM histórico v0.1 puede seleccionar hasta tres zonas H5.2 y únicamente códigos observacionales autorizados por Python para cada una. El LLM no escribe texto libre: Python arma todo el render final con hechos y cifras exactos. Un validator separado rechaza zonas inventadas, claves adicionales, códigos no autorizados o evidencia alterada.
 
@@ -1357,6 +1365,7 @@ Contrato:
 [ ] conservar JSON determinista para History
 [ ] H4/H5.1 si existe referencia histórica compatible
 [ ] H5.2 si ambos DuckDB raw están disponibles
+[ ] evidencia de telemetría histórica por intervalos validada si H5.2 aplica
 [ ] narrativa histórica H5.2 validada si el LLM está habilitado
 ```
 

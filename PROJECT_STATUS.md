@@ -405,6 +405,13 @@ H5.2 resolves both raw DuckDBs through History, applies exact context gates, com
 independent historical/current `LapAnalyzer` sources, validates the temporal delta and
 emits observational spatial zone summaries.
 
+H5.2 interval telemetry evidence v0.1 is now integrated as the non-blocking
+`h5_2_telemetry_evidence` orchestrator stage. It aligns both raw reference laps by
+common lap distance, records speed/throttle/brake/gear plus accumulated delta for
+validated H5.2 intervals, validates the artifact and supports signature-based reuse.
+The real Spa checkpoint passed end to end with 27 fully covered zones and one partial
+zone. This remains observational and does not authorize historical coaching.
+
 H5.2 v0.2 preserves broad delta trends for audit and, when an exact validated
 track/layout profile exists, splits them deterministically at profile boundaries
 before LLM selection. Missing profiles use an explicit unlocalized fallback.

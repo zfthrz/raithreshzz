@@ -174,6 +174,7 @@ D3.x deterministic-first default and D2.9 production ranker (2026-08-25).
 | H4 historical reference | v0.2 |
 | H5.1 dual reference | v0.2 |
 | H5.2 | v0.2 profile-localized raw comparison + v0.1 validated observational LLM narrative |
+| H5.2 interval telemetry evidence | v0.1 / deterministic observational samples |
 | H5.3 historical coaching debrief | roadmap only / shadow complete (H5.3a-f) + Nivel 2 action policy / production gated |
 | H5.4 coaching precision | P1–P11 implemented / P10–P11 presentation-only |
 
@@ -886,6 +887,15 @@ exists, H5.2 splits those trends at profile turn boundaries and exposes only the
 localized summaries to the historical LLM. The profile identity, status, source hash
 and localization mode are validated. Without an exact profile, H5.2 keeps an explicit
 unlocalized fallback rather than guessing circuit boundaries.
+
+After a valid H5.2 raw comparison, the orchestrator may also build
+`h5_2_telemetry_evidence` v0.1. It aligns the current and historical reference laps
+on their common `Lap Dist` coverage and emits deterministic interval samples for
+speed, throttle, brake, discrete gear and accumulated delta. The artifact is written
+under `data/generated/h5_2_telemetry_evidence/<session>/`, has its own validator and
+reuse signature, and fails non-blocking so H5.3 and the normal debrief can continue.
+It is strictly observational: it does not modify the H5.2 zone summaries, authorize
+historical actions, change ranking or replace `session_reference`.
 
 At v0.2 it deliberately keeps:
 

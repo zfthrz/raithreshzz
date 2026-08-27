@@ -43,6 +43,9 @@ python race_engineer.py analyze "telemetria\ARCHIVO.duckdb" --backend ollama
 - H5.2 LLM output is a controlled-code selection only: Python authorizes and renders every observation; free text, historical actions, causal claims and replacement of `session_reference` are forbidden.
 - H5.2 zone-selection audit metrics are shadow evidence only. Impact, intensity or
   corner specificity cannot become a production ranking formula without broader validation.
+- H5.2 interval telemetry evidence is deterministic and observational only. Its
+  speed/throttle/brake/gear samples and accumulated delta may support inspection,
+  but cannot authorize historical coaching or replace `session_reference`.
 - LLM prompt experiments must use `run_llm_prompt_shadow.py`. Promotion evidence
   requires exact same-source/backend/model A/B pairs assessed by
   `assess_llm_prompt_shadow_promotion.py`; cross-model comparisons are
@@ -83,6 +86,7 @@ build_persistent_patterns.py H3 0.1
 select_historical_reference.py H4 0.2
 build_dual_reference_context.py H5.1 0.2
 build_cross_session_comparison.py H5.2 0.2 / profile-localized raw comparison
+build_historical_telemetry_evidence.py H5.2 interval evidence 0.1 / observational
 historical_llm_analysis.py   H5.2 LLM 0.1 / validated observational narrative
 build_historical_coaching_candidates.py H5.3a 0.1 / shadow candidates
 prepare_h5_3_audit_dataset.py + label/validate H5.3b 0.1 / audit + human review

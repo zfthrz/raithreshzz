@@ -97,6 +97,15 @@ def cross_session_output_path(
     return stage_output_dir(database_path, "h5_2") / "cross_session_comparison.json"
 
 
+def historical_telemetry_evidence_output_path(
+    database_path: str | os.PathLike[str],
+) -> Path:
+    return (
+        stage_output_dir(database_path, "h5_2_telemetry_evidence")
+        / "interval_evidence_v0_1.json"
+    )
+
+
 def h5_3_candidates_path(database_path: str | os.PathLike[str]) -> Path:
     return (
         stage_output_dir(database_path, "h5_3")

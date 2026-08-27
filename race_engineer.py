@@ -18,6 +18,7 @@ from runtime_paths import (
     h5_3_section_path,
     historical_llm_debug_dir,
     historical_llm_output_path,
+    historical_telemetry_evidence_output_path,
     historical_reference_output_path,
     history_db_default_path,
     llm_result_dir,
@@ -385,6 +386,8 @@ def analyze_command(args: argparse.Namespace) -> int:
     h5_2_validator = PROJECT_ROOT / "validate_cross_session_comparison.py"
     h5_2_llm_script = PROJECT_ROOT / "historical_llm_analysis.py"
     h5_2_llm_validator = PROJECT_ROOT / "validate_historical_llm_analysis.py"
+    h5_2_telemetry_script = PROJECT_ROOT / "build_historical_telemetry_evidence.py"
+    h5_2_telemetry_validator = PROJECT_ROOT / "validate_historical_telemetry_evidence.py"
     h5_3_candidate_script = PROJECT_ROOT / "build_historical_coaching_candidates.py"
     h5_3_render_script = PROJECT_ROOT / "render_historical_debrief.py"
     h5_3_validator_script = PROJECT_ROOT / "validate_historical_debrief.py"
@@ -610,6 +613,7 @@ def analyze_command(args: argparse.Namespace) -> int:
         stage_results["h4"] = STATUS_SKIPPED
         stage_results["h5_1"] = STATUS_SKIPPED
         stage_results["h5_2"] = STATUS_SKIPPED
+        stage_results["h5_2_telemetry_evidence"] = STATUS_SKIPPED
         stage_results["h5_2_llm"] = STATUS_SKIPPED
         stage_results["h5_3"] = STATUS_SKIPPED
         print_stage("history", STATUS_SKIPPED, "--no-history")
@@ -731,6 +735,7 @@ def analyze_command(args: argparse.Namespace) -> int:
             stage_results["h4"] = STATUS_SKIPPED
             stage_results["h5_1"] = STATUS_SKIPPED
             stage_results["h5_2"] = STATUS_SKIPPED
+            stage_results["h5_2_telemetry_evidence"] = STATUS_SKIPPED
             stage_results["h5_2_llm"] = STATUS_SKIPPED
             stage_results["h5_3"] = STATUS_SKIPPED
             print_stage("h4", STATUS_SKIPPED, "--no-historical-context")
@@ -741,6 +746,7 @@ def analyze_command(args: argparse.Namespace) -> int:
                 stage_results["h4"] = STATUS_SKIPPED
                 stage_results["h5_1"] = STATUS_SKIPPED
                 stage_results["h5_2"] = STATUS_SKIPPED
+                stage_results["h5_2_telemetry_evidence"] = STATUS_SKIPPED
                 stage_results["h5_2_llm"] = STATUS_SKIPPED
                 stage_results["h5_3"] = STATUS_SKIPPED
                 print_stage("h4", STATUS_SKIPPED, ", ".join(reasons))
@@ -846,6 +852,7 @@ def analyze_command(args: argparse.Namespace) -> int:
                     )
                 except CrossSessionNotApplicableError as exc:
                     stage_results["h5_2"] = STATUS_SKIPPED
+                    stage_results["h5_2_telemetry_evidence"] = STATUS_SKIPPED
                     stage_results["h5_2_llm"] = STATUS_SKIPPED
                     stage_results["h5_3"] = STATUS_SKIPPED
                     print_stage("h5_2", STATUS_SKIPPED, str(exc))
@@ -912,6 +919,117 @@ def analyze_command(args: argparse.Namespace) -> int:
                         save_state(state_path, state)
                         stage_results["h5_2"] = STATUS_RUN
                         print_stage("h5_2", STATUS_RUN, str(h5_2_output))
+
+                    # --------------------------------------------
+                    # H5.2 deterministic telemetry evidence (shadow)
+                    # --------------------------------------------
+                    telemetry_evidence_output = (
+                        historical_telemetry_evidence_output_path(database)
+                    )
+                    telemetry_evidence_signature = {
+                        "h5_2_sha256": sha256_file(h5_2_output),
+                        "current_raw": stat_signature(
+                            h5_2_pair["current"]["database"]
+                        ),
+                        "historical_raw": stat_signature(
+                            h5_2_pair["historical"]["database"]
+                        ),
+                        "builder": script_signature(h5_2_telemetry_script),
+                        "validator": script_signature(h5_2_telemetry_validator),
+                        "evidence_model": script_signature(
+                            PROJECT_ROOT / "historical_telemetry_evidence.py"
+                        ),
+                        "track_map_model": script_signature(
+                            PROJECT_ROOT / "race_engineer_track_map.py"
+                        ),
+                    }
+                    reuse_telemetry_evidence = (
+                        not args.force
+                        and stage_is_reusable(
+                            state,
+                            "h5_2_telemetry_evidence",
+                            telemetry_evidence_signature,
+                            required_paths=(telemetry_evidence_output,),
+                        )
+                    )
+                    if reuse_telemetry_evidence:
+                        stage_results["h5_2_telemetry_evidence"] = STATUS_REUSED
+                        print_stage(
+                            "h5_2_telemetry_evidence",
+                            STATUS_REUSED,
+                            str(telemetry_evidence_output),
+                        )
+                    else:
+                        dual_reference = h5_2_pair["dual_reference"]
+                        session_reference = dual_reference.get("session_reference") or {}
+                        historical_reference = dual_reference.get("historical_reference") or {}
+                        command = [
+                            sys.executable,
+                            str(h5_2_telemetry_script),
+                            str(h5_2_pair["current"]["database"]),
+                            str(h5_2_pair["historical"]["database"]),
+                            "--current-lap",
+                            str(h5_2_pair["current"]["lap"]),
+                            "--reference-lap",
+                            str(h5_2_pair["historical"]["lap"]),
+                            "--zones",
+                            str(h5_2_output),
+                            "--output",
+                            str(telemetry_evidence_output),
+                        ]
+                        if session_reference.get("duration_s") is not None:
+                            command.extend([
+                                "--current-duration",
+                                str(session_reference["duration_s"]),
+                            ])
+                        if historical_reference.get("duration_s") is not None:
+                            command.extend([
+                                "--reference-duration",
+                                str(historical_reference["duration_s"]),
+                            ])
+                        try:
+                            run_checked(command)
+                            run_checked([
+                                sys.executable,
+                                str(h5_2_telemetry_validator),
+                                str(telemetry_evidence_output),
+                            ])
+                        except (subprocess.CalledProcessError, OSError, ValueError) as exc:
+                            stage_results["h5_2_telemetry_evidence"] = STATUS_FAILED
+                            print_stage(
+                                "h5_2_telemetry_evidence",
+                                STATUS_FAILED,
+                                str(exc),
+                            )
+                            record_stage(
+                                state,
+                                "h5_2_telemetry_evidence",
+                                signature=telemetry_evidence_signature,
+                                status=STATUS_FAILED,
+                                details={"reason": str(exc)},
+                            )
+                            save_state(state_path, state)
+                        else:
+                            record_stage(
+                                state,
+                                "h5_2_telemetry_evidence",
+                                signature=telemetry_evidence_signature,
+                                status=STATUS_RUN,
+                                output=str(telemetry_evidence_output),
+                                details={
+                                    "evidence_sha256": sha256_file(
+                                        telemetry_evidence_output
+                                    ),
+                                    "observational_only": True,
+                                },
+                            )
+                            save_state(state_path, state)
+                            stage_results["h5_2_telemetry_evidence"] = STATUS_RUN
+                            print_stage(
+                                "h5_2_telemetry_evidence",
+                                STATUS_RUN,
+                                str(telemetry_evidence_output),
+                            )
 
                     # --------------------------------------------
                     # H5.2 LLM historical narrative (observational)

@@ -7,9 +7,10 @@ debriefs LLM juntos.
 
 El flujo separa dos responsabilidades:
 
-1. `scan` ejecuta el análisis determinista y la importación a History con
-   `--no-llm --no-historical-context`.
-2. `debrief-next` completa el LLM y el contexto histórico para una sola sesión.
+1. `scan` ejecuta el análisis determinista, importa History y permite el
+   contexto histórico Python aplicable con `--no-llm`.
+2. `debrief-next` completa el debrief determinista para una sola sesión sin
+   acceso a un modelo.
 
 Un fallo del LLM no elimina ni revierte la sesión ya importada.
 
@@ -102,9 +103,10 @@ Al terminar el ingest/backfill (o al omitirlo), `maintenance` genera
 automáticamente el **debrief determinista de carrera** de la sesión
 `HISTORY_READY` más antigua — una sesión por corrida — forzando en el subproceso
 `RACE_ENGINEER_DETERMINISTIC_FIRST=1` y `RACE_ENGINEER_LLM_RANKER=0`, y pasando
-`--no-historical-context --force-deterministic-debrief`. Este último modo sólo se
-acepta con DeepSeek y sin contexto histórico, fija el runtime deterministic-first,
-desactiva el ranker LLM y elimina `DEEPSEEK_API_KEY` del subproceso. Así puede
+`--force-deterministic-debrief`. Este último modo conserva H3/H4/H5
+deterministas, omite explícitamente la narrativa histórica H5.2 LLM, fija el
+runtime deterministic-first, desactiva el ranker LLM y elimina
+`DEEPSEEK_API_KEY` del subproceso. Así puede
 reconstruir un render antiguo incompatible sin posibilidad de llamar al modelo. La
 narrativa histórica observacional (única pieza que todavía puede usar LLM) queda
 fuera del flujo desatendido. Las sesiones ya marcadas `DEBRIEF_READY` no entran en

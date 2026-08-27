@@ -441,7 +441,7 @@ def scan(
 
         try:
             probe(path)
-            runner(path, ["--no-llm", "--no-historical-context"])
+            runner(path, ["--no-llm"])
         except Exception as exc:
             entry["status"] = STATUS_FAILED
             entry["last_error"] = f"{type(exc).__name__}: {exc}"
@@ -554,7 +554,7 @@ def backfill_next(
         if not selected_path.is_file():
             raise FileNotFoundError(selected_path)
         probe(selected_path)
-        runner(selected_path, ["--no-llm", "--no-historical-context"])
+        runner(selected_path, ["--no-llm"])
     except Exception as exc:
         if insufficient_valid_laps(
             selected_path,
@@ -711,7 +711,7 @@ def maintenance(
         telemetry_dir=telemetry_dir,
         runner=runner,
         env=deterministic_debrief_env(),
-        extra_args=["--no-historical-context", "--force-deterministic-debrief"],
+        extra_args=["--force-deterministic-debrief"],
     )
 
 

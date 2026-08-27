@@ -1476,13 +1476,15 @@ The scheduled `maintenance` contract is History-first:
 - if `Le Mans Ultimate.exe` is running, return `SKIPPED_GAME_RUNNING` before scan;
 - wait 10 minutes after the last game observation (`POST_GAME_SETTLE`);
 - give new stable telemetry priority over backlog;
-- run deterministic analysis and History import with `--no-llm --no-historical-context`;
+- run deterministic analysis, History import and applicable H3/H4/H5 Python
+  context with `--no-llm`;
 - after ingest/backfill, generate the deterministic race debrief (one session
   per run) forcing `RACE_ENGINEER_DETERMINISTIC_FIRST=1` and
   `RACE_ENGINEER_LLM_RANKER=0` in the subprocess plus
-  `--no-historical-context --force-deterministic-debrief`; the explicit mode
-  removes `DEEPSEEK_API_KEY`, rejects incompatible invocation and rebuilds stale
-  renders without model access (failures keep `HISTORY_READY` for retry);
+  `--force-deterministic-debrief`; the explicit mode preserves deterministic
+  historical context, skips the H5.2 LLM narrative, removes `DEEPSEEK_API_KEY`,
+  rejects incompatible invocation and rebuilds stale renders without model
+  access (failures keep `HISTORY_READY` for retry);
 - process at most one backfill candidate per cooldown;
 - retain an unchanged `FAILED` entry without retrying it every minute, so an old
   unusable recording cannot block pending deterministic debriefs; a signature

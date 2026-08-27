@@ -28,13 +28,12 @@ def test_force_deterministic_debrief_parser_contract():
         "session.duckdb",
         "--backend",
         "deepseek",
-        "--no-historical-context",
         "--force-deterministic-debrief",
     ])
 
     assert args.force_deterministic_debrief is True
     assert args.backend == "deepseek"
-    assert args.no_historical_context is True
+    assert args.no_historical_context is False
 
 
 @pytest.mark.parametrize("backend", ["ollama", "llamacpp"])
@@ -45,7 +44,6 @@ def test_force_deterministic_debrief_rejects_non_deepseek_before_file_access(bac
         "missing.duckdb",
         "--backend",
         backend,
-        "--no-historical-context",
         "--force-deterministic-debrief",
     ])
 
@@ -53,7 +51,7 @@ def test_force_deterministic_debrief_rejects_non_deepseek_before_file_access(bac
         race_engineer.analyze_command(args)
 
 
-def test_force_deterministic_debrief_requires_historical_context_disabled():
+def test_force_deterministic_debrief_allows_historical_context():
     parser = race_engineer.build_parser()
     args = parser.parse_args([
         "analyze",
@@ -63,5 +61,11 @@ def test_force_deterministic_debrief_requires_historical_context_disabled():
         "--force-deterministic-debrief",
     ])
 
-    with pytest.raises(ValueError, match="--no-historical-context"):
+    with pytest.raises(FileNotFoundError):
         race_engineer.analyze_command(args)
+
+
+def test_force_deterministic_debrief_disables_historical_llm_in_source():
+    source = open(race_engineer.__file__, encoding="utf-8").read()
+    assert "if args.no_llm or args.force_deterministic_debrief:" in source
+    assert "narrativa histórica LLM deshabilitada" in source

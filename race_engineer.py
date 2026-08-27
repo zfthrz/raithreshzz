@@ -359,10 +359,10 @@ def h5_2_llm_skip_on_failure(
 
 def analyze_command(args: argparse.Namespace) -> int:
     if args.force_deterministic_debrief:
-        if args.backend != "deepseek" or not args.no_historical_context or args.no_llm:
+        if args.backend != "deepseek" or args.no_llm:
             raise ValueError(
-                "--force-deterministic-debrief exige --backend deepseek, "
-                "--no-historical-context y LLM stage habilitada."
+                "--force-deterministic-debrief exige --backend deepseek "
+                "y la etapa de debrief habilitada."
             )
     force_llm_stage = args.force_llm or args.force_deterministic_debrief
     llm_subprocess_env = (
@@ -916,9 +916,14 @@ def analyze_command(args: argparse.Namespace) -> int:
                     # --------------------------------------------
                     # H5.2 LLM historical narrative (observational)
                     # --------------------------------------------
-                    if args.no_llm:
+                    if args.no_llm or args.force_deterministic_debrief:
                         stage_results["h5_2_llm"] = STATUS_SKIPPED
-                        print_stage("h5_2_llm", STATUS_SKIPPED, "--no-llm")
+                        reason = (
+                            "debrief determinista: narrativa histórica LLM deshabilitada"
+                            if args.force_deterministic_debrief
+                            else "--no-llm"
+                        )
+                        print_stage("h5_2_llm", STATUS_SKIPPED, reason)
                     else:
                         h5_2_llm_output = historical_llm_output_path(
                             database,
@@ -1258,9 +1263,9 @@ def build_parser() -> argparse.ArgumentParser:
         "--force-deterministic-debrief",
         action="store_true",
         help=(
-            "Reconstruir sólo el debrief principal en modo Python fail-closed; "
-            "requiere deepseek + --no-historical-context y elimina la API key "
-            "del subproceso."
+            "Reconstruir el debrief principal en modo Python fail-closed; "
+            "conserva el contexto histórico determinista, omite la narrativa "
+            "histórica LLM y elimina la API key del subproceso."
         ),
     )
     analyze.add_argument("--no-llm", action="store_true")

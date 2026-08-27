@@ -108,6 +108,10 @@ Validated baseline:
   decisions are exposed as observational projections; nothing is written back
   as membership. Read-only corpus audit covered 14/14 eligible post-snapshot
   sessions (Spa 13/13, Interlagos 1/1; Imola had none pending).
+- Deterministic launcher historical-context fix (2026-08-27): GUI and scheduler
+  deterministic debrief runs no longer pass `--no-historical-context`.
+  Applicable H3/H4/H5 Python stages remain enabled while the main ranker and
+  H5.2 historical LLM narrative stay disabled and `DEEPSEEK_API_KEY` is removed.
 - Phase J golden set (2026-08-23): `golden_set_semantic_regression.py` +
   `golden_set/golden_set_v0_1.json` with 6 SEED records (Imola, Monza,
   Interlagos, Fuji, Spa, Sarthe). Semantic regression (region, action families,

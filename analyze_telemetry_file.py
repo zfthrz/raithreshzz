@@ -111,7 +111,7 @@ def analyze_selected_file(
     print(f"Archivo: {database}")
     print("Etapa 1/2: análisis determinista + History, sin LLM.")
     try:
-        runner(database, ["--no-llm", "--no-historical-context"])
+        runner(database, ["--no-llm"])
     except Exception as exc:
         print(f"FAILED: etapa determinista/History: {type(exc).__name__}: {exc}")
         return 1
@@ -137,7 +137,6 @@ def analyze_selected_file(
         final_args = [
             "--backend",
             "deepseek",
-            "--no-historical-context",
             "--force-deterministic-debrief",
         ]
     else:

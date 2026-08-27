@@ -102,7 +102,7 @@ def test_scan_waits_for_stability_then_imports_history_without_llm(tmp_path: Pat
     ) == 0
     assert calls == [(
         database,
-        ["--no-llm", "--no-historical-context"],
+        ["--no-llm"],
     )]
     assert read_state(state_path)["files"][str(database)]["status"] == (
         ingest.STATUS_HISTORY_READY
@@ -144,7 +144,7 @@ def test_backfill_next_processes_only_newest_large_baseline(tmp_path: Path):
 
     assert calls == [(
         newest,
-        ["--no-llm", "--no-historical-context"],
+        ["--no-llm"],
     )]
     updated = read_state(state_path)["files"]
     assert updated[str(newest)]["status"] == ingest.STATUS_HISTORY_READY
@@ -324,14 +324,13 @@ def test_maintenance_runs_one_backfill_when_scan_is_idle_and_cooldown_elapsed(
     ) == 0
     assert calls[0] == (
         database,
-        ["--no-llm", "--no-historical-context"],
+        ["--no-llm"],
         None,
     )
     assert calls[1][0] == database
     assert calls[1][1] == [
         "--backend",
         "deepseek",
-        "--no-historical-context",
         "--force-deterministic-debrief",
     ]
     assert calls[1][2] is not None
@@ -746,7 +745,7 @@ def test_changed_failed_file_returns_to_stability_and_can_retry(tmp_path: Path):
         probe=lambda path: None,
     ) == 0
 
-    assert calls == [(database, ["--no-llm", "--no-historical-context"])]
+    assert calls == [(database, ["--no-llm"])]
     entry = read_state(state_path)["files"][str(database)]
     assert entry["status"] == ingest.STATUS_HISTORY_READY
     assert entry["attempts"] == 2
@@ -811,7 +810,6 @@ def test_maintenance_generates_deterministic_debrief_after_ingest(
         [
             "--backend",
             "deepseek",
-            "--no-historical-context",
             "--force-deterministic-debrief",
         ],
         ingest.deterministic_debrief_env(),
@@ -863,7 +861,6 @@ def test_maintenance_ignores_stale_failure_and_generates_pending_debrief(
         [
             "--backend",
             "deepseek",
-            "--no-historical-context",
             "--force-deterministic-debrief",
         ],
         ingest.deterministic_debrief_env(),

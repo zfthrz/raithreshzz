@@ -48,18 +48,47 @@ def write_json(path: Path, payload: dict[str, Any]) -> None:
     )
 
 
+def import_h3_outputs(
+    history_db: Path,
+    patterns_path: Path,
+    matches_path: Path,
+) -> dict[str, Any]:
+    """Explicit, validated H3 History stage; never hidden in build_patterns()."""
+
+    import duckdb
+
+    from session_history import import_pattern_run, initialize_schema
+
+    history_db = Path(history_db).resolve()
+    history_db.parent.mkdir(parents=True, exist_ok=True)
+    connection = duckdb.connect(str(history_db))
+    try:
+        initialize_schema(connection)
+        result = import_pattern_run(connection, patterns_path, matches_path)
+    finally:
+        connection.close()
+    status = "REUSED" if result.get("status") == "REUSED" else "RUN"
+    return {
+        **result,
+        "status": status,
+        "import_result_status": result.get("status"),
+        "history_db": str(history_db),
+    }
+
+
 def run_h3_pipeline(
     features_path: Path,
     *,
     output_dir: Path | None = None,
     batches_root: Path = DEFAULT_BATCHES_ROOT,
     persistent_min_sessions: int = DEFAULT_PERSISTENT_MIN_INDEPENDENT_SESSIONS,
+    history_db: Path | None = None,
 ) -> tuple[dict[str, Any], int]:
     """Official H2 -> H3 batch path.
 
     Uses the production authorization layer for every context. Exact variant
     calibration remains exact; promoted track/layout baseline may contribute
-    production MATCH only. No History import is performed here.
+    production MATCH only. History import is an explicit optional stage.
     """
     features_path = Path(features_path).resolve()
     if not features_path.is_file():
@@ -120,6 +149,7 @@ def run_h3_pipeline(
             "h3_pipeline_version": H3_PIPELINE_VERSION,
             "created_at_utc": utc_now_iso(),
             "source_features": str(features_path),
+            "source_features_sha256": matcher_metadata["source_features_sha256"],
             "source_matches": str(matches_path),
             "matcher_version": gate["matcher_version"],
             "matcher_status": matcher_metadata.get("matcher_status"),
@@ -155,6 +185,34 @@ def run_h3_pipeline(
     result = "REVIEW_REQUIRED" if conflict_count else "PASS"
     exit_code = 2 if conflict_count else 0
 
+    history_stage: dict[str, Any]
+    if history_db is None:
+        history_stage = {
+            "status": "SKIPPED_NOT_APPLICABLE",
+            "reason": "--history-db no solicitado",
+        }
+    elif conflict_count:
+        history_stage = {
+            "status": "SKIPPED_NOT_APPLICABLE",
+            "reason": "conflict_review_required",
+            "history_db": str(Path(history_db).resolve()),
+        }
+    else:
+        try:
+            history_stage = import_h3_outputs(
+                history_db,
+                patterns_path,
+                matches_path,
+            )
+        except Exception as exc:
+            history_stage = {
+                "status": "FAILED",
+                "history_db": str(Path(history_db).resolve()),
+                "reason": f"{type(exc).__name__}: {exc}",
+            }
+            result = "FAILED"
+            exit_code = 1
+
     report = {
         "pipeline_version": H3_PIPELINE_VERSION,
         "created_at_utc": utc_now_iso(),
@@ -167,8 +225,9 @@ def run_h3_pipeline(
         },
         "h2_gate": gate,
         "h3_summary": summary,
-        "history_imported": False,
-        "history_mutated": False,
+        "history_import": history_stage,
+        "history_imported": history_stage.get("status") in {"RUN", "REUSED"},
+        "history_mutated": history_stage.get("status") == "RUN",
     }
     write_json(report_path, report)
     report["outputs"]["report"] = str(report_path)
@@ -179,7 +238,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description=(
             "H3 batch pipeline: production-authorized H2 -> persistent pattern "
-            "builder. Does not import History."
+            "builder with optional explicit validated History import."
         )
     )
     parser.add_argument("features_json", type=Path)
@@ -188,6 +247,12 @@ def main() -> int:
         "--batches-root",
         type=Path,
         default=DEFAULT_BATCHES_ROOT,
+    )
+    parser.add_argument(
+        "--history-db",
+        type=Path,
+        default=None,
+        help="Importar el run H3 validado a esta History DB; omitido = read-only.",
     )
     parser.add_argument(
         "--persistent-min-sessions",
@@ -201,6 +266,7 @@ def main() -> int:
         output_dir=args.output_dir,
         batches_root=args.batches_root,
         persistent_min_sessions=args.persistent_min_sessions,
+        history_db=args.history_db,
     )
 
     h2 = report["h2_gate"]
@@ -221,6 +287,7 @@ def main() -> int:
     print(f"H3 states:                  {h3.get('state_counts') or {}}")
     print(f"H3 conflicts:               {h3.get('conflict_review_required_count', 0)}")
     print(f"History imported:           {report['history_imported']}")
+    print(f"History stage:              {report['history_import']['status']}")
     print(f"Result:                     {report['result']}")
     print(f"Matches:                    {report['outputs']['episode_pair_matches']}")
     print(f"Patterns:                   {report['outputs']['persistent_patterns']}")

@@ -2,7 +2,9 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import sys
+from collections import Counter
 from datetime import datetime, timezone
 
 import duckdb
@@ -3136,6 +3138,55 @@ def _bundle_sha256(patterns_sha, matches_sha):
     ).hexdigest()
 
 
+def _stable_pattern_bundle_sha256(
+    patterns_doc,
+    matches_doc,
+    patterns_sha,
+    matches_sha,
+):
+    """Identify one official H2/H3 materialization without volatile timestamps.
+
+    Legacy standalone H3 artifacts keep their historical byte-hash identity. The
+    official pipeline carries a source feature hash and enough structured authority
+    provenance to derive an idempotent semantic bundle key.
+    """
+
+    metadata = patterns_doc.get("metadata") or {}
+    match_metadata = matches_doc.get("metadata") or {}
+    if not metadata.get("h3_pipeline_version"):
+        return _bundle_sha256(patterns_sha, matches_sha)
+
+    identity = {
+        "source_features_sha256": metadata.get("source_features_sha256"),
+        "h3_version": metadata.get("h3_version"),
+        "pattern_schema_version": metadata.get("schema_version"),
+        "h3_pipeline_version": metadata.get("h3_pipeline_version"),
+        "matcher_version": metadata.get("matcher_version"),
+        "authorized_matcher_version": metadata.get("authorized_matcher_version"),
+        "track_baseline_policy_version": metadata.get(
+            "track_baseline_policy_version"
+        ),
+        "match_promotion_policy_version": metadata.get(
+            "match_promotion_policy_version"
+        ),
+        "persistent_min_independent_sessions": metadata.get(
+            "persistent_min_independent_sessions"
+        ),
+        "h2_authority_gate": metadata.get("h2_authority_gate"),
+        "summary": patterns_doc.get("summary"),
+        "patterns": patterns_doc.get("patterns"),
+        "decisions": matches_doc.get("decisions"),
+        "production_contract": match_metadata.get("production_contract"),
+    }
+    canonical = json.dumps(
+        identity,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
 def _pattern_run_existing(connection, bundle_sha):
     row = connection.execute(
         """
@@ -3180,6 +3231,12 @@ def _validate_pattern_import_sources(connection, patterns_doc, matches_doc):
         raise ValueError(
             "Matcher provenance mismatch entre persistent_patterns y episode_pair_matches."
         )
+
+    _validate_official_h3_authority_provenance(
+        metadata,
+        match_metadata,
+        decisions,
+    )
 
     conflicts = safe_int(summary.get("conflict_review_required_count")) or 0
     if conflicts:
@@ -3263,6 +3320,94 @@ def _validate_pattern_import_sources(connection, patterns_doc, matches_doc):
     return metadata, summary, patterns, match_metadata, decisions
 
 
+def _validate_official_h3_authority_provenance(
+    metadata,
+    match_metadata,
+    decisions,
+):
+    """Fail closed for official hierarchical H2/H3 pipeline artifacts."""
+
+    if not metadata.get("h3_pipeline_version"):
+        return
+
+    sha_pattern = re.compile(r"^[0-9a-f]{64}$")
+    patterns_features_sha = str(metadata.get("source_features_sha256") or "")
+    matches_features_sha = str(match_metadata.get("source_features_sha256") or "")
+    if not sha_pattern.fullmatch(patterns_features_sha):
+        raise ValueError("H3 oficial sin source_features_sha256 válido.")
+    if matches_features_sha != patterns_features_sha:
+        raise ValueError("source_features_sha256 mismatch entre H3 y H2.")
+
+    provenance_fields = (
+        "authorized_matcher_version",
+        "track_baseline_policy_version",
+        "match_promotion_policy_version",
+    )
+    for field in provenance_fields:
+        pattern_value = metadata.get(field)
+        match_value = match_metadata.get(field)
+        if not pattern_value or pattern_value != match_value:
+            raise ValueError(f"Provenance H2/H3 inválida para {field}.")
+
+    gate = metadata.get("h2_authority_gate")
+    if not isinstance(gate, dict):
+        raise ValueError("H3 oficial sin h2_authority_gate válido.")
+    if str(gate.get("matcher_version") or "") != str(metadata.get("matcher_version")):
+        raise ValueError("h2_authority_gate matcher_version inconsistente.")
+    if safe_int(gate.get("inherited_reject_count")) != 0:
+        raise ValueError("H3 oficial contiene inherited REJECT.")
+    if safe_int(gate.get("unauthorized_match_count")) != 0:
+        raise ValueError("H3 oficial contiene MATCH no autorizado.")
+
+    decision_counts = Counter()
+    scope_counts = Counter()
+    for decision in decisions:
+        if not isinstance(decision, dict):
+            raise ValueError("Decision H2 oficial inválida.")
+        value = str(decision.get("decision") or "AMBIGUOUS")
+        authority = decision.get("authority")
+        if not isinstance(authority, dict):
+            raise ValueError("Decision H2 oficial sin authority.")
+        scope = str(authority.get("calibration_scope") or "UNKNOWN")
+        decision_counts[value] += 1
+        scope_counts[scope] += 1
+
+        for field in provenance_fields:
+            if authority.get(field) != metadata.get(field):
+                raise ValueError(
+                    f"Decision H2 con provenance inconsistente para {field}."
+                )
+
+        if value == "MATCH" and authority.get("production_match_authorized") is not True:
+            raise ValueError("Decision MATCH sin autoridad productiva.")
+        if value == "MATCH" and scope not in {
+            "EXACT_VARIANT_CALIBRATION",
+            "COVERED_BY_TRACK_MATCH_BASELINE",
+        }:
+            raise ValueError(f"Decision MATCH con calibration_scope inválido: {scope}.")
+        if scope == "EXACT_VARIANT_CALIBRATION" and value == "REJECT":
+            if authority.get("production_reject_authorized") is not True:
+                raise ValueError("REJECT exacto sin autoridad calibrada.")
+        if scope == "COVERED_BY_TRACK_MATCH_BASELINE":
+            if value == "REJECT":
+                raise ValueError("REJECT heredado no puede persistirse en H3.")
+            if authority.get("production_reject_authorized") is not False:
+                raise ValueError("Track baseline debe conservar REJECT variant-specific.")
+
+    expected_decisions = {
+        str(key): int(value)
+        for key, value in (gate.get("decision_counts") or {}).items()
+    }
+    expected_scopes = {
+        str(key): int(value)
+        for key, value in (gate.get("authority_scope_counts") or {}).items()
+    }
+    if dict(sorted(decision_counts.items())) != dict(sorted(expected_decisions.items())):
+        raise ValueError("h2_authority_gate decision_counts inconsistente.")
+    if dict(sorted(scope_counts.items())) != dict(sorted(expected_scopes.items())):
+        raise ValueError("h2_authority_gate authority_scope_counts inconsistente.")
+
+
 def import_pattern_run(connection, patterns_path, matches_path):
     patterns_path = normalized_path(patterns_path)
     matches_path = normalized_path(matches_path)
@@ -3273,7 +3418,17 @@ def import_pattern_run(connection, patterns_path, matches_path):
 
     patterns_sha = file_sha256(patterns_path)
     matches_sha = file_sha256(matches_path)
-    bundle_sha = _bundle_sha256(patterns_sha, matches_sha)
+    patterns_doc = load_json_object(patterns_path)
+    matches_doc = load_json_object(matches_path)
+    metadata, summary, patterns, match_metadata, decisions = _validate_pattern_import_sources(
+        connection, patterns_doc, matches_doc
+    )
+    bundle_sha = _stable_pattern_bundle_sha256(
+        patterns_doc,
+        matches_doc,
+        patterns_sha,
+        matches_sha,
+    )
 
     existing = _pattern_run_existing(connection, bundle_sha)
     if existing is not None:
@@ -3282,12 +3437,6 @@ def import_pattern_run(connection, patterns_path, matches_path):
             "pattern_run_id": existing,
             "source_bundle_sha256": bundle_sha,
         }
-
-    patterns_doc = load_json_object(patterns_path)
-    matches_doc = load_json_object(matches_path)
-    metadata, summary, patterns, match_metadata, decisions = _validate_pattern_import_sources(
-        connection, patterns_doc, matches_doc
-    )
 
     # Infer run context from patterns; a calibration run must have exactly one H2 context.
     contexts = {

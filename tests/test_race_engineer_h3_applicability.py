@@ -45,7 +45,7 @@ def test_h3_uncalibrated_context_is_not_applicable(tmp_path: Path):
     applicable, reasons = h3_applicability(analysis, _history(tmp_path))
 
     assert applicable is False
-    assert any("sin calibración" in reason for reason in reasons)
+    assert any("sin autoridad H2" in reason for reason in reasons)
 
 
 def test_h3_calibrated_context_without_pattern_runs(tmp_path: Path):

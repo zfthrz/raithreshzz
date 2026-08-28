@@ -1,4 +1,5 @@
 import argparse
+import json
 import math
 import os
 import re
@@ -1378,7 +1379,8 @@ def validate_pattern_layer(connection, errors, warnings):
             persistent_pattern_count,
             conflict_review_required_count,
             match_edge_count,
-            transitively_resolved_ambiguous_pair_count
+            transitively_resolved_ambiguous_pair_count,
+            metadata_json
         FROM pattern_runs
         ORDER BY pattern_run_id
         """
@@ -1392,6 +1394,7 @@ def validate_pattern_layer(connection, errors, warnings):
             declared_patterns, declared_episodes,
             declared_single, declared_repeat, declared_persistent, declared_conflict,
             declared_match_edges, declared_transitive_ambig,
+            metadata_json,
         ) = row
 
         for label, value in (
@@ -1408,6 +1411,63 @@ def validate_pattern_layer(connection, errors, warnings):
             errors.append(f"pattern_run {run_id}: persistent_min_independent_sessions inválido")
         if not track or not layout or not variant:
             errors.append(f"pattern_run {run_id}: contexto incompleto")
+
+        try:
+            metadata = json.loads(metadata_json or "{}")
+        except (TypeError, ValueError, json.JSONDecodeError):
+            metadata = None
+            errors.append(f"pattern_run {run_id}: metadata_json inválido")
+        if isinstance(metadata, dict) and metadata.get("h3_pipeline_version"):
+            source_features_sha = str(metadata.get("source_features_sha256") or "")
+            if not sha_pattern.match(source_features_sha):
+                errors.append(
+                    f"pattern_run {run_id}: source_features_sha256 oficial inválido"
+                )
+            for field in (
+                "authorized_matcher_version",
+                "track_baseline_policy_version",
+                "match_promotion_policy_version",
+            ):
+                if not metadata.get(field):
+                    errors.append(
+                        f"pattern_run {run_id}: provenance oficial ausente {field}"
+                    )
+            gate = metadata.get("h2_authority_gate")
+            if not isinstance(gate, dict):
+                errors.append(f"pattern_run {run_id}: h2_authority_gate inválido")
+            else:
+                if safe_int(gate.get("inherited_reject_count")) != 0:
+                    errors.append(f"pattern_run {run_id}: inherited REJECT persistido")
+                if safe_int(gate.get("unauthorized_match_count")) != 0:
+                    errors.append(f"pattern_run {run_id}: MATCH no autorizado persistido")
+
+            authority_rows = connection.execute(
+                """
+                SELECT decision, raw_decision_json
+                FROM persistent_pattern_pair_evidence
+                WHERE pattern_run_id = ?
+                """,
+                [run_id],
+            ).fetchall()
+            for decision, raw_json in authority_rows:
+                try:
+                    raw = json.loads(raw_json or "{}")
+                except (TypeError, ValueError, json.JSONDecodeError):
+                    errors.append(
+                        f"pattern_run {run_id}: raw_decision_json inválido"
+                    )
+                    continue
+                authority = raw.get("authority") or {}
+                scope = authority.get("calibration_scope")
+                if scope == "COVERED_BY_TRACK_MATCH_BASELINE":
+                    if decision == "REJECT":
+                        errors.append(
+                            f"pattern_run {run_id}: REJECT heredado persistido"
+                        )
+                    if authority.get("production_reject_authorized") is not False:
+                        errors.append(
+                            f"pattern_run {run_id}: baseline elevó autoridad REJECT"
+                        )
 
         actual_patterns = connection.execute(
             "SELECT COUNT(*) FROM persistent_patterns WHERE pattern_run_id = ?",

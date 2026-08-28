@@ -64,6 +64,9 @@ python race_engineer.py analyze "telemetria\ARCHIVO.duckdb" --backend ollama
   an official H3 run into History is explicit, idempotent and observational:
   `cross_session_repeat` is not a `persistent_pattern`, conflicts are never imported,
   and no imported row changes session-reference or historical coaching authority.
+- H3 import readiness discovery is read-only. It may validate existing official
+  bundles and report not-applicable/ready/imported/conflict/failed, but it must not
+  run H2/H3, mutate History or treat readiness as coaching authority.
 - H5.3 remains ROADMAP_ONLY; H5.3a/b/c are implemented shadow-only and never
   enable historical coaching. The orchestrator `h5_3` stage is observational-only
   and must return `SKIPPED_NOT_APPLICABLE` when H4/H5.1/H5.2 prerequisites are

@@ -83,7 +83,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.38"
+GUI_VERSION = "1.39"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 STATE_REFRESH_INTERVAL_MS = 5_000
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -161,6 +161,14 @@ READINESS_ACTION_LABELS = {
     "ESTABLISH_TRACK_BASELINE_FIRST": "Establecer primero el baseline del circuito",
     "NONE": "Sin acción pendiente",
     "UNKNOWN": "Revisión manual",
+}
+
+H3_IMPORT_STATUS_LABELS = {
+    "H3_NOT_APPLICABLE": "No aplicable",
+    "H3_READY_TO_IMPORT": "Listo para importar",
+    "H3_IMPORTED": "Importado",
+    "H3_CONFLICT": "Conflicto",
+    "H3_FAILED": "Falló validación",
 }
 
 SESSION_CHANGE_STATUS_LABELS = {
@@ -498,6 +506,24 @@ def track_readiness_status_tooltip(row: dict) -> str:
         "TRACK_MATCH_BASELINE_SHADOW",
     }:
         text += " Variantes fuente: " + ", ".join(map(str, source_variants)) + "."
+    h3 = row.get("h3_import") or {}
+    h3_status = str(h3.get("status") or "H3_NOT_APPLICABLE")
+    h3_text = {
+        "H3_NOT_APPLICABLE": "H3: no hay una materialización oficial aplicable.",
+        "H3_READY_TO_IMPORT": (
+            "H3: bundle oficial validado y listo para importación explícita; "
+            "History todavía no fue modificado."
+        ),
+        "H3_IMPORTED": (
+            "H3: este bundle exacto ya está en History como evidencia observacional."
+        ),
+        "H3_CONFLICT": "H3: conflicto detectado; la importación está bloqueada.",
+        "H3_FAILED": "H3: el bundle no superó la validación fail-closed.",
+    }.get(h3_status, f"H3: {h3_status}.")
+    reason = str(h3.get("reason") or "").strip()
+    if reason:
+        h3_text += f" Motivo: {reason}."
+    text += " " + h3_text
     return text
 
 
@@ -2003,7 +2029,7 @@ class RaceEngineerApp:
         ).pack(anchor="w")
 
         context_columns = (
-            "variant", "sessions", "labels", "matcher", "historical", "status", "next"
+            "variant", "sessions", "labels", "matcher", "h3", "historical", "status", "next"
         )
         self.track_context_tree = self.ttk.Treeview(
             contexts_panel,
@@ -2016,6 +2042,7 @@ class RaceEngineerApp:
             "sessions": "Sesiones",
             "labels": "Labels",
             "matcher": "H2",
+            "h3": "H3",
             "historical": "Histórico",
             "status": "Estado",
             "next": "Siguiente acción",
@@ -2025,6 +2052,7 @@ class RaceEngineerApp:
             "sessions": 70,
             "labels": 70,
             "matcher": 270,
+            "h3": 135,
             "historical": 145,
             "status": 220,
             "next": 250,
@@ -2182,6 +2210,10 @@ class RaceEngineerApp:
                     row.get("sessions", 0),
                     f"{row.get('labeled_pairs', 0)}/{row.get('queue_pairs', 0)}",
                     row.get("matcher_status", "—"),
+                    H3_IMPORT_STATUS_LABELS.get(
+                        str(row.get("h3_import_status") or "H3_NOT_APPLICABLE"),
+                        str(row.get("h3_import_status") or "—"),
+                    ),
                     row.get("historical_status", "—"),
                     READINESS_STATUS_LABELS.get(status, status),
                     action_label,

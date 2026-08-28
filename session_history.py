@@ -3199,6 +3199,65 @@ def _pattern_run_existing(connection, bundle_sha):
     return safe_int(row[0]) if row else None
 
 
+def inspect_pattern_run_import(connection, patterns_path, matches_path):
+    """Validate an H3 bundle and report whether this exact run is in History.
+
+    This is the read-only counterpart of ``import_pattern_run``.  It applies the
+    same source, context and authority validation, but never starts a transaction
+    or inserts rows.
+    """
+
+    patterns_path = normalized_path(patterns_path)
+    matches_path = normalized_path(matches_path)
+    if not os.path.exists(patterns_path):
+        raise FileNotFoundError(patterns_path)
+    if not os.path.exists(matches_path):
+        raise FileNotFoundError(matches_path)
+
+    patterns_sha = file_sha256(patterns_path)
+    matches_sha = file_sha256(matches_path)
+    patterns_doc = load_json_object(patterns_path)
+    matches_doc = load_json_object(matches_path)
+    metadata, summary, patterns, _, _ = _validate_pattern_import_sources(
+        connection,
+        patterns_doc,
+        matches_doc,
+    )
+    bundle_sha = _stable_pattern_bundle_sha256(
+        patterns_doc,
+        matches_doc,
+        patterns_sha,
+        matches_sha,
+    )
+    existing = _pattern_run_existing(connection, bundle_sha)
+    contexts = {
+        (
+            str((pattern.get("context") or {}).get("track") or "").strip(),
+            str((pattern.get("context") or {}).get("track_layout") or "").strip(),
+            str((pattern.get("context") or {}).get("vehicle_variant") or "").strip(),
+        )
+        for pattern in patterns
+    }
+    if len(contexts) != 1:
+        raise ValueError(
+            "Pattern run debe tener un único contexto; "
+            f"encontrados={sorted(contexts)!r}"
+        )
+
+    return {
+        "status": "IMPORTED" if existing is not None else "READY_TO_IMPORT",
+        "pattern_run_id": existing,
+        "source_bundle_sha256": bundle_sha,
+        "context": next(iter(contexts)),
+        "pattern_count": len(patterns),
+        "state_counts": dict(summary.get("state_counts") or {}),
+        "h3_version": metadata.get("h3_version"),
+        "matcher_version": metadata.get("matcher_version"),
+        "observational_only": True,
+        "historical_actions_authorized": False,
+    }
+
+
 def _validate_pattern_import_sources(connection, patterns_doc, matches_doc):
     metadata = patterns_doc.get("metadata")
     summary = patterns_doc.get("summary")

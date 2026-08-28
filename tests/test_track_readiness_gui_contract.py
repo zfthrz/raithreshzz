@@ -40,3 +40,12 @@ def test_shadow_tooltip_keeps_match_and_reject_unauthorized():
     assert "shadow" in text
     assert "No autoriza MATCH productivo" in text
     assert "nunca hereda REJECT" in text
+
+
+def test_gui_tooltip_exposes_h3_ready_as_explicit_observational_import():
+    text = track_readiness_status_tooltip({
+        "overall_status": "CURRENT_REQUIREMENTS_SATISFIED",
+        "h3_import": {"status": "H3_READY_TO_IMPORT"},
+    })
+    assert "listo para importación explícita" in text
+    assert "History todavía no fue modificado" in text

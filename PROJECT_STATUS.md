@@ -16,6 +16,9 @@ Validated baseline:
 - GUI Track Readiness v1.38 distinguishes exact calibration, promoted MATCH-only
   coverage, shadow baseline and pending/blocking states. Promoted coverage explicitly
   states that REJECT remains variant-specific and does not claim full calibration.
+- GUI v1.39 / Track Readiness v0.8 adds read-only H3 import discovery. Existing
+  official bundles are reported as not applicable, ready to import, imported,
+  conflict or failed. Discovery does not materialize H3 or write History.
 
 - full pytest: `1359 PASS / 0 FAIL / 0 SKIP`;
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP` (last analyzer-affecting checkpoint);

@@ -88,6 +88,7 @@ def _roots(tmp_path: Path, monkeypatch, rows: list[dict]):
     runs.mkdir()
     batches.mkdir()
     monkeypatch.setattr(tr, "load_calibration_summary", lambda _root: {"rows": rows})
+    monkeypatch.setattr(tr, "discover_h3_import_readiness", lambda **_kwargs: {})
     return profiles, runs, batches
 
 
@@ -354,3 +355,26 @@ def test_highest_validated_profile_wins(tmp_path, monkeypatch):
         profile_dir=profiles, runs_root=runs, batches_root=batches
     )
     assert payload["rows"][0]["profile_id"] == "spa-v0.3"
+
+
+def test_h3_import_readiness_is_exposed_without_changing_overall_status(tmp_path, monkeypatch):
+    profiles, runs, batches = _roots(
+        tmp_path, monkeypatch,
+        [_calibration(matcher_status="CALIBRATED_PROVISIONAL_MULTI_CONTEXT")],
+    )
+    _profile(profiles / "spa_v0_3.json")
+    monkeypatch.setattr(tr, "discover_h3_import_readiness", lambda **_kwargs: {
+        tr.H3Context("Spa", "Spa", "LMP2_ELMS"): {
+            "status": "H3_READY_TO_IMPORT", "read_only": True,
+            "historical_actions_authorized": False,
+        }
+    })
+    payload = tr.build_track_readiness(
+        profile_dir=profiles, runs_root=runs, batches_root=batches,
+        history_db=tmp_path / "history.duckdb",
+    )
+    row = payload["rows"][0]
+    assert row["overall_status"] == "CURRENT_REQUIREMENTS_SATISFIED"
+    assert row["h3_import_status"] == "H3_READY_TO_IMPORT"
+    assert row["h3_import"]["historical_actions_authorized"] is False
+    assert payload["summary"]["h3_import_status_counts"] == {"H3_READY_TO_IMPORT": 1}

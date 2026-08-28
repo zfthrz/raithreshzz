@@ -1285,6 +1285,11 @@ Los conflictos no se importan. Una cobertura jerárquica promovida puede aportar
 únicamente: REJECT continúa siendo específico de la variante. Importar H3 nunca cambia
 la referencia de sesión ni habilita coaching histórico.
 
+La vista `Circuitos → Readiness` inspecciona esos bundles sin ejecutar el pipeline ni
+escribir History. Su columna H3 diferencia `No aplicable`, `Listo para importar`,
+`Importado`, `Conflicto` y `Falló validación`. “Listo para importar” es sólo un
+diagnóstico: la importación continúa siendo explícita mediante `--history-db`.
+
 Todavía no crear `persistent_pattern` automáticamente sólo porque dos episodios fueron `MATCH`.
 
 El primer batch H2 de Monza Hypercar tiene 24 pares revisados por una persona

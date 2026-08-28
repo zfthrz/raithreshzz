@@ -154,7 +154,7 @@ D3.x deterministic-first default and D2.9 production ranker (2026-08-25).
 | Component | Current operational baseline |
 |---|---|
 | `race_engineer.py` | orchestrator v0.3 |
-| `race_engineer_gui.py` | v1.38 / Track Readiness hierarchy + current desktop workflow |
+| `race_engineer_gui.py` | v1.39 / Track Readiness hierarchy + read-only H3 import readiness |
 | `analyze_telemetry.py` | v3.8 + Objective Python v6 |
 | Brake point | 2.1 / schema 2.1 |
 | Throttle point | 1.2.1 / schema 1.2 |
@@ -777,6 +777,14 @@ Real Imola HYPER validation on a temporary copy of History produced 26 MATCH,
 Exactly one compatible run and 14 derived rows were stored; a full rerun returned
 `REUSED`, inherited REJECT remained zero and the History validator passed. The real
 History database was not modified during this checkpoint.
+
+`h3_import_readiness.py` adds a read-only operational bridge before scheduler
+automation. It discovers only already-materialized official H3 bundles, validates
+them through the same History import contract and reports exact-context states:
+`H3_NOT_APPLICABLE`, `H3_READY_TO_IMPORT`, `H3_IMPORTED`, `H3_CONFLICT` or
+`H3_FAILED`. It never runs H2/H3, writes History or changes coaching authority.
+Track Readiness v0.8 and GUI v1.39 expose this state independently from calibration
+readiness; a ready bundle still requires explicit import.
 
 H3.1 adds a per-session observational materialization step through
 `select_session_persistent_patterns.py`. For an exact calibrated

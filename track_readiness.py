@@ -8,12 +8,13 @@ from pathlib import Path
 from typing import Any, Iterable
 
 from cross_session_zone_localization import VALID_PROFILE_STATUSES, normalize_identity
+from h3_import_readiness import H3Context, discover_h3_import_readiness
 from race_engineer_ui_model import load_calibration_summary
 from track_baseline_shadow import resolve_track_baseline
 from track_match_baseline_promotion import discover_promotion_for_context
 
 
-TRACK_READINESS_VERSION = "0.7"
+TRACK_READINESS_VERSION = "0.8"
 READY_STAGE_STATUSES = {"RUN", "REUSED"}
 PROFILE_VERSION_RE = re.compile(r"v(\d+)[._](\d+)", re.IGNORECASE)
 
@@ -526,11 +527,13 @@ def build_track_readiness(
     profile_dir: Path | None = None,
     batches_root: Path | None = None,
     runs_root: Path | None = None,
+    history_db: Path | None = None,
 ) -> dict[str, Any]:
     root = Path(project_root or Path(__file__).resolve().parent)
     profile_dir = Path(profile_dir or root / "track_profiles")
     batches_root = Path(batches_root or root / "calibration_batches")
     runs_root = Path(runs_root or root / "data" / "generated" / "runs")
+    history_db = Path(history_db or root / "data" / "local" / "race_engineer_history.duckdb")
 
     profiles, profile_errors = discover_profiles(profile_dir)
     layout_hints = _validated_profile_layout_hints(profiles)
@@ -542,6 +545,10 @@ def build_track_readiness(
 
     calibration_summary = load_calibration_summary(batches_root)
     calibration_rows = calibration_summary.get("rows") or []
+    h3_by_context = discover_h3_import_readiness(
+        batches_root=batches_root,
+        history_db=history_db,
+    )
 
     calibration_by_key: dict[ContextKey, dict[str, Any]] = {}
     for row in calibration_rows:
@@ -578,6 +585,14 @@ def build_track_readiness(
         profile_status = _profile_state(profile)
         runtime = runtime_contexts.get(key)
         calibration = calibration_by_key.get(key)
+        h3 = h3_by_context.get(
+            H3Context(key.track, key.track_layout, key.vehicle_variant),
+            {
+                "status": "H3_NOT_APPLICABLE",
+                "read_only": True,
+                "historical_actions_authorized": False,
+            },
+        )
 
         runtime_sessions = int((runtime or {}).get("sessions") or 0)
         calibration_sessions = int((calibration or {}).get("sessions") or 0)
@@ -673,6 +688,10 @@ def build_track_readiness(
                     promotion.get("production_reject_authorized") is True
                 ),
                 "historical_status": _historical_status(runtime),
+                "h3_import": h3,
+                "h3_import_status": str(
+                    h3.get("status") or "H3_NOT_APPLICABLE"
+                ),
                 "overall_status": overall_status,
                 "next_action": next_action,
             }
@@ -740,8 +759,10 @@ def build_track_readiness(
             }
 
     counts: dict[str, int] = defaultdict(int)
+    h3_counts: dict[str, int] = defaultdict(int)
     for row in rows:
         counts[row["overall_status"]] += 1
+        h3_counts[row["h3_import_status"]] += 1
 
     tracks = _build_track_summary(
         rows=rows,
@@ -766,6 +787,7 @@ def build_track_readiness(
             "resolved_missing_layout_from_profile": resolved_by_profile,
             "unresolved_sessions": len(unresolved_sessions),
             "status_counts": dict(sorted(counts.items())),
+            "h3_import_status_counts": dict(sorted(h3_counts.items())),
         },
         "identity_warnings": _identity_warnings(rows),
         "errors": profile_errors + runtime_errors,

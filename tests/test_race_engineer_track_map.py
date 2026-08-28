@@ -28,6 +28,7 @@ from race_engineer_track_map import (
     pan_distance_window,
     pan_track_canvas_view,
     point_index_for_distance,
+    point_index_for_elapsed_time,
     profile_location_for_distance,
     profile_turns,
     priority_for_distance,
@@ -166,6 +167,54 @@ def make_gps_database(path: Path) -> Path:
     return path
 
 
+def test_track_map_duration_is_independent_from_render_resolution(tmp_path: Path):
+    durations = []
+    point_counts = []
+    for target_hz in (10.0, 20.0, 50.0):
+        database = make_gps_database(
+            tmp_path / f"duration_{target_hz:g}.duckdb"
+        )
+        result = load_track_map(
+            database,
+            preferred_lap=1,
+            target_hz=target_hz,
+        )
+        durations.append(result.duration_s)
+        point_counts.append(len(result.points))
+
+    # Lap.ts boundaries are 40.000 s apart. Resampling changes point density,
+    # never the authoritative lap duration.
+    assert durations == pytest.approx([40.0, 40.0, 40.0], abs=1e-9)
+    assert point_counts[0] < point_counts[1] < point_counts[2]
+
+
+def test_track_map_points_keep_lap_relative_time(tmp_path: Path):
+    database = make_gps_database(tmp_path / "elapsed.duckdb")
+    result = load_track_map(database, preferred_lap=1, target_hz=20.0)
+
+    elapsed = [
+        point.elapsed_s
+        for point in result.points
+        if point.elapsed_s is not None
+    ]
+    assert elapsed
+    assert elapsed[0] == pytest.approx(0.0, abs=1e-9)
+    assert elapsed == sorted(elapsed)
+    assert elapsed[-1] <= result.duration_s
+
+
+def test_point_index_for_elapsed_time_uses_nearest_sample():
+    points = (
+        TrackMapPoint(0.0, 0.0, 0.0, elapsed_s=0.000),
+        TrackMapPoint(1.0, 0.0, 1.0, elapsed_s=0.050),
+        TrackMapPoint(2.0, 0.0, 2.0, elapsed_s=0.100),
+    )
+    assert point_index_for_elapsed_time(points, 0.001) == 0
+    assert point_index_for_elapsed_time(points, 0.026) == 1
+    assert point_index_for_elapsed_time(points, 0.099) == 2
+    assert point_index_for_elapsed_time(points, 99.0) == 2
+
+
 def test_load_track_map_reconstructs_preferred_lap_read_only(tmp_path: Path):
     database = make_gps_database(tmp_path / "session.duckdb")
     size_before = database.stat().st_size
@@ -198,7 +247,10 @@ def test_list_track_map_laps_returns_only_complete_sorted_laps_read_only(
     options = list_track_map_laps(database, target_hz=5.0)
 
     assert [option.lap for option in options] == [0, 1]
-    assert all(option.duration_s == pytest.approx(39.8) for option in options)
+    # Lap.ts boundaries in the synthetic fixture are exactly 0, 40 and 80 s.
+    # The lap list must use native boundaries, not the 5 Hz resampled grid
+    # whose last in-lap sample is 39.8 s.
+    assert all(option.duration_s == pytest.approx(40.0) for option in options)
     assert database.stat().st_size == size_before
 
 

@@ -9,6 +9,7 @@ import os
 import queue
 import sys
 import threading
+import time
 from pathlib import Path
 
 from race_engineer_history_gui import open_history_browser
@@ -64,6 +65,7 @@ from race_engineer_track_map import (
     pan_distance_window,
     pan_track_canvas_view,
     point_index_for_distance,
+    point_index_for_elapsed_time,
     profile_location_for_distance,
     profile_turns,
     priority_for_distance,
@@ -84,7 +86,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.41"
+GUI_VERSION = "1.42"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 STATE_REFRESH_INTERVAL_MS = 5_000
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -718,6 +720,9 @@ class RaceEngineerApp:
         self._row_tooltip = None
         self.track_playback_active = False
         self.track_playback_after_id = None
+        self.track_playback_started_at: float | None = None
+        self.track_playback_anchor_elapsed_s = 0.0
+        self.track_playback_elapsed_s = 0.0
         self.track_resolution_hz = 20.0
         self.analysis_queue: queue.Queue[tuple[str, object]] = queue.Queue()
         self.track_map_queue: queue.Queue[tuple[int, str, object]] = queue.Queue()
@@ -4837,6 +4842,21 @@ class RaceEngineerApp:
         data = self.current_track_map
         if data is None or not data.points:
             return
+        anchor = 0.0
+        if (
+            self.selected_track_point_index is not None
+            and 0 <= self.selected_track_point_index < len(data.points)
+        ):
+            selected_elapsed = data.points[
+                self.selected_track_point_index
+            ].elapsed_s
+            if selected_elapsed is not None:
+                anchor = max(0.0, float(selected_elapsed))
+        if anchor >= data.duration_s:
+            anchor = 0.0
+        self.track_playback_anchor_elapsed_s = anchor
+        self.track_playback_elapsed_s = anchor
+        self.track_playback_started_at = time.perf_counter()
         self.track_playback_active = True
         self.track_play_button.configure(text="⏸ Pausa")
         self._schedule_track_playback()
@@ -4844,6 +4864,9 @@ class RaceEngineerApp:
     def _schedule_track_playback(self):
         if not self.track_playback_active:
             return
+        # Resolution controls visual update frequency only. Playback speed is
+        # driven by perf_counter() in _tick_track_playback, so render overhead
+        # cannot make 50 Hz run slower than 10/20 Hz.
         interval_ms = max(16, int(round(1000.0 / self.track_resolution_hz)))
         self.track_playback_after_id = self.root.after(
             interval_ms,
@@ -4858,15 +4881,39 @@ class RaceEngineerApp:
         if data is None or not data.points:
             self._stop_track_playback()
             return
-        index = (self.selected_track_point_index or 0) + 1
-        if index >= len(data.points):
+        if self.track_playback_started_at is None:
+            self.track_playback_started_at = time.perf_counter()
+        wall_elapsed_s = time.perf_counter() - self.track_playback_started_at
+        target_elapsed_s = self.track_playback_anchor_elapsed_s + wall_elapsed_s
+        self.track_playback_elapsed_s = min(
+            max(target_elapsed_s, 0.0),
+            max(float(data.duration_s), 0.0),
+        )
+        if target_elapsed_s >= data.duration_s:
+            self._apply_track_point_selection(len(data.points) - 1)
+            self._set_playback_time_status(data.duration_s)
+            self._stop_track_playback()
+            return
+        index = point_index_for_elapsed_time(data.points, target_elapsed_s)
+        if index is None:
             self._stop_track_playback()
             return
         self._apply_track_point_selection(index)
+        self._set_playback_time_status(target_elapsed_s)
         self._schedule_track_playback()
+
+    def _set_playback_time_status(self, elapsed_s: float) -> None:
+        """Show playback clock to milliseconds without claiming 1 kHz telemetry."""
+        minutes = int(max(elapsed_s, 0.0) // 60.0)
+        seconds = max(elapsed_s, 0.0) - minutes * 60.0
+        timing = f"{minutes}:{seconds:06.3f}"
+        current = self.track_map_telemetry_status.get().strip()
+        suffix = current.split(" · tiempo ", 1)[0] if current else "Telemetría"
+        self.track_map_telemetry_status.set(f"{suffix} · tiempo {timing}")
 
     def _stop_track_playback(self):
         self.track_playback_active = False
+        self.track_playback_started_at = None
         if self.track_playback_after_id is not None:
             try:
                 self.root.after_cancel(self.track_playback_after_id)
@@ -4882,6 +4929,9 @@ class RaceEngineerApp:
             return
         self._stop_track_playback()
         self._apply_track_point_selection(0)
+        self.track_playback_anchor_elapsed_s = 0.0
+        self.track_playback_elapsed_s = 0.0
+        self._set_playback_time_status(0.0)
         point = data.points[0]
         distance = (
             "—" if point.lap_distance_m is None else f"{point.lap_distance_m:.0f} m"
@@ -4898,6 +4948,7 @@ class RaceEngineerApp:
             return
         if hz == self.track_resolution_hz:
             return
+        self._stop_track_playback()
         self.track_resolution_hz = hz
         record = self.selected_record()
         if record is not None:

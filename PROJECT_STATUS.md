@@ -29,6 +29,11 @@ Validated baseline:
   `Circuitos → Readiness`. Its file fingerprint updates only the compact status
   line, not the session/map/telemetry workspace; invalid or mutating contracts fail
   closed and no import action is exposed.
+- GUI v1.42 / track-map v0.9 drives playback from monotonic wall time and stores
+  lap-relative timestamps on rendered points. Playback therefore remains 1× at
+  10/20/50 Hz, while lap selectors and the playback clock retain millisecond
+  precision from native boundaries/reference duration instead of resampled-grid
+  rounding. Source telemetry remains read-only.
 - H3 import maintenance v0.2 audits all newest exact-context materializations in
   one command and keeps History read-only by default. `--apply` remains an explicit
   operator action and imports only existing `H3_READY_TO_IMPORT` bundles through

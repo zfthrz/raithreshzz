@@ -3,6 +3,8 @@ from __future__ import annotations
 import inspect
 from types import SimpleNamespace
 
+import pytest
+import race_engineer_gui as gui
 from race_engineer_gui import (
     GUI_VERSION,
     PRIMARY_SECTIONS,
@@ -42,6 +44,70 @@ def test_telemetry_pointer_selects_nearest_map_point_on_visible_axis():
     assert selected == [1]
     assert app._select_telemetry_point(40.0) is False
     assert selected == [1]
+
+
+def test_playback_tick_uses_wall_clock_independent_from_render_rate(monkeypatch):
+    app = RaceEngineerApp.__new__(RaceEngineerApp)
+    app.track_playback_active = True
+    app.track_playback_after_id = "pending"
+    app.track_playback_started_at = 100.0
+    app.track_playback_anchor_elapsed_s = 0.0
+    app.track_playback_elapsed_s = 0.0
+    app.current_track_map = SimpleNamespace(
+        duration_s=0.100,
+        points=(
+            TrackMapPoint(0.0, 0.0, 0.0, elapsed_s=0.000),
+            TrackMapPoint(1.0, 0.0, 1.0, elapsed_s=0.020),
+            TrackMapPoint(2.0, 0.0, 2.0, elapsed_s=0.040),
+            TrackMapPoint(3.0, 0.0, 3.0, elapsed_s=0.100),
+        ),
+    )
+    selected = []
+    displayed_times = []
+    scheduled = []
+    app._apply_track_point_selection = selected.append
+    app._set_playback_time_status = displayed_times.append
+    app._schedule_track_playback = lambda: scheduled.append(True)
+    app._stop_track_playback = lambda: None
+    monkeypatch.setattr(gui.time, "perf_counter", lambda: 100.027)
+
+    app._tick_track_playback()
+
+    assert selected == [1]
+    assert app.track_playback_elapsed_s == pytest.approx(0.027)
+    assert displayed_times == pytest.approx([0.027])
+    assert scheduled == [True]
+
+
+def test_playback_tick_stops_exactly_at_authoritative_lap_duration(monkeypatch):
+    app = RaceEngineerApp.__new__(RaceEngineerApp)
+    app.track_playback_active = True
+    app.track_playback_after_id = "pending"
+    app.track_playback_started_at = 50.0
+    app.track_playback_anchor_elapsed_s = 0.0
+    app.track_playback_elapsed_s = 0.0
+    app.current_track_map = SimpleNamespace(
+        duration_s=1.234,
+        points=(
+            TrackMapPoint(0.0, 0.0, 0.0, elapsed_s=0.000),
+            TrackMapPoint(1.0, 0.0, 1.0, elapsed_s=1.220),
+        ),
+    )
+    selected = []
+    displayed_times = []
+    stopped = []
+    app._apply_track_point_selection = selected.append
+    app._set_playback_time_status = displayed_times.append
+    app._schedule_track_playback = lambda: None
+    app._stop_track_playback = lambda: stopped.append(True)
+    monkeypatch.setattr(gui.time, "perf_counter", lambda: 51.500)
+
+    app._tick_track_playback()
+
+    assert selected == [1]
+    assert app.track_playback_elapsed_s == 1.234
+    assert displayed_times == [1.234]
+    assert stopped == [True]
 
 
 class FakeStyle:

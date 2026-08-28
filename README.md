@@ -1374,6 +1374,12 @@ aplicables. La actualización observa sólo el fingerprint del archivo local y n
 reconstruye mapas ni telemetría. La vista es estrictamente read-only y no ofrece
 importación automática.
 
+La GUI v1.42 desacopla la velocidad del playback de la resolución visual: 10, 20 y
+50 Hz reproducen a velocidad 1× usando un reloj monotónico, mientras el marcador se
+ajusta al punto telemétrico temporal más cercano. Los tiempos de vuelta y el reloj
+se muestran a milisegundos usando límites nativos de vuelta o la duración exacta de
+la referencia, sin redondeo causado por el último intervalo del resampling.
+
 El contrato LLM histórico v0.1 puede seleccionar hasta tres zonas H5.2 y únicamente códigos observacionales autorizados por Python para cada una. El LLM no escribe texto libre: Python arma todo el render final con hechos y cifras exactos. Un validator separado rechaza zonas inventadas, claves adicionales, códigos no autorizados o evidencia alterada.
 
 La selección puede auditarse sin llamar nuevamente al modelo:

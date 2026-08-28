@@ -91,7 +91,7 @@ Checkpoint: 2026-08-26 GUI v1.21 + automatic H2 review queues + H5.4 P1–P11.
 
 ```text
 race_engineer.py             orchestrator 0.3
-race_engineer_gui.py         desktop session hub 1.21 / automatic calibration queues
+race_engineer_gui.py         desktop session hub 1.42 / time-based telemetry playback
 analyze_telemetry.py         3.8 + Objective Python v6
 llm_analysis*.py             3.10.8.5.4
 llm_analysis_llamacpp.py     3.10.8.5.4 / llama.cpp local (default qwen3-14b)

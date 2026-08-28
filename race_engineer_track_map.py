@@ -32,7 +32,7 @@ from extract_lmu_track_gps import (
 )
 
 
-TRACK_MAP_VERSION = "0.8"
+TRACK_MAP_VERSION = "0.9"
 GEAR_GLITCH_MAX_DURATION_S = 0.25
 
 
@@ -45,6 +45,7 @@ class TrackMapPoint:
     throttle_percent: float | None = None
     brake_percent: float | None = None
     gear: int | None = None
+    elapsed_s: float | None = None
 
 
 @dataclass(frozen=True)
@@ -211,10 +212,21 @@ def list_track_map_laps(
             for lap, indices in groups.items()
         }
         complete = _complete_lap_metrics(metrics)
+
+        def authoritative_lap_duration_s(lap: int) -> float:
+            # Prefer native Lap.ts boundaries over the resampled master grid.
+            if boundaries and 0 <= lap < len(boundaries) - 1:
+                start_s = float(boundaries[lap])
+                end_s = float(boundaries[lap + 1])
+                duration_s = end_s - start_s
+                if math.isfinite(duration_s) and duration_s > 0.0:
+                    return duration_s
+            return float(complete[lap]["duration_s"])
+
         return tuple(
             TrackMapLapOption(
                 lap=int(lap),
-                duration_s=float(complete[lap]["duration_s"]),
+                duration_s=authoritative_lap_duration_s(int(lap)),
             )
             for lap in sorted(complete)
         )
@@ -345,6 +357,25 @@ def load_track_map(
         )
         if grouping_basis == "lap_distance_resets_fallback":
             selection_reason += "_DISTANCE_RESET_FALLBACK"
+        selected_start_s = float(master_times[groups[selected_lap][0]])
+        selected_duration_s = float(metrics[selected_lap]["duration_s"])
+        if (
+            grouping_basis == "lap_events"
+            and 0 <= selected_lap < len(boundaries)
+        ):
+            selected_start_s = float(boundaries[selected_lap])
+            if selected_lap + 1 < len(boundaries):
+                boundary_duration_s = (
+                    float(boundaries[selected_lap + 1]) - selected_start_s
+                )
+                if boundary_duration_s > 0.0:
+                    selected_duration_s = boundary_duration_s
+        if (
+            selection_reason == "REFERENCE_DURATION_MATCH"
+            and preferred_duration_s is not None
+            and preferred_duration_s > 0.0
+        ):
+            selected_duration_s = float(preferred_duration_s)
         rows = csv_rows_for_lap(
             groups[selected_lap],
             master_times,
@@ -372,6 +403,10 @@ def load_track_map(
                     throttle_percent=_finite_at(throttle, master_index),
                     brake_percent=_finite_at(brake, master_index),
                     gear=_gear_at(gear, master_index),
+                    elapsed_s=max(
+                        0.0,
+                        float(row["session_time_s"]) - selected_start_s,
+                    ),
                 )
             )
         # Re-evaluate event-style zero sentinels inside the selected lap. This
@@ -390,6 +425,7 @@ def load_track_map(
                 point.throttle_percent,
                 point.brake_percent,
                 selected_gears[index],
+                point.elapsed_s,
             )
             for index, point in enumerate(points)
         ]
@@ -404,7 +440,7 @@ def load_track_map(
             lap=int(selected_lap),
             requested_lap=preferred_lap,
             selection_reason=selection_reason,
-            duration_s=float(metrics[selected_lap]["duration_s"]),
+            duration_s=selected_duration_s,
             points=points,
             width_m=max(xs) - min(xs),
             height_m=max(ys) - min(ys),
@@ -595,6 +631,40 @@ def summarize_track_interval(
         brake_mean_percent=mean(brakes),
         brake_max_percent=max(brakes) if brakes else None,
     )
+
+
+def point_index_for_elapsed_time(
+    points: tuple[TrackMapPoint, ...],
+    elapsed_s: float,
+) -> int | None:
+    """Return the sample nearest to a lap-relative playback time.
+
+    Playback time is authoritative and independent from sample/render rate.
+    The visual marker still snaps to the closest real/resampled telemetry point;
+    no synthetic 1 kHz telemetry samples are invented.
+    """
+
+    if not points or not math.isfinite(float(elapsed_s)):
+        return None
+    target = max(0.0, float(elapsed_s))
+    timed = [
+        (index, float(point.elapsed_s))
+        for index, point in enumerate(points)
+        if point.elapsed_s is not None and math.isfinite(float(point.elapsed_s))
+    ]
+    if not timed:
+        return None
+    if target <= timed[0][1]:
+        return timed[0][0]
+    if target >= timed[-1][1]:
+        return timed[-1][0]
+    times = [value for _, value in timed]
+    right = bisect_right(times, target)
+    left_index, left_time = timed[right - 1]
+    right_index, right_time = timed[right]
+    if target - left_time <= right_time - target:
+        return left_index
+    return right_index
 
 
 def _complete_lap_metrics(metrics: dict[int, dict]) -> dict[int, dict]:

@@ -154,7 +154,7 @@ D3.x deterministic-first default and D2.9 production ranker (2026-08-25).
 | Component | Current operational baseline |
 |---|---|
 | `race_engineer.py` | orchestrator v0.3 |
-| `race_engineer_gui.py` | v1.41 / Track Readiness + automatic H3 audit status |
+| `race_engineer_gui.py` | v1.42 / time-based telemetry playback + exact lap timing |
 | `analyze_telemetry.py` | v3.8 + Objective Python v6 |
 | Brake point | 2.1 / schema 2.1 |
 | Throttle point | 1.2.1 / schema 1.2 |
@@ -1530,6 +1530,14 @@ cheap scheduler fingerprint detects snapshot changes without rebuilding sessions
 maps or telemetry. Missing, malformed or non-read-only snapshots fail closed in the
 label; the GUI never imports H3 or writes either History or maintenance state. See
 `docs/RACE_ENGINEER_GUI_V1_41.md`.
+
+GUI v1.42 / track-map v0.9 makes playback speed independent from render resolution.
+The marker advances from `perf_counter()` wall time and snaps to the nearest existing
+lap-relative telemetry sample, so 50 Hz affects visual update density rather than
+making playback run slow. Native `Lap.ts` boundaries (or the exact selected analysis
+duration for a reference match) own the displayed lap duration, preserving
+millisecond precision instead of the final resampled grid interval. No synthetic
+high-frequency telemetry is created. See `docs/RACE_ENGINEER_GUI_V1_42.md`.
 
 GUI v1.18 integra el scheduler con el catálogo abierto mediante un fingerprint
 read-only de los `state.json`. Cada cinco segundos comprueba ruta, `mtime_ns` y

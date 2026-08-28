@@ -86,7 +86,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.42"
+GUI_VERSION = "1.43"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 STATE_REFRESH_INTERVAL_MS = 5_000
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -581,6 +581,53 @@ def h3_maintenance_summary(path: Path) -> str:
     return " · ".join(parts)
 
 
+def h3_materialization_summary(path: Path) -> str:
+    try:
+        payload = json.loads(Path(path).read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        return "H3 materialización · esperando primera auditoría"
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+        return "H3 materialización · estado local inválido"
+    if not isinstance(payload, dict):
+        return "H3 materialización · estado local inválido"
+    try:
+        files_written = int(payload.get("files_written") or 0)
+    except (TypeError, ValueError):
+        return "H3 materialización · contrato read-only inválido"
+    if (
+        payload.get("mode") != "AUDIT_READ_ONLY"
+        or payload.get("history_mutated") is not False
+        or files_written != 0
+    ):
+        return "H3 materialización · contrato read-only inválido"
+    counts = payload.get("status_counts")
+    if not isinstance(counts, dict):
+        return "H3 materialización · estado local incompleto"
+    try:
+        ready = int(counts.get("MATERIALIZATION_READY") or 0)
+        existing = int(counts.get("ALREADY_MATERIALIZED") or 0)
+        no_match = int(counts.get("NO_AUTHORIZED_MATCH") or 0)
+        blocked = int(counts.get("CONFLICT_REVIEW_REQUIRED") or 0) + int(
+            counts.get("MATERIALIZATION_FAILED") or 0
+        )
+    except (TypeError, ValueError):
+        return "H3 materialización · estado local incompleto"
+    if min(ready, existing, no_match, blocked) < 0:
+        return "H3 materialización · estado local incompleto"
+    parts = ["H3 materialización · audit read-only"]
+    if ready:
+        parts.append(f"{ready} listos para ejecución explícita")
+    if existing:
+        parts.append(f"{existing} ya materializados")
+    if no_match:
+        parts.append(f"{no_match} sin MATCH autorizado")
+    if blocked:
+        parts.append(f"{blocked} bloqueados/fallidos")
+    if len(parts) == 1:
+        parts.append("sin contextos clasificados")
+    return " · ".join(parts)
+
+
 def format_comparison_columns(view: dict) -> tuple[str, str, str, str]:
     available = bool(view.get("available"))
     hist = view.get("historical") or {}
@@ -772,6 +819,9 @@ class RaceEngineerApp:
         )
         self.h3_import_maintenance_path = (
             PROJECT_ROOT / "data" / "local" / "h3_import_maintenance.json"
+        )
+        self.h3_materialization_readiness_path = (
+            PROJECT_ROOT / "data" / "local" / "h3_materialization_readiness.json"
         )
         self.scheduler_log_path = (
             PROJECT_ROOT / "data" / "local" / "telemetry_auto_ingest_task.log"
@@ -2015,6 +2065,15 @@ class RaceEngineerApp:
         self.ttk.Label(
             frame,
             textvariable=self.h3_maintenance_summary_var,
+            style="Subtitle.TLabel",
+            justify="left",
+        ).pack(fill="x", pady=(0, 8))
+        self.h3_materialization_summary_var = self.tk.StringVar(
+            value="H3 materialización · cargando…"
+        )
+        self.ttk.Label(
+            frame,
+            textvariable=self.h3_materialization_summary_var,
             style="Subtitle.TLabel",
             justify="left",
         ).pack(fill="x", pady=(0, 8))
@@ -3887,12 +3946,22 @@ class RaceEngineerApp:
         variable = getattr(self, "h3_maintenance_summary_var", None)
         if variable is not None:
             variable.set(h3_maintenance_summary(self.h3_import_maintenance_path))
+        materialization_variable = getattr(
+            self, "h3_materialization_summary_var", None
+        )
+        if materialization_variable is not None:
+            materialization_variable.set(
+                h3_materialization_summary(
+                    self.h3_materialization_readiness_path
+                )
+            )
 
     def _scheduler_fingerprint(self):
         return (
             file_fingerprint(self.telemetry_ingest_state_path),
             file_fingerprint(self.scheduler_runtime_path),
             file_fingerprint(self.h3_import_maintenance_path),
+            file_fingerprint(self.h3_materialization_readiness_path),
         )
 
     def _scheduler_diagnostic_text(self) -> str:

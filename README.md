@@ -1380,6 +1380,12 @@ ajusta al punto telemétrico temporal más cercano. Los tiempos de vuelta y el r
 se muestran a milisegundos usando límites nativos de vuelta o la duración exacta de
 la referencia, sin redondeo causado por el último intervalo del resampling.
 
+La GUI v1.43 agrega una segunda línea H3 para materialización: muestra contextos ya
+materializados, listos para ejecución explícita, sin MATCH autorizado o bloqueados.
+El scheduler calcula ese snapshot en memoria sólo cuando cambian features, labels,
+bundles o código de autoridad; un cambio ordinario de History no dispara el proceso
+pesado y LMU abierto lo difiere. No se genera ningún bundle automáticamente.
+
 El contrato LLM histórico v0.1 puede seleccionar hasta tres zonas H5.2 y únicamente códigos observacionales autorizados por Python para cada una. El LLM no escribe texto libre: Python arma todo el render final con hechos y cifras exactos. Un validator separado rechaza zonas inventadas, claves adicionales, códigos no autorizados o evidencia alterada.
 
 La selección puede auditarse sin llamar nuevamente al modelo:

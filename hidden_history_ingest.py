@@ -9,6 +9,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Callable, Sequence
 
+from auto_ingest_telemetry import le_mans_ultimate_is_running
+
 
 PROJECT_ROOT = Path(__file__).resolve().parent
 LMU_TELEMETRY_DIR = Path(
@@ -17,6 +19,9 @@ LMU_TELEMETRY_DIR = Path(
 DEFAULT_LOG_PATH = PROJECT_ROOT / "data" / "local" / "telemetry_auto_ingest_task.log"
 DEFAULT_RUNTIME_PATH = PROJECT_ROOT / "data" / "local" / "telemetry_scheduler_runtime.json"
 DEFAULT_H3_IMPORT_STATE_PATH = PROJECT_ROOT / "data" / "local" / "h3_import_maintenance.json"
+DEFAULT_H3_MATERIALIZATION_STATE_PATH = (
+    PROJECT_ROOT / "data" / "local" / "h3_materialization_readiness.json"
+)
 DEFAULT_MAX_LOG_BYTES = 2 * 1024 * 1024
 
 
@@ -106,6 +111,18 @@ def build_h3_import_audit_command(
     ]
 
 
+def build_h3_materialization_audit_command(
+    *, python_executable: Path | None = None,
+) -> list[str]:
+    return [
+        str(console_python_executable(python_executable)),
+        str(PROJECT_ROOT / "audit_h3_materialization_readiness.py"),
+        "--output",
+        str(DEFAULT_H3_MATERIALIZATION_STATE_PATH),
+        "--reuse-unchanged-output",
+    ]
+
+
 def rotate_log(path: Path, *, max_bytes: int = DEFAULT_MAX_LOG_BYTES) -> None:
     if max_bytes < 1 or not path.is_file() or path.stat().st_size < max_bytes:
         return
@@ -123,9 +140,11 @@ def run_hidden_maintenance(
     calibration_command: Sequence[str] | None = None,
     mixed_cue_command: Sequence[str] | None = None,
     h3_import_audit_command: Sequence[str] | None = None,
+    h3_materialization_audit_command: Sequence[str] | None = None,
     runner: Callable[..., object] = subprocess.run,
     max_log_bytes: int = DEFAULT_MAX_LOG_BYTES,
     runtime_path: Path = DEFAULT_RUNTIME_PATH,
+    game_is_running: Callable[[], bool] = le_mans_ultimate_is_running,
 ) -> int:
     log_path.parent.mkdir(parents=True, exist_ok=True)
     rotate_log(log_path, max_bytes=max_log_bytes)
@@ -149,6 +168,11 @@ def run_hidden_maintenance(
         list(h3_import_audit_command)
         if h3_import_audit_command is not None
         else (build_h3_import_audit_command() if command is None else None)
+    )
+    selected_h3_materialization_audit_command = (
+        list(h3_materialization_audit_command)
+        if h3_materialization_audit_command is not None
+        else (build_h3_materialization_audit_command() if command is None else None)
     )
     creationflags = getattr(subprocess, "CREATE_NO_WINDOW", 0) if os.name == "nt" else 0
 
@@ -252,6 +276,39 @@ def run_hidden_maintenance(
                         f"maintenance exit_code={h3_return_code}; "
                         "History remains successful and no import was attempted.\n"
                     )
+            if return_code == 0 and selected_h3_materialization_audit_command is not None:
+                if game_is_running():
+                    log.write(
+                        "H3 materialization readiness audit: "
+                        "DEFERRED_GAME_RUNNING\n"
+                    )
+                else:
+                    log.write("H3 materialization readiness audit (read-only)\n")
+                    log.flush()
+                    try:
+                        materialization_completed = runner(
+                            selected_h3_materialization_audit_command,
+                            cwd=str(PROJECT_ROOT),
+                            stdout=log,
+                            stderr=subprocess.STDOUT,
+                            check=False,
+                            creationflags=creationflags,
+                        )
+                        materialization_return_code = int(
+                            getattr(materialization_completed, "returncode", 1)
+                        )
+                    except Exception as exc:
+                        materialization_return_code = 1
+                        log.write(
+                            "H3 MATERIALIZATION AUDIT EXCEPTION: "
+                            f"{type(exc).__name__}: {exc}\n"
+                        )
+                    if materialization_return_code != 0:
+                        log.write(
+                            "H3 MATERIALIZATION AUDIT WARNING: "
+                            f"maintenance exit_code={materialization_return_code}; "
+                            "History remains successful and no bundle was written.\n"
+                        )
         except Exception:
             traceback.print_exc(file=log)
             return_code = 1

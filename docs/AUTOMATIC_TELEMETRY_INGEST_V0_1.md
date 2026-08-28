@@ -180,6 +180,18 @@ completa si nada cambió. Esta etapa nunca usa `--apply`; sólo informa
 `H3_READY_TO_IMPORT`, `H3_IMPORTED`, conflictos, fallos o contextos no aplicables.
 Sus fallos son warnings no bloqueantes y no escriben en DuckDB.
 
+El runner mantiene además un snapshot separado para saber si batches nuevos podrían
+materializar H3:
+
+```powershell
+Get-Content .\data\local\h3_materialization_readiness.json
+```
+
+Como esta evaluación in-memory es costosa, su fingerprint ignora cambios ordinarios
+de History y reacciona sólo a features, labels, bundles oficiales o código de
+autoridad. Si LMU está abierto queda `DEFERRED_GAME_RUNNING`. Nunca escribe bundles,
+nunca importa History y un fallo no bloquea el scheduler principal.
+
 Cuando `pending_review_count` llega a cero, el mantenimiento reconstruye y valida en
 orden H5.3g, H5.3h y H5.3i. Los paths y conteos quedan en el mismo estado local bajo
 `downstream_status: AUDITS_CURRENT`. Con casos pendientes devuelve

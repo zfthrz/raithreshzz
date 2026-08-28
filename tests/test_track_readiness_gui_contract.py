@@ -3,6 +3,7 @@ from race_engineer_gui import (
     READINESS_STATUS_LABELS,
     track_readiness_status_tooltip,
     h3_maintenance_summary,
+    h3_materialization_summary,
 )
 
 
@@ -87,3 +88,20 @@ def test_h3_automatic_summary_fails_closed(tmp_path):
         encoding="utf-8",
     )
     assert "estado local incompleto" in h3_maintenance_summary(malformed_counts)
+
+
+def test_h3_materialization_summary_reports_ready_without_authorizing_apply(tmp_path):
+    state = tmp_path / "h3_materialization_readiness.json"
+    state.write_text(
+        '{"mode":"AUDIT_READ_ONLY","history_mutated":false,"files_written":0,'
+        '"status_counts":{"MATERIALIZATION_READY":2,'
+        '"ALREADY_MATERIALIZED":5,"NO_AUTHORIZED_MATCH":4}}',
+        encoding="utf-8",
+    )
+
+    text = h3_materialization_summary(state)
+
+    assert "audit read-only" in text
+    assert "2 listos para ejecución explícita" in text
+    assert "5 ya materializados" in text
+    assert "4 sin MATCH autorizado" in text

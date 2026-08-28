@@ -75,6 +75,13 @@ current authorized H2 classifier, H2→H3 gate and H3 builder in memory, requiri
 least one authorized MATCH and no conflict for `MATERIALIZATION_READY`. It writes no
 matches, patterns or reports and never mutates History.
 
+Version 0.2 may run from hidden maintenance and atomically publishes
+`data/local/h3_materialization_readiness.json`. Its fingerprint covers feature,
+label, official-bundle and H2/H3 authority-code inputs, but deliberately excludes
+ordinary History-only changes. The expensive audit is deferred while LMU runs and
+failures remain non-blocking. Real timing was 235.38 seconds for `RUN` and 0.20
+seconds for unchanged `REUSED`; both wrote zero H2/H3 artifacts.
+
 The first real materialization audit classified six contexts ready (Imola HYPER,
 Interlagos LMP2_ELMS, Spa LMP2_ELMS, Spa LMP2_WEC, Fuji GT3 and Fuji LMP2_ELMS),
 four with no authorized MATCH (Monza HYPER, Monza LMP2_ELMS, Sarthe LMP2_WEC and

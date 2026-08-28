@@ -80,6 +80,21 @@ def test_build_h3_import_audit_command_is_read_only(tmp_path: Path):
     assert "--apply" not in command
 
 
+def test_build_h3_materialization_audit_command_is_read_only(tmp_path: Path):
+    python = tmp_path / "python.exe"
+    command = hidden.build_h3_materialization_audit_command(
+        python_executable=python
+    )
+    assert command == [
+        str(python.resolve()),
+        str(hidden.PROJECT_ROOT / "audit_h3_materialization_readiness.py"),
+        "--output",
+        str(hidden.DEFAULT_H3_MATERIALIZATION_STATE_PATH),
+        "--reuse-unchanged-output",
+    ]
+    assert "--apply" not in command
+
+
 def test_hidden_maintenance_runs_nonblocking_review_maintenance_after_success(
     tmp_path: Path,
 ):
@@ -135,6 +150,53 @@ def test_h3_audit_exception_does_not_invalidate_history(tmp_path: Path):
     assert "H3 IMPORT AUDIT EXCEPTION: RuntimeError: audit unavailable" in text
     assert "H3 IMPORT AUDIT WARNING" in text
     assert '"status": "PASS"' in (tmp_path / "runtime.json").read_text(encoding="utf-8")
+
+
+def test_h3_materialization_failure_does_not_invalidate_history(tmp_path: Path):
+    calls = 0
+
+    def runner(command, **kwargs):
+        nonlocal calls
+        calls += 1
+        return SimpleNamespace(returncode=0 if calls == 1 else 8)
+
+    result = hidden.run_hidden_maintenance(
+        log_path=tmp_path / "task.log",
+        command=["python.exe", "history.py"],
+        h3_materialization_audit_command=["python.exe", "materialization.py"],
+        game_is_running=lambda: False,
+        runner=runner,
+        runtime_path=tmp_path / "runtime.json",
+    )
+
+    assert result == 0
+    text = (tmp_path / "task.log").read_text(encoding="utf-8")
+    assert "H3 MATERIALIZATION AUDIT WARNING" in text
+    assert "no bundle was written" in text
+    assert '"status": "PASS"' in (tmp_path / "runtime.json").read_text(encoding="utf-8")
+
+
+def test_h3_materialization_is_deferred_while_game_is_running(tmp_path: Path):
+    calls = []
+
+    def runner(command, **kwargs):
+        calls.append(list(command))
+        return SimpleNamespace(returncode=0)
+
+    result = hidden.run_hidden_maintenance(
+        log_path=tmp_path / "task.log",
+        command=["python.exe", "history.py"],
+        h3_materialization_audit_command=["python.exe", "materialization.py"],
+        game_is_running=lambda: True,
+        runner=runner,
+        runtime_path=tmp_path / "runtime.json",
+    )
+
+    assert result == 0
+    assert calls == [["python.exe", "history.py"]]
+    assert "DEFERRED_GAME_RUNNING" in (
+        tmp_path / "task.log"
+    ).read_text(encoding="utf-8")
 
 
 def test_rotate_log_keeps_one_previous_copy(tmp_path: Path):

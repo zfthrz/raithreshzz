@@ -34,6 +34,14 @@ Validated baseline:
   10/20/50 Hz, while lap selectors and the playback clock retain millisecond
   precision from native boundaries/reference duration instead of resampled-grid
   rounding. Source telemetry remains read-only.
+- H3 materialization-readiness v0.2 is now a non-blocking hidden-scheduler audit.
+  It fingerprints features, labels, official bundles and authority code, ignores
+  ordinary History-only changes and defers while LMU runs. Real RUN: 235.38 s;
+  unchanged REUSED: 0.20 s; 2 ready (Spa LMP2_WEC, Fuji GT3), 5 newest bundles
+  already materialized and 4 without authorized MATCH; 0 files written.
+- GUI v1.43 displays that materialization snapshot separately from H3 import
+  readiness, preserving the distinction between an older imported bundle and a
+  newer batch ready for explicit rematerialization.
 - H3 import maintenance v0.2 audits all newest exact-context materializations in
   one command and keeps History read-only by default. `--apply` remains an explicit
   operator action and imports only existing `H3_READY_TO_IMPORT` bundles through

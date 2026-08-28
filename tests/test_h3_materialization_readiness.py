@@ -95,3 +95,33 @@ def test_context_audit_skips_imported_and_fails_closed(tmp_path: Path, monkeypat
     assert len(calls) == 2
     assert report["files_written"] == 0
     assert report["history_mutated"] is False
+
+
+def test_materialization_fingerprint_ignores_unrelated_batch_files(tmp_path: Path):
+    batches = tmp_path / "batches"
+    batch = batches / "context"
+    batch.mkdir(parents=True)
+    history = tmp_path / "history.duckdb"
+    history.write_bytes(b"history")
+    features = batch / "episode_pair_features.json"
+    features.write_text("[]", encoding="utf-8")
+    unrelated = batch / "notes.txt"
+    unrelated.write_text("first", encoding="utf-8")
+
+    first = audit.audit_input_fingerprint(
+        batches_root=batches, history_db=history
+    )
+    unrelated.write_text("second", encoding="utf-8")
+    assert audit.audit_input_fingerprint(
+        batches_root=batches, history_db=history
+    ) == first
+
+    history.write_bytes(b"ordinary new session import")
+    assert audit.audit_input_fingerprint(
+        batches_root=batches, history_db=history
+    ) == first
+
+    features.write_text("[{}]", encoding="utf-8")
+    assert audit.audit_input_fingerprint(
+        batches_root=batches, history_db=history
+    ) != first

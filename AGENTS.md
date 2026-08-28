@@ -73,7 +73,9 @@ python race_engineer.py analyze "telemetria\ARCHIVO.duckdb" --backend ollama
   publish local readiness state; it must never pass `--apply`.
 - `audit_h3_materialization_readiness.py` may run the authorized H2 gate and H3
   builder in memory to report readiness, but it must write no bundle and mutate no
-  History state. `MATERIALIZATION_READY` still requires an explicit pipeline run.
+  History state. The hidden scheduler may publish only its read-only snapshot and
+  must defer the expensive audit while LMU is running. `MATERIALIZATION_READY`
+  still requires an explicit pipeline run.
 - H5.3 remains ROADMAP_ONLY; H5.3a/b/c are implemented shadow-only and never
   enable historical coaching. The orchestrator `h5_3` stage is observational-only
   and must return `SKIPPED_NOT_APPLICABLE` when H4/H5.1/H5.2 prerequisites are
@@ -91,7 +93,7 @@ Checkpoint: 2026-08-26 GUI v1.21 + automatic H2 review queues + H5.4 P1–P11.
 
 ```text
 race_engineer.py             orchestrator 0.3
-race_engineer_gui.py         desktop session hub 1.42 / time-based telemetry playback
+race_engineer_gui.py         desktop session hub 1.43 / automatic H3 audit status
 analyze_telemetry.py         3.8 + Objective Python v6
 llm_analysis*.py             3.10.8.5.4
 llm_analysis_llamacpp.py     3.10.8.5.4 / llama.cpp local (default qwen3-14b)

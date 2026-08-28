@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from pathlib import Path
 from typing import Any, Callable
@@ -19,15 +20,60 @@ from h2_authority_gate import validate_authorized_h2
 from h3_import_readiness import H3_IMPORTED, discover_h3_import_readiness
 from run_h3_pipeline import load_features
 from runtime_paths import local_root
+from maintain_h3_imports import reusable_report, write_report
 
 
-H3_MATERIALIZATION_READINESS_VERSION = "0.1"
+H3_MATERIALIZATION_READINESS_VERSION = "0.2"
 MATERIALIZATION_READY = "MATERIALIZATION_READY"
 NO_AUTHORIZED_MATCH = "NO_AUTHORIZED_MATCH"
 CONFLICT_REVIEW_REQUIRED = "CONFLICT_REVIEW_REQUIRED"
 MATERIALIZATION_FAILED = "MATERIALIZATION_FAILED"
 ALREADY_MATERIALIZED = "ALREADY_MATERIALIZED"
 DEFAULT_HISTORY_DB = local_root() / "race_engineer_history.duckdb"
+DEFAULT_STATE_PATH = local_root() / "h3_materialization_readiness.json"
+FINGERPRINT_BATCH_FILENAMES = {
+    "BATCH_STATUS.json",
+    "episode_pair_features.json",
+    "pair_labels.json",
+    "persistent_patterns.json",
+    "episode_pair_matches.json",
+    "h3_pipeline_report.json",
+}
+FINGERPRINT_CODE_PATHS = tuple(
+    Path(__file__).resolve().parent / name
+    for name in (
+        "audit_h3_materialization_readiness.py",
+        "authorized_episode_pair_matcher.py",
+        "episode_pair_matcher.py",
+        "track_baseline_shadow.py",
+        "track_match_baseline_promotion.py",
+        "h2_authority_gate.py",
+        "build_persistent_patterns.py",
+    )
+)
+
+
+def audit_input_fingerprint(*, batches_root: Path, history_db: Path) -> str:
+    # Ordinary History ingestion must not trigger a multi-minute H2/H3 rebuild.
+    # Import readiness owns exact DB-import state; this audit reacts to evidence,
+    # bundle or authority-code changes only.
+    paths = [*FINGERPRINT_CODE_PATHS]
+    root = Path(batches_root)
+    if root.is_dir():
+        paths.extend(
+            path
+            for path in root.rglob("*.json")
+            if path.name in FINGERPRINT_BATCH_FILENAMES
+        )
+    records = []
+    for path in sorted(paths, key=lambda item: str(item).casefold()):
+        try:
+            stat = path.stat()
+            records.append((str(path.resolve()), stat.st_size, stat.st_mtime_ns))
+        except OSError:
+            records.append((str(path.resolve()), None, None))
+    raw = json.dumps(records, ensure_ascii=False, separators=(",", ":"))
+    return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
 
 def inspect_feature_materialization(
@@ -140,19 +186,33 @@ def main() -> int:
     )
     parser.add_argument("--batches-root", type=Path, default=DEFAULT_BATCHES_ROOT)
     parser.add_argument("--history-db", type=Path, default=DEFAULT_HISTORY_DB)
+    parser.add_argument("--output", type=Path)
+    parser.add_argument("--reuse-unchanged-output", action="store_true")
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args()
-    report = audit_h3_materialization_readiness(
-        batches_root=args.batches_root,
-        history_db=args.history_db,
+    fingerprint = audit_input_fingerprint(
+        batches_root=args.batches_root, history_db=args.history_db
     )
+    cached = (
+        reusable_report(args.output, input_fingerprint=fingerprint)
+        if args.reuse_unchanged_output and args.output is not None
+        else None
+    )
+    reused = cached is not None
+    report = cached or audit_h3_materialization_readiness(
+        batches_root=args.batches_root, history_db=args.history_db
+    )
+    report["input_fingerprint"] = fingerprint
+    if args.output is not None and not reused:
+        write_report(args.output, report)
     if args.json:
         print(json.dumps(report, ensure_ascii=False, indent=2))
         return 0
     print("=" * 76)
-    print("RACE ENGINEER - H3 MATERIALIZATION READINESS v0.1")
+    print("RACE ENGINEER - H3 MATERIALIZATION READINESS v0.2")
     print("=" * 76)
     print(f"Mode:       {report['mode']}")
+    print(f"Execution:  {'REUSED' if reused else 'RUN'}")
     print(f"Contexts:   {report['context_count']}")
     for status, count in sorted(report["status_counts"].items()):
         print(f"  {status}: {count}")
@@ -162,6 +222,8 @@ def main() -> int:
         )
     print("Files:      0 written")
     print("History:    UNCHANGED")
+    if args.output is not None:
+        print(f"State:      {args.output.resolve()}")
     return 0
 
 

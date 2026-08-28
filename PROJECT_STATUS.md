@@ -25,12 +25,15 @@ Validated baseline:
   previous-lap prefix by selecting the segment with greatest distance coverage.
   Real Fuji validation retained 5125 points and removed 12 impossible neutral samples.
   Ten recent real Spa files all rendered at 50 Hz after the boundary correction.
-- H3 import maintenance v0.1 audits all newest exact-context materializations in
+- H3 import maintenance v0.2 audits all newest exact-context materializations in
   one command and keeps History read-only by default. `--apply` remains an explicit
   operator action and imports only existing `H3_READY_TO_IMPORT` bundles through
-  the unchanged production validator/importer; it is not scheduled automatically.
-  Real audit: 11 contexts = 1 imported (Imola LMP2_ELMS), 1 failed legacy bundle
-  without valid source hash (Imola HYPER), 9 not materialized and 0 ready.
+  the unchanged production validator/importer. The hidden scheduler now runs only
+  the read-only audit, atomically publishes `data/local/h3_import_maintenance.json`
+  and never passes `--apply`. A cheap input fingerprint reduced an unchanged real
+  rerun from 19.69 s to 0.14 s; failures are logged without invalidating History.
+  Current real audit: 11 contexts = 7 imported, 4 not applicable and 0
+  ready/failed/conflict.
 - H3 materialization-readiness audit v0.1 runs the unchanged authorized H2 gate and
   H3 builder entirely in memory. Real audit: 6 `MATERIALIZATION_READY` (Imola HYPER,
   Interlagos LMP2_ELMS, Spa LMP2_ELMS, Spa LMP2_WEC, Fuji GT3, Fuji LMP2_ELMS),

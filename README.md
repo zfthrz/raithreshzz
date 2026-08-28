@@ -1305,7 +1305,18 @@ python maintain_h3_imports.py --apply
 
 Ese modo procesa únicamente bundles que el mismo gate productivo ya clasificó
 `H3_READY_TO_IMPORT`. No ejecuta H2/H3, no repara material legacy, no atraviesa
-conflictos y no forma parte del scheduler oculto.
+conflictos y nunca es invocado automáticamente.
+
+El scheduler oculto ejecuta únicamente la auditoría read-only y publica su último
+snapshot de forma atómica en:
+
+```text
+data/local/h3_import_maintenance.json
+```
+
+Si History y los artefactos oficiales H3 no cambiaron, reutiliza el snapshot por
+fingerprint barato. Un fallo de esta etapa se registra como warning, no bloquea
+History y jamás activa `--apply`.
 
 Para saber cuáles contextos sin bundle podrían materializar H3 con la autoridad
 actual, sin escribir ningún resultado:

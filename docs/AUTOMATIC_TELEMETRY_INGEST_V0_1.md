@@ -169,6 +169,17 @@ Get-Content .\data\local\h5_3_review_maintenance.json
 revisión manual. Un fallo H5.3 queda en el log y en ese estado, pero no bloquea la
 ingestión de History.
 
+Después de History, el runner también ejecuta la auditoría H3 read-only y guarda:
+
+```powershell
+Get-Content .\data\local\h3_import_maintenance.json
+```
+
+El fingerprint de History y de los bundles oficiales evita repetir la auditoría
+completa si nada cambió. Esta etapa nunca usa `--apply`; sólo informa
+`H3_READY_TO_IMPORT`, `H3_IMPORTED`, conflictos, fallos o contextos no aplicables.
+Sus fallos son warnings no bloqueantes y no escriben en DuckDB.
+
 Cuando `pending_review_count` llega a cero, el mantenimiento reconstruye y valida en
 orden H5.3g, H5.3h y H5.3i. Los paths y conteos quedan en el mismo estado local bajo
 `downstream_status: AUDITS_CURRENT`. Con casos pendientes devuelve

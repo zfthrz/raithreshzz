@@ -424,7 +424,10 @@ python maintain_h3_imports.py
 This default is read-only. `python maintain_h3_imports.py --apply` is an explicit
 operator action that imports only bundles already classified
 `H3_READY_TO_IMPORT` by the production validator. It does not build H2/H3,
-process conflicts, authorize coaching or run from the hidden scheduler.
+process conflicts or authorize coaching. The hidden scheduler runs only the
+read-only form and publishes `data/local/h3_import_maintenance.json`; it never
+passes `--apply`. A cheap History/official-bundle fingerprint reuses the existing
+snapshot when inputs are unchanged.
 
 Before creating missing official bundles, the in-memory gate can be audited with:
 
@@ -1567,6 +1570,10 @@ The scheduled `maintenance` contract is History-first:
 - give new stable telemetry priority over backlog;
 - run deterministic analysis, History import and applicable H3/H4/H5 Python
   context with `--no-llm`;
+- after successful History maintenance, audit existing official H3 import
+  readiness read-only and atomically publish `data/local/h3_import_maintenance.json`;
+  unchanged inputs reuse the prior snapshot and H3 audit failures remain
+  non-blocking warnings;
 - after ingest/backfill, generate the deterministic race debrief (one session
   per run) forcing `RACE_ENGINEER_DETERMINISTIC_FIRST=1` and
   `RACE_ENGINEER_LLM_RANKER=0` in the subprocess plus

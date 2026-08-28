@@ -38,7 +38,7 @@ Official idempotency uses a stable materialization hash over deterministic evide
 and authority provenance while excluding volatile timestamps and paths. Rebuilding
 the same source evidence therefore returns `REUSED` instead of creating another run.
 
-## Explicit multi-context maintenance
+## Explicit multi-context maintenance v0.2
 
 `maintain_h3_imports.py` consolidates the existing readiness inspection without
 changing its authority boundary:
@@ -50,8 +50,20 @@ python maintain_h3_imports.py
 The default mode is read-only. `--apply` is an explicit operator action and imports
 only existing bundles classified `H3_READY_TO_IMPORT` by the production inspection.
 It skips imported, incomplete, conflicting and legacy-invalid bundles. It does not
-run H2/H3, repair provenance, authorize coaching or participate in hidden scheduler
-maintenance.
+run H2/H3, repair provenance or authorize coaching.
+
+The hidden scheduler executes only this read-only audit after successful History
+maintenance and atomically publishes:
+
+```text
+data/local/h3_import_maintenance.json
+```
+
+It never passes `--apply`. A cheap fingerprint over History and the official H3
+bundle files allows unchanged scheduler cycles to reuse the existing snapshot.
+Audit failures are non-blocking warnings: History remains successful and no import
+is attempted. Real validation reduced an unchanged rerun from 19.69 seconds to
+0.14 seconds while retaining `history_mutated=false`.
 
 The first real audit found 11 exact contexts: one already imported Imola LMP2_ELMS
 bundle, one legacy Imola HYPER bundle failing closed because it lacks a valid

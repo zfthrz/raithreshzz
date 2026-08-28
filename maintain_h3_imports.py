@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from pathlib import Path
 from typing import Any, Callable
@@ -18,8 +19,65 @@ from run_h3_pipeline import import_h3_outputs
 from runtime_paths import local_root
 
 
-H3_IMPORT_MAINTENANCE_VERSION = "0.1"
+H3_IMPORT_MAINTENANCE_VERSION = "0.2"
 DEFAULT_HISTORY_DB = local_root() / "race_engineer_history.duckdb"
+DEFAULT_STATE_PATH = local_root() / "h3_import_maintenance.json"
+FINGERPRINT_FILENAMES = {
+    "persistent_patterns.json",
+    "episode_pair_matches.json",
+    "h3_pipeline_report.json",
+}
+
+
+def write_report(path: Path, report: dict[str, Any]) -> None:
+    """Publish a complete audit snapshot without exposing a partial JSON file."""
+
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(
+        json.dumps(report, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    temporary.replace(path)
+
+
+def audit_input_fingerprint(*, batches_root: Path, history_db: Path) -> str:
+    """Cheap change detector only; production validators still own readiness."""
+
+    paths = [Path(history_db)]
+    root = Path(batches_root)
+    if root.is_dir():
+        paths.extend(
+            path
+            for path in root.rglob("*.json")
+            if path.name in FINGERPRINT_FILENAMES
+        )
+    records = []
+    for path in sorted(paths, key=lambda item: str(item).casefold()):
+        try:
+            stat = path.stat()
+            records.append((str(path.resolve()), stat.st_size, stat.st_mtime_ns))
+        except OSError:
+            records.append((str(path.resolve()), None, None))
+    encoded = json.dumps(records, ensure_ascii=False, separators=(",", ":"))
+    return hashlib.sha256(encoded.encode("utf-8")).hexdigest()
+
+
+def reusable_report(path: Path, *, input_fingerprint: str) -> dict[str, Any] | None:
+    try:
+        report = json.loads(Path(path).read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+        return None
+    if not isinstance(report, dict):
+        return None
+    if report.get("mode") != "AUDIT_READ_ONLY":
+        return None
+    if report.get("input_fingerprint") != input_fingerprint:
+        return None
+    if report.get("history_mutated") is not False:
+        return None
+    return report
 
 
 def _context_payload(context: H3Context, row: dict[str, Any]) -> dict[str, Any]:
@@ -130,6 +188,16 @@ def main() -> int:
     parser.add_argument("--batches-root", type=Path, default=DEFAULT_BATCHES_ROOT)
     parser.add_argument("--history-db", type=Path, default=DEFAULT_HISTORY_DB)
     parser.add_argument(
+        "--output",
+        type=Path,
+        help="Guardar atómicamente el reporte JSON (audit o apply).",
+    )
+    parser.add_argument(
+        "--reuse-unchanged-output",
+        action="store_true",
+        help="Reutilizar --output si el fingerprint barato de entradas no cambió.",
+    )
+    parser.add_argument(
         "--apply",
         action="store_true",
         help="Importación explícita de todos los bundles H3_READY_TO_IMPORT.",
@@ -137,7 +205,21 @@ def main() -> int:
     parser.add_argument("--json", action="store_true", help="Imprimir JSON completo.")
     args = parser.parse_args()
 
-    if args.apply:
+    input_fingerprint = audit_input_fingerprint(
+        batches_root=args.batches_root,
+        history_db=args.history_db,
+    )
+    reused = False
+    cached = (
+        reusable_report(args.output, input_fingerprint=input_fingerprint)
+        if args.reuse_unchanged_output and args.output is not None and not args.apply
+        else None
+    )
+    if cached is not None:
+        report = cached
+        exit_code = 0
+        reused = True
+    elif args.apply:
         report, exit_code = apply_ready_h3_imports(
             batches_root=args.batches_root,
             history_db=args.history_db,
@@ -149,14 +231,20 @@ def main() -> int:
         )
         exit_code = 0
 
+    report["input_fingerprint"] = input_fingerprint
+
+    if args.output is not None and not reused:
+        write_report(args.output, report)
+
     if args.json:
         print(json.dumps(report, ensure_ascii=False, indent=2))
         return exit_code
 
     print("=" * 76)
-    print("RACE ENGINEER - H3 IMPORT MAINTENANCE v0.1")
+    print("RACE ENGINEER - H3 IMPORT MAINTENANCE v0.2")
     print("=" * 76)
     print(f"Mode:             {report['mode']}")
+    print(f"Execution:        {'REUSED' if reused else 'RUN'}")
     print(f"Contexts:         {report['context_count']}")
     for status, count in sorted(report["status_counts"].items()):
         print(f"  {status}: {count}")
@@ -170,6 +258,8 @@ def main() -> int:
         print(f"RESULT:           {report['result']}")
     else:
         print("History:          UNCHANGED")
+        if args.output is not None:
+            print(f"State:            {args.output.resolve()}")
         print("NEXT ACTION:      add --apply only after reviewing this audit")
     return exit_code
 

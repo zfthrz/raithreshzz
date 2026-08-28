@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import json
 
 import maintain_h3_imports as maintenance
 from h3_import_readiness import (
@@ -57,6 +58,58 @@ def test_audit_is_read_only_and_sorts_contexts(tmp_path: Path, monkeypatch):
         H3_IMPORTED: 1,
         H3_CONFLICT: 1,
     }
+
+
+def test_write_report_is_atomic_and_json_readable(tmp_path: Path):
+    output = tmp_path / "local" / "h3_import_maintenance.json"
+    report = {"mode": "AUDIT_READ_ONLY", "history_mutated": False}
+
+    maintenance.write_report(output, report)
+
+    assert output.read_text(encoding="utf-8").endswith("\n")
+    assert not output.with_suffix(".json.tmp").exists()
+    assert json.loads(output.read_text(encoding="utf-8")) == report
+
+
+def test_fingerprint_changes_only_when_relevant_inputs_change(tmp_path: Path):
+    batches = tmp_path / "batches"
+    batch = batches / "context"
+    batch.mkdir(parents=True)
+    history = tmp_path / "history.duckdb"
+    history.write_bytes(b"history")
+    patterns = batch / "persistent_patterns.json"
+    patterns.write_text("{}", encoding="utf-8")
+    ignored = batch / "pair_review_queue.json"
+    ignored.write_text("{}", encoding="utf-8")
+
+    first = maintenance.audit_input_fingerprint(
+        batches_root=batches, history_db=history
+    )
+    ignored.write_text('{"changed": true}', encoding="utf-8")
+    assert maintenance.audit_input_fingerprint(
+        batches_root=batches, history_db=history
+    ) == first
+
+    patterns.write_text('{"changed": true}', encoding="utf-8")
+    assert maintenance.audit_input_fingerprint(
+        batches_root=batches, history_db=history
+    ) != first
+
+
+def test_reusable_report_fails_closed(tmp_path: Path):
+    output = tmp_path / "state.json"
+    valid = {
+        "mode": "AUDIT_READ_ONLY",
+        "input_fingerprint": "abc",
+        "history_mutated": False,
+    }
+    maintenance.write_report(output, valid)
+
+    assert maintenance.reusable_report(output, input_fingerprint="abc") == valid
+    assert maintenance.reusable_report(output, input_fingerprint="different") is None
+    valid["history_mutated"] = True
+    maintenance.write_report(output, valid)
+    assert maintenance.reusable_report(output, input_fingerprint="abc") is None
 
 
 def test_apply_imports_only_ready_bundles(tmp_path: Path, monkeypatch):

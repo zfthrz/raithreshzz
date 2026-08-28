@@ -69,7 +69,8 @@ python race_engineer.py analyze "telemetria\ARCHIVO.duckdb" --backend ollama
   run H2/H3, mutate History or treat readiness as coaching authority.
 - `maintain_h3_imports.py` preserves that read-only default. Its `--apply` mode is
   an explicit operator action that may import only bundles already classified
-  `H3_READY_TO_IMPORT`; it is not part of hidden scheduler maintenance.
+  `H3_READY_TO_IMPORT`. The hidden scheduler may run only its read-only audit and
+  publish local readiness state; it must never pass `--apply`.
 - `audit_h3_materialization_readiness.py` may run the authorized H2 gate and H3
   builder in memory to report readiness, but it must write no bundle and mutate no
   History state. `MATERIALIZATION_READY` still requires an explicit pipeline run.

@@ -128,6 +128,12 @@ def _analysis_path_from_state(state: dict[str, Any], state_path: Path) -> Path |
     return path if path.is_file() else None
 
 
+def _stage_status(state: dict[str, Any], stage_name: str) -> str:
+    summary = _dict(state.get("last_summary"))
+    stage = _dict(_dict(state.get("stages")).get(stage_name))
+    return str(summary.get(stage_name) or stage.get("status") or "UNKNOWN")
+
+
 def discover_runtime_contexts(runs_root: Path) -> tuple[dict[ContextKey, dict[str, Any]], list[str]]:
     contexts: dict[ContextKey, dict[str, Any]] = {}
     errors: list[str] = []
@@ -167,14 +173,11 @@ def discover_runtime_contexts(runs_root: Path) -> tuple[dict[ContextKey, dict[st
             entry["sessions"] += 1
             stages = _dict(state.get("stages"))
             h4 = _dict(stages.get("h4"))
-            if (
-                str(h4.get("status") or "") in READY_STAGE_STATUSES
-                and h4.get("output")
-            ):
+            if _stage_status(state, "h4") in READY_STAGE_STATUSES and h4.get("output"):
                 entry["h4_reference_available"] = True
             for stage_name, raw_stage in stages.items():
                 stage = _dict(raw_stage)
-                status = str(stage.get("status") or "")
+                status = _stage_status(state, str(stage_name))
                 output = str(stage.get("output") or "")
                 if status not in READY_STAGE_STATUSES:
                     continue

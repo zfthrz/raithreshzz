@@ -358,6 +358,7 @@ def test_state_check_refreshes_only_after_change_and_reschedules(tmp_path):
     app._state_files_fingerprint = state_files_fingerprint(app.runs_root)
     app.telemetry_ingest_state_path = tmp_path / "telemetry_auto_ingest.json"
     app.scheduler_runtime_path = tmp_path / "telemetry_scheduler_runtime.json"
+    app.h3_import_maintenance_path = tmp_path / "h3_import_maintenance.json"
     app._scheduler_state_fingerprint = None
     app._refresh_scheduler_status = lambda: None
     app.calibration_batches_root = tmp_path / "calibration_batches"
@@ -393,6 +394,7 @@ def test_state_check_does_not_refresh_during_gui_analysis(tmp_path):
     app._state_files_fingerprint = ()
     app.telemetry_ingest_state_path = tmp_path / "telemetry_auto_ingest.json"
     app.scheduler_runtime_path = tmp_path / "telemetry_scheduler_runtime.json"
+    app.h3_import_maintenance_path = tmp_path / "h3_import_maintenance.json"
     app._scheduler_state_fingerprint = None
     app._refresh_scheduler_status = lambda: None
     app.calibration_batches_root = tmp_path / "calibration_batches"
@@ -416,6 +418,7 @@ def test_scheduler_state_change_updates_badge_without_full_refresh(tmp_path):
     app.runs_root.mkdir()
     app.telemetry_ingest_state_path = tmp_path / "telemetry_auto_ingest.json"
     app.scheduler_runtime_path = tmp_path / "telemetry_scheduler_runtime.json"
+    app.h3_import_maintenance_path = tmp_path / "h3_import_maintenance.json"
     app.telemetry_ingest_state_path.write_text('{"files": {}}', encoding="utf-8")
     app._closing = False
     app.analysis_running = False
@@ -436,6 +439,7 @@ def test_scheduler_state_change_updates_badge_without_full_refresh(tmp_path):
     assert badge_refreshes == [True]
     assert app._scheduler_state_fingerprint == (
         file_fingerprint(app.telemetry_ingest_state_path),
+        None,
         None,
     )
 

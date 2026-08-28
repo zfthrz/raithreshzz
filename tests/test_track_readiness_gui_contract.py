@@ -2,6 +2,7 @@ from race_engineer_gui import (
     READINESS_STATUS_COLORS,
     READINESS_STATUS_LABELS,
     track_readiness_status_tooltip,
+    h3_maintenance_summary,
 )
 
 
@@ -49,3 +50,40 @@ def test_gui_tooltip_exposes_h3_ready_as_explicit_observational_import():
     })
     assert "listo para importación explícita" in text
     assert "History todavía no fue modificado" in text
+
+
+def test_h3_automatic_summary_reads_only_scheduler_snapshot(tmp_path):
+    state = tmp_path / "h3_import_maintenance.json"
+    state.write_text(
+        '{"mode":"AUDIT_READ_ONLY","history_mutated":false,'
+        '"status_counts":{"H3_IMPORTED":7,"H3_READY_TO_IMPORT":1,'
+        '"H3_NOT_APPLICABLE":4}}',
+        encoding="utf-8",
+    )
+
+    text = h3_maintenance_summary(state)
+
+    assert "audit read-only" in text
+    assert "7 importados" in text
+    assert "1 listos para revisión explícita" in text
+    assert "4 no aplicables" in text
+
+
+def test_h3_automatic_summary_fails_closed(tmp_path):
+    missing = tmp_path / "missing.json"
+    assert "esperando primera auditoría" in h3_maintenance_summary(missing)
+
+    invalid = tmp_path / "invalid.json"
+    invalid.write_text(
+        '{"mode":"APPLY_EXPLICIT","history_mutated":true,"status_counts":{}}',
+        encoding="utf-8",
+    )
+    assert "contrato read-only inválido" in h3_maintenance_summary(invalid)
+
+    malformed_counts = tmp_path / "malformed-counts.json"
+    malformed_counts.write_text(
+        '{"mode":"AUDIT_READ_ONLY","history_mutated":false,'
+        '"status_counts":{"H3_IMPORTED":"unknown"}}',
+        encoding="utf-8",
+    )
+    assert "estado local incompleto" in h3_maintenance_summary(malformed_counts)

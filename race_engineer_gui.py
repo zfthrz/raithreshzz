@@ -84,7 +84,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.40"
+GUI_VERSION = "1.41"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 STATE_REFRESH_INTERVAL_MS = 5_000
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -528,6 +528,57 @@ def track_readiness_status_tooltip(row: dict) -> str:
     return text
 
 
+def h3_maintenance_summary(path: Path) -> str:
+    try:
+        payload = json.loads(Path(path).read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        return "H3 automático · esperando primera auditoría"
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+        return "H3 automático · estado local inválido"
+    if not isinstance(payload, dict):
+        return "H3 automático · estado local inválido"
+    if (
+        payload.get("mode") != "AUDIT_READ_ONLY"
+        or payload.get("history_mutated") is not False
+    ):
+        return "H3 automático · contrato read-only inválido"
+
+    counts = payload.get("status_counts")
+    if not isinstance(counts, dict):
+        return "H3 automático · estado local incompleto"
+    try:
+        values = {
+            name: int(counts.get(name) or 0)
+            for name in (
+                "H3_IMPORTED",
+                "H3_READY_TO_IMPORT",
+                "H3_CONFLICT",
+                "H3_FAILED",
+                "H3_NOT_APPLICABLE",
+            )
+        }
+    except (TypeError, ValueError):
+        return "H3 automático · estado local incompleto"
+    if any(value < 0 for value in values.values()):
+        return "H3 automático · estado local incompleto"
+    imported = values["H3_IMPORTED"]
+    ready = values["H3_READY_TO_IMPORT"]
+    blocked = values["H3_CONFLICT"] + values["H3_FAILED"]
+    not_applicable = values["H3_NOT_APPLICABLE"]
+    parts = ["H3 automático · audit read-only"]
+    if imported:
+        parts.append(f"{imported} importados")
+    if ready:
+        parts.append(f"{ready} listos para revisión explícita")
+    if blocked:
+        parts.append(f"{blocked} bloqueados/fallidos")
+    if not_applicable:
+        parts.append(f"{not_applicable} no aplicables")
+    if len(parts) == 1:
+        parts.append("sin contextos clasificados")
+    return " · ".join(parts)
+
+
 def format_comparison_columns(view: dict) -> tuple[str, str, str, str]:
     available = bool(view.get("available"))
     hist = view.get("historical") or {}
@@ -713,6 +764,9 @@ class RaceEngineerApp:
         )
         self.scheduler_runtime_path = (
             PROJECT_ROOT / "data" / "local" / "telemetry_scheduler_runtime.json"
+        )
+        self.h3_import_maintenance_path = (
+            PROJECT_ROOT / "data" / "local" / "h3_import_maintenance.json"
         )
         self.scheduler_log_path = (
             PROJECT_ROOT / "data" / "local" / "telemetry_auto_ingest_task.log"
@@ -1950,6 +2004,16 @@ class RaceEngineerApp:
             command=self._refresh_track_readiness,
         ).pack(side="right")
 
+        self.h3_maintenance_summary_var = self.tk.StringVar(
+            value="H3 automático · cargando…"
+        )
+        self.ttk.Label(
+            frame,
+            textvariable=self.h3_maintenance_summary_var,
+            style="Subtitle.TLabel",
+            justify="left",
+        ).pack(fill="x", pady=(0, 8))
+
         split = self.ttk.Panedwindow(frame, orient="vertical")
         split.pack(fill="both", expand=True)
 
@@ -2084,6 +2148,7 @@ class RaceEngineerApp:
         return frame
 
     def _refresh_track_readiness(self):
+        self._refresh_h3_maintenance_summary()
         try:
             payload = build_track_readiness(project_root=PROJECT_ROOT)
         except (OSError, ValueError, json.JSONDecodeError) as exc:
@@ -3811,11 +3876,18 @@ class RaceEngineerApp:
             "<Button-1>",
             self._show_scheduler_diagnostics,
         )
+        self._refresh_h3_maintenance_summary()
+
+    def _refresh_h3_maintenance_summary(self):
+        variable = getattr(self, "h3_maintenance_summary_var", None)
+        if variable is not None:
+            variable.set(h3_maintenance_summary(self.h3_import_maintenance_path))
 
     def _scheduler_fingerprint(self):
         return (
             file_fingerprint(self.telemetry_ingest_state_path),
             file_fingerprint(self.scheduler_runtime_path),
+            file_fingerprint(self.h3_import_maintenance_path),
         )
 
     def _scheduler_diagnostic_text(self) -> str:

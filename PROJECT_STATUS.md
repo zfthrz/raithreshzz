@@ -25,6 +25,10 @@ Validated baseline:
   previous-lap prefix by selecting the segment with greatest distance coverage.
   Real Fuji validation retained 5125 points and removed 12 impossible neutral samples.
   Ten recent real Spa files all rendered at 50 Hz after the boundary correction.
+- GUI v1.41 displays the scheduler-owned H3 read-only audit snapshot in
+  `Circuitos → Readiness`. Its file fingerprint updates only the compact status
+  line, not the session/map/telemetry workspace; invalid or mutating contracts fail
+  closed and no import action is exposed.
 - H3 import maintenance v0.2 audits all newest exact-context materializations in
   one command and keeps History read-only by default. `--apply` remains an explicit
   operator action and imports only existing `H3_READY_TO_IMPORT` bundles through

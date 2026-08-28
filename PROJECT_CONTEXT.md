@@ -154,7 +154,7 @@ D3.x deterministic-first default and D2.9 production ranker (2026-08-25).
 | Component | Current operational baseline |
 |---|---|
 | `race_engineer.py` | orchestrator v0.3 |
-| `race_engineer_gui.py` | v1.40 / Track Readiness + corrected high-resolution telemetry render |
+| `race_engineer_gui.py` | v1.41 / Track Readiness + automatic H3 audit status |
 | `analyze_telemetry.py` | v3.8 + Objective Python v6 |
 | Brake point | 2.1 / schema 2.1 |
 | Throttle point | 1.2.1 / schema 1.2 |
@@ -1523,6 +1523,13 @@ an asynchronous resolution refresh. A stale previous-lap prefix before the LMU
 distance coverage, fixing files that appeared loaded but blank at 50 Hz.
 Leading/trailing sustained neutral remains visible. See
 `docs/RACE_ENGINEER_GUI_V1_40.md`.
+
+GUI v1.41 reads the scheduler-owned `data/local/h3_import_maintenance.json` snapshot
+and shows its read-only H3 status/counts in `Circuitos → Readiness`. The existing
+cheap scheduler fingerprint detects snapshot changes without rebuilding sessions,
+maps or telemetry. Missing, malformed or non-read-only snapshots fail closed in the
+label; the GUI never imports H3 or writes either History or maintenance state. See
+`docs/RACE_ENGINEER_GUI_V1_41.md`.
 
 GUI v1.18 integra el scheduler con el catálogo abierto mediante un fingerprint
 read-only de los `state.json`. Cada cinco segundos comprueba ruta, `mtime_ns` y

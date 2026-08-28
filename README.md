@@ -1368,6 +1368,12 @@ original no se modifica. Si LMU deja muestras de la vuelta anterior antes del re
 de `Lap Dist`, el gráfico conserva el tramo con mayor cobertura física para evitar
 una serie aparentemente cargada pero vacía a 50 Hz.
 
+La GUI v1.41 muestra en `Circuitos → Readiness` el último snapshot automático H3:
+contextos importados, listos para revisión explícita, bloqueados/fallidos y no
+aplicables. La actualización observa sólo el fingerprint del archivo local y no
+reconstruye mapas ni telemetría. La vista es estrictamente read-only y no ofrece
+importación automática.
+
 El contrato LLM histórico v0.1 puede seleccionar hasta tres zonas H5.2 y únicamente códigos observacionales autorizados por Python para cada una. El LLM no escribe texto libre: Python arma todo el render final con hechos y cifras exactos. Un validator separado rechaza zonas inventadas, claves adicionales, códigos no autorizados o evidencia alterada.
 
 La selección puede auditarse sin llamar nuevamente al modelo:

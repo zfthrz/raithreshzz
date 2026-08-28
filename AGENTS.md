@@ -67,6 +67,12 @@ python race_engineer.py analyze "telemetria\ARCHIVO.duckdb" --backend ollama
 - H3 import readiness discovery is read-only. It may validate existing official
   bundles and report not-applicable/ready/imported/conflict/failed, but it must not
   run H2/H3, mutate History or treat readiness as coaching authority.
+- `maintain_h3_imports.py` preserves that read-only default. Its `--apply` mode is
+  an explicit operator action that may import only bundles already classified
+  `H3_READY_TO_IMPORT`; it is not part of hidden scheduler maintenance.
+- `audit_h3_materialization_readiness.py` may run the authorized H2 gate and H3
+  builder in memory to report readiness, but it must write no bundle and mutate no
+  History state. `MATERIALIZATION_READY` still requires an explicit pipeline run.
 - H5.3 remains ROADMAP_ONLY; H5.3a/b/c are implemented shadow-only and never
   enable historical coaching. The orchestrator `h5_3` stage is observational-only
   and must return `SKIPPED_NOT_APPLICABLE` when H4/H5.1/H5.2 prerequisites are

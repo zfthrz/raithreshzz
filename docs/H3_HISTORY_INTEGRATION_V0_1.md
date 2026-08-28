@@ -38,6 +38,46 @@ Official idempotency uses a stable materialization hash over deterministic evide
 and authority provenance while excluding volatile timestamps and paths. Rebuilding
 the same source evidence therefore returns `REUSED` instead of creating another run.
 
+## Explicit multi-context maintenance
+
+`maintain_h3_imports.py` consolidates the existing readiness inspection without
+changing its authority boundary:
+
+```powershell
+python maintain_h3_imports.py
+```
+
+The default mode is read-only. `--apply` is an explicit operator action and imports
+only existing bundles classified `H3_READY_TO_IMPORT` by the production inspection.
+It skips imported, incomplete, conflicting and legacy-invalid bundles. It does not
+run H2/H3, repair provenance, authorize coaching or participate in hidden scheduler
+maintenance.
+
+The first real audit found 11 exact contexts: one already imported Imola LMP2_ELMS
+bundle, one legacy Imola HYPER bundle failing closed because it lacks a valid
+`source_features_sha256`, nine contexts without an official materialization, and no
+bundle ready to import. History remained unchanged.
+
+`audit_h3_materialization_readiness.py` diagnoses the preceding stage. It runs the
+current authorized H2 classifier, H2→H3 gate and H3 builder in memory, requiring at
+least one authorized MATCH and no conflict for `MATERIALIZATION_READY`. It writes no
+matches, patterns or reports and never mutates History.
+
+The first real materialization audit classified six contexts ready (Imola HYPER,
+Interlagos LMP2_ELMS, Spa LMP2_ELMS, Spa LMP2_WEC, Fuji GT3 and Fuji LMP2_ELMS),
+four with no authorized MATCH (Monza HYPER, Monza LMP2_ELMS, Sarthe LMP2_WEC and
+Daytona LMP2_ELMS), plus the already-materialized Imola LMP2_ELMS context.
+
+## First multi-context apply
+
+Before applying, the scheduler was disabled, DuckDB was checkpointed and a physical
+backup was verified byte-for-byte with SHA-256. Six bundles then returned `RUN`:
+Imola HYPER, Interlagos LMP2_ELMS, Spa LMP2_ELMS, Spa LMP2_WEC, Fuji GT3 and Fuji
+LMP2_ELMS. The post-import audit reports seven `H3_IMPORTED` exact contexts and four
+`H3_NOT_APPLICABLE`, with no ready, failed or conflicting bundle. The History schema
+validator passed; its only warning was the pre-existing filename/context difference
+for session 98. The hidden scheduler was restored to enabled/ready.
+
 ## Real checkpoint
 
 The Imola HYPER batch `c75b788fa4` was executed against a temporary copy of History:

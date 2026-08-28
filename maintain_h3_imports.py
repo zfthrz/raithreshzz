@@ -1,0 +1,178 @@
+"""Audit and explicitly import already-materialized official H3 bundles."""
+
+from __future__ import annotations
+
+import argparse
+import json
+from pathlib import Path
+from typing import Any, Callable
+
+from authorized_episode_pair_matcher import DEFAULT_BATCHES_ROOT
+from h3_import_readiness import (
+    H3_READY_TO_IMPORT,
+    H3Context,
+    clear_h3_import_readiness_cache,
+    discover_h3_import_readiness,
+)
+from run_h3_pipeline import import_h3_outputs
+from runtime_paths import local_root
+
+
+H3_IMPORT_MAINTENANCE_VERSION = "0.1"
+DEFAULT_HISTORY_DB = local_root() / "race_engineer_history.duckdb"
+
+
+def _context_payload(context: H3Context, row: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "track": context.track,
+        "track_layout": context.track_layout,
+        "vehicle_variant": context.vehicle_variant,
+        **row,
+    }
+
+
+def audit_h3_imports(
+    *,
+    batches_root: Path = DEFAULT_BATCHES_ROOT,
+    history_db: Path = DEFAULT_HISTORY_DB,
+) -> dict[str, Any]:
+    """Return the existing read-only readiness result in stable context order."""
+
+    rows = discover_h3_import_readiness(
+        batches_root=Path(batches_root),
+        history_db=Path(history_db),
+    )
+    contexts = [
+        _context_payload(context, row)
+        for context, row in sorted(
+            rows.items(),
+            key=lambda item: (
+                item[0].track,
+                item[0].track_layout,
+                item[0].vehicle_variant,
+            ),
+        )
+    ]
+    counts: dict[str, int] = {}
+    for row in contexts:
+        status = str(row.get("status") or "UNKNOWN")
+        counts[status] = counts.get(status, 0) + 1
+    return {
+        "version": H3_IMPORT_MAINTENANCE_VERSION,
+        "mode": "AUDIT_READ_ONLY",
+        "batches_root": str(Path(batches_root).resolve()),
+        "history_db": str(Path(history_db).resolve()),
+        "context_count": len(contexts),
+        "status_counts": counts,
+        "contexts": contexts,
+        "history_mutated": False,
+        "historical_actions_authorized": False,
+    }
+
+
+def apply_ready_h3_imports(
+    *,
+    batches_root: Path = DEFAULT_BATCHES_ROOT,
+    history_db: Path = DEFAULT_HISTORY_DB,
+    importer: Callable[[Path, Path, Path], dict[str, Any]] = import_h3_outputs,
+) -> tuple[dict[str, Any], int]:
+    """Import only bundles that passed the existing production readiness gate."""
+
+    audit = audit_h3_imports(batches_root=batches_root, history_db=history_db)
+    results = []
+    failed = 0
+    for row in audit["contexts"]:
+        if row.get("status") != H3_READY_TO_IMPORT:
+            continue
+        try:
+            result = importer(
+                Path(history_db),
+                Path(str(row["patterns_path"])),
+                Path(str(row["matches_path"])),
+            )
+            results.append({
+                "track": row["track"],
+                "track_layout": row["track_layout"],
+                "vehicle_variant": row["vehicle_variant"],
+                "batch_id": row.get("batch_id"),
+                **result,
+            })
+        except Exception as exc:
+            failed += 1
+            results.append({
+                "track": row["track"],
+                "track_layout": row["track_layout"],
+                "vehicle_variant": row["vehicle_variant"],
+                "batch_id": row.get("batch_id"),
+                "status": "FAILED",
+                "reason": f"{type(exc).__name__}: {exc}",
+            })
+
+    clear_h3_import_readiness_cache()
+    report = {
+        **audit,
+        "mode": "APPLY_EXPLICIT",
+        "ready_before_apply": len(results),
+        "import_results": results,
+        "history_mutated": any(row.get("status") == "RUN" for row in results),
+        "result": "FAILED" if failed else "PASS",
+    }
+    return report, 1 if failed else 0
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(
+        description=(
+            "Audita bundles H3 existentes y, sólo con --apply, importa los que "
+            "ya pasan el gate oficial de readiness."
+        )
+    )
+    parser.add_argument("--batches-root", type=Path, default=DEFAULT_BATCHES_ROOT)
+    parser.add_argument("--history-db", type=Path, default=DEFAULT_HISTORY_DB)
+    parser.add_argument(
+        "--apply",
+        action="store_true",
+        help="Importación explícita de todos los bundles H3_READY_TO_IMPORT.",
+    )
+    parser.add_argument("--json", action="store_true", help="Imprimir JSON completo.")
+    args = parser.parse_args()
+
+    if args.apply:
+        report, exit_code = apply_ready_h3_imports(
+            batches_root=args.batches_root,
+            history_db=args.history_db,
+        )
+    else:
+        report = audit_h3_imports(
+            batches_root=args.batches_root,
+            history_db=args.history_db,
+        )
+        exit_code = 0
+
+    if args.json:
+        print(json.dumps(report, ensure_ascii=False, indent=2))
+        return exit_code
+
+    print("=" * 76)
+    print("RACE ENGINEER - H3 IMPORT MAINTENANCE v0.1")
+    print("=" * 76)
+    print(f"Mode:             {report['mode']}")
+    print(f"Contexts:         {report['context_count']}")
+    for status, count in sorted(report["status_counts"].items()):
+        print(f"  {status}: {count}")
+    if args.apply:
+        print(f"Ready processed:  {report['ready_before_apply']}")
+        for row in report["import_results"]:
+            print(
+                f"  {row['track']} | {row['vehicle_variant']}: "
+                f"{row.get('status', 'UNKNOWN')}"
+            )
+        print(f"RESULT:           {report['result']}")
+    else:
+        print("History:          UNCHANGED")
+        print("NEXT ACTION:      add --apply only after reviewing this audit")
+    return exit_code
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

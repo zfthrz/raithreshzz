@@ -25,6 +25,24 @@ Validated baseline:
   previous-lap prefix by selecting the segment with greatest distance coverage.
   Real Fuji validation retained 5125 points and removed 12 impossible neutral samples.
   Ten recent real Spa files all rendered at 50 Hz after the boundary correction.
+- H3 import maintenance v0.1 audits all newest exact-context materializations in
+  one command and keeps History read-only by default. `--apply` remains an explicit
+  operator action and imports only existing `H3_READY_TO_IMPORT` bundles through
+  the unchanged production validator/importer; it is not scheduled automatically.
+  Real audit: 11 contexts = 1 imported (Imola LMP2_ELMS), 1 failed legacy bundle
+  without valid source hash (Imola HYPER), 9 not materialized and 0 ready.
+- H3 materialization-readiness audit v0.1 runs the unchanged authorized H2 gate and
+  H3 builder entirely in memory. Real audit: 6 `MATERIALIZATION_READY` (Imola HYPER,
+  Interlagos LMP2_ELMS, Spa LMP2_ELMS, Spa LMP2_WEC, Fuji GT3, Fuji LMP2_ELMS),
+  4 `NO_AUTHORIZED_MATCH` (both Monza contexts, Sarthe LMP2_WEC, Daytona
+  LMP2_ELMS), and 1 already materialized. It wrote 0 files and did not mutate History.
+- Explicit H3 multi-context apply (2026-08-28): after a checkpointed physical
+  History backup verified byte-for-byte by SHA-256, six official bundles were
+  materialized, validated and imported (`RUN`): Imola HYPER, Interlagos LMP2_ELMS,
+  Spa LMP2_ELMS, Spa LMP2_WEC, Fuji GT3 and Fuji LMP2_ELMS. Post-import readiness:
+  7 `H3_IMPORTED`, 4 `H3_NOT_APPLICABLE`, 0 ready/failed/conflict. History validator
+  PASS with its one pre-existing session-98 filename/context warning; scheduler
+  restored to enabled/ready.
 
 - full pytest: `1359 PASS / 0 FAIL / 0 SKIP`;
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP` (last analyzer-affecting checkpoint);

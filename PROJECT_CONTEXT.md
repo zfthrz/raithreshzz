@@ -415,6 +415,34 @@ FAILED
 
 A rerun should reuse valid stages rather than paying for an LLM call or regenerating every artifact unnecessarily.
 
+Existing official H3 materializations can be reviewed together with:
+
+```powershell
+python maintain_h3_imports.py
+```
+
+This default is read-only. `python maintain_h3_imports.py --apply` is an explicit
+operator action that imports only bundles already classified
+`H3_READY_TO_IMPORT` by the production validator. It does not build H2/H3,
+process conflicts, authorize coaching or run from the hidden scheduler.
+
+Before creating missing official bundles, the in-memory gate can be audited with:
+
+```powershell
+python audit_h3_materialization_readiness.py
+```
+
+It executes the current authorized H2 classifier, H2→H3 gate and H3 builder without
+writing their outputs. `MATERIALIZATION_READY` means the existing production logic
+found at least one authorized MATCH and no H3 conflict; it is evidence for an
+explicit later pipeline run, not permission for scheduler mutation.
+
+The first explicit multi-context apply imported six validated bundles after a
+checkpointed, SHA-256-verified physical History backup. Imola HYPER, Interlagos
+LMP2_ELMS, Spa LMP2_ELMS, Spa LMP2_WEC, Fuji GT3 and Fuji LMP2_ELMS all returned
+`RUN`; the post-import audit reports 7 imported exact contexts and 4 not applicable.
+The full History validator passed and the hidden scheduler was re-enabled afterward.
+
 State/signatures are stored under:
 
 ```text

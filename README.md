@@ -1290,6 +1290,39 @@ escribir History. Su columna H3 diferencia `No aplicable`, `Listo para importar`
 `Importado`, `Conflicto` y `Falló validación`. “Listo para importar” es sólo un
 diagnóstico: la importación continúa siendo explícita mediante `--history-db`.
 
+Para revisar todos los contextos existentes de una vez, sin escribir History:
+
+```powershell
+python maintain_h3_imports.py
+```
+
+Después de revisar el listado, la importación agrupada sigue requiriendo una acción
+explícita:
+
+```powershell
+python maintain_h3_imports.py --apply
+```
+
+Ese modo procesa únicamente bundles que el mismo gate productivo ya clasificó
+`H3_READY_TO_IMPORT`. No ejecuta H2/H3, no repara material legacy, no atraviesa
+conflictos y no forma parte del scheduler oculto.
+
+Para saber cuáles contextos sin bundle podrían materializar H3 con la autoridad
+actual, sin escribir ningún resultado:
+
+```powershell
+python audit_h3_materialization_readiness.py
+```
+
+El audit usa en memoria el clasificador autorizado, el gate H2→H3 y el builder H3.
+No inventa thresholds: exige al menos un MATCH ya autorizado y cero conflictos.
+`MATERIALIZATION_READY` todavía requiere ejecutar explícitamente el pipeline oficial.
+
+El primer mantenimiento agrupado se ejecutó con backup físico previo de History,
+verificado por SHA-256. Se importaron seis bundles oficiales y el estado resultante
+quedó en siete contextos `H3_IMPORTED` y cuatro `H3_NOT_APPLICABLE`. El validador
+completo de History pasó y la tarea programada se reactivó al finalizar.
+
 Todavía no crear `persistent_pattern` automáticamente sólo porque dos episodios fueron `MATCH`.
 
 El primer batch H2 de Monza Hypercar tiene 24 pares revisados por una persona

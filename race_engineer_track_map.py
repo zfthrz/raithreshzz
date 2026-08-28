@@ -32,7 +32,8 @@ from extract_lmu_track_gps import (
 )
 
 
-TRACK_MAP_VERSION = "0.7"
+TRACK_MAP_VERSION = "0.8"
+GEAR_GLITCH_MAX_DURATION_S = 0.25
 
 
 @dataclass(frozen=True)
@@ -282,9 +283,10 @@ def load_track_map(
         brake = align_channel(
             channels.get("Brake Pos"), master_times, gps_time_reference
         )
-        gear = align_channel(
+        gear = align_discrete_channel(
             channels.get("Gear"), master_times, gps_time_reference
         )
+        gear = sanitize_gear_trace(gear, master_times)
         boundaries = read_lap_event_times(connection, tables)
         event_laps = (
             assign_laps_from_boundaries(master_times, boundaries)
@@ -372,6 +374,25 @@ def load_track_map(
                     gear=_gear_at(gear, master_index),
                 )
             )
+        # Re-evaluate event-style zero sentinels inside the selected lap. This
+        # avoids a session-level run boundary hiding the positive gears that
+        # bracket a shift in the final rendered slice.
+        selected_gears = sanitize_gear_trace(
+            [point.gear for point in points],
+            [float(row["session_time_s"]) for row in rows],
+        )
+        points = [
+            TrackMapPoint(
+                point.x_m,
+                point.y_m,
+                point.lap_distance_m,
+                point.speed_kmh,
+                point.throttle_percent,
+                point.brake_percent,
+                selected_gears[index],
+            )
+            for index, point in enumerate(points)
+        ]
         points = tuple(points)
         xs = [point.x_m for point in points]
         ys = [point.y_m for point in points]
@@ -408,6 +429,89 @@ def _gear_at(values: list[float | None], index: int | None) -> int | None:
         return None
     gear = int(round(value))
     return gear if 0 <= gear <= 20 else None
+
+
+def align_discrete_channel(
+    channel: dict[str, Any] | None,
+    master_times: list[float],
+    reference_times: list[float],
+) -> list[float | None]:
+    """Align a discrete state with previous-value hold, never interpolation."""
+
+    if not channel or not channel.get("values"):
+        return [None] * len(master_times)
+    source_values = list(channel["values"])
+    source_times = list(channel.get("times") or [])
+    if not source_times:
+        from extract_lmu_track_gps import infer_times_from_index
+
+        source_times = infer_times_from_index(len(source_values), reference_times)
+    pairs = sorted(
+        (float(time), float(value))
+        for time, value in zip(source_times, source_values)
+        if math.isfinite(float(time)) and math.isfinite(float(value))
+    )
+    if not pairs:
+        return [None] * len(master_times)
+    times = [pair[0] for pair in pairs]
+    values = [pair[1] for pair in pairs]
+    result: list[float | None] = []
+    for time in master_times:
+        index = bisect_right(times, float(time)) - 1
+        result.append(values[0] if index < 0 else values[index])
+    return result
+
+
+def sanitize_gear_trace(
+    values: list[float | None],
+    times: list[float],
+) -> list[float | None]:
+    """Remove short display-only gear bounces without rewriting telemetry.
+
+    A short run bracketed by the same gear is an impulse. LMU's event-style Gear
+    table emits zero before the next positive gear, so any zero bracketed by
+    positive gears is a transition sentinel rather than a useful lap state.
+    Leading/trailing neutral remains visible.
+    """
+
+    normalized = [
+        None
+        if value is None or not math.isfinite(float(value))
+        else int(round(float(value)))
+        for value in values
+    ]
+    normalized = [value if value is None or 0 <= value <= 20 else None for value in normalized]
+    if len(normalized) != len(times) or len(normalized) < 3:
+        return normalized
+
+    runs: list[tuple[int, int, int | None]] = []
+    start = 0
+    for index in range(1, len(normalized) + 1):
+        if index == len(normalized) or normalized[index] != normalized[start]:
+            runs.append((start, index, normalized[start]))
+            start = index
+
+    cleaned = list(normalized)
+    for run_index in range(1, len(runs) - 1):
+        start, end, value = runs[run_index]
+        _, _, previous = runs[run_index - 1]
+        _, _, following = runs[run_index + 1]
+        if value is None or previous is None or following is None:
+            continue
+        run_end_time = float(times[end]) if end < len(times) else float(times[end - 1])
+        duration = max(0.0, run_end_time - float(times[start]))
+        short_bounce = duration <= GEAR_GLITCH_MAX_DURATION_S or math.isclose(
+            duration, GEAR_GLITCH_MAX_DURATION_S, abs_tol=1e-9
+        )
+        is_bounce = previous == following and short_bounce
+        is_neutral_shift = (
+            value == 0
+            and previous > 0
+            and following > 0
+        )
+        if is_bounce or is_neutral_shift:
+            cleaned[start:end] = [previous] * (end - start)
+    return cleaned
 
 
 def telemetry_gear_scale(*point_sets: tuple[TrackMapPoint, ...]) -> int:
@@ -1001,6 +1105,38 @@ def build_track_telemetry_chart(
     def x_for(distance: float) -> float:
         return left_px + (distance - distance_min) / (distance_max - distance_min) * usable_width
 
+    def decimate_for_canvas(
+        values: list[tuple[float, float]],
+    ) -> tuple[tuple[float, float], ...]:
+        """Keep temporal extrema per x pixel instead of flooding Tk canvas."""
+
+        if len(values) < 3:
+            return tuple(values)
+        result: list[tuple[float, float]] = []
+        bucket: list[tuple[float, float]] = []
+        pixel = None
+
+        def flush() -> None:
+            if not bucket:
+                return
+            selected = {0, len(bucket) - 1}
+            selected.add(min(range(len(bucket)), key=lambda index: bucket[index][1]))
+            selected.add(max(range(len(bucket)), key=lambda index: bucket[index][1]))
+            for index in sorted(selected):
+                point = bucket[index]
+                if not result or point != result[-1]:
+                    result.append(point)
+
+        for point in values:
+            point_pixel = int(round(point[0]))
+            if pixel is not None and point_pixel != pixel:
+                flush()
+                bucket = []
+            pixel = point_pixel
+            bucket.append(point)
+        flush()
+        return tuple(result)
+
     def series(attribute: str, lane: int, maximum: float) -> tuple[tuple[float, float], ...]:
         result = []
         lane_top = top_px + lane * lane_height
@@ -1032,7 +1168,7 @@ def build_track_telemetry_chart(
                 continue
             normalized = min(max(float(value) / maximum, 0.0), 1.0)
             result.append((x_for(distance), lane_top + (1.0 - normalized) * lane_height))
-        return tuple(result)
+        return decimate_for_canvas(result)
 
     gear_points = ()
     if include_gear:
@@ -1040,6 +1176,7 @@ def build_track_telemetry_chart(
         lane_top = top_px + 3 * lane_height
         previous_distance = None
         previous_y = None
+        last_x = None
         seen_distances = set()
         for point in points:
             distance = point.lap_distance_m
@@ -1063,10 +1200,17 @@ def build_track_telemetry_chart(
             gear_value = min(max(int(point.gear), 0), resolved_gear_max)
             x = x_for(distance)
             y = lane_top + (1.0 - gear_value / resolved_gear_max) * lane_height
-            if previous_y is not None:
+            if previous_y is None:
+                result.append((x, y))
+            elif y != previous_y:
                 result.append((x, previous_y))
-            result.append((x, y))
+                result.append((x, y))
             previous_y = y
+            last_x = x
+        if previous_y is not None and last_x is not None:
+            endpoint = (last_x, previous_y)
+            if not result or endpoint != result[-1]:
+                result.append(endpoint)
         gear_points = tuple(result)
 
     return TrackTelemetryChart(

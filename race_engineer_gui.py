@@ -83,7 +83,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.39"
+GUI_VERSION = "1.40"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 STATE_REFRESH_INTERVAL_MS = 5_000
 PROJECT_ROOT = Path(__file__).resolve().parent

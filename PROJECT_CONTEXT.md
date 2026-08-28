@@ -154,7 +154,7 @@ D3.x deterministic-first default and D2.9 production ranker (2026-08-25).
 | Component | Current operational baseline |
 |---|---|
 | `race_engineer.py` | orchestrator v0.3 |
-| `race_engineer_gui.py` | v1.39 / Track Readiness hierarchy + read-only H3 import readiness |
+| `race_engineer_gui.py` | v1.40 / Track Readiness + corrected high-resolution telemetry render |
 | `analyze_telemetry.py` | v3.8 + Objective Python v6 |
 | Brake point | 2.1 / schema 2.1 |
 | Throttle point | 1.2.1 / schema 1.2 |
@@ -1480,6 +1480,14 @@ GUI v1.17 mejora la resolución: alineación a 20 Hz por default (la nativa es
 ~100 Hz) con selector 10/20/50 Hz en la fila de playback; el paso del playback
 se ajusta para mantener velocidad 1×. Presentación read-only. See
 `docs/RACE_ENGINEER_GUI_V1_17.md`.
+
+GUI v1.40 corrects the 50 Hz telemetry render without changing source evidence.
+Continuous channels are reduced to temporal extrema per canvas pixel, while the
+gear lane stores only actual step transitions. Gear is aligned as a discrete
+previous-value state instead of linearly interpolated; LMU zero transition sentinels
+between positive gears and short same-gear bounces are removed only from the displayed
+lap. Leading/trailing sustained neutral remains visible. See
+`docs/RACE_ENGINEER_GUI_V1_40.md`.
 
 GUI v1.18 integra el scheduler con el catálogo abierto mediante un fingerprint
 read-only de los `state.json`. Cada cinco segundos comprueba ruta, `mtime_ns` y

@@ -22,6 +22,7 @@ from race_engineer_track_map import (
     load_track_profile,
     load_track_priorities,
     load_track_zones,
+    align_discrete_channel,
     nearest_fitted_point_index,
     pan_distance_window,
     pan_track_canvas_view,
@@ -30,6 +31,7 @@ from race_engineer_track_map import (
     profile_turns,
     priority_for_distance,
     summarize_track_interval,
+    sanitize_gear_trace,
     telemetry_chart_x_for_distance,
     telemetry_chart_distance_for_x,
     telemetry_speed_scale,
@@ -39,6 +41,31 @@ from race_engineer_track_map import (
     zone_for_distance,
     zone_point_ranges,
 )
+
+
+def test_discrete_gear_alignment_never_invents_intermediate_gears():
+    channel = {"times": [0.0, 1.0], "values": [2.0, 5.0]}
+    aligned = align_discrete_channel(
+        channel,
+        [0.0, 0.25, 0.5, 0.75, 1.0],
+        [0.0, 1.0],
+    )
+    assert aligned == [2.0, 2.0, 2.0, 2.0, 5.0]
+
+
+def test_gear_sanitizer_removes_short_neutral_and_bounce_only():
+    times = [index * 0.1 for index in range(12)]
+    values = [6, 6, 0, 0, 5, 5, 4, 5, 5, 3, 3, 3]
+    cleaned = sanitize_gear_trace(values, times)
+    assert cleaned[:5] == [6, 6, 6, 6, 5]
+    assert cleaned[6:9] == [5, 5, 5]
+    assert cleaned[9:] == [3, 3, 3]
+
+
+def test_gear_sanitizer_preserves_leading_sustained_neutral():
+    times = [index * 0.1 for index in range(10)]
+    values = [0, 0, 0, 0, 0, 0, 2, 2, 3, 3]
+    assert sanitize_gear_trace(values, times)[:6] == [0] * 6
 
 
 def test_load_track_map_defaults_to_20hz():
@@ -426,6 +453,33 @@ def test_telemetry_chart_adds_discrete_fourth_gear_lane_only_when_requested():
     assert all(y >= 93.0 for _, y in four_lane.gear)
     assert all(y <= 120.0 for _, y in four_lane.gear)
     assert max(y for _, y in four_lane.brake) <= 93.0
+
+
+def test_high_density_50hz_chart_is_decimated_but_remains_visible():
+    points = tuple(
+        TrackMapPoint(
+            float(index),
+            0.0,
+            index * 0.4,
+            speed_kmh=200.0 + 20.0 * math.sin(index / 80.0),
+            throttle_percent=float(index % 101),
+            brake_percent=20.0 if 1000 <= index <= 1100 else 0.0,
+            gear=5 if index < 2500 else 6,
+        )
+        for index in range(5000)
+    )
+    chart = build_track_telemetry_chart(
+        points,
+        width_px=900,
+        height_px=320,
+        include_gear=True,
+    )
+    assert chart is not None
+    assert len(chart.speed) >= 2
+    assert len(chart.throttle) >= 2
+    assert len(chart.brake) >= 2
+    assert len(chart.gear) == 4
+    assert len(chart.speed) <= 4 * 900
 
 
 def test_gear_step_series_stops_at_lap_distance_reset():

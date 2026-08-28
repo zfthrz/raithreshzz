@@ -19,6 +19,9 @@ Validated baseline:
 - GUI v1.39 / Track Readiness v0.8 adds read-only H3 import discovery. Existing
   official bundles are reported as not applicable, ready to import, imported,
   conflict or failed. Discovery does not materialize H3 or write History.
+- GUI v1.40 / track-map model v0.8 fixes empty high-density 50 Hz charts by
+  pixel-aware polyline reduction and renders Gear as a cleaned discrete event state.
+  Real Fuji validation retained 5125 points and removed 12 impossible neutral samples.
 
 - full pytest: `1359 PASS / 0 FAIL / 0 SKIP`;
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP` (last analyzer-affecting checkpoint);

@@ -76,6 +76,10 @@ python race_engineer.py analyze "telemetria\ARCHIVO.duckdb" --backend ollama
   History state. The hidden scheduler may publish only its read-only snapshot and
   must defer the expensive audit while LMU is running. `MATERIALIZATION_READY`
   still requires an explicit pipeline run.
+- `audit_h3_runtime_utility.py` is corpus observability only. It may compare
+  generated H3.1 availability with generated H4/H5.2 artifacts and report exact
+  membership separately from H3.2 projection, but it must not label false positives,
+  call the matcher/LLM, open History, change thresholds or authorize coaching.
 - H5.3 remains ROADMAP_ONLY; H5.3a/b/c are implemented shadow-only and never
   enable historical coaching. The orchestrator `h5_3` stage is observational-only
   and must return `SKIPPED_NOT_APPLICABLE` when H4/H5.1/H5.2 prerequisites are

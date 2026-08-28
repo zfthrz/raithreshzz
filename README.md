@@ -1329,6 +1329,19 @@ El audit usa en memoria el clasificador autorizado, el gate H2→H3 y el builder
 No inventa thresholds: exige al menos un MATCH ya autorizado y cero conflictos.
 `MATERIALIZATION_READY` todavía requiere ejecutar explícitamente el pipeline oficial.
 
+Para auditar cuánto aporta H3 en los artefactos runtime existentes, sin abrir History
+ni ejecutar matcher/LLM:
+
+```powershell
+python audit_h3_runtime_utility.py
+```
+
+El reporte queda en
+`data/generated/diagnostics/h3_runtime_utility_audit.json`. Mantiene separadas las
+membresías exactas H3.1 y las proyecciones calibradas H3.2, mide coexistencia con
+H4/H5 y expone señales de revisión. No clasifica falsos positivos, no cambia ningún
+threshold y no autoriza acciones históricas.
+
 El primer mantenimiento agrupado se ejecutó con backup físico previo de History,
 verificado por SHA-256. Se importaron seis bundles oficiales y el estado resultante
 quedó en siete contextos `H3_IMPORTED` y cuatro `H3_NOT_APPLICABLE`. El validador

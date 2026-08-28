@@ -63,6 +63,18 @@ Validated baseline:
   7 `H3_IMPORTED`, 4 `H3_NOT_APPLICABLE`, 0 ready/failed/conflict. History validator
   PASS with its one pre-existing session-98 filename/context warning; scheduler
   restored to enabled/ready.
+- H3 runtime utility audit v0.1 (2026-08-28) is read-only over generated H3.1/H4/H5.2
+  artifacts. Real corpus: 49 valid sessions, 0 invalid, 322 exact-membership edges,
+  102 calibrated-projection edges and 33 sessions with recurrent/projected H3.
+  H3 and H5 coexist in 22 sessions; H3 contributes without H5 in 11; 16 have
+  neither. Forty-three same-context patterns recur across multiple runtime sessions.
+  Authority violations, duplicate identities and cross-context pattern-ID collisions
+  are all zero. Projection and two-session-repeat counts remain review signals only.
+- Spa LMP2_WEC batch `d9d252f147` and Fuji GT3 batch `8122469d1f` were explicitly
+  materialized/imported after a checkpointed SHA-256-identical History backup.
+  Both returned `RUN/PASS` with zero conflicts. Runtime replay then produced
+  `MATCHED_PATTERN_MEMBERSHIP`: Spa 22 matched / 11 recurrent and Fuji 7 matched /
+  3 recurrent. H4/H5 completed PASS without LLM and the scheduler returned to Ready.
 
 - full pytest: `1359 PASS / 0 FAIL / 0 SKIP`;
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP` (last analyzer-affecting checkpoint);

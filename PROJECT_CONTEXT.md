@@ -834,6 +834,16 @@ automatic `MATCH` is emitted as a projected observational edge; `AMBIGUOUS`,
 The projection is not persisted as pattern membership and has no coaching or
 ranking authority.
 
+`audit_h3_runtime_utility.py` adds a separate read-only corpus-observability layer.
+It consumes only generated H3.1, H4 and H5.2 JSON artifacts, keeps exact stored
+membership distinct from calibrated H3.2 projection, and measures runtime coverage,
+same-context pattern recurrence and complementarity with H5. It never opens History,
+calls H2/LLM, changes a selection, applies a threshold or labels a false positive.
+Its review signals are counts requiring later human interpretation, not promotion
+evidence. The first real audit covered 49 sessions: 33 had recurrent or projected H3,
+22 combined H3 with H5, 11 had H3 without H5 and 16 had neither; authority,
+duplicate-identity and cross-context-collision checks were all zero.
+
 Normal `race_engineer.py analyze` reports `H3 = RUN` only when H3.1 can
 materialize the latest compatible snapshot. Contexts without an imported run
 remain:

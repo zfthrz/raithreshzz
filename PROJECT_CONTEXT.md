@@ -854,6 +854,16 @@ edges across 27 patterns and 13 sessions: all 21 Spa LMP2_ELMS patterns appeared
 session and also existed as exact runtime membership. This supports human review of
 Spa projection edges, not automatic persistence or promotion.
 
+`prepare_h3_projection_review.py` reconstructs those generated projection pairs from
+History in read-only mode using the neutral H2 feature builder. It includes every
+valid edge for an operator-selected exact context, applies no threshold or sampling,
+deduplicates only identical physical episode pairs, and writes an ignored local queue.
+`label_h3_projection_pairs.py` reuses the existing human semantics
+`SAME / DIFFERENT / AMBIGUOUS / SKIP` while enforcing the isolated scope
+`H3_2_PROJECTION_VALIDATION_ONLY` in both queue and labels. These labels do not enter
+normal H2 calibration, persist H3 membership or authorize coaching. The initial Spa
+LMP2_ELMS queue contains all 96 projected edges as 96 unique review pairs.
+
 Normal `race_engineer.py analyze` reports `H3 = RUN` only when H3.1 can
 materialize the latest compatible snapshot. Contexts without an imported run
 remain:

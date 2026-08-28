@@ -79,6 +79,13 @@ Validated baseline:
   between core spatial and extended spatial-channel MATCH. Contract, authority,
   duplicate and cross-context checks are zero. Human review is required before any
   persistence hypothesis.
+- H3.2 projection human review v0.1 reconstructs neutral representative/current
+  episode features from read-only History and emits an isolated local queue with no
+  threshold or sampling. The Spa LMP2_ELMS queue contains all 96 valid projected
+  edges as 96 unique pairs. The dedicated label entry point reuses
+  SAME/DIFFERENT/AMBIGUOUS/SKIP but records
+  `H3_2_PROJECTION_VALIDATION_ONLY`; labels explicitly authorize neither matcher
+  calibration nor H3 persistence/coaching.
 - Spa LMP2_WEC batch `d9d252f147` and Fuji GT3 batch `8122469d1f` were explicitly
   materialized/imported after a checkpointed SHA-256-identical History backup.
   Both returned `RUN/PASS` with zero conflicts. Runtime replay then produced

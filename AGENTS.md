@@ -84,6 +84,10 @@ python race_engineer.py analyze "telemetria\ARCHIVO.duckdb" --backend ollama
   projection edges by exact context and pattern identity. Repetition counts and
   coexistence with exact runtime membership are review signals only: they are not
   thresholds, labels, persisted membership or promotion authority.
+- H3.2 projection review queues must remain under ignored local state and declare
+  `H3_2_PROJECTION_VALIDATION_ONLY`. Their SAME/DIFFERENT/AMBIGUOUS/SKIP labels
+  reuse H2 review semantics but must never be consumed as matcher calibration,
+  persisted membership or coaching authority without a separate approved gate.
 - H5.3 remains ROADMAP_ONLY; H5.3a/b/c are implemented shadow-only and never
   enable historical coaching. The orchestrator `h5_3` stage is observational-only
   and must return `SKIPPED_NOT_APPLICABLE` when H4/H5.1/H5.2 prerequisites are

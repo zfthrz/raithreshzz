@@ -1353,6 +1353,28 @@ El reporte `data/generated/diagnostics/h3_projection_stability_audit.json` agrup
 sesiones independientes, reglas y coexistencia con membresía exacta, pero no usa esos
 conteos como threshold, no genera labels y no persiste una proyección como patrón.
 
+Para preparar la revisión humana completa de un contexto exacto —sin muestreo—:
+
+```powershell
+python prepare_h3_projection_review.py `
+  --track "Circuit de Spa-Francorchamps" `
+  --track-layout "Circuit de Spa-Francorchamps" `
+  --vehicle-variant LMP2_ELMS `
+  --output "data\local\h3_projection_review\spa_lmp2_elms_pair_review_queue.json"
+```
+
+Para etiquetarla de forma reanudable:
+
+```powershell
+python label_h3_projection_pairs.py `
+  "data\local\h3_projection_review\spa_lmp2_elms_pair_review_queue.json" `
+  --labels "data\local\h3_projection_review\spa_lmp2_elms_pair_labels.json"
+```
+
+La interfaz conserva `SAME / DIFFERENT / AMBIGUOUS / SKIP`, pero queue y labels
+declaran `H3_2_PROJECTION_VALIDATION_ONLY`. No alimentan automáticamente la
+calibración H2 ni convierten una proyección en membresía H3.
+
 El primer mantenimiento agrupado se ejecutó con backup físico previo de History,
 verificado por SHA-256. Se importaron seis bundles oficiales y el estado resultante
 quedó en siete contextos `H3_IMPORTED` y cuatro `H3_NOT_APPLICABLE`. El validador

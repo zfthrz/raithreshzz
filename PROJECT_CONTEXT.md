@@ -1486,7 +1486,11 @@ Continuous channels are reduced to temporal extrema per canvas pixel, while the
 gear lane stores only actual step transitions. Gear is aligned as a discrete
 previous-value state instead of linearly interpolated; LMU zero transition sentinels
 between positive gears and short same-gear bounces are removed only from the displayed
-lap. Leading/trailing sustained neutral remains visible. See
+lap. Dense canvas lines are segmented and the previous chart remains visible during
+an asynchronous resolution refresh. A stale previous-lap prefix before the LMU
+`Lap Dist` reset is excluded by selecting the segment with greatest physical
+distance coverage, fixing files that appeared loaded but blank at 50 Hz.
+Leading/trailing sustained neutral remains visible. See
 `docs/RACE_ENGINEER_GUI_V1_40.md`.
 
 GUI v1.18 integra el scheduler con el catálogo abierto mediante un fingerprint

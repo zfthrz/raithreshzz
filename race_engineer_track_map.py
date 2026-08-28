@@ -524,6 +524,30 @@ def telemetry_gear_scale(*point_sets: tuple[TrackMapPoint, ...]) -> int:
     return max(1, max(gears, default=1))
 
 
+def canvas_polyline_chunks(
+    points: tuple[tuple[float, float], ...],
+    *,
+    max_points: int = 750,
+) -> tuple[tuple[tuple[float, float], ...], ...]:
+    """Split a dense Tk polyline while overlapping endpoints for continuity."""
+
+    if max_points < 2:
+        raise ValueError("max_points debe ser >= 2")
+    if len(points) < 2:
+        return ()
+    chunks = []
+    start = 0
+    while start < len(points) - 1:
+        end = min(len(points), start + max_points)
+        chunk = tuple(points[start:end])
+        if len(chunk) >= 2:
+            chunks.append(chunk)
+        if end >= len(points):
+            break
+        start = end - 1
+    return tuple(chunks)
+
+
 def summarize_track_interval(
     points: tuple[TrackMapPoint, ...],
     start_distance_m: float,
@@ -1042,9 +1066,40 @@ def build_track_telemetry_chart(
 ) -> TrackTelemetryChart | None:
     """Fit native channels into three deterministic distance-based chart lanes."""
 
+    # Lap.ts can place one or more samples from the previous lap at the start
+    # of the selected group.  This is more visible at 50 Hz: e.g. 6975, 6975,
+    # 0, 1, 2...  Split only on the existing physical reset threshold and keep
+    # the pass with the greatest observed distance coverage.  A normal group
+    # remains untouched; a genuine second pass stays excluded.
+    point_segments: list[list[TrackMapPoint]] = [[]]
+    previous_segment_distance = None
+    for point in points:
+        distance = point.lap_distance_m
+        if distance is not None and math.isfinite(distance):
+            distance = float(distance)
+            if (
+                previous_segment_distance is not None
+                and previous_segment_distance - distance
+                > LAP_DISTANCE_RESET_THRESHOLD_M
+            ):
+                point_segments.append([])
+            previous_segment_distance = distance
+        point_segments[-1].append(point)
+
+    def segment_coverage(segment: list[TrackMapPoint]) -> float:
+        distances = [
+            float(point.lap_distance_m)
+            for point in segment
+            if point.lap_distance_m is not None
+            and math.isfinite(point.lap_distance_m)
+        ]
+        return max(distances) - min(distances) if distances else -1.0
+
+    chart_points = tuple(max(point_segments, key=segment_coverage))
+
     valid_distances = [
         float(point.lap_distance_m)
-        for point in points
+        for point in chart_points
         if point.lap_distance_m is not None and math.isfinite(point.lap_distance_m)
     ]
     if not valid_distances or width_px <= left_px + right_px or height_px <= top_px + bottom_px:
@@ -1144,7 +1199,7 @@ def build_track_telemetry_chart(
         # duplicates keep the first valid sample without averaging telemetry.
         previous_distance = None
         seen_distances = set()
-        for point in points:
+        for point in chart_points:
             distance = point.lap_distance_m
             if distance is None or not math.isfinite(distance):
                 continue
@@ -1178,7 +1233,7 @@ def build_track_telemetry_chart(
         previous_y = None
         last_x = None
         seen_distances = set()
-        for point in points:
+        for point in chart_points:
             distance = point.lap_distance_m
             if distance is None or not math.isfinite(distance):
                 continue

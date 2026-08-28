@@ -20,8 +20,11 @@ Validated baseline:
   official bundles are reported as not applicable, ready to import, imported,
   conflict or failed. Discovery does not materialize H3 or write History.
 - GUI v1.40 / track-map model v0.8 fixes empty high-density 50 Hz charts by
-  pixel-aware polyline reduction and renders Gear as a cleaned discrete event state.
+  pixel-aware polyline reduction, segmented Tk drawing and non-destructive async
+  refresh; it renders Gear as a cleaned discrete event state and ignores a stale
+  previous-lap prefix by selecting the segment with greatest distance coverage.
   Real Fuji validation retained 5125 points and removed 12 impossible neutral samples.
+  Ten recent real Spa files all rendered at 50 Hz after the boundary correction.
 
 - full pytest: `1359 PASS / 0 FAIL / 0 SKIP`;
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP` (last analyzer-affecting checkpoint);

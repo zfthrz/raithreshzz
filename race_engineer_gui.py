@@ -72,6 +72,7 @@ from race_engineer_track_map import (
     telemetry_chart_distance_for_x,
     telemetry_speed_scale,
     telemetry_gear_scale,
+    canvas_polyline_chunks,
     historical_telemetry_sample_at_distance,
     historical_telemetry_uncovered_ranges,
     transform_fitted_track_points,
@@ -666,7 +667,7 @@ class RaceEngineerApp:
         self._row_tooltip = None
         self.track_playback_active = False
         self.track_playback_after_id = None
-        self.track_resolution_hz = 10.0
+        self.track_resolution_hz = 20.0
         self.analysis_queue: queue.Queue[tuple[str, object]] = queue.Queue()
         self.track_map_queue: queue.Queue[tuple[int, str, object]] = queue.Queue()
         self.session_change_queue: queue.Queue[tuple[int, str, object]] = queue.Queue()
@@ -3617,6 +3618,7 @@ class RaceEngineerApp:
         )
         cached = self.track_map_cache.get(cache_key)
         if cached is not None:
+            self.track_map_preserve_visual_token = None
             self.current_track_map = cached
             self.manual_track_map_loading = False
             self.selected_track_point_index = None
@@ -4243,41 +4245,48 @@ class RaceEngineerApp:
             daemon=True,
         ).start()
 
-    def _request_track_map(self, record: SessionRecord):
+    def _request_track_map(
+        self,
+        record: SessionRecord,
+        *,
+        preserve_visual: bool = False,
+    ):
         self.track_map_token += 1
         token = self.track_map_token
+        self.track_map_preserve_visual_token = token if preserve_visual else None
         self.track_map_loading = False
-        self.current_track_map = None
-        self.current_session_reference_track_map = None
         self.current_track_record = record
         self.manual_track_map_loading = False
-        self._clear_track_lap_options()
-        self.current_historical_track_map = None
-        self.current_historical_track_label = ""
         self.historical_track_map_loading = False
-        self.current_track_zones = ()
-        self.current_track_priorities = ()
-        self.current_track_profile = None
-        self.current_track_turns = ()
-        self._update_track_turn_controls()
-        self._update_track_plan_controls()
-        self._set_track_playback_controls(False)
-        self.current_fitted_track_points = ()
-        self.selected_track_overlay = None
-        self.selected_track_point_index = None
-        self.track_map_dragging = False
-        self.telemetry_zoom_range = None
-        self.track_map_zoom_scale = 1.0
-        self.track_map_zoom_offset = (0.0, 0.0)
-        self.track_map_pan_anchor = None
-        self.track_map_canvas.delete("all")
-        self.track_telemetry_canvas.delete("all")
-        self.track_map_zone_status.set("Buscando zonas H5.2 y prioridades del debrief…")
-        self.track_map_telemetry_status.set(
-            "Hacé clic en el trazado para inspeccionar velocidad, freno y acelerador."
-        )
-        self._set_telemetry_zoom_status()
-        self._set_track_map_zoom_status()
+        if not preserve_visual:
+            self.current_track_map = None
+            self.current_session_reference_track_map = None
+            self._clear_track_lap_options()
+            self.current_historical_track_map = None
+            self.current_historical_track_label = ""
+            self.current_track_zones = ()
+            self.current_track_priorities = ()
+            self.current_track_profile = None
+            self.current_track_turns = ()
+            self._update_track_turn_controls()
+            self._update_track_plan_controls()
+            self._set_track_playback_controls(False)
+            self.current_fitted_track_points = ()
+            self.selected_track_overlay = None
+            self.selected_track_point_index = None
+            self.track_map_dragging = False
+            self.telemetry_zoom_range = None
+            self.track_map_zoom_scale = 1.0
+            self.track_map_zoom_offset = (0.0, 0.0)
+            self.track_map_pan_anchor = None
+            self.track_map_canvas.delete("all")
+            self.track_telemetry_canvas.delete("all")
+            self.track_map_zone_status.set("Buscando zonas H5.2 y prioridades del debrief…")
+            self.track_map_telemetry_status.set(
+                "Hacé clic en el trazado para inspeccionar velocidad, freno y acelerador."
+            )
+            self._set_telemetry_zoom_status()
+            self._set_track_map_zoom_status()
 
         # Iniciar la referencia histórica sólo después de limpiar todo el estado.
         self._start_historical_telemetry_request(record, token)
@@ -4308,6 +4317,7 @@ class RaceEngineerApp:
         )
         cached = self.track_map_cache.get(cache_key)
         if cached is not None:
+            self.track_map_preserve_visual_token = None
             self.current_track_map = cached
             self.current_session_reference_track_map = cached
             try:
@@ -4368,7 +4378,9 @@ class RaceEngineerApp:
             return
 
         self.track_map_loading = True
-        self.track_map_status.set("Reconstruyendo vuelta GPS en segundo plano…")
+        self.track_map_status.set(
+            f"Cargando telemetría a {self.track_resolution_hz:.0f} Hz en segundo plano…"
+        )
 
         def worker():
             try:
@@ -4478,6 +4490,7 @@ class RaceEngineerApp:
             current_completed = True
             self.track_map_loading = False
             if kind == "done":
+                self.track_map_preserve_visual_token = None
                 (
                     cache_key,
                     data,
@@ -4513,6 +4526,13 @@ class RaceEngineerApp:
                 self._set_track_zone_summary(layer_errors=list(layer_errors))
                 self._render_track_map()
             else:
+                if getattr(self, "track_map_preserve_visual_token", None) == token:
+                    self.track_map_preserve_visual_token = None
+                    self.track_map_status.set(
+                        f"No se pudo cargar {self.track_resolution_hz:.0f} Hz; "
+                        f"se conserva el gráfico anterior: {value}"
+                    )
+                    continue
                 self.current_track_map = None
                 self.current_track_zones = ()
                 self.current_track_priorities = ()
@@ -4809,7 +4829,7 @@ class RaceEngineerApp:
         self.track_resolution_hz = hz
         record = self.selected_record()
         if record is not None:
-            self._request_track_map(record)
+            self._request_track_map(record, preserve_visual=True)
 
     def _set_track_playback_controls(self, enabled: bool):
         if not hasattr(self, "track_play_button"):
@@ -5454,9 +5474,9 @@ class RaceEngineerApp:
                 (historical_chart.brake, "#a06f6f"),
                 (historical_chart.gear, "#9a8a63"),
             ):
-                if len(values) >= 2:
+                for chunk in canvas_polyline_chunks(values):
                     coordinates = [
-                        coordinate for point in values for coordinate in point
+                        coordinate for point in chunk for coordinate in point
                     ]
                     canvas.create_line(
                         *coordinates,
@@ -5473,9 +5493,9 @@ class RaceEngineerApp:
                 (reference_chart.brake, "#ea8b8b"),
                 (reference_chart.gear, "#e0bf68"),
             ):
-                if len(values) >= 2:
+                for chunk in canvas_polyline_chunks(values):
                     coordinates = [
-                        coordinate for point in values for coordinate in point
+                        coordinate for point in chunk for coordinate in point
                     ]
                     canvas.create_line(
                         *coordinates,
@@ -5491,8 +5511,8 @@ class RaceEngineerApp:
             (chart.brake, "#e45a5a"),
             (chart.gear, "#d5a94f"),
         ):
-            if len(values) >= 2:
-                coordinates = [coordinate for point in values for coordinate in point]
+            for chunk in canvas_polyline_chunks(values):
+                coordinates = [coordinate for point in chunk for coordinate in point]
                 canvas.create_line(
                     *coordinates,
                     fill=color,

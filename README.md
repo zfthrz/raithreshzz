@@ -1318,7 +1318,11 @@ inspección observacional: no cambia el plan, el ranking ni la autoridad de coac
 La GUI v1.40 conserva la alineación seleccionada a 10/20/50 Hz, pero reduce el
 trazado a los extremos temporales relevantes por píxel para no saturar Tk a 50 Hz.
 Gear usa retención discreta y elimina del render los ceros transitorios que LMU emite
-antes de la nueva marcha; la telemetría DuckDB original no se modifica.
+antes de la nueva marcha. Las polilíneas densas se dibujan en segmentos y el gráfico
+anterior permanece visible mientras carga la nueva resolución; la telemetría DuckDB
+original no se modifica. Si LMU deja muestras de la vuelta anterior antes del reset
+de `Lap Dist`, el gráfico conserva el tramo con mayor cobertura física para evitar
+una serie aparentemente cargada pero vacía a 50 Hz.
 
 El contrato LLM histórico v0.1 puede seleccionar hasta tres zonas H5.2 y únicamente códigos observacionales autorizados por Python para cada una. El LLM no escribe texto libre: Python arma todo el render final con hechos y cifras exactos. Un validator separado rechaza zonas inventadas, claves adicionales, códigos no autorizados o evidencia alterada.
 

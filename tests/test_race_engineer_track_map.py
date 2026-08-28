@@ -12,6 +12,7 @@ from race_engineer_track_map import (
     TrackMapPoint,
     build_historical_telemetry_comparison,
     build_track_telemetry_chart,
+    canvas_polyline_chunks,
     fit_track_points,
     focus_track_canvas_view,
     historical_telemetry_sample_at_distance,
@@ -482,6 +483,16 @@ def test_high_density_50hz_chart_is_decimated_but_remains_visible():
     assert len(chart.speed) <= 4 * 900
 
 
+def test_dense_canvas_polyline_is_split_with_continuous_endpoints():
+    points = tuple((float(index), float(index % 7)) for index in range(2000))
+    chunks = canvas_polyline_chunks(points, max_points=750)
+    assert [len(chunk) for chunk in chunks] == [750, 750, 502]
+    assert chunks[0][-1] == chunks[1][0]
+    assert chunks[1][-1] == chunks[2][0]
+    assert chunks[0][0] == points[0]
+    assert chunks[-1][-1] == points[-1]
+
+
 def test_gear_step_series_stops_at_lap_distance_reset():
     points = (
         TrackMapPoint(0.0, 0.0, 0.0, gear=2),
@@ -556,6 +567,31 @@ def test_telemetry_chart_keeps_one_pass_without_duplicate_distances():
     assert [y for _, y in filtered.speed] == pytest.approx([44.04])
     assert [y for _, y in filtered.throttle] == pytest.approx([76.44])
     assert [y for _, y in filtered.brake] == pytest.approx([108.84])
+
+
+def test_telemetry_chart_discards_stale_previous_lap_prefix_at_high_frequency():
+    points = (
+        TrackMapPoint(0.0, 0.0, 6974.5, 250.0, 100.0, 0.0, 6),
+        TrackMapPoint(1.0, 0.0, 6974.5, 250.0, 100.0, 0.0, 6),
+        TrackMapPoint(2.0, 0.0, 0.3, 215.0, 100.0, 0.0, 4),
+        TrackMapPoint(3.0, 0.0, 100.0, 220.0, 90.0, 10.0, 4),
+        TrackMapPoint(4.0, 0.0, 6975.0, 240.0, 100.0, 0.0, 6),
+    )
+
+    chart = build_track_telemetry_chart(
+        points,
+        width_px=200,
+        height_px=132,
+        include_gear=True,
+    )
+
+    assert chart is not None
+    assert len(chart.speed) == 3
+    assert len(chart.throttle) == 3
+    assert len(chart.brake) == 3
+    assert len(chart.gear) >= 2
+    assert chart.distance_min_m == pytest.approx(0.3)
+    assert chart.distance_max_m == pytest.approx(6975.0)
 
 
 def test_telemetry_chart_discards_small_distance_jitter_and_keeps_following_samples():

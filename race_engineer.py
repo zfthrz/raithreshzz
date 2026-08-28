@@ -273,6 +273,55 @@ def h4_applicability(db_path: Path, session_id: int) -> tuple[bool, list[str]]:
         connection.close()
 
 
+def h2_authority_for_h3(
+    track: str,
+    layout: str,
+    variant: str,
+) -> tuple[str, bool]:
+    """Resolve H2 MATCH authority for H3 without inventing exact calibration."""
+    context = (track, layout, variant)
+
+    try:
+        from episode_pair_matcher import CALIBRATIONS
+
+        if context in CALIBRATIONS:
+            return "EXACT_VARIANT_CALIBRATION", True
+    except Exception:
+        pass
+
+    try:
+        from track_readiness import build_track_readiness
+
+        readiness = build_track_readiness(project_root=PROJECT_ROOT)
+        for row in readiness.get("rows") or []:
+            if not isinstance(row, dict):
+                continue
+
+            row_context = (
+                str(row.get("track") or ""),
+                str(row.get("track_layout") or ""),
+                str(row.get("vehicle_variant") or ""),
+            )
+            if row_context != context:
+                continue
+
+            status = str(row.get("overall_status") or "UNKNOWN")
+
+            if status == "COVERED_BY_TRACK_MATCH_BASELINE":
+                return status, True
+            if status in {
+                "TRACK_MATCH_BASELINE_SHADOW",
+                "WAITING_FOR_TRACK_BASELINE",
+            }:
+                return status, False
+            return status, False
+
+    except Exception:
+        return "H2_AUTHORITY_UNAVAILABLE", False
+
+    return "NO_AUTHORIZED_H2", False
+
+
 def h3_applicability(
     analysis_json: Path,
     db_path: Path,
@@ -300,13 +349,11 @@ def h3_applicability(
         or ""
     )
 
-    calibrated = False
-    try:
-        from episode_pair_matcher import CALIBRATIONS
-
-        calibrated = (track, layout, variant) in CALIBRATIONS
-    except Exception:
-        calibrated = False
+    h2_scope, h2_match_authorized = h2_authority_for_h3(
+        track,
+        layout,
+        variant,
+    )
 
     pattern_runs = 0
     if db_path.exists():
@@ -328,16 +375,33 @@ def h3_applicability(
         except Exception:
             pattern_runs = 0
 
-    if calibrated and pattern_runs:
+    if h2_match_authorized and pattern_runs:
+        if h2_scope == "EXACT_VARIANT_CALIBRATION":
+            authority_text = "calibración H2 exacta"
+        else:
+            authority_text = "track MATCH baseline promovido"
         reasons = [
-            f"contexto calibrado con {pattern_runs} pattern run(s) en History; "
+            f"contexto con {authority_text} y {pattern_runs} pattern run(s) en History; "
             "H3.1 puede resolver membresía del snapshot"
         ]
-    elif calibrated:
-        reasons = ["contexto calibrado sin pattern runs H3 importados"]
+    elif h2_match_authorized:
+        if h2_scope == "EXACT_VARIANT_CALIBRATION":
+            reasons = [
+                "contexto con calibración H2 exacta sin pattern runs H3 importados"
+            ]
+        else:
+            reasons = [
+                "contexto cubierto por track MATCH baseline promovido "
+                "sin pattern runs H3 importados"
+            ]
+    elif h2_scope == "TRACK_MATCH_BASELINE_SHADOW":
+        reasons = ["contexto con track MATCH baseline todavía en shadow para H3"]
+    elif h2_scope == "WAITING_FOR_TRACK_BASELINE":
+        reasons = ["contexto esperando baseline H2 de circuito para H3"]
     else:
-        reasons = ["contexto sin calibración H2 para H3"]
-    return bool(calibrated and pattern_runs), reasons
+        reasons = [f"contexto sin autoridad H2 para H3 ({h2_scope})"]
+
+    return bool(h2_match_authorized and pattern_runs), reasons
 
 
 def print_stage(name: str, status: str, detail: str | None = None) -> None:

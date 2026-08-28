@@ -1342,6 +1342,17 @@ membresías exactas H3.1 y las proyecciones calibradas H3.2, mide coexistencia c
 H4/H5 y expone señales de revisión. No clasifica falsos positivos, no cambia ningún
 threshold y no autoriza acciones históricas.
 
+La estabilidad interna de las proyecciones H3.2 puede inspeccionarse por separado:
+
+```powershell
+python audit_h3_projection_stability.py
+```
+
+El reporte `data/generated/diagnostics/h3_projection_stability_audit.json` agrupa
+únicamente MATCH automáticos ya generados por contexto exacto y `pattern_id`. Cuenta
+sesiones independientes, reglas y coexistencia con membresía exacta, pero no usa esos
+conteos como threshold, no genera labels y no persiste una proyección como patrón.
+
 El primer mantenimiento agrupado se ejecutó con backup físico previo de History,
 verificado por SHA-256. Se importaron seis bundles oficiales y el estado resultante
 quedó en siete contextos `H3_IMPORTED` y cuatro `H3_NOT_APPLICABLE`. El validador

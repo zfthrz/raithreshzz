@@ -70,6 +70,15 @@ Validated baseline:
   neither. Forty-three same-context patterns recur across multiple runtime sessions.
   Authority violations, duplicate identities and cross-context pattern-ID collisions
   are all zero. Projection and two-session-repeat counts remain review signals only.
+- H3.2 projection stability audit v0.1 groups generated automatic MATCH edges without
+  calling the matcher or applying thresholds. Real corpus: 102 edges, 27 patterns,
+  13 projected sessions and 21 patterns repeated across multiple projected sessions.
+  Spa LMP2_ELMS accounts for 96 edges / 21 patterns / 12 sessions, with every pattern
+  appearing in 2–8 sessions. Interlagos contributes 6 single-session projections;
+  all six pattern IDs also occur as exact runtime membership. Rule edges split 51/51
+  between core spatial and extended spatial-channel MATCH. Contract, authority,
+  duplicate and cross-context checks are zero. Human review is required before any
+  persistence hypothesis.
 - Spa LMP2_WEC batch `d9d252f147` and Fuji GT3 batch `8122469d1f` were explicitly
   materialized/imported after a checkpointed SHA-256-identical History backup.
   Both returned `RUN/PASS` with zero conflicts. Runtime replay then produced

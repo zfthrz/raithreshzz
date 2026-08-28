@@ -80,6 +80,10 @@ python race_engineer.py analyze "telemetria\ARCHIVO.duckdb" --backend ollama
   generated H3.1 availability with generated H4/H5.2 artifacts and report exact
   membership separately from H3.2 projection, but it must not label false positives,
   call the matcher/LLM, open History, change thresholds or authorize coaching.
+- `audit_h3_projection_stability.py` may group already-generated automatic H3.2
+  projection edges by exact context and pattern identity. Repetition counts and
+  coexistence with exact runtime membership are review signals only: they are not
+  thresholds, labels, persisted membership or promotion authority.
 - H5.3 remains ROADMAP_ONLY; H5.3a/b/c are implemented shadow-only and never
   enable historical coaching. The orchestrator `h5_3` stage is observational-only
   and must return `SKIPPED_NOT_APPLICABLE` when H4/H5.1/H5.2 prerequisites are

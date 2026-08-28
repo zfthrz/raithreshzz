@@ -844,6 +844,16 @@ evidence. The first real audit covered 49 sessions: 33 had recurrent or projecte
 22 combined H3 with H5, 11 had H3 without H5 and 16 had neither; authority,
 duplicate-identity and cross-context-collision checks were all zero.
 
+`audit_h3_projection_stability.py` drills into the generated H3.2 subset without
+rerunning the matcher. It groups only valid automatic MATCH edges by exact
+track/layout/vehicle/pattern identity and reports independent projected sessions,
+matcher rule IDs and whether the pattern also appears as exact runtime membership.
+No repeated count is interpreted as a threshold. The first corpus audit found 102
+edges across 27 patterns and 13 sessions: all 21 Spa LMP2_ELMS patterns appeared in
+2–8 projected sessions, while six Interlagos patterns appeared in one projected
+session and also existed as exact runtime membership. This supports human review of
+Spa projection edges, not automatic persistence or promotion.
+
 Normal `race_engineer.py analyze` reports `H3 = RUN` only when H3.1 can
 materialize the latest compatible snapshot. Contexts without an imported run
 remain:

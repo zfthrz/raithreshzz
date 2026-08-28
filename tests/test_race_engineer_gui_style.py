@@ -142,11 +142,13 @@ def test_primary_navigation_groups_technical_views_by_user_task():
         "Resumen",
         "Telemetría",
         "Historial",
+        "Circuitos",
         "Diagnóstico",
         "Calibración",
     )
     assert SECTION_VIEWS["Resumen"] == ("Debrief", "Próxima tanda", "Vueltas")
     assert SECTION_VIEWS["Historial"] == ("Referencia", "Comparación")
+    assert SECTION_VIEWS["Circuitos"] == ("Readiness",)
     assert SECTION_VIEWS["Diagnóstico"] == ("Pipeline", "Ejecución")
     assert SECTION_VIEWS["Calibración"] == ("Calibración",)
 

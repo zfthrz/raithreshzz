@@ -41,6 +41,7 @@ from race_engineer_ui_analysis import (
     stream_analysis,
     validate_analysis_candidate,
 )
+from track_readiness import build_track_readiness
 from race_engineer_track_map import (
     TrackMapData,
     TrackMapLapOption,
@@ -82,7 +83,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.37"
+GUI_VERSION = "1.38"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 STATE_REFRESH_INTERVAL_MS = 5_000
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -92,11 +93,19 @@ SESSION_FILTER_LABELS = {
     "Sólo History": "HISTORY_READY",
     "Fallidas": "FAILED",
 }
-PRIMARY_SECTIONS = ("Resumen", "Telemetría", "Historial", "Diagnóstico", "Calibración")
+PRIMARY_SECTIONS = (
+    "Resumen",
+    "Telemetría",
+    "Historial",
+    "Circuitos",
+    "Diagnóstico",
+    "Calibración",
+)
 SECTION_VIEWS = {
     "Resumen": ("Debrief", "Próxima tanda", "Vueltas"),
     "Telemetría": ("Mapa y canales",),
     "Historial": ("Referencia", "Comparación"),
+    "Circuitos": ("Readiness",),
     "Diagnóstico": ("Pipeline", "Ejecución"),
     "Calibración": ("Calibración",),
 }
@@ -104,8 +113,54 @@ SECTION_DESCRIPTIONS = {
     "Resumen": "Debrief, plan de próxima tanda y vueltas clave de la sesión seleccionada.",
     "Telemetría": "Mapa del circuito y canales de telemetría de la sesión seleccionada.",
     "Historial": "Referencia histórica y comparación contextual validada.",
+    "Circuitos": "Estado de track profiles, sesiones y calibración por circuito/contexto.",
     "Diagnóstico": "Estado del pipeline, ejecución y automatización.",
     "Calibración": "Cobertura y estado de calibración por contexto.",
+}
+
+READINESS_STATUS_COLORS = {
+    "CURRENT_REQUIREMENTS_SATISFIED": "#00FFA6",
+    "COVERED_BY_TRACK_MATCH_BASELINE": "#42d6c7",
+    "TRACK_MATCH_BASELINE_SHADOW": "#f0c674",
+    "WAITING_FOR_TRACK_BASELINE": "#7fb3e3",
+    "CANDIDATE_CALIBRATED": "#f0c674",
+    "NEEDS_EVALUATION": "#f0c674",
+    "NEEDS_LABELS": "#f0c674",
+    "NEEDS_CALIBRATION_QUEUE": "#7fb3e3",
+    "NEEDS_SESSIONS": "#7fb3e3",
+    "NEEDS_PROFILE": "#ff7b72",
+    "MATCH_BASELINE_CONFLICT": "#ff7b72",
+    "UNKNOWN": "#9aa5ad",
+}
+
+READINESS_STATUS_LABELS = {
+    "CURRENT_REQUIREMENTS_SATISFIED": "Calibración exacta vigente",
+    "COVERED_BY_TRACK_MATCH_BASELINE": "Cobertura MATCH-only promovida",
+    "TRACK_MATCH_BASELINE_SHADOW": "Baseline MATCH en shadow",
+    "WAITING_FOR_TRACK_BASELINE": "Esperando baseline de circuito",
+    "NEEDS_PROFILE": "Necesita track profile",
+    "NEEDS_SESSIONS": "Necesita sesiones",
+    "NEEDS_CALIBRATION_QUEUE": "Necesita calibration queue",
+    "NEEDS_LABELS": "Necesita labels",
+    "NEEDS_EVALUATION": "Necesita evaluación",
+    "CANDIDATE_CALIBRATED": "Candidato pendiente de revisión",
+    "MATCH_BASELINE_CONFLICT": "Conflicto de baseline MATCH",
+    "UNKNOWN": "Estado no resuelto",
+}
+
+READINESS_ACTION_LABELS = {
+    "CREATE_OR_VALIDATE_TRACK_PROFILE": "Crear / validar track profile",
+    "RECORD_MORE_SESSIONS": "Registrar más sesiones",
+    "GENERATE_CALIBRATION_QUEUE": "Generar calibration queue",
+    "LABEL_CALIBRATION_QUEUE": "Etiquetar calibration queue",
+    "COLLECT_EVALUATION_EVIDENCE": "Recolectar evidencia de evaluación",
+    "REVIEW_SHADOW_METRICS": "Revisar métricas shadow",
+    "NONE_MATCH_ONLY": "Sin acción para MATCH; REJECT sigue específico",
+    "COLLECT_MATCH_SHADOW_EVIDENCE": "Recolectar evidencia MATCH shadow",
+    "REVIEW_MATCH_BASELINE_CONFLICT": "Revisar conflicto de baseline MATCH",
+    "ESTABLISH_TRACK_BASELINE_FIRST": "Establecer primero el baseline del circuito",
+    "NONE": "Sin acción pendiente",
+    "UNKNOWN": "Revisión manual",
 }
 
 SESSION_CHANGE_STATUS_LABELS = {
@@ -412,6 +467,40 @@ def calibration_status_tooltip(status: str) -> str:
     return CALIBRATION_STATUS_TOOLTIPS[calibration_status_tag(status)]
 
 
+def track_readiness_status_tooltip(row: dict) -> str:
+    status = str(row.get("overall_status") or "UNKNOWN")
+    descriptions = {
+        "CURRENT_REQUIREMENTS_SATISFIED": (
+            "Calibración exacta para esta variante. MATCH y REJECT conservan "
+            "únicamente la autoridad definida por esa calibración."
+        ),
+        "COVERED_BY_TRACK_MATCH_BASELINE": (
+            "Cobertura promovida sólo para MATCH desde el baseline del mismo "
+            "circuito/layout. REJECT sigue siendo específico de la variante y "
+            "permanece fail-closed. No significa fully calibrated."
+        ),
+        "TRACK_MATCH_BASELINE_SHADOW": (
+            "El baseline MATCH del circuito/layout sigue en shadow. No autoriza "
+            "MATCH productivo y nunca hereda REJECT."
+        ),
+        "WAITING_FOR_TRACK_BASELINE": (
+            "Este contexto espera que otra variante establezca primero el baseline "
+            "MATCH del circuito/layout. REJECT no se comparte."
+        ),
+    }
+    text = descriptions.get(
+        status,
+        str((row.get("next_action") or {}).get("description") or status),
+    )
+    source_variants = list(row.get("baseline_source_variants") or [])
+    if source_variants and status in {
+        "COVERED_BY_TRACK_MATCH_BASELINE",
+        "TRACK_MATCH_BASELINE_SHADOW",
+    }:
+        text += " Variantes fuente: " + ", ".join(map(str, source_variants)) + "."
+    return text
+
+
 def format_comparison_columns(view: dict) -> tuple[str, str, str, str]:
     available = bool(view.get("available"))
     hist = view.get("historical") or {}
@@ -603,6 +692,9 @@ class RaceEngineerApp:
         )
         self.scheduler_diagnostic_window = None
         self.calibration_batches_root = PROJECT_ROOT / "calibration_batches"
+        self.track_readiness_payload: dict = {}
+        self.track_readiness_rows: list[dict] = []
+        self.track_readiness_tracks: list[dict] = []
         self.settings_warning = ""
 
         root.title(f"Threshzz's Telemetry Analysis LMU v{GUI_VERSION}")
@@ -1485,6 +1577,9 @@ class RaceEngineerApp:
         self.historical_reference_text = self._text_tab(history_notebook, "Referencia")
         self._comparison_tab(history_notebook)
 
+        readiness_frame = self.primary_section_frames["Circuitos"]
+        self._track_readiness_panel(readiness_frame)
+
         diagnostics_frame = self.primary_section_frames["Diagnóstico"]
         self.diagnostics_notebook = ttk.Notebook(diagnostics_frame)
         self.diagnostics_notebook.pack(fill="both", expand=True)
@@ -1531,6 +1626,8 @@ class RaceEngineerApp:
         self.primary_section_var.set(section)
         self.workspace_title_var.set(section)
         self.workspace_subtitle_var.set(SECTION_DESCRIPTIONS.get(section, ""))
+        if section == "Circuitos":
+            self._refresh_track_readiness()
 
         for name, button in self.primary_section_buttons.items():
             button.configure(
@@ -1804,6 +1901,314 @@ class RaceEngineerApp:
             side="top",
         )
         return frame
+
+    def _track_readiness_panel(self, parent):
+        frame = self.ttk.Frame(parent, style="Panel.TFrame", padding=8)
+        frame.pack(fill="both", expand=True)
+
+        header = self.ttk.Frame(frame, style="Panel.TFrame")
+        header.pack(fill="x", pady=(0, 8))
+        self.track_readiness_summary_var = self.tk.StringVar(
+            value="Cargando estado de circuitos…"
+        )
+        self.ttk.Label(
+            header,
+            textvariable=self.track_readiness_summary_var,
+            style="CardValue.TLabel",
+            justify="left",
+        ).pack(side="left", fill="x", expand=True)
+        self.ttk.Button(
+            header,
+            text="Actualizar estado",
+            command=self._refresh_track_readiness,
+        ).pack(side="right")
+
+        split = self.ttk.Panedwindow(frame, orient="vertical")
+        split.pack(fill="both", expand=True)
+
+        tracks_panel = self.ttk.Frame(split, style="Panel.TFrame")
+        contexts_panel = self.ttk.Frame(split, style="Panel.TFrame")
+        split.add(tracks_panel, weight=2)
+        split.add(contexts_panel, weight=3)
+
+        self.ttk.Label(
+            tracks_panel,
+            text="CIRCUITOS",
+            style="CardLabel.TLabel",
+        ).pack(anchor="w", pady=(0, 5))
+
+        track_columns = ("track", "profile", "contexts", "satisfied", "pending", "unresolved")
+        self.track_readiness_tree = self.ttk.Treeview(
+            tracks_panel,
+            columns=track_columns,
+            show="headings",
+            selectmode="browse",
+            height=9,
+        )
+        track_headings = {
+            "track": "Circuito",
+            "profile": "Profile",
+            "contexts": "Contexts",
+            "satisfied": "OK",
+            "pending": "Pendientes",
+            "unresolved": "Sin resolver",
+        }
+        track_widths = {
+            "track": 360,
+            "profile": 130,
+            "contexts": 70,
+            "satisfied": 55,
+            "pending": 80,
+            "unresolved": 90,
+        }
+        for name in track_columns:
+            self.track_readiness_tree.heading(name, text=track_headings[name])
+            self.track_readiness_tree.column(
+                name,
+                width=track_widths[name],
+                minwidth=50,
+                stretch=name == "track",
+            )
+        track_scroll = self.ttk.Scrollbar(
+            tracks_panel, orient="vertical", command=self.track_readiness_tree.yview
+        )
+        self.track_readiness_tree.configure(yscrollcommand=track_scroll.set)
+        track_scroll.pack(side="right", fill="y")
+        self.track_readiness_tree.pack(fill="both", expand=True)
+        self.track_readiness_tree.bind("<<TreeviewSelect>>", self._on_track_readiness_select)
+
+        self.track_readiness_tree.tag_configure(
+            "track_ok",
+            foreground=READINESS_STATUS_COLORS["CURRENT_REQUIREMENTS_SATISFIED"],
+        )
+        self.track_readiness_tree.tag_configure(
+            "track_pending",
+            foreground=READINESS_STATUS_COLORS["NEEDS_EVALUATION"],
+        )
+        self.track_readiness_tree.tag_configure(
+            "track_profile_missing",
+            foreground=READINESS_STATUS_COLORS["NEEDS_PROFILE"],
+        )
+
+        context_header = self.ttk.Frame(contexts_panel, style="Panel.TFrame")
+        context_header.pack(fill="x", pady=(8, 5))
+        self.track_readiness_detail_var = self.tk.StringVar(
+            value="Seleccioná un circuito para ver sus contextos."
+        )
+        self.ttk.Label(
+            context_header,
+            textvariable=self.track_readiness_detail_var,
+            style="CardValue.TLabel",
+            justify="left",
+        ).pack(anchor="w")
+
+        context_columns = (
+            "variant", "sessions", "labels", "matcher", "historical", "status", "next"
+        )
+        self.track_context_tree = self.ttk.Treeview(
+            contexts_panel,
+            columns=context_columns,
+            show="headings",
+            selectmode="browse",
+        )
+        context_headings = {
+            "variant": "Variant",
+            "sessions": "Sesiones",
+            "labels": "Labels",
+            "matcher": "H2",
+            "historical": "Histórico",
+            "status": "Estado",
+            "next": "Siguiente acción",
+        }
+        context_widths = {
+            "variant": 110,
+            "sessions": 70,
+            "labels": 70,
+            "matcher": 270,
+            "historical": 145,
+            "status": 220,
+            "next": 250,
+        }
+        for name in context_columns:
+            self.track_context_tree.heading(name, text=context_headings[name])
+            self.track_context_tree.column(
+                name,
+                width=context_widths[name],
+                minwidth=55,
+                stretch=name in {"matcher", "status", "next"},
+            )
+        context_scroll = self.ttk.Scrollbar(
+            contexts_panel, orient="vertical", command=self.track_context_tree.yview
+        )
+        self.track_context_tree.configure(yscrollcommand=context_scroll.set)
+        context_scroll.pack(side="right", fill="y")
+        self.track_context_tree.pack(fill="both", expand=True)
+        self.track_context_tree.bind(
+            "<Motion>", self._on_track_readiness_context_motion
+        )
+        self.track_context_tree.bind("<Leave>", self._hide_row_tooltip)
+
+        for status, color in READINESS_STATUS_COLORS.items():
+            self.track_context_tree.tag_configure(status, foreground=color)
+
+        self._refresh_track_readiness()
+        return frame
+
+    def _refresh_track_readiness(self):
+        try:
+            payload = build_track_readiness(project_root=PROJECT_ROOT)
+        except (OSError, ValueError, json.JSONDecodeError) as exc:
+            self.track_readiness_summary_var.set(
+                f"No se pudo calcular Track Readiness: {exc}"
+            )
+            return
+
+        self.track_readiness_payload = payload
+        self.track_readiness_rows = list(payload.get("rows") or [])
+        self.track_readiness_tracks = list(payload.get("tracks") or [])
+
+        summary = payload.get("summary") or {}
+        status_counts = summary.get("status_counts") or {}
+        exact = int(status_counts.get("CURRENT_REQUIREMENTS_SATISFIED", 0))
+        match_covered = int(
+            status_counts.get("COVERED_BY_TRACK_MATCH_BASELINE", 0)
+        )
+        satisfied = exact + match_covered
+        pending = max(0, int(summary.get("contexts", 0)) - satisfied)
+        self.track_readiness_summary_var.set(
+            f"{summary.get('tracks', 0)} circuitos · "
+            f"{summary.get('contexts', 0)} contextos · "
+            f"{exact} calibrados exactos · "
+            f"{match_covered} con cobertura MATCH-only · "
+            f"{pending} pendientes · "
+            f"{summary.get('unresolved_sessions', 0)} sesiones sin contexto resoluble"
+        )
+
+        selected_track = None
+        selection = self.track_readiness_tree.selection()
+        if selection:
+            try:
+                selected_track = self.track_readiness_tracks[int(selection[0])]["track"]
+            except (ValueError, IndexError, KeyError):
+                selected_track = None
+
+        for iid in self.track_readiness_tree.get_children():
+            self.track_readiness_tree.delete(iid)
+
+        selected_iid = None
+        for index, track in enumerate(self.track_readiness_tracks):
+            if track.get("profile_status") != "VALIDATED":
+                tag = "track_profile_missing"
+            elif int(track.get("pending_contexts") or 0) > 0:
+                tag = "track_pending"
+            else:
+                tag = "track_ok"
+
+            iid = str(index)
+            self.track_readiness_tree.insert(
+                "",
+                "end",
+                iid=iid,
+                values=(
+                    track.get("track", "—"),
+                    track.get("profile_status", "UNKNOWN"),
+                    track.get("context_count", 0),
+                    track.get("satisfied_contexts", 0),
+                    track.get("pending_contexts", 0),
+                    track.get("unresolved_sessions", 0),
+                ),
+                tags=(tag,),
+            )
+            if selected_track and track.get("track") == selected_track:
+                selected_iid = iid
+
+        if selected_iid is None and self.track_readiness_tracks:
+            selected_iid = "0"
+
+        if selected_iid is not None:
+            self.track_readiness_tree.selection_set(selected_iid)
+            self.track_readiness_tree.focus(selected_iid)
+            self.track_readiness_tree.see(selected_iid)
+            self._populate_track_readiness_contexts(
+                self.track_readiness_tracks[int(selected_iid)]
+            )
+        else:
+            self._populate_track_readiness_contexts(None)
+
+    def _on_track_readiness_select(self, _event=None):
+        selection = self.track_readiness_tree.selection()
+        if not selection:
+            self._populate_track_readiness_contexts(None)
+            return
+        try:
+            track = self.track_readiness_tracks[int(selection[0])]
+        except (ValueError, IndexError):
+            self._populate_track_readiness_contexts(None)
+            return
+        self._populate_track_readiness_contexts(track)
+
+    def _populate_track_readiness_contexts(self, track):
+        for iid in self.track_context_tree.get_children():
+            self.track_context_tree.delete(iid)
+
+        if not isinstance(track, dict):
+            self.track_readiness_detail_var.set(
+                "Seleccioná un circuito para ver sus contextos."
+            )
+            return
+
+        unresolved = int(track.get("unresolved_sessions") or 0)
+        unresolved_text = (
+            f" · {unresolved} sesiones sin layout resoluble" if unresolved else ""
+        )
+        self.track_readiness_detail_var.set(
+            f"{track.get('track', 'Circuito')} · "
+            f"profile {track.get('profile_status', 'UNKNOWN')} · "
+            f"{track.get('context_count', 0)} contextos"
+            f"{unresolved_text}"
+        )
+
+        for index, row in enumerate(list(track.get("contexts") or [])):
+            action = row.get("next_action") or {}
+            action_code = str(action.get("code") or "UNKNOWN")
+            action_label = READINESS_ACTION_LABELS.get(action_code, action_code)
+            status = str(row.get("overall_status") or "UNKNOWN")
+            self.track_context_tree.insert(
+                "",
+                "end",
+                iid=str(index),
+                values=(
+                    row.get("vehicle_variant", "—"),
+                    row.get("sessions", 0),
+                    f"{row.get('labeled_pairs', 0)}/{row.get('queue_pairs', 0)}",
+                    row.get("matcher_status", "—"),
+                    row.get("historical_status", "—"),
+                    READINESS_STATUS_LABELS.get(status, status),
+                    action_label,
+                ),
+                tags=(status,),
+            )
+
+    def _on_track_readiness_context_motion(self, event):
+        iid = self.track_context_tree.identify_row(event.y)
+        if not iid:
+            self._hide_row_tooltip()
+            return
+        selection = self.track_readiness_tree.selection()
+        if not selection:
+            self._hide_row_tooltip()
+            return
+        try:
+            track = self.track_readiness_tracks[int(selection[0])]
+            row = list(track.get("contexts") or [])[int(iid)]
+        except (ValueError, IndexError, KeyError):
+            self._hide_row_tooltip()
+            return
+        self._show_row_tooltip(
+            track_readiness_status_tooltip(row),
+            event.x_root,
+            event.y_root,
+        )
 
     def _calibration_panel(self, parent):
         frame = self.ttk.Frame(parent, style="Panel.TFrame", padding=5)

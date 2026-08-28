@@ -154,7 +154,7 @@ D3.x deterministic-first default and D2.9 production ranker (2026-08-25).
 | Component | Current operational baseline |
 |---|---|
 | `race_engineer.py` | orchestrator v0.3 |
-| `race_engineer_gui.py` | v1.21 / scheduler recovery + automatic calibration queues |
+| `race_engineer_gui.py` | v1.38 / Track Readiness hierarchy + current desktop workflow |
 | `analyze_telemetry.py` | v3.8 + Objective Python v6 |
 | Brake point | 2.1 / schema 2.1 |
 | Throttle point | 1.2.1 / schema 1.2 |
@@ -170,7 +170,7 @@ D3.x deterministic-first default and D2.9 production ranker (2026-08-25).
 | LLM output validator | v1.2 |
 | `session_history.py` | v1.4 / History schema 4 |
 | H2 matcher | v0.3 / provisional calibrated single context |
-| H3 persistent patterns | v0.1 / derived |
+| H3 persistent patterns | v0.1 / derived + explicit idempotent History import |
 | H4 historical reference | v0.2 |
 | H5.1 dual reference | v0.2 |
 | H5.2 | v0.2 profile-localized raw comparison + v0.1 validated observational LLM narrative |
@@ -746,6 +746,37 @@ expected matcher = 0.3
 ```
 
 H3 is derived from a calibrated H2 matcher run. It is **not** forced on every new telemetry session.
+
+`run_h3_pipeline.py` is the official materialization path:
+
+```text
+episode_pair_features.json
+    -> authorized H2 decisions
+    -> H2 authority gate
+    -> persistent_patterns.json
+    -> optional explicit validated History import
+```
+
+Omitting `--history-db` remains read-only. Supplying it adds an auditable History
+stage with `RUN / REUSED / SKIPPED_NOT_APPLICABLE / FAILED`. The import reuses the
+existing schema-4 pattern tables and preserves source hashes, H3/matcher versions,
+authorized matcher and baseline/promotion policy versions, authority scopes, exact
+track/layout/vehicle context, members and pair evidence. Its stable identity excludes
+volatile timestamps, so rematerializing the same authorized evidence is idempotent.
+
+State semantics are strict: two-session `cross_session_repeat` rows are derived
+observational evidence and are not promoted to `persistent_pattern`; the latter still
+requires the configured minimum of three independent sessions. Any
+`conflict_review_required` run is withheld. Track-baseline authority may contribute
+MATCH only; inherited REJECT blocks import. History validation rechecks those
+provenance constraints. None of these states changes `session_reference`, ranking,
+H4/H5 authority or `next_stint_plan`.
+
+Real Imola HYPER validation on a temporary copy of History produced 26 MATCH,
+298 AMBIGUOUS, 0 REJECT and 14 `cross_session_repeat` classes with zero conflicts.
+Exactly one compatible run and 14 derived rows were stored; a full rerun returned
+`REUSED`, inherited REJECT remained zero and the History validator passed. The real
+History database was not modified during this checkpoint.
 
 H3.1 adds a per-session observational materialization step through
 `select_session_persistent_patterns.py`. For an exact calibrated

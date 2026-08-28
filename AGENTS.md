@@ -58,7 +58,12 @@ python race_engineer.py analyze "telemetria\ARCHIVO.duckdb" --backend ollama
   `next_stint_plan`; a consumer may expose P11 focus only when its count and plan-label
   subset are consistent, otherwise it must fall back to the complete validated plan.
 - H2 matcher v0.3 is provisional/context-limited, not a universal multi-track matcher.
-- H3 is calibration-derived and is not forced on every per-session run.
+- Hierarchical H2 track/layout baselines may authorize MATCH only after explicit
+  promotion. REJECT remains exact-variant-only and inherited REJECT is forbidden.
+- H3 is calibration-derived and is not forced on every per-session run. Importing
+  an official H3 run into History is explicit, idempotent and observational:
+  `cross_session_repeat` is not a `persistent_pattern`, conflicts are never imported,
+  and no imported row changes session-reference or historical coaching authority.
 - H5.3 remains ROADMAP_ONLY; H5.3a/b/c are implemented shadow-only and never
   enable historical coaching. The orchestrator `h5_3` stage is observational-only
   and must return `SKIPPED_NOT_APPLICABLE` when H4/H5.1/H5.2 prerequisites are
@@ -83,6 +88,7 @@ llm_analysis_llamacpp.py     3.10.8.5.4 / llama.cpp local (default qwen3-14b)
 session_history.py           1.4 / schema 4
 episode_pair_matcher.py      H2 0.3
 build_persistent_patterns.py H3 0.1
+run_h3_pipeline.py          authorized H2 -> H3 -> optional validated History import
 select_historical_reference.py H4 0.2
 build_dual_reference_context.py H5.1 0.2
 build_cross_session_comparison.py H5.2 0.2 / profile-localized raw comparison

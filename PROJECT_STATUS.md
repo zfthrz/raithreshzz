@@ -7,6 +7,16 @@ llama.cpp recovery and H5.3 review work described below.
 
 Validated baseline:
 
+- Hierarchical H2/H3 History integration (2026-08-28): `run_h3_pipeline.py`
+  now offers an explicit `--history-db` stage after its authorized H2 gate. Official
+  provenance is validated, equivalent rematerializations are idempotent and conflicts
+  fail closed. A temporary History copy imported the real Imola HYPER result as exactly
+  14 `cross_session_repeat` rows (26 MATCH / 298 AMBIGUOUS / 0 REJECT), then returned
+  `REUSED`; no persistent pattern, inherited REJECT or coaching authority was created.
+- GUI Track Readiness v1.38 distinguishes exact calibration, promoted MATCH-only
+  coverage, shadow baseline and pending/blocking states. Promoted coverage explicitly
+  states that REJECT remains variant-specific and does not claim full calibration.
+
 - full pytest: `1359 PASS / 0 FAIL / 0 SKIP`;
 - Objective Python regressions: `55 PASS / 0 FAIL / 0 SKIP` (last analyzer-affecting checkpoint);
 - GUI: v1.21, automatic calibration queues + deterministic double-click analysis

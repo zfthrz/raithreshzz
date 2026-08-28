@@ -1262,6 +1262,29 @@ H5.2 LLM historical narrative         <- observacional y validada
 H5.3 historical coaching debrief       <- roadmap productivo; H5.3a-f implementadas en shadow
 ```
 
+El entry point oficial para materializar H2 autorizado → H3 es:
+
+```powershell
+python run_h3_pipeline.py `
+  "calibration_batches\BATCH\episode_pair_features.json"
+```
+
+Ese comando es read-only respecto de History. Para importar explícitamente un run
+sin conflictos a una base determinada:
+
+```powershell
+python run_h3_pipeline.py `
+  "calibration_batches\BATCH\episode_pair_features.json" `
+  --history-db "data\local\race_engineer_history.duckdb"
+```
+
+La etapa informa `RUN`, `REUSED`, `SKIPPED_NOT_APPLICABLE` o `FAILED`.
+`cross_session_repeat` conserva evidencia observacional de dos sesiones, pero no se
+convierte en `persistent_pattern`; éste requiere al menos tres sesiones independientes.
+Los conflictos no se importan. Una cobertura jerárquica promovida puede aportar MATCH
+únicamente: REJECT continúa siendo específico de la variante. Importar H3 nunca cambia
+la referencia de sesión ni habilita coaching histórico.
+
 Todavía no crear `persistent_pattern` automáticamente sólo porque dos episodios fueron `MATCH`.
 
 El primer batch H2 de Monza Hypercar tiene 24 pares revisados por una persona

@@ -440,6 +440,13 @@ writing their outputs. `MATERIALIZATION_READY` means the existing production log
 found at least one authorized MATCH and no H3 conflict; it is evidence for an
 explicit later pipeline run, not permission for scheduler mutation.
 
+Completed isolated H3.2 projection labels can be summarized with
+`audit_h3_projection_review.py`. It validates the exact queue hash and authority
+contract, then reports human agreement by existing matcher rule/pattern plus raw
+metric distributions. The queue is positive-only, so this evidence cannot estimate
+recall or false negatives, define thresholds, calibrate H2, persist H3 membership
+or authorize coaching.
+
 The first explicit multi-context apply imported six validated bundles after a
 checkpointed, SHA-256-verified physical History backup. Imola HYPER, Interlagos
 LMP2_ELMS, Spa LMP2_ELMS, Spa LMP2_WEC, Fuji GT3 and Fuji LMP2_ELMS all returned

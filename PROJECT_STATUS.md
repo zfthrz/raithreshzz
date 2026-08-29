@@ -86,6 +86,14 @@ Validated baseline:
   SAME/DIFFERENT/AMBIGUOUS/SKIP but records
   `H3_2_PROJECTION_VALIDATION_ONLY`; labels explicitly authorize neither matcher
   calibration nor H3 persistence/coaching.
+- H3.2 projection human-review audit v0.1 validates the exact isolated queue/labels
+  contract and summarizes reviewed positives by matcher rule, pattern and raw metric
+  distributions. The Spa LMP2_ELMS review is complete: 96/96 pairs, 94 SAME,
+  2 AMBIGUOUS, 0 DIFFERENT and 0 SKIP. This positive-only result does not measure
+  recall/false negatives and authorizes no threshold, calibration or membership.
+  A smaller independent-context check on Interlagos LMP2_ELMS reviewed all six
+  projected pairs across three sessions and six patterns: 6 SAME, 0 DIFFERENT,
+  0 AMBIGUOUS and 0 SKIP; all six used `CORE_SPATIAL_MATCH`.
 - Spa LMP2_WEC batch `d9d252f147` and Fuji GT3 batch `8122469d1f` were explicitly
   materialized/imported after a checkpointed SHA-256-identical History backup.
   Both returned `RUN/PASS` with zero conflicts. Runtime replay then produced

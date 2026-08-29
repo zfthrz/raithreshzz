@@ -88,6 +88,10 @@ python race_engineer.py analyze "telemetria\ARCHIVO.duckdb" --backend ollama
   `H3_2_PROJECTION_VALIDATION_ONLY`. Their SAME/DIFFERENT/AMBIGUOUS/SKIP labels
   reuse H2 review semantics but must never be consumed as matcher calibration,
   persisted membership or coaching authority without a separate approved gate.
+- The H3.2 projection human-review audit may summarize completed isolated labels
+  by existing matcher rule, pattern and raw feature distributions. Its queue is
+  positive-only, so it cannot estimate recall or false negatives, infer thresholds,
+  calibrate the matcher, persist membership or authorize coaching.
 - H5.3 remains ROADMAP_ONLY; H5.3a/b/c are implemented shadow-only and never
   enable historical coaching. The orchestrator `h5_3` stage is observational-only
   and must return `SKIPPED_NOT_APPLICABLE` when H4/H5.1/H5.2 prerequisites are

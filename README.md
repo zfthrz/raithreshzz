@@ -1375,6 +1375,20 @@ La interfaz conserva `SAME / DIFFERENT / AMBIGUOUS / SKIP`, pero queue y labels
 declaran `H3_2_PROJECTION_VALIDATION_ONLY`. No alimentan automáticamente la
 calibración H2 ni convierten una proyección en membresía H3.
 
+Después de completar las etiquetas, el acuerdo humano de los positivos existentes
+puede resumirse sin promoción:
+
+```powershell
+python audit_h3_projection_review.py `
+  "data\local\h3_projection_review\spa_lmp2_elms_pair_review_queue.json" `
+  "data\local\h3_projection_review\spa_lmp2_elms_pair_labels.json" `
+  --output "data\local\h3_projection_review\spa_lmp2_elms_review_audit.json"
+```
+
+El audit valida hash, scope y flags de autoridad, y desglosa etiquetas por regla y
+patrón. Como la cola contiene sólo MATCH automáticos, no estima recall ni falsos
+negativos y no crea thresholds.
+
 El primer mantenimiento agrupado se ejecutó con backup físico previo de History,
 verificado por SHA-256. Se importaron seis bundles oficiales y el estado resultante
 quedó en siete contextos `H3_IMPORTED` y cuatro `H3_NOT_APPLICABLE`. El validador

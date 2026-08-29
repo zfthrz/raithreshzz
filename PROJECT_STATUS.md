@@ -42,6 +42,10 @@ Validated baseline:
 - GUI v1.43 displays that materialization snapshot separately from H3 import
   readiness, preserving the distinction between an older imported bundle and a
   newer batch ready for explicit rematerialization.
+- GUI v1.44 adds one context-sensitive `Materializar H3` action to Track Readiness.
+  It is enabled only by an exact fresh `MATERIALIZATION_READY` row, runs the v0.1
+  materializer in background with the observed fingerprint, refreshes both read-only
+  snapshots afterward and never invokes History import apply.
 - H3 import maintenance v0.2 audits all newest exact-context materializations in
   one command and keeps History read-only by default. `--apply` remains an explicit
   operator action and imports only existing `H3_READY_TO_IMPORT` bundles through
@@ -94,6 +98,11 @@ Validated baseline:
   A smaller independent-context check on Interlagos LMP2_ELMS reviewed all six
   projected pairs across three sessions and six patterns: 6 SAME, 0 DIFFERENT,
   0 AMBIGUOUS and 0 SKIP; all six used `CORE_SPATIAL_MATCH`.
+- H3 exact-context materializer v0.1 provides one explicit, fail-closed command from
+  `MATERIALIZATION_READY` to a validated official bundle. Default mode is read-only;
+  apply writes no History and must finish `H3_READY_TO_IMPORT`. The current real
+  audit has no pending ready context: 7 already materialized and 4 without an
+  authorized MATCH.
 - Spa LMP2_WEC batch `d9d252f147` and Fuji GT3 batch `8122469d1f` were explicitly
   materialized/imported after a checkpointed SHA-256-identical History backup.
   Both returned `RUN/PASS` with zero conflicts. Runtime replay then produced

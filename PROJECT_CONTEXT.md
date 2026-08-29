@@ -154,7 +154,7 @@ D3.x deterministic-first default and D2.9 production ranker (2026-08-25).
 | Component | Current operational baseline |
 |---|---|
 | `race_engineer.py` | orchestrator v0.3 |
-| `race_engineer_gui.py` | v1.43 / automatic H3 import + materialization audit status |
+| `race_engineer_gui.py` | v1.44 / explicit exact-context H3 materialization |
 | `analyze_telemetry.py` | v3.8 + Objective Python v6 |
 | Brake point | 2.1 / schema 2.1 |
 | Throttle point | 1.2.1 / schema 1.2 |
@@ -439,6 +439,12 @@ It executes the current authorized H2 classifier, H2→H3 gate and H3 builder wi
 writing their outputs. `MATERIALIZATION_READY` means the existing production logic
 found at least one authorized MATCH and no H3 conflict; it is evidence for an
 explicit later pipeline run, not permission for scheduler mutation.
+
+`materialize_h3_context.py` automates that explicit pipeline run for exactly one
+track/layout/vehicle context. It is read-only without `--apply`; apply mode accepts
+only a fresh `MATERIALIZATION_READY` row, writes the normal three-file official
+bundle without passing a History database, and verifies the resulting state is
+`H3_READY_TO_IMPORT`. Import remains a separate explicit action.
 
 Completed isolated H3.2 projection labels can be summarized with
 `audit_h3_projection_review.py`. It validates the exact queue hash and authority

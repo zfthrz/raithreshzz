@@ -1329,6 +1329,25 @@ El audit usa en memoria el clasificador autorizado, el gate H2→H3 y el builder
 No inventa thresholds: exige al menos un MATCH ya autorizado y cero conflictos.
 `MATERIALIZATION_READY` todavía requiere ejecutar explícitamente el pipeline oficial.
 
+Ese contexto exacto puede materializarse con un único comando, todavía sin importar
+History:
+
+```powershell
+python materialize_h3_context.py `
+  --track "NOMBRE EXACTO" `
+  --track-layout "LAYOUT EXACTO" `
+  --vehicle-variant LMP2_ELMS `
+  --apply
+```
+
+Sin `--apply` el comando sólo valida readiness. Apply ejecuta el pipeline oficial,
+exige `history_mutated=false` y confirma `H3_READY_TO_IMPORT`. La importación sigue
+separada mediante `maintain_h3_imports.py --apply`.
+
+GUI v1.44 expone la misma operación desde Track Readiness mediante
+`Materializar H3`. El botón sólo se habilita para una fila exacta lista, ejecuta en
+background y refresca los audits; nunca importa History automáticamente.
+
 Para auditar cuánto aporta H3 en los artefactos runtime existentes, sin abrir History
 ni ejecutar matcher/LLM:
 

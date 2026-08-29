@@ -24,6 +24,11 @@ from race_engineer_scheduler_status import (
     load_status as load_scheduler_status,
 )
 from scheduler_queue_actions import defer_blocking_debrief, resume_deferred_debrief
+from race_engineer_h3_materialization_gui import (
+    build_materialization_commands,
+    resolve_materialization_target,
+    stream_commands as stream_h3_materialization_commands,
+)
 
 from race_engineer_ui_model import (
     SessionDetail,
@@ -86,7 +91,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.43"
+GUI_VERSION = "1.44"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 STATE_REFRESH_INTERVAL_MS = 5_000
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -772,6 +777,7 @@ class RaceEngineerApp:
         self.track_playback_elapsed_s = 0.0
         self.track_resolution_hz = 20.0
         self.analysis_queue: queue.Queue[tuple[str, object]] = queue.Queue()
+        self.h3_materialization_queue: queue.Queue[tuple[str, object]] = queue.Queue()
         self.track_map_queue: queue.Queue[tuple[int, str, object]] = queue.Queue()
         self.session_change_queue: queue.Queue[tuple[int, str, object]] = queue.Queue()
         self.session_change_token = 0
@@ -805,6 +811,7 @@ class RaceEngineerApp:
             tuple[str, int, int | None, int | None], TrackMapData
         ] = {}
         self.analysis_running = False
+        self.h3_materialization_running = False
         self.analysis_database: Path | None = None
         self._state_files_fingerprint: tuple[tuple[str, int, int], ...] = ()
         self._scheduler_state_fingerprint: tuple[tuple[int, int] | None, tuple[int, int] | None] | None = None
@@ -822,6 +829,9 @@ class RaceEngineerApp:
         )
         self.h3_materialization_readiness_path = (
             PROJECT_ROOT / "data" / "local" / "h3_materialization_readiness.json"
+        )
+        self.h3_materialization_result_path = (
+            PROJECT_ROOT / "data" / "local" / "h3_materialization_last_apply.json"
         )
         self.scheduler_log_path = (
             PROJECT_ROOT / "data" / "local" / "telemetry_auto_ingest_task.log"
@@ -2053,6 +2063,13 @@ class RaceEngineerApp:
             style="CardValue.TLabel",
             justify="left",
         ).pack(side="left", fill="x", expand=True)
+        self.h3_materialize_button = self.ttk.Button(
+            header,
+            text="Materializar H3",
+            command=self._start_h3_materialization,
+            state="disabled",
+        )
+        self.h3_materialize_button.pack(side="right", padx=(8, 0))
         self.ttk.Button(
             header,
             text="Actualizar estado",
@@ -2203,6 +2220,9 @@ class RaceEngineerApp:
         self.track_context_tree.bind(
             "<Motion>", self._on_track_readiness_context_motion
         )
+        self.track_context_tree.bind(
+            "<<TreeviewSelect>>", self._on_track_readiness_context_select
+        )
         self.track_context_tree.bind("<Leave>", self._hide_row_tooltip)
 
         for status, color in READINESS_STATUS_COLORS.items():
@@ -2306,6 +2326,7 @@ class RaceEngineerApp:
         self._populate_track_readiness_contexts(track)
 
     def _populate_track_readiness_contexts(self, track):
+        self.track_readiness_context_rows = []
         for iid in self.track_context_tree.get_children():
             self.track_context_tree.delete(iid)
 
@@ -2313,6 +2334,7 @@ class RaceEngineerApp:
             self.track_readiness_detail_var.set(
                 "Seleccioná un circuito para ver sus contextos."
             )
+            self._update_h3_materialize_button()
             return
 
         unresolved = int(track.get("unresolved_sessions") or 0)
@@ -2326,7 +2348,8 @@ class RaceEngineerApp:
             f"{unresolved_text}"
         )
 
-        for index, row in enumerate(list(track.get("contexts") or [])):
+        self.track_readiness_context_rows = list(track.get("contexts") or [])
+        for index, row in enumerate(self.track_readiness_context_rows):
             action = row.get("next_action") or {}
             action_code = str(action.get("code") or "UNKNOWN")
             action_label = READINESS_ACTION_LABELS.get(action_code, action_code)
@@ -2349,6 +2372,156 @@ class RaceEngineerApp:
                     action_label,
                 ),
                 tags=(status,),
+            )
+        self._update_h3_materialize_button()
+
+    def _selected_track_readiness_context(self):
+        selection = self.track_context_tree.selection()
+        if not selection:
+            return None
+        try:
+            return self.track_readiness_context_rows[int(selection[0])]
+        except (AttributeError, ValueError, IndexError):
+            return None
+
+    def _selected_h3_materialization_target(self):
+        row = self._selected_track_readiness_context()
+        if not isinstance(row, dict):
+            return None
+        return resolve_materialization_target(
+            self.h3_materialization_readiness_path,
+            row,
+        )
+
+    def _on_track_readiness_context_select(self, _event=None):
+        self._update_h3_materialize_button()
+
+    def _update_h3_materialize_button(self):
+        button = getattr(self, "h3_materialize_button", None)
+        if button is None:
+            return
+        enabled = (
+            not self.analysis_running
+            and not self.h3_materialization_running
+            and self._selected_h3_materialization_target() is not None
+        )
+        button.configure(state="normal" if enabled else "disabled")
+
+    def _start_h3_materialization(self):
+        from tkinter import messagebox
+
+        if self.analysis_running or self.h3_materialization_running:
+            messagebox.showinfo(
+                "Race Engineer",
+                "Ya hay una operación en ejecución.",
+                parent=self.root,
+            )
+            return
+        target = self._selected_h3_materialization_target()
+        if target is None:
+            messagebox.showwarning(
+                "Race Engineer",
+                "El contexto seleccionado no está MATERIALIZATION_READY o el audit cambió.",
+                parent=self.root,
+            )
+            self._update_h3_materialize_button()
+            return
+        if not messagebox.askyesno(
+            "Materializar H3",
+            (
+                f"¿Materializar el bundle H3 oficial para?\n\n"
+                f"{target.track}\n{target.track_layout}\n{target.vehicle_variant}\n\n"
+                "Esta acción escribe el bundle H3, pero no importa History ni "
+                "autoriza coaching."
+            ),
+            parent=self.root,
+        ):
+            return
+
+        commands = build_materialization_commands(
+            target,
+            project_root=PROJECT_ROOT,
+            python_executable=Path(sys.executable),
+            materialization_state_path=self.h3_materialization_readiness_path,
+            import_state_path=self.h3_import_maintenance_path,
+            result_path=self.h3_materialization_result_path,
+        )
+        self.h3_materialization_running = True
+        self._update_h3_materialize_button()
+        self.execution_status.set("Materializando H3…")
+        self._set_text(
+            self.execution_text,
+            "RACE ENGINEER — MATERIALIZACIÓN H3 EXPLÍCITA\n"
+            f"Contexto: {target.track} | {target.track_layout} | "
+            f"{target.vehicle_variant}\nHistory: NO SE IMPORTARÁ\n",
+        )
+        self._show_primary_section("Diagnóstico")
+        self.diagnostics_notebook.select(self.execution_text.master)
+
+        def worker():
+            try:
+                code = stream_h3_materialization_commands(
+                    commands,
+                    project_root=PROJECT_ROOT,
+                    on_line=lambda line: self.h3_materialization_queue.put(
+                        ("line", line)
+                    ),
+                )
+                self.h3_materialization_queue.put(("done", code))
+            except Exception as exc:
+                self.h3_materialization_queue.put(
+                    ("error", f"{type(exc).__name__}: {exc}")
+                )
+
+        threading.Thread(
+            target=worker,
+            name="race-engineer-h3-materialization",
+            daemon=True,
+        ).start()
+        self.root.after(100, self._poll_h3_materialization_queue)
+
+    def _poll_h3_materialization_queue(self):
+        finished = False
+        while True:
+            try:
+                kind, value = self.h3_materialization_queue.get_nowait()
+            except queue.Empty:
+                break
+            if kind == "line":
+                self._append_execution_line(str(value))
+            elif kind == "done":
+                self._finish_h3_materialization(int(value))
+                finished = True
+            elif kind == "error":
+                self._append_execution_line(f"H3_GUI_FAILED: {value}")
+                self._finish_h3_materialization(1)
+                finished = True
+        if self.h3_materialization_running and not finished:
+            self.root.after(100, self._poll_h3_materialization_queue)
+
+    def _finish_h3_materialization(self, return_code: int):
+        from tkinter import messagebox
+
+        self.h3_materialization_running = False
+        self._refresh_track_readiness()
+        self._refresh_calibration_summary()
+        self._scheduler_state_fingerprint = self._scheduler_fingerprint()
+        self._update_h3_materialize_button()
+        if return_code == 0:
+            self.execution_status.set("H3 materializado; listo para importar")
+            self._append_execution_line("\nGUI H3 RESULT: PASS")
+            messagebox.showinfo(
+                "Race Engineer",
+                "El bundle H3 fue materializado y validado. History sigue sin cambios.",
+                parent=self.root,
+            )
+        else:
+            self.execution_status.set("Materialización H3 bloqueada o fallida")
+            self._append_execution_line("\nGUI H3 RESULT: FAILED")
+            messagebox.showerror(
+                "Race Engineer",
+                "La materialización H3 no se completó. Revisá Diagnóstico; History no fue importado.",
+                parent=self.root,
             )
 
     def _on_track_readiness_context_motion(self, event):
@@ -3902,7 +4075,9 @@ class RaceEngineerApp:
         if self._closing:
             return
         try:
-            if not self.analysis_running:
+            if not self.analysis_running and not getattr(
+                self, "h3_materialization_running", False
+            ):
                 current = state_files_fingerprint(self.runs_root)
                 if current != self._state_files_fingerprint:
                     self.refresh()
@@ -6039,10 +6214,10 @@ class RaceEngineerApp:
     def _confirm_analysis(self, database: Path):
         from tkinter import messagebox
 
-        if self.analysis_running:
+        if self.analysis_running or self.h3_materialization_running:
             messagebox.showinfo(
                 "Race Engineer",
-                "Ya hay un análisis en ejecución.",
+                "Ya hay una operación en ejecución.",
                 parent=self.root,
             )
             return
@@ -6174,10 +6349,10 @@ class RaceEngineerApp:
     def _on_close(self):
         from tkinter import messagebox
 
-        if self.analysis_running:
+        if self.analysis_running or self.h3_materialization_running:
             messagebox.showwarning(
                 "Race Engineer",
-                "Hay un análisis en ejecución. La ventana no se cerrará ni cancelará el proceso.\n\n"
+                "Hay una operación en ejecución. La ventana no se cerrará ni cancelará el proceso.\n\n"
                 "Esperá a que termine.",
                 parent=self.root,
             )

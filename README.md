@@ -1354,6 +1354,12 @@ History ejecuta `CHECKPOINT`, guarda una copia en `data/local/history_backups/`,
 verifica SHA-256 y luego exige `H3_IMPORTED`. La GUI no usa la importación masiva
 de todos los contextos listos. Véase `docs/H3_CONTEXT_IMPORTER_V0_1.md`.
 
+GUI v1.46 superpone el cambio local del delta temporal sobre los cuatro canales:
+verde translúcido cuando la vuelta actual recupera tiempo y rojo cuando lo pierde.
+Funciona contra la referencia de sesión y contra History H4. La reducción a un
+máximo de 240 bloques es exclusivamente visual para conservar fluidez a 50 Hz; no
+suaviza ni modifica el delta determinista almacenado.
+
 Para auditar cuánto aporta H3 en los artefactos runtime existentes, sin abrir History
 ni ejecutar matcher/LLM:
 

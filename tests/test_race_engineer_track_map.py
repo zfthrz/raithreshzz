@@ -16,6 +16,7 @@ from race_engineer_track_map import (
     fit_track_points,
     focus_track_canvas_view,
     historical_telemetry_sample_at_distance,
+    telemetry_delta_change_spans,
     historical_telemetry_uncovered_ranges,
     transform_fitted_track_points,
     list_track_map_laps,
@@ -1079,6 +1080,49 @@ def test_historical_comparison_accumulates_time_delta_and_does_not_mutate_inputs
     assert comparison.samples[-1].accumulated_delta_s == pytest.approx(0.2)
     assert current == current_before
     assert reference == reference_before
+
+
+def test_delta_change_spans_distinguish_local_loss_from_local_gain():
+    current = (
+        TrackMapPoint(0.0, 0.0, 0.0, 200.0),
+        TrackMapPoint(0.0, 0.0, 100.0, 180.0),
+        TrackMapPoint(0.0, 0.0, 200.0, 240.0),
+    )
+    reference = (
+        TrackMapPoint(0.0, 0.0, 0.0, 200.0),
+        TrackMapPoint(0.0, 0.0, 100.0, 200.0),
+        TrackMapPoint(0.0, 0.0, 200.0, 200.0),
+    )
+
+    spans = telemetry_delta_change_spans(
+        build_historical_telemetry_comparison(current, reference)
+    )
+
+    assert [span.direction for span in spans] == ["LOSS", "GAIN"]
+    assert [(span.start_distance_m, span.end_distance_m) for span in spans] == [
+        (0.0, 100.0),
+        (100.0, 200.0),
+    ]
+    assert spans[0].delta_change_s > 0.0
+    assert spans[1].delta_change_s < 0.0
+
+
+def test_delta_change_visual_reduction_bounds_span_count_without_changing_source():
+    current = tuple(
+        TrackMapPoint(0.0, 0.0, float(index), 190.0 if index % 2 else 210.0)
+        for index in range(1001)
+    )
+    reference = tuple(
+        TrackMapPoint(0.0, 0.0, float(index), 200.0)
+        for index in range(1001)
+    )
+    comparison = build_historical_telemetry_comparison(current, reference)
+
+    spans = telemetry_delta_change_spans(comparison, max_spans=40)
+
+    assert len(spans) <= 40
+    assert comparison.samples[0].distance_m == 0.0
+    assert comparison.samples[-1].distance_m == 1000.0
 
 
 def test_historical_comparison_fails_closed_without_common_distance():

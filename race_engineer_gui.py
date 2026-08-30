@@ -86,6 +86,7 @@ from race_engineer_track_map import (
     telemetry_gear_scale,
     canvas_polyline_chunks,
     historical_telemetry_sample_at_distance,
+    telemetry_delta_change_spans,
     historical_telemetry_uncovered_ranges,
     transform_fitted_track_points,
     turn_for_number,
@@ -96,7 +97,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.45"
+GUI_VERSION = "1.46"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 STATE_REFRESH_INTERVAL_MS = 5_000
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -5903,6 +5904,25 @@ class RaceEngineerApp:
 )
 
         if telemetry_comparison is not None:
+            for span in telemetry_delta_change_spans(
+                telemetry_comparison,
+                max_spans=240,
+            ):
+                start_x = telemetry_chart_x_for_distance(
+                    chart, span.start_distance_m, width_px=width
+                )
+                end_x = telemetry_chart_x_for_distance(
+                    chart, span.end_distance_m, width_px=width
+                )
+                canvas.create_rectangle(
+                    start_x,
+                    12,
+                    end_x,
+                    height - 12,
+                    fill="#174735" if span.direction == "GAIN" else "#57232b",
+                    outline="",
+                    stipple="gray50",
+                )
             for uncovered_start, uncovered_end in historical_telemetry_uncovered_ranges(
                 telemetry_comparison,
                 axis_start_distance_m=chart.distance_min_m,
@@ -5964,6 +5984,16 @@ class RaceEngineerApp:
                 text=label,
                 fill=color,
                 anchor="w",
+                font=("Segoe UI", 8),
+            )
+
+        if telemetry_comparison is not None:
+            canvas.create_text(
+                84,
+                height - 7,
+                text="Delta local · verde gana tiempo · rojo pierde tiempo",
+                fill="#b8c7d1",
+                anchor="sw",
                 font=("Segoe UI", 8),
             )
 

@@ -161,6 +161,14 @@ class HistoricalTelemetryComparison:
     samples: tuple[AlignedTelemetrySample, ...]
 
 
+@dataclass(frozen=True)
+class TelemetryDeltaSpan:
+    start_distance_m: float
+    end_distance_m: float
+    direction: str
+    delta_change_s: float
+
+
 def list_track_map_laps(
     database_path: Path,
     *,
@@ -1115,6 +1123,83 @@ def historical_telemetry_sample_at_distance(
     ):
         return None
     return min(comparison.samples, key=lambda sample: abs(sample.distance_m - distance_m))
+
+
+def telemetry_delta_change_spans(
+    comparison: HistoricalTelemetryComparison,
+    *,
+    max_spans: int | None = None,
+) -> tuple[TelemetryDeltaSpan, ...]:
+    """Group adjacent local time gains/losses from the existing delta trace.
+
+    Positive accumulated-delta change means the current lap lost time; negative
+    change means it gained time. Missing or exactly neutral samples break a span.
+    No smoothing or threshold is introduced here.
+    """
+
+    intervals: list[TelemetryDeltaSpan] = []
+    previous: AlignedTelemetrySample | None = None
+    for sample in comparison.samples:
+        if (
+            previous is None
+            or previous.accumulated_delta_s is None
+            or sample.accumulated_delta_s is None
+            or sample.distance_m <= previous.distance_m
+        ):
+            previous = sample
+            continue
+        change = sample.accumulated_delta_s - previous.accumulated_delta_s
+        direction = "LOSS" if change > 0.0 else "GAIN" if change < 0.0 else None
+        if direction is None:
+            previous = sample
+            continue
+        intervals.append(
+            TelemetryDeltaSpan(
+                previous.distance_m,
+                sample.distance_m,
+                direction,
+                change,
+            )
+        )
+        previous = sample
+
+    if max_spans is not None:
+        if max_spans <= 0:
+            raise ValueError("max_spans debe ser positivo")
+        chunk_size = max(1, math.ceil(len(intervals) / max_spans))
+        reduced = []
+        for start in range(0, len(intervals), chunk_size):
+            chunk = intervals[start : start + chunk_size]
+            change = sum(span.delta_change_s for span in chunk)
+            direction = "LOSS" if change > 0.0 else "GAIN" if change < 0.0 else None
+            if direction is not None:
+                reduced.append(
+                    TelemetryDeltaSpan(
+                        chunk[0].start_distance_m,
+                        chunk[-1].end_distance_m,
+                        direction,
+                        change,
+                    )
+                )
+        intervals = reduced
+
+    spans: list[TelemetryDeltaSpan] = []
+    for interval in intervals:
+        if (
+            spans
+            and spans[-1].direction == interval.direction
+            and math.isclose(spans[-1].end_distance_m, interval.start_distance_m)
+        ):
+            prior = spans[-1]
+            spans[-1] = TelemetryDeltaSpan(
+                prior.start_distance_m,
+                interval.end_distance_m,
+                prior.direction,
+                prior.delta_change_s + interval.delta_change_s,
+            )
+        else:
+            spans.append(interval)
+    return tuple(spans)
 
 
 def build_track_telemetry_chart(

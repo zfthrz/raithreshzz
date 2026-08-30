@@ -51,6 +51,11 @@ Validated baseline:
   and SHA-256-verifies a physical backup, runs the official transactional importer
   and requires `H3_IMPORTED` afterwards. It never imports every ready context
   implicitly and does not authorize coaching.
+- GUI v1.46 visualizes the already-calculated comparison delta over all telemetry
+  lanes: translucent green marks local time gain and red marks local time loss,
+  for both session-reference and H4 History comparisons. Rendering aggregates at
+  most 240 visual blocks so 50 Hz traces do not reintroduce GUI lag; analysis data
+  and deterministic comparison math remain unchanged.
 - H3 import maintenance v0.2 audits all newest exact-context materializations in
   one command and keeps History read-only by default. `--apply` remains an explicit
   operator action and imports only existing `H3_READY_TO_IMPORT` bundles through

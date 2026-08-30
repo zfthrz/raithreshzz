@@ -1,0 +1,266 @@
+{
+  "schema_version": 1,
+  "profile_id": "daytona-road-course-lmu-12turn-v0.1",
+  "status": "VALIDATED_MULTI_SESSION",
+  "track": "Daytona International Speedway",
+  "layout": "Daytona International Speedway Road Course",
+  "distance_coordinate": "LMU Lap Dist",
+  "lap_length_m": 5727.0,
+  "calibration": {
+    "source_session": "Daytona International Speedway_P_2026-08-09T03_58_32Z",
+    "source_lap_internal_index": 4,
+    "source_lap_time_s_approx": 97.1,
+    "source_lap_dist_max_m": 5726.833088611567,
+    "source_gps_path_m_approx": 5708.57545810977,
+    "geometry_method": "GPS trajectory + signed curvature + LMU/RaceControl 12-turn sequence constrained calibration",
+    "numbering_scheme": "LMU/RaceControl Daytona Road Course 12-turn scheme",
+    "numbering_note": "The LMU-oriented RaceControl guide defines a 5.73 km, 12-turn anti-clockwise road course. T7-T8 and T11-T12 follow the conventional road-course numbering of the two Speedway banking pairs; T9-T10 split the Le Mans Chicane into entry and exit halves.",
+    "external_reference_summary": [
+      "RaceControl LMU Daytona guide: 3.56 miles / 5.73 km, 12 turns, anti-clockwise; Turn 2 Kink, Turn 3 International Horseshoe and the Le Mans Chicane.",
+      "NASCAR Daytona Road Course turn-by-turn guide: T7-T8 Speedway banking, T9-T10 backstretch chicane and T11-T12 final Speedway banking.",
+      "ACO/24h-lemans official announcement: the former Bus Stop at Daytona is officially named the Le Mans Chicane."
+    ],
+    "requires_cross_session_validation": false,
+    "validation_status": "PASS",
+    "validation_summary": {
+      "calibration_session": {
+        "session": "Daytona International Speedway_P_2026-08-09T03_58_32Z",
+        "lap_internal_index": 4,
+        "lap_time_s_approx": 97.1,
+        "lap_dist_max_m": 5726.833088611567,
+        "gps_path_m_approx": 5708.57545810977,
+        "gps_coverage": 1.0
+      },
+      "independent_sessions": [
+        {
+          "session": "Daytona International Speedway_P_2026-08-20T05_20_17Z",
+          "lap_internal_index": 1,
+          "lap_time_s_approx": 100.1,
+          "lap_dist_max_m": 5726.900879296851,
+          "gps_path_m_approx": 5704.10715213929,
+          "gps_coverage": 1.0,
+          "method": "same-region signed-curvature cross-check; manual region check for low-curvature Speedway banking",
+          "apex_pass_tolerance_m": 35.0,
+          "apex_warning_tolerance_m": 70.0,
+          "pass_count": 9,
+          "warning_count": 3,
+          "failure_count": 0,
+          "median_abs_offset_m": 20.0,
+          "max_abs_offset_m": 52.0,
+          "overall_status": "PASS"
+        },
+        {
+          "session": "Daytona International Speedway_P_2026-08-28T04_37_28Z",
+          "lap_internal_index": 2,
+          "lap_time_s_approx": 100.9,
+          "lap_dist_max_m": 5726.77001953125,
+          "gps_path_m_approx": 5689.496363301635,
+          "gps_coverage": 1.0,
+          "method": "same-region signed-curvature cross-check; manual region check for low-curvature Speedway banking",
+          "apex_pass_tolerance_m": 35.0,
+          "apex_warning_tolerance_m": 70.0,
+          "pass_count": 10,
+          "warning_count": 2,
+          "failure_count": 0,
+          "median_abs_offset_m": 14.0,
+          "max_abs_offset_m": 48.0,
+          "overall_status": "PASS"
+        }
+      ],
+      "interpretation": "All 12 LMU/RaceControl regions are present in both independent laps. The six infield turns and both Le Mans Chicane halves have stable signed-curvature evidence. The four Speedway turns are continuous low-curvature banking regions and are retained from the verified 12-turn numbering rather than selected by top-N curvature ranking."
+    }
+  },
+  "ignored_geometric_features_m": [
+    {
+      "center_m": 420.0,
+      "reason": "secondary local maximum inside the continuous T1 left-hand region; the stable representative apex is 480 m"
+    },
+    {
+      "center_m": 2250.0,
+      "reason": "secondary local maximum inside T6 Speedway-entry curvature; not a separate named turn"
+    }
+  ],
+  "manual_low_curvature_turns": [
+    {
+      "turn": 7,
+      "reason": "continuous 31-degree Speedway banking; geometric peak position varies with the chosen racing line"
+    },
+    {
+      "turn": 8,
+      "reason": "continuous 31-degree Speedway banking; retained from the verified 12-turn road-course numbering"
+    },
+    {
+      "turn": 11,
+      "reason": "continuous final Speedway banking after the Le Mans Chicane"
+    },
+    {
+      "turn": 12,
+      "reason": "continuous final Speedway banking into the tri-oval and start/finish straight"
+    }
+  ],
+  "turns": [
+    {
+      "turn": 1,
+      "name": "Turn 1",
+      "aliases": ["Road Course Turn 1"],
+      "group": "Turn 1",
+      "direction": "left",
+      "start_m": 350.0,
+      "apex_m": 480.0,
+      "end_m": 560.0
+    },
+    {
+      "turn": 2,
+      "name": "Kink",
+      "aliases": ["Turn 2"],
+      "group": "Kink",
+      "direction": "mixed",
+      "direction_sequence": ["right", "left"],
+      "start_m": 580.0,
+      "apex_m": 710.0,
+      "end_m": 780.0
+    },
+    {
+      "turn": 3,
+      "name": "International Horseshoe",
+      "aliases": ["Rodríguez International Horseshoe", "Rodriguez International Horseshoe"],
+      "group": "International Horseshoe",
+      "direction": "right",
+      "start_m": 880.0,
+      "apex_m": 940.0,
+      "end_m": 1030.0
+    },
+    {
+      "turn": 4,
+      "name": "Dogleg",
+      "aliases": ["Turn 4"],
+      "group": "Dogleg",
+      "direction": "left",
+      "start_m": 1360.0,
+      "apex_m": 1470.0,
+      "end_m": 1580.0
+    },
+    {
+      "turn": 5,
+      "name": "West Horseshoe",
+      "aliases": ["Turn 5"],
+      "group": "West Horseshoe",
+      "direction": "right",
+      "start_m": 1660.0,
+      "apex_m": 1760.0,
+      "end_m": 1880.0
+    },
+    {
+      "turn": 6,
+      "name": "Speedway Entry",
+      "aliases": ["Turn 6", "Infield Exit"],
+      "group": "Speedway Entry",
+      "direction": "left",
+      "start_m": 2050.0,
+      "apex_m": 2150.0,
+      "end_m": 2380.0
+    },
+    {
+      "turn": 7,
+      "name": "Speedway Turn 1",
+      "aliases": ["Oval Turn 1"],
+      "group": "Speedway Turns 1–2",
+      "direction": "left",
+      "start_m": 2380.0,
+      "apex_m": 2650.0,
+      "end_m": 2800.0
+    },
+    {
+      "turn": 8,
+      "name": "Speedway Turn 2",
+      "aliases": ["Oval Turn 2"],
+      "group": "Speedway Turns 1–2",
+      "direction": "left",
+      "start_m": 2800.0,
+      "apex_m": 2940.0,
+      "end_m": 3150.0
+    },
+    {
+      "turn": 9,
+      "name": "Le Mans Chicane Entry",
+      "aliases": ["Bus Stop Entry"],
+      "group": "Le Mans Chicane",
+      "direction": "mixed",
+      "direction_sequence": ["left", "right"],
+      "start_m": 3750.0,
+      "apex_m": 3905.0,
+      "end_m": 3995.0
+    },
+    {
+      "turn": 10,
+      "name": "Le Mans Chicane Exit",
+      "aliases": ["Bus Stop Exit"],
+      "group": "Le Mans Chicane",
+      "direction": "mixed",
+      "direction_sequence": ["right", "left"],
+      "start_m": 3995.0,
+      "apex_m": 4035.0,
+      "end_m": 4130.0
+    },
+    {
+      "turn": 11,
+      "name": "Speedway Turn 3",
+      "aliases": ["Oval Turn 3"],
+      "group": "Speedway Turns 3–4",
+      "direction": "left",
+      "start_m": 4250.0,
+      "apex_m": 4600.0,
+      "end_m": 4700.0
+    },
+    {
+      "turn": 12,
+      "name": "Speedway Turn 4",
+      "aliases": ["Oval Turn 4"],
+      "group": "Speedway Turns 3–4",
+      "direction": "left",
+      "start_m": 4700.0,
+      "apex_m": 4890.0,
+      "end_m": 5100.0
+    }
+  ],
+  "display_policy": {
+    "prefer_corner_name": true,
+    "turn_number_is_secondary": false,
+    "turn_number_suffix": "LMU",
+    "always_preserve_lmu_distance_m": true
+  },
+  "geometric_notes": {
+    "note_1": {
+      "id": "daytona_backstretch_to_le_mans_chicane",
+      "type": "gap_explanation",
+      "entity": "Speedway Turn 2 (T8) → Le Mans Chicane Entry (T9)",
+      "start_m": 3150.0,
+      "end_m": 3750.0,
+      "gap_m": 600.0,
+      "classification": "straight_real_track_feature",
+      "reason": "High-speed backstretch acceleration corridor before the Le Mans Chicane braking zone; no additional named road-course turn is inserted."
+    },
+    "note_2": {
+      "id": "daytona_frontstretch_wrap",
+      "type": "gap_explanation",
+      "entity": "Speedway Turn 4 (T12) → Turn 1",
+      "start_m": 5100.0,
+      "end_m": 5727.0,
+      "gap_m": 627.0,
+      "classification": "straight_real_track_feature",
+      "reason": "Tri-oval/frontstretch run through start-finish before the braking transition into road-course Turn 1."
+    }
+  },
+  "provenance": {
+    "gps_exports": [
+      "track_exports/daytona_calibration/Daytona International Speedway_P_2026-08-09T03_58_32Z_track_gps.csv",
+      "track_exports/daytona_validation_1/Daytona International Speedway_P_2026-08-20T05_20_17Z_track_gps.csv",
+      "track_exports/daytona_validation_2/Daytona International Speedway_P_2026-08-28T04_37_28Z_track_gps.csv"
+    ],
+    "reference_urls": [
+      "https://news.racecontrol.gg/tracks/daytona-international-speedway-road-course-track-guide-for-lmu/",
+      "https://www.nascar.com/news-media/2020/08/12/daytona-road-course-turn-by-turn-analysis/",
+      "https://www.24h-lemans.com/en/news/chicanes-at-daytona-international-speedway-le-mans-renamed-in-symbol-of-unity-55971"
+    ]
+  }
+}

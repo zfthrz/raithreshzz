@@ -154,7 +154,7 @@ D3.x deterministic-first default and D2.9 production ranker (2026-08-25).
 | Component | Current operational baseline |
 |---|---|
 | `race_engineer.py` | orchestrator v0.3 |
-| `race_engineer_gui.py` | v1.47 / local delta overlay and optional steering telemetry |
+| `race_engineer_gui.py` | v1.48 / lazy read-only History statistics |
 | `analyze_telemetry.py` | v3.8 + Objective Python v6 |
 | Brake point | 2.1 / schema 2.1 |
 | Throttle point | 1.2.1 / schema 1.2 |
@@ -1595,6 +1595,15 @@ not trigger the multi-minute audit, and LMU running defers it. The local snapsho
 `data/local/h3_materialization_readiness.json`. `MATERIALIZATION_READY` remains an
 explicit operator action and the GUI exposes no apply control. See
 `docs/RACE_ENGINEER_GUI_V1_43.md`.
+
+GUI v1.48 adds a lazy `Estadísticas` workspace over History schema 4. General and
+monthly totals count only valid laps and sum their stored `lap_distance_m`; favorites
+are descriptive usage counts, not coaching evidence. Exact `LMP2_WEC` and
+`LMP2_ELMS` categories remain separate while their explicit car display is unified
+as `Oreca 07`. Other classes fail closed to the LMU-recorded entry because History
+does not yet own a canonical model field. DuckDB opens read-only in a background
+worker and an mtime/size fingerprint avoids repeat work. See
+`docs/RACE_ENGINEER_GUI_V1_48.md`.
 
 GUI v1.18 integra el scheduler con el catálogo abierto mediante un fingerprint
 read-only de los `state.json`. Cada cinco segundos comprueba ruta, `mtime_ns` y

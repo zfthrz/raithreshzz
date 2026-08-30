@@ -18,6 +18,7 @@ from race_engineer_calibration_gui import (
     resolve_calibration_labeling_target,
 )
 from runtime_paths import history_db_default_path
+from race_engineer_statistics import HistoryStatistics, load_history_statistics
 from race_engineer_h5_3_review_status import load_status as load_h5_3_review_status
 from race_engineer_scheduler_status import (
     diagnostic_report as scheduler_diagnostic_report,
@@ -97,7 +98,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.47"
+GUI_VERSION = "1.48"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 STATE_REFRESH_INTERVAL_MS = 5_000
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -111,6 +112,7 @@ PRIMARY_SECTIONS = (
     "Resumen",
     "Telemetría",
     "Historial",
+    "Estadísticas",
     "Circuitos",
     "Diagnóstico",
     "Calibración",
@@ -119,6 +121,7 @@ SECTION_VIEWS = {
     "Resumen": ("Debrief", "Próxima tanda", "Vueltas"),
     "Telemetría": ("Mapa y canales",),
     "Historial": ("Referencia", "Comparación"),
+    "Estadísticas": ("General", "Mensual"),
     "Circuitos": ("Readiness",),
     "Diagnóstico": ("Pipeline", "Ejecución"),
     "Calibración": ("Calibración",),
@@ -127,6 +130,7 @@ SECTION_DESCRIPTIONS = {
     "Resumen": "Debrief, plan de próxima tanda y vueltas clave de la sesión seleccionada.",
     "Telemetría": "Mapa del circuito y canales de telemetría de la sesión seleccionada.",
     "Historial": "Referencia histórica y comparación contextual validada.",
+    "Estadísticas": "Uso acumulado y mensual calculado desde History.",
     "Circuitos": "Estado de track profiles, sesiones y calibración por circuito/contexto.",
     "Diagnóstico": "Estado del pipeline, ejecución y automatización.",
     "Calibración": "Cobertura y estado de calibración por contexto.",
@@ -789,6 +793,7 @@ class RaceEngineerApp:
         self.session_change_queue: queue.Queue[tuple[int, str, object]] = queue.Queue()
         self.session_catalog_queue: queue.Queue[tuple[str, object]] = queue.Queue()
         self.track_readiness_queue: queue.Queue[tuple[str, object]] = queue.Queue()
+        self.statistics_queue: queue.Queue[tuple[str, object]] = queue.Queue()
         self.session_change_token = 0
         self.session_change_after_id = None
         self.session_change_cache: dict[str, dict] = {}
@@ -829,7 +834,10 @@ class RaceEngineerApp:
         self._state_refresh_after_id = None
         self._initial_catalog_after_id = None
         self._track_readiness_after_id = None
+        self._statistics_after_id = None
         self.track_readiness_loading = False
+        self.statistics_loading = False
+        self.statistics_fingerprint: tuple[int, int] | None = None
         self._closing = False
         self.telemetry_ingest_state_path = (
             PROJECT_ROOT / "data" / "local" / "telemetry_auto_ingest.json"
@@ -1746,6 +1754,9 @@ class RaceEngineerApp:
         self.historical_reference_text = self._text_tab(history_notebook, "Referencia")
         self._comparison_tab(history_notebook)
 
+        statistics_frame = self.primary_section_frames["Estadísticas"]
+        self._statistics_panel(statistics_frame)
+
         readiness_frame = self.primary_section_frames["Circuitos"]
         self._track_readiness_panel(readiness_frame)
 
@@ -1797,6 +1808,8 @@ class RaceEngineerApp:
         self.workspace_subtitle_var.set(SECTION_DESCRIPTIONS.get(section, ""))
         if section == "Circuitos":
             self._refresh_track_readiness()
+        elif section == "Estadísticas":
+            self._refresh_statistics()
 
         for name, button in self.primary_section_buttons.items():
             button.configure(
@@ -2305,6 +2318,388 @@ class RaceEngineerApp:
             )
             return
         self._apply_track_readiness_payload(payload)
+
+    @staticmethod
+    def _statistics_value(value: str | None) -> str:
+        return value or "—"
+
+    @staticmethod
+    def _statistics_km(value: float) -> str:
+        return f"{value:,.1f}".replace(",", "_").replace(".", ",").replace("_", ".")
+
+    def _statistics_panel(self, parent):
+        ttk = self.ttk
+        tk = self.tk
+
+        shell = ttk.Frame(parent, style="Workspace.TFrame")
+        shell.pack(fill="both", expand=True)
+        self.statistics_status_var = tk.StringVar(
+            value="Abrí Estadísticas para cargar el historial."
+        )
+        ttk.Label(
+            shell,
+            textvariable=self.statistics_status_var,
+            style="WorkspaceSubtitle.TLabel",
+        ).pack(anchor="w", pady=(0, 12))
+
+        cards = ttk.Frame(shell, style="Workspace.TFrame")
+        cards.pack(fill="x", pady=(0, 16))
+        self.statistics_value_vars = {}
+        card_specs = (
+            ("sessions", "SESIONES"),
+            ("laps", "VUELTAS VÁLIDAS"),
+            ("distance", "KILÓMETROS"),
+            ("track", "CIRCUITO PREFERIDO"),
+            ("category", "CATEGORÍA PREFERIDA"),
+            ("car", "AUTO / ENTRADA PREFERIDA"),
+        )
+        for index, (key, title) in enumerate(card_specs):
+            cards.columnconfigure(index, weight=1, uniform="statistics")
+            card = ttk.Frame(cards, style="MetricCard.TFrame", padding=(12, 10))
+            card.grid(
+                row=0,
+                column=index,
+                sticky="nsew",
+                padx=(0 if index == 0 else 4, 0 if index == len(card_specs) - 1 else 4),
+            )
+            ttk.Label(card, text=title, style="CardLabel.TLabel").pack(anchor="w")
+            variable = tk.StringVar(value="—")
+            self.statistics_value_vars[key] = variable
+            ttk.Label(
+                card,
+                textvariable=variable,
+                style="CardValue.TLabel",
+                wraplength=170,
+                justify="left",
+            ).pack(anchor="w", pady=(7, 0))
+
+        charts = ttk.Frame(shell, style="Workspace.TFrame", height=220)
+        charts.pack(fill="x", pady=(0, 14))
+        charts.pack_propagate(False)
+        self.statistics_chart_canvases = {}
+        self.statistics_distributions = {}
+        for index, (key, title) in enumerate(
+            (
+                ("track", "CIRCUITOS"),
+                ("category", "CATEGORÍAS"),
+                ("car", "AUTOS / ENTRADAS"),
+            )
+        ):
+            charts.columnconfigure(index, weight=1, uniform="statistics_charts")
+            chart = tk.Canvas(
+                charts,
+                background="#11171a",
+                highlightthickness=1,
+                highlightbackground="#27323a",
+                borderwidth=0,
+                height=210,
+            )
+            chart.grid(
+                row=0,
+                column=index,
+                sticky="nsew",
+                padx=(0 if index == 0 else 4, 0 if index == 2 else 4),
+            )
+            chart.bind(
+                "<Configure>",
+                lambda _event, chart_key=key: self._redraw_statistics_chart(chart_key),
+            )
+            self.statistics_chart_canvases[key] = chart
+            self.statistics_distributions[key] = (title, ())
+
+        ttk.Label(
+            shell,
+            text="HISTORIAL MENSUAL · DOBLE CLIC PARA VER SESIONES",
+            style="WorkspaceSubtitle.TLabel",
+        ).pack(anchor="w", pady=(0, 8))
+        table = ttk.Frame(shell, style="Workspace.TFrame")
+        table.pack(fill="both", expand=True)
+        columns = ("month", "sessions", "laps", "km", "track", "category", "car")
+        self.statistics_tree = ttk.Treeview(
+            table,
+            columns=columns,
+            show="headings",
+            selectmode="browse",
+        )
+        for name, title, width, stretch in (
+            ("month", "Mes", 90, False),
+            ("sessions", "Sesiones", 80, False),
+            ("laps", "Vueltas", 80, False),
+            ("km", "Kilómetros", 95, False),
+            ("track", "Circuito preferido", 190, True),
+            ("category", "Categoría", 135, False),
+            ("car", "Auto / entrada", 220, True),
+        ):
+            self.statistics_tree.heading(name, text=title)
+            self.statistics_tree.column(name, width=width, minwidth=65, stretch=stretch)
+        scrollbar = ttk.Scrollbar(table, orient="vertical", command=self.statistics_tree.yview)
+        self.statistics_tree.configure(yscrollcommand=scrollbar.set)
+        scrollbar.pack(side="right", fill="y")
+        self.statistics_tree.pack(side="left", fill="both", expand=True)
+        self.statistics_tree.bind("<Double-1>", self._open_statistics_month)
+        self.statistics_sessions_by_month = {}
+
+    def _refresh_statistics(self, *, force: bool = False):
+        if self._closing or self.statistics_loading:
+            return
+        history_db = history_db_default_path()
+        try:
+            stat = history_db.stat()
+            fingerprint = (stat.st_mtime_ns, stat.st_size)
+        except OSError as exc:
+            self.statistics_status_var.set(f"History no disponible: {exc}")
+            return
+        if not force and self.statistics_fingerprint == fingerprint:
+            return
+
+        self.statistics_loading = True
+        self.statistics_status_var.set("Calculando estadísticas desde History…")
+
+        def worker():
+            try:
+                payload = load_history_statistics(history_db)
+                self.statistics_queue.put(("done", (fingerprint, payload)))
+            except Exception as exc:
+                self.statistics_queue.put(("error", f"{type(exc).__name__}: {exc}"))
+
+        threading.Thread(
+            target=worker,
+            name="race-engineer-statistics",
+            daemon=True,
+        ).start()
+        self._statistics_after_id = self.root.after(50, self._poll_statistics)
+
+    def _poll_statistics(self):
+        self._statistics_after_id = None
+        if self._closing:
+            return
+        try:
+            kind, payload = self.statistics_queue.get_nowait()
+        except queue.Empty:
+            self._statistics_after_id = self.root.after(50, self._poll_statistics)
+            return
+
+        self.statistics_loading = False
+        if kind == "error":
+            self.statistics_status_var.set(f"No se pudieron cargar las estadísticas: {payload}")
+            return
+        fingerprint, statistics = payload
+        self.statistics_fingerprint = fingerprint
+        self._apply_statistics(statistics)
+
+    def _apply_statistics(self, statistics: HistoryStatistics):
+        overall = statistics.overall
+        values = {
+            "sessions": str(overall.session_count),
+            "laps": str(overall.valid_lap_count),
+            "distance": f"{self._statistics_km(overall.total_distance_km)} km",
+            "track": self._statistics_value(overall.favorite_track),
+            "category": self._statistics_value(overall.favorite_category),
+            "car": self._statistics_value(overall.favorite_car),
+        }
+        for key, value in values.items():
+            self.statistics_value_vars[key].set(value)
+
+        self.statistics_distributions = {
+            "track": ("CIRCUITOS", statistics.track_distribution),
+            "category": ("CATEGORÍAS", statistics.category_distribution),
+            "car": ("AUTOS / ENTRADAS", statistics.car_distribution),
+        }
+        for key in self.statistics_chart_canvases:
+            self._redraw_statistics_chart(key)
+
+        for item in self.statistics_tree.get_children():
+            self.statistics_tree.delete(item)
+        for index, monthly in enumerate(statistics.monthly):
+            summary = monthly.summary
+            self.statistics_tree.insert(
+                "",
+                "end",
+                values=(
+                    monthly.month,
+                    summary.session_count,
+                    summary.valid_lap_count,
+                    self._statistics_km(summary.total_distance_km),
+                    self._statistics_value(summary.favorite_track),
+                    self._statistics_value(summary.favorite_category),
+                    self._statistics_value(summary.favorite_car),
+                ),
+                tags=("row_even" if index % 2 == 0 else "row_odd",),
+            )
+        self.statistics_tree.tag_configure("row_even", background="#171717")
+        self.statistics_tree.tag_configure("row_odd", background="#1b1f23")
+
+        self.statistics_sessions_by_month = {
+            monthly.month: tuple(
+                session
+                for session in statistics.sessions
+                if (session.month or "Sin fecha") == monthly.month
+            )
+            for monthly in statistics.monthly
+        }
+        self.statistics_status_var.set(
+            "Estadísticas read-only · sólo vueltas válidas; kilómetros sumados desde Lap Dist."
+        )
+
+    def _redraw_statistics_chart(self, key: str):
+        canvas = self.statistics_chart_canvases.get(key)
+        title, source_items = self.statistics_distributions.get(key, (key, ()))
+        if canvas is None:
+            return
+        canvas.delete("all")
+        width = max(canvas.winfo_width(), 280)
+        height = max(canvas.winfo_height(), 190)
+        canvas.create_text(
+            14,
+            13,
+            anchor="nw",
+            text=f"{title} · POR VUELTAS VÁLIDAS",
+            fill="#91a6b8",
+            font=("Segoe UI Semibold", 9),
+        )
+        items = list(source_items)
+        if not items:
+            canvas.create_text(
+                width / 2,
+                height / 2,
+                text="Sin datos",
+                fill="#7f929f",
+                font=("Segoe UI", 10),
+            )
+            return
+        if len(items) > 5:
+            top = items[:5]
+            other_laps = sum(item.valid_lap_count for item in items[5:])
+            items = top + [("Otros", other_laps)]
+        else:
+            items = [(item.label, item.valid_lap_count) for item in items]
+        items = [
+            (item.label, item.valid_lap_count) if not isinstance(item, tuple) else item
+            for item in items
+        ]
+        total = sum(count for _label, count in items)
+        if total <= 0:
+            return
+
+        palette = ("#00FFA6", "#42d6c7", "#7fb3e3", "#f0c674", "#ff7b72", "#8f7ee7")
+        diameter = min(142, height - 54, max(90, width // 3))
+        left = 16
+        top = 42
+        start = 90.0
+        for index, (_label, count) in enumerate(items):
+            extent = -(count / total) * 360.0
+            canvas.create_arc(
+                left,
+                top,
+                left + diameter,
+                top + diameter,
+                start=start,
+                extent=extent,
+                fill=palette[index % len(palette)],
+                outline="#11171a",
+                width=2,
+            )
+            start += extent
+        hole = diameter * 0.48
+        offset = (diameter - hole) / 2
+        canvas.create_oval(
+            left + offset,
+            top + offset,
+            left + offset + hole,
+            top + offset + hole,
+            fill="#11171a",
+            outline="#11171a",
+        )
+        canvas.create_text(
+            left + diameter / 2,
+            top + diameter / 2,
+            text=str(total),
+            fill="#edf6fa",
+            font=("Segoe UI Semibold", 12),
+        )
+
+        legend_x = left + diameter + 16
+        legend_width = max(width - legend_x - 10, 80)
+        for index, (label, count) in enumerate(items):
+            y = 45 + index * 25
+            canvas.create_rectangle(
+                legend_x,
+                y,
+                legend_x + 10,
+                y + 10,
+                fill=palette[index % len(palette)],
+                outline="",
+            )
+            percentage = (count / total) * 100.0
+            text = f"{label} · {percentage:.0f}%"
+            canvas.create_text(
+                legend_x + 16,
+                y - 2,
+                anchor="nw",
+                width=legend_width,
+                text=text,
+                fill="#cbd8df",
+                font=("Segoe UI", 8),
+            )
+
+    def _open_statistics_month(self, event=None):
+        selection = self.statistics_tree.selection()
+        if not selection:
+            return
+        values = self.statistics_tree.item(selection[0], "values")
+        if not values:
+            return
+        month = str(values[0])
+        sessions = self.statistics_sessions_by_month.get(month, ())
+
+        window = self.tk.Toplevel(self.root)
+        window.title(f"Estadísticas {month} · {len(sessions)} sesiones")
+        window.geometry("1120x620")
+        window.minsize(820, 420)
+        window.configure(background="#0b1116")
+        shell = self.ttk.Frame(window, style="Workspace.TFrame", padding=(18, 16))
+        shell.pack(fill="both", expand=True)
+        self.ttk.Label(
+            shell,
+            text=f"{month} · {len(sessions)} sesiones",
+            style="WorkspaceTitle.TLabel",
+        ).pack(anchor="w", pady=(0, 12))
+
+        table = self.ttk.Frame(shell, style="Workspace.TFrame")
+        table.pack(fill="both", expand=True)
+        columns = ("date", "track", "category", "car", "laps", "km")
+        tree = self.ttk.Treeview(table, columns=columns, show="headings")
+        for name, title, width, stretch in (
+            ("date", "Fecha", 145, False),
+            ("track", "Circuito", 220, True),
+            ("category", "Categoría", 130, False),
+            ("car", "Auto / entrada", 230, True),
+            ("laps", "Vueltas", 75, False),
+            ("km", "Kilómetros", 95, False),
+        ):
+            tree.heading(name, text=title)
+            tree.column(name, width=width, minwidth=65, stretch=stretch)
+        scrollbar = self.ttk.Scrollbar(table, orient="vertical", command=tree.yview)
+        tree.configure(yscrollcommand=scrollbar.set)
+        scrollbar.pack(side="right", fill="y")
+        tree.pack(side="left", fill="both", expand=True)
+        for index, session in enumerate(sessions):
+            timestamp = session.timestamp.replace("T", " ").replace("Z", "")
+            tree.insert(
+                "",
+                "end",
+                values=(
+                    timestamp[:16],
+                    session.track,
+                    session.category,
+                    session.car,
+                    session.valid_lap_count,
+                    self._statistics_km(session.total_distance_km),
+                ),
+                tags=("row_even" if index % 2 == 0 else "row_odd",),
+            )
+        tree.tag_configure("row_even", background="#171717")
+        tree.tag_configure("row_odd", background="#1b1f23")
 
     def _apply_track_readiness_payload(self, payload):
         self.track_readiness_payload = payload
@@ -6683,6 +7078,12 @@ class RaceEngineerApp:
             except Exception:
                 pass
             self._track_readiness_after_id = None
+        if self._statistics_after_id is not None:
+            try:
+                self.root.after_cancel(self._statistics_after_id)
+            except Exception:
+                pass
+            self._statistics_after_id = None
         self.root.destroy()
 
 

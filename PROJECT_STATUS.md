@@ -7,6 +7,11 @@ llama.cpp recovery and H5.3 review work described below.
 
 Validated baseline:
 
+- GUI v1.48 adds lazy read-only general/monthly History statistics. Valid laps and
+  kilometers come directly from schema-4 `laps`; favorite track/category/car are
+  descriptive usage summaries. LMP2 categories remain exact while the displayed
+  car is explicitly unified as Oreca 07. The real 120-session smoke produced 452
+  valid laps and 2711.3 km without slowing application startup.
 - Hierarchical H2/H3 History integration (2026-08-28): `run_h3_pipeline.py`
   now offers an explicit `--history-db` stage after its authorized H2 gate. Official
   provenance is validated, equivalent rematerializations are idempotent and conflicts

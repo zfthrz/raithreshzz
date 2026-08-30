@@ -208,12 +208,14 @@ def test_primary_navigation_groups_technical_views_by_user_task():
         "Resumen",
         "Telemetría",
         "Historial",
+        "Estadísticas",
         "Circuitos",
         "Diagnóstico",
         "Calibración",
     )
     assert SECTION_VIEWS["Resumen"] == ("Debrief", "Próxima tanda", "Vueltas")
     assert SECTION_VIEWS["Historial"] == ("Referencia", "Comparación")
+    assert SECTION_VIEWS["Estadísticas"] == ("General", "Mensual")
     assert SECTION_VIEWS["Circuitos"] == ("Readiness",)
     assert SECTION_VIEWS["Diagnóstico"] == ("Pipeline", "Ejecución")
     assert SECTION_VIEWS["Calibración"] == ("Calibración",)
@@ -621,6 +623,27 @@ def test_track_readiness_is_lazy_and_runs_outside_tk_thread():
     assert "threading.Thread(" in refresh_source
     assert "build_track_readiness(project_root=PROJECT_ROOT)" in refresh_source
     assert "self._apply_track_readiness_payload(payload)" in poll_source
+
+
+def test_history_statistics_are_lazy_read_only_and_run_outside_tk_thread():
+    build_source = inspect.getsource(RaceEngineerApp._build_layout)
+    show_source = inspect.getsource(RaceEngineerApp._show_primary_section)
+    refresh_source = inspect.getsource(RaceEngineerApp._refresh_statistics)
+    poll_source = inspect.getsource(RaceEngineerApp._poll_statistics)
+
+    assert "self._refresh_statistics()" not in build_source
+    assert 'section == "Estadísticas"' in show_source
+    assert "threading.Thread(" in refresh_source
+    assert "load_history_statistics(history_db)" in refresh_source
+    assert "self._apply_statistics(statistics)" in poll_source
+    panel_source = inspect.getsource(RaceEngineerApp._statistics_panel)
+    assert 'style="MetricCard.TFrame"' in panel_source
+    assert 'self.statistics_tree.bind("<Double-1>", self._open_statistics_month)' in panel_source
+    detail_source = inspect.getsource(RaceEngineerApp._open_statistics_month)
+    assert 'self.statistics_sessions_by_month.get(month, ())' in detail_source
+    chart_source = inspect.getsource(RaceEngineerApp._redraw_statistics_chart)
+    assert 'canvas.create_arc(' in chart_source
+    assert 'text=f"{title} · POR VUELTAS VÁLIDAS"' in chart_source
 
 
 

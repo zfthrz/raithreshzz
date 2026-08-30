@@ -955,7 +955,18 @@ def test_validated_next_stint_priorities_map_to_gps_intervals(tmp_path: Path):
                             "start_distance_m": 500,
                             "end_distance_m": 560,
                             "track_location": {"label": "T5"},
-                            "driver_cues": [{"text": "Sostené el acelerador"}],
+                            "steering_coaching_requested": True,
+                            "validated_recommendation": "reducir la magnitud del volante",
+                            "steering_direction": "higher_in_comparison_lap",
+                            "driver_cues": [
+                                {"text": "Sostené el acelerador"},
+                                {
+                                    "kind": "validated_llm_steering",
+                                    "source": "validated_llm_recommendation+python_direction",
+                                    "channel": "steering_magnitude",
+                                    "text": "Reducí la magnitud del volante",
+                                },
+                            ],
                         },
                         {
                             "plan_label": "A",
@@ -981,11 +992,69 @@ def test_validated_next_stint_priorities_map_to_gps_intervals(tmp_path: Path):
     assert priorities[0].label == "T1"
     assert priorities[0].cues == ("Frená hacia la referencia",)
     assert priorities[0].is_focus is False
+    assert priorities[0].has_validated_steering is False
     assert priorities[1].is_focus is True
+    assert priorities[1].has_validated_steering is True
     assert priority_for_distance(priorities, 530).priority_id == "B"
     assert priority_for_distance(priorities, 400) is None
     assert zone_point_ranges(points, priorities[0]) == ((1, 3),)
     assert zone_point_ranges(points, priorities[1]) == ((5, 7),)
+
+
+@pytest.mark.parametrize(
+    ("field", "replacement"),
+    [
+        ("steering_coaching_requested", False),
+        ("validated_recommendation", "observación sin acción directa"),
+        ("steering_direction", "unknown"),
+    ],
+)
+def test_track_priority_steering_autofocus_contract_fails_closed(
+    tmp_path: Path,
+    field: str,
+    replacement,
+):
+    item = {
+        "plan_label": "A",
+        "start_distance_m": 100,
+        "end_distance_m": 180,
+        "steering_coaching_requested": True,
+        "validated_recommendation": "reducir la magnitud del volante",
+        "steering_direction": "higher_in_comparison_lap",
+        "driver_cues": [{
+            "kind": "validated_llm_steering",
+            "source": "validated_llm_recommendation+python_direction",
+            "channel": "steering_magnitude",
+            "text": "Reducí la magnitud del volante",
+        }],
+    }
+    item[field] = replacement
+    source = tmp_path / "debrief.json"
+    source.write_text(
+        json.dumps({"session_coaching_facts": {"next_stint_plan": [item]}}),
+        encoding="utf-8",
+    )
+
+    assert load_track_priorities(source)[0].has_validated_steering is False
+
+
+def test_track_priority_does_not_infer_steering_from_text(tmp_path: Path):
+    source = tmp_path / "debrief.json"
+    source.write_text(
+        json.dumps({
+            "session_coaching_facts": {
+                "next_stint_plan": [{
+                    "plan_label": "A",
+                    "start_distance_m": 100,
+                    "end_distance_m": 180,
+                    "driver_cues": [{"text": "Reducí el volante"}],
+                }]
+            }
+        }),
+        encoding="utf-8",
+    )
+
+    assert load_track_priorities(source)[0].has_validated_steering is False
 
 
 def test_telemetry_speed_scale_can_be_shared_between_two_laps():

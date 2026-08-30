@@ -4,6 +4,7 @@ import json
 from dataclasses import replace
 from pathlib import Path
 
+import race_engineer_ui_model as ui_model
 from race_engineer_ui_model import (
     _plan_text,
     build_session_change_view,
@@ -156,6 +157,42 @@ def test_discovers_validated_debrief_and_reference_metadata(tmp_path: Path):
     assert session.status == "DEBRIEF_READY"
     assert session.debrief_path is not None
     assert session.has_validated_debrief is True
+
+
+def test_session_metadata_cache_avoids_reloading_unchanged_analysis(
+    tmp_path: Path,
+    monkeypatch,
+):
+    state_path = make_session(tmp_path, "session-cache")
+    state = json.loads(state_path.read_text(encoding="utf-8"))
+    analysis_path = Path(state["stages"]["analyze"]["output"]).resolve()
+    cache_path = tmp_path / "local" / "gui_session_metadata_cache.json"
+
+    first, errors = discover_sessions(
+        tmp_path / "runs",
+        metadata_cache_path=cache_path,
+    )
+    assert errors == []
+    assert first[0].track == "Fuji Speedway"
+    assert cache_path.is_file()
+
+    original_json = ui_model._json
+    analysis_reads = []
+
+    def tracking_json(path):
+        if Path(path).resolve() == analysis_path:
+            analysis_reads.append(Path(path))
+        return original_json(path)
+
+    monkeypatch.setattr(ui_model, "_json", tracking_json)
+    second, errors = discover_sessions(
+        tmp_path / "runs",
+        metadata_cache_path=cache_path,
+    )
+
+    assert errors == []
+    assert second[0].reference_time_s == 90.94
+    assert analysis_reads == []
 
 
 def test_history_only_session_is_not_presented_as_debrief_ready(tmp_path: Path):

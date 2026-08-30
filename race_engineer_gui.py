@@ -787,6 +787,8 @@ class RaceEngineerApp:
         self.h3_import_queue: queue.Queue[tuple[str, object]] = queue.Queue()
         self.track_map_queue: queue.Queue[tuple[int, str, object]] = queue.Queue()
         self.session_change_queue: queue.Queue[tuple[int, str, object]] = queue.Queue()
+        self.session_catalog_queue: queue.Queue[tuple[str, object]] = queue.Queue()
+        self.track_readiness_queue: queue.Queue[tuple[str, object]] = queue.Queue()
         self.session_change_token = 0
         self.session_change_after_id = None
         self.session_change_cache: dict[str, dict] = {}
@@ -825,9 +827,15 @@ class RaceEngineerApp:
         self._scheduler_state_fingerprint: tuple[tuple[int, int] | None, tuple[int, int] | None] | None = None
         self._calibration_state_fingerprint: tuple[tuple[str, int, int], ...] = ()
         self._state_refresh_after_id = None
+        self._initial_catalog_after_id = None
+        self._track_readiness_after_id = None
+        self.track_readiness_loading = False
         self._closing = False
         self.telemetry_ingest_state_path = (
             PROJECT_ROOT / "data" / "local" / "telemetry_auto_ingest.json"
+        )
+        self.session_metadata_cache_path = (
+            PROJECT_ROOT / "data" / "local" / "gui_session_metadata_cache.json"
         )
         self.scheduler_runtime_path = (
             PROJECT_ROOT / "data" / "local" / "telemetry_scheduler_runtime.json"
@@ -862,8 +870,12 @@ class RaceEngineerApp:
 
         self._configure_style()
         self._build_layout()
-        self.refresh()
-        self._schedule_state_refresh_check()
+        self.count_var.set("Cargando catálogo de sesiones…")
+        self.footer_var.set(str(self.runs_root))
+        self._initial_catalog_after_id = self.root.after(
+            75,
+            self._start_initial_catalog_load,
+        )
 
     def _configure_style(self):
         style = self.ttk.Style(self.root)
@@ -2246,19 +2258,55 @@ class RaceEngineerApp:
         for status, color in READINESS_STATUS_COLORS.items():
             self.track_context_tree.tag_configure(status, foreground=color)
 
-        self._refresh_track_readiness()
         return frame
 
     def _refresh_track_readiness(self):
         self._refresh_h3_maintenance_summary()
+        if self.track_readiness_loading:
+            return
+        self.track_readiness_loading = True
+        self.track_readiness_summary_var.set("Calculando estado de circuitos…")
+
+        def worker():
+            try:
+                payload = build_track_readiness(project_root=PROJECT_ROOT)
+                self.track_readiness_queue.put(("done", payload))
+            except Exception as exc:
+                self.track_readiness_queue.put(
+                    ("error", f"{type(exc).__name__}: {exc}")
+                )
+
+        threading.Thread(
+            target=worker,
+            name="race-engineer-track-readiness",
+            daemon=True,
+        ).start()
+        self._track_readiness_after_id = self.root.after(
+            100,
+            self._poll_track_readiness,
+        )
+
+    def _poll_track_readiness(self):
+        self._track_readiness_after_id = None
+        if self._closing:
+            return
         try:
-            payload = build_track_readiness(project_root=PROJECT_ROOT)
-        except (OSError, ValueError, json.JSONDecodeError) as exc:
-            self.track_readiness_summary_var.set(
-                f"No se pudo calcular Track Readiness: {exc}"
+            kind, payload = self.track_readiness_queue.get_nowait()
+        except queue.Empty:
+            self._track_readiness_after_id = self.root.after(
+                100,
+                self._poll_track_readiness,
             )
             return
+        self.track_readiness_loading = False
+        if kind == "error":
+            self.track_readiness_summary_var.set(
+                f"No se pudo calcular Track Readiness: {payload}"
+            )
+            return
+        self._apply_track_readiness_payload(payload)
 
+    def _apply_track_readiness_payload(self, payload):
         self.track_readiness_payload = payload
         self.track_readiness_rows = list(payload.get("rows") or [])
         self.track_readiness_tracks = list(payload.get("tracks") or [])
@@ -4200,7 +4248,10 @@ class RaceEngineerApp:
         self._refresh_calibration_summary()
         previous = self.selected_record()
         previous_key = previous.session_key if previous else None
-        self.all_sessions, errors = discover_sessions(self.runs_root)
+        self.all_sessions, errors = discover_sessions(
+            self.runs_root,
+            metadata_cache_path=self.session_metadata_cache_path,
+        )
         self._cancel_session_change_request()
         self.session_change_cache.clear()
         self.session_read_errors = errors
@@ -4211,6 +4262,59 @@ class RaceEngineerApp:
         )
         self._state_files_fingerprint = state_files_fingerprint(self.runs_root)
         self._scheduler_state_fingerprint = self._scheduler_fingerprint()
+
+    def _start_initial_catalog_load(self):
+        self._initial_catalog_after_id = None
+        if self._closing:
+            return
+        self._refresh_h5_3_review_status()
+        self._refresh_scheduler_status()
+
+        def worker():
+            try:
+                result = discover_sessions(
+                    self.runs_root,
+                    metadata_cache_path=self.session_metadata_cache_path,
+                )
+                self.session_catalog_queue.put(("done", result))
+            except Exception as exc:
+                self.session_catalog_queue.put(
+                    ("error", f"{type(exc).__name__}: {exc}")
+                )
+
+        threading.Thread(
+            target=worker,
+            name="race-engineer-session-catalog",
+            daemon=True,
+        ).start()
+        self._initial_catalog_after_id = self.root.after(
+            50,
+            self._poll_initial_catalog_load,
+        )
+
+    def _poll_initial_catalog_load(self):
+        self._initial_catalog_after_id = None
+        if self._closing:
+            return
+        try:
+            kind, payload = self.session_catalog_queue.get_nowait()
+        except queue.Empty:
+            self._initial_catalog_after_id = self.root.after(
+                50,
+                self._poll_initial_catalog_load,
+            )
+            return
+        if kind == "done":
+            self.all_sessions, errors = payload
+            self.session_read_errors = errors
+            self._populate_session_tree(errors=errors)
+            self._state_files_fingerprint = state_files_fingerprint(self.runs_root)
+            self._scheduler_state_fingerprint = self._scheduler_fingerprint()
+        else:
+            self.all_sessions = []
+            self.session_read_errors = [str(payload)]
+            self._populate_session_tree(errors=self.session_read_errors)
+        self._schedule_state_refresh_check()
 
     def _schedule_state_refresh_check(self):
         if self._closing or self._state_refresh_after_id is not None:
@@ -5186,6 +5290,8 @@ class RaceEngineerApp:
         )
         if priority is None:
             return
+        if priority.has_validated_steering:
+            self.track_aux_channel_var.set("Volante")
         self.selected_track_overlay = ("priority", priority.priority_id)
         self.telemetry_zoom_range = (
             priority.start_distance_m,
@@ -6565,6 +6671,18 @@ class RaceEngineerApp:
             except Exception:
                 pass
             self._state_refresh_after_id = None
+        if self._initial_catalog_after_id is not None:
+            try:
+                self.root.after_cancel(self._initial_catalog_after_id)
+            except Exception:
+                pass
+            self._initial_catalog_after_id = None
+        if self._track_readiness_after_id is not None:
+            try:
+                self.root.after_cancel(self._track_readiness_after_id)
+            except Exception:
+                pass
+            self._track_readiness_after_id = None
         self.root.destroy()
 
 

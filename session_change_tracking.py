@@ -318,18 +318,31 @@ def _qualitative_actions(
 def _validated_steering_actions(
     item: dict[str, Any],
 ) -> dict[tuple[str], dict[str, Any]]:
-    if item.get("steering_coaching_requested") is not True:
+    if not has_validated_steering_action(item):
         return {}
+    direction = item["steering_direction"]
+    return {
+        (direction,): {
+            "channel": "steering_magnitude",
+            "steering_direction": direction,
+        }
+    }
+
+
+def has_validated_steering_action(item: dict[str, Any]) -> bool:
+    """Return whether an item satisfies the existing steering cue contract."""
+    if item.get("steering_coaching_requested") is not True:
+        return False
     recommendation = item.get("validated_recommendation")
     if (
         not isinstance(recommendation, str)
         or not recommendation.strip()
         or not _steering_direct_action_present(recommendation)
     ):
-        return {}
+        return False
     direction = item.get("steering_direction")
     if direction not in {"higher_in_comparison_lap", "lower_in_comparison_lap"}:
-        return {}
+        return False
     valid_cue = any(
         isinstance(cue, dict)
         and cue.get("kind") == "validated_llm_steering"
@@ -337,14 +350,7 @@ def _validated_steering_actions(
         and cue.get("channel") == "steering_magnitude"
         for cue in _list(item.get("driver_cues"))
     )
-    if not valid_cue:
-        return {}
-    return {
-        (direction,): {
-            "channel": "steering_magnitude",
-            "steering_direction": direction,
-        }
-    }
+    return valid_cue
 
 
 _STRUCTURED_ACTION_EXTRACTORS = (

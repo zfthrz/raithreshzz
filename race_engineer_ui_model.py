@@ -24,6 +24,7 @@ from session_change_tracking import (
 
 PROJECT_ROOT = Path(__file__).resolve().parent
 UI_MODEL_VERSION = "0.5"
+SESSION_METADATA_CACHE_VERSION = 1
 READY_STAGE_STATUSES = {"RUN", "REUSED"}
 FAILED_STAGE_STATUSES = {"FAILED"}
 SESSION_FILTERS = {"ALL", "DEBRIEF_READY", "HISTORY_READY", "FAILED"}
@@ -414,7 +415,72 @@ def _vehicle_label(metadata: dict[str, Any]) -> str:
     )
 
 
-def load_session_record(state_path: Path) -> SessionRecord:
+def _analysis_metadata(
+    analysis_path: Path | None,
+    cache_entries: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    if analysis_path is None:
+        return {}
+    try:
+        stat = analysis_path.stat()
+        cache_key = str(analysis_path.resolve())
+    except OSError:
+        return {}
+    if cache_entries is not None:
+        cached = _dict(cache_entries.get(cache_key))
+        metadata = cached.get("metadata")
+        if (
+            cached.get("mtime_ns") == stat.st_mtime_ns
+            and cached.get("size") == stat.st_size
+            and isinstance(metadata, dict)
+        ):
+            return metadata
+    metadata = _dict(_json(analysis_path).get("metadata"))
+    if cache_entries is not None:
+        cache_entries[cache_key] = {
+            "mtime_ns": stat.st_mtime_ns,
+            "size": stat.st_size,
+            "metadata": metadata,
+        }
+    return metadata
+
+
+def _load_session_metadata_cache(path: Path) -> dict[str, Any]:
+    try:
+        payload = _json(path)
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError, ValueError):
+        return {}
+    if payload.get("version") != SESSION_METADATA_CACHE_VERSION:
+        return {}
+    return _dict(payload.get("analyses"))
+
+
+def _write_session_metadata_cache(path: Path, entries: dict[str, Any]) -> None:
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        temporary = path.with_suffix(path.suffix + ".tmp")
+        temporary.write_text(
+            json.dumps(
+                {
+                    "version": SESSION_METADATA_CACHE_VERSION,
+                    "analyses": entries,
+                },
+                ensure_ascii=False,
+                separators=(",", ":"),
+            ),
+            encoding="utf-8",
+        )
+        temporary.replace(path)
+    except OSError:
+        # El caché es una optimización local: nunca debe bloquear el catálogo.
+        return
+
+
+def load_session_record(
+    state_path: Path,
+    *,
+    analysis_metadata_cache: dict[str, Any] | None = None,
+) -> SessionRecord:
     state_path = Path(state_path).resolve()
     state = _json(state_path)
     stages_payload = _dict(state.get("stages"))
@@ -426,8 +492,7 @@ def load_session_record(state_path: Path) -> SessionRecord:
     historical_llm_stage = _dict(stages_payload.get("h5_2_llm"))
 
     analysis_path = _existing_path(analyze_stage.get("output"))
-    analysis = _json(analysis_path) if analysis_path else {}
-    metadata = _dict(analysis.get("metadata"))
+    metadata = _analysis_metadata(analysis_path, analysis_metadata_cache)
     modified = state_path.stat().st_mtime
     stages = _stage_statuses(state)
     status, status_detail = _overall_status(stages)
@@ -462,19 +527,45 @@ def load_session_record(state_path: Path) -> SessionRecord:
     )
 
 
-def discover_sessions(runs_root: Path) -> tuple[list[SessionRecord], list[str]]:
+def discover_sessions(
+    runs_root: Path,
+    *,
+    metadata_cache_path: Path | None = None,
+) -> tuple[list[SessionRecord], list[str]]:
     root = Path(runs_root)
     if not root.is_dir():
         return [], [f"No existe el directorio de ejecuciones: {root.resolve()}"]
 
+    cache_entries = (
+        _load_session_metadata_cache(metadata_cache_path)
+        if metadata_cache_path is not None
+        else None
+    )
     sessions = []
     errors = []
     for state_path in root.rglob("state.json"):
         try:
-            sessions.append(load_session_record(state_path))
+            sessions.append(
+                load_session_record(
+                    state_path,
+                    analysis_metadata_cache=cache_entries,
+                )
+            )
         except (OSError, UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
             errors.append(f"{state_path}: {exc}")
     sessions.sort(key=lambda item: (-item.modified_timestamp, item.session_key.casefold()))
+    if metadata_cache_path is not None and cache_entries is not None:
+        active_paths = {
+            str(session.analysis_path.resolve())
+            for session in sessions
+            if session.analysis_path is not None
+        }
+        current_entries = {
+            key: value
+            for key, value in cache_entries.items()
+            if key in active_paths
+        }
+        _write_session_metadata_cache(metadata_cache_path, current_entries)
     return sessions, errors
 
 

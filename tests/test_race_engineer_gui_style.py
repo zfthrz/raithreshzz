@@ -601,4 +601,26 @@ def test_summary_dashboard_uses_three_simultaneous_columns_before_change_trackin
     assert build_source.index('self.laps_text =') < build_source.index('self.session_change_panel =')
 
 
+def test_initial_session_catalog_is_deferred_until_tk_mainloop():
+    init_source = inspect.getsource(RaceEngineerApp.__init__)
+    worker_source = inspect.getsource(RaceEngineerApp._start_initial_catalog_load)
+
+    assert 'self.count_var.set("Cargando catálogo de sesiones…")' in init_source
+    assert "self.root.after(" in init_source
+    assert "self.refresh()" not in init_source
+    assert "threading.Thread(" in worker_source
+    assert "metadata_cache_path=self.session_metadata_cache_path" in worker_source
+
+
+def test_track_readiness_is_lazy_and_runs_outside_tk_thread():
+    panel_source = inspect.getsource(RaceEngineerApp._track_readiness_panel)
+    refresh_source = inspect.getsource(RaceEngineerApp._refresh_track_readiness)
+    poll_source = inspect.getsource(RaceEngineerApp._poll_track_readiness)
+
+    assert "self._refresh_track_readiness()" not in panel_source
+    assert "threading.Thread(" in refresh_source
+    assert "build_track_readiness(project_root=PROJECT_ROOT)" in refresh_source
+    assert "self._apply_track_readiness_payload(payload)" in poll_source
+
+
 

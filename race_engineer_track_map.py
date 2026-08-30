@@ -12,6 +12,7 @@ from typing import Any, Callable
 import duckdb
 
 from cross_session_zone_localization import find_validated_track_profile
+from session_change_tracking import has_validated_steering_action
 
 from extract_lmu_track_gps import (
     LAP_DISTANCE_RESET_THRESHOLD_M,
@@ -87,6 +88,7 @@ class TrackMapPriority:
     end_distance_m: float
     cues: tuple[str, ...]
     is_focus: bool = False
+    has_validated_steering: bool = False
 
 
 @dataclass(frozen=True)
@@ -1778,6 +1780,7 @@ def load_track_priorities(path: Path | None) -> tuple[TrackMapPriority, ...]:
                 end_distance_m=end,
                 cues=tuple(cues),
                 is_focus=priority_id in focus_ids,
+                has_validated_steering=has_validated_steering_action(value),
             )
         )
     priorities.sort(

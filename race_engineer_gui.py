@@ -29,6 +29,11 @@ from race_engineer_h3_materialization_gui import (
     resolve_materialization_target,
     stream_commands as stream_h3_materialization_commands,
 )
+from race_engineer_h3_import_gui import (
+    build_import_commands,
+    resolve_import_target,
+    stream_commands as stream_h3_import_commands,
+)
 
 from race_engineer_ui_model import (
     SessionDetail,
@@ -91,7 +96,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.44"
+GUI_VERSION = "1.45"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 STATE_REFRESH_INTERVAL_MS = 5_000
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -778,6 +783,7 @@ class RaceEngineerApp:
         self.track_resolution_hz = 20.0
         self.analysis_queue: queue.Queue[tuple[str, object]] = queue.Queue()
         self.h3_materialization_queue: queue.Queue[tuple[str, object]] = queue.Queue()
+        self.h3_import_queue: queue.Queue[tuple[str, object]] = queue.Queue()
         self.track_map_queue: queue.Queue[tuple[int, str, object]] = queue.Queue()
         self.session_change_queue: queue.Queue[tuple[int, str, object]] = queue.Queue()
         self.session_change_token = 0
@@ -812,6 +818,7 @@ class RaceEngineerApp:
         ] = {}
         self.analysis_running = False
         self.h3_materialization_running = False
+        self.h3_import_running = False
         self.analysis_database: Path | None = None
         self._state_files_fingerprint: tuple[tuple[str, int, int], ...] = ()
         self._scheduler_state_fingerprint: tuple[tuple[int, int] | None, tuple[int, int] | None] | None = None
@@ -832,6 +839,9 @@ class RaceEngineerApp:
         )
         self.h3_materialization_result_path = (
             PROJECT_ROOT / "data" / "local" / "h3_materialization_last_apply.json"
+        )
+        self.h3_import_result_path = (
+            PROJECT_ROOT / "data" / "local" / "h3_import_last_apply.json"
         )
         self.scheduler_log_path = (
             PROJECT_ROOT / "data" / "local" / "telemetry_auto_ingest_task.log"
@@ -2070,6 +2080,13 @@ class RaceEngineerApp:
             state="disabled",
         )
         self.h3_materialize_button.pack(side="right", padx=(8, 0))
+        self.h3_import_button = self.ttk.Button(
+            header,
+            text="Importar H3",
+            command=self._start_h3_import,
+            state="disabled",
+        )
+        self.h3_import_button.pack(side="right", padx=(8, 0))
         self.ttk.Button(
             header,
             text="Actualizar estado",
@@ -2393,6 +2410,12 @@ class RaceEngineerApp:
             row,
         )
 
+    def _selected_h3_import_target(self):
+        row = self._selected_track_readiness_context()
+        if not isinstance(row, dict):
+            return None
+        return resolve_import_target(self.h3_import_maintenance_path, row)
+
     def _on_track_readiness_context_select(self, _event=None):
         self._update_h3_materialize_button()
 
@@ -2403,14 +2426,24 @@ class RaceEngineerApp:
         enabled = (
             not self.analysis_running
             and not self.h3_materialization_running
+            and not self.h3_import_running
             and self._selected_h3_materialization_target() is not None
         )
         button.configure(state="normal" if enabled else "disabled")
+        import_button = getattr(self, "h3_import_button", None)
+        if import_button is not None:
+            import_enabled = (
+                not self.analysis_running
+                and not self.h3_materialization_running
+                and not self.h3_import_running
+                and self._selected_h3_import_target() is not None
+            )
+            import_button.configure(state="normal" if import_enabled else "disabled")
 
     def _start_h3_materialization(self):
         from tkinter import messagebox
 
-        if self.analysis_running or self.h3_materialization_running:
+        if self.analysis_running or self.h3_materialization_running or self.h3_import_running:
             messagebox.showinfo(
                 "Race Engineer",
                 "Ya hay una operación en ejecución.",
@@ -2479,6 +2512,104 @@ class RaceEngineerApp:
             daemon=True,
         ).start()
         self.root.after(100, self._poll_h3_materialization_queue)
+
+    def _start_h3_import(self):
+        from tkinter import messagebox
+
+        if self.analysis_running or self.h3_materialization_running or self.h3_import_running:
+            messagebox.showinfo("Race Engineer", "Ya hay una operación en ejecución.", parent=self.root)
+            return
+        target = self._selected_h3_import_target()
+        if target is None:
+            messagebox.showwarning(
+                "Race Engineer",
+                "El contexto seleccionado no está H3_READY_TO_IMPORT o el audit cambió.",
+                parent=self.root,
+            )
+            self._update_h3_materialize_button()
+            return
+        if not messagebox.askyesno(
+            "Importar H3",
+            (
+                f"¿Importar en History el bundle H3 oficial para?\n\n"
+                f"{target.track}\n{target.track_layout}\n{target.vehicle_variant}\n\n"
+                "Antes de modificar History se creará y verificará un backup SHA-256. "
+                "La evidencia seguirá siendo observacional y no autoriza coaching."
+            ),
+            parent=self.root,
+        ):
+            return
+        commands = build_import_commands(
+            target,
+            project_root=PROJECT_ROOT,
+            python_executable=Path(sys.executable),
+            materialization_state_path=self.h3_materialization_readiness_path,
+            import_state_path=self.h3_import_maintenance_path,
+            result_path=self.h3_import_result_path,
+        )
+        self.h3_import_running = True
+        self._update_h3_materialize_button()
+        self.execution_status.set("Importando H3 con backup…")
+        self._set_text(
+            self.execution_text,
+            "RACE ENGINEER — IMPORTACIÓN H3 EXPLÍCITA\n"
+            f"Contexto: {target.track} | {target.track_layout} | {target.vehicle_variant}\n"
+            "Backup SHA-256: OBLIGATORIO ANTES DEL IMPORT\n",
+        )
+        self._show_primary_section("Diagnóstico")
+        self.diagnostics_notebook.select(self.execution_text.master)
+
+        def worker():
+            try:
+                code = stream_h3_import_commands(
+                    commands,
+                    project_root=PROJECT_ROOT,
+                    on_line=lambda line: self.h3_import_queue.put(("line", line)),
+                )
+                self.h3_import_queue.put(("done", code))
+            except Exception as exc:
+                self.h3_import_queue.put(("error", f"{type(exc).__name__}: {exc}"))
+
+        threading.Thread(target=worker, name="race-engineer-h3-import", daemon=True).start()
+        self.root.after(100, self._poll_h3_import_queue)
+
+    def _poll_h3_import_queue(self):
+        finished = False
+        while True:
+            try:
+                kind, value = self.h3_import_queue.get_nowait()
+            except queue.Empty:
+                break
+            if kind == "line":
+                self._append_execution_line(str(value))
+            elif kind == "done":
+                self._finish_h3_import(int(value))
+                finished = True
+            elif kind == "error":
+                self._append_execution_line(f"H3_IMPORT_GUI_FAILED: {value}")
+                self._finish_h3_import(1)
+                finished = True
+        if self.h3_import_running and not finished:
+            self.root.after(100, self._poll_h3_import_queue)
+
+    def _finish_h3_import(self, return_code: int):
+        from tkinter import messagebox
+
+        self.h3_import_running = False
+        self._refresh_track_readiness()
+        self._refresh_calibration_summary()
+        self._scheduler_state_fingerprint = self._scheduler_fingerprint()
+        self._update_h3_materialize_button()
+        if return_code == 0:
+            self.execution_status.set("H3 importado en History")
+            self._append_execution_line("\nGUI H3 IMPORT RESULT: PASS")
+            messagebox.showinfo(
+                "Race Engineer",
+                "El contexto H3 fue respaldado, importado y validado en History.",
+                parent=self.root,
+            )
+        else:
+            self.execution_status.set("Importación H3 bloqueada o fallida")
 
     def _poll_h3_materialization_queue(self):
         finished = False
@@ -4075,8 +4206,10 @@ class RaceEngineerApp:
         if self._closing:
             return
         try:
-            if not self.analysis_running and not getattr(
-                self, "h3_materialization_running", False
+            if (
+                not self.analysis_running
+                and not getattr(self, "h3_materialization_running", False)
+                and not getattr(self, "h3_import_running", False)
             ):
                 current = state_files_fingerprint(self.runs_root)
                 if current != self._state_files_fingerprint:
@@ -6214,7 +6347,7 @@ class RaceEngineerApp:
     def _confirm_analysis(self, database: Path):
         from tkinter import messagebox
 
-        if self.analysis_running or self.h3_materialization_running:
+        if self.analysis_running or self.h3_materialization_running or self.h3_import_running:
             messagebox.showinfo(
                 "Race Engineer",
                 "Ya hay una operación en ejecución.",
@@ -6349,7 +6482,7 @@ class RaceEngineerApp:
     def _on_close(self):
         from tkinter import messagebox
 
-        if self.analysis_running or self.h3_materialization_running:
+        if self.analysis_running or self.h3_materialization_running or self.h3_import_running:
             messagebox.showwarning(
                 "Race Engineer",
                 "Hay una operación en ejecución. La ventana no se cerrará ni cancelará el proceso.\n\n"

@@ -154,7 +154,7 @@ D3.x deterministic-first default and D2.9 production ranker (2026-08-25).
 | Component | Current operational baseline |
 |---|---|
 | `race_engineer.py` | orchestrator v0.3 |
-| `race_engineer_gui.py` | v1.44 / explicit exact-context H3 materialization |
+| `race_engineer_gui.py` | v1.45 / explicit exact-context H3 materialization and verified import |
 | `analyze_telemetry.py` | v3.8 + Objective Python v6 |
 | Brake point | 2.1 / schema 2.1 |
 | Throttle point | 1.2.1 / schema 1.2 |
@@ -445,6 +445,12 @@ track/layout/vehicle context. It is read-only without `--apply`; apply mode acce
 only a fresh `MATERIALIZATION_READY` row, writes the normal three-file official
 bundle without passing a History database, and verifies the resulting state is
 `H3_READY_TO_IMPORT`. Import remains a separate explicit action.
+
+`import_h3_context.py` implements that separate action for one exact context. It
+requires fresh `H3_READY_TO_IMPORT`, checkpoints History, creates a physical
+backup whose SHA-256 is verified against an unchanged source, invokes the
+official transactional importer and requires `H3_IMPORTED` afterwards. GUI
+v1.45 exposes it as `Importar H3`; no bulk-ready import is used by the GUI.
 
 Completed isolated H3.2 projection labels can be summarized with
 `audit_h3_projection_review.py`. It validates the exact queue hash and authority

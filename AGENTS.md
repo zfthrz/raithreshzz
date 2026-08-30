@@ -81,6 +81,10 @@ python race_engineer.py analyze "telemetria\ARCHIVO.duckdb" --backend ollama
   `--apply` may write only the three H3 bundle files, must pass `history_db=None`,
   and must finish as `H3_READY_TO_IMPORT`. It never imports History or authorizes
   coaching.
+- `import_h3_context.py` is the separate exact-context History mutation. It
+  requires `H3_READY_TO_IMPORT`, creates and SHA-256-verifies a checkpointed
+  DuckDB backup first, then post-validates `H3_IMPORTED`. It remains
+  observational and never authorizes coaching.
 - `audit_h3_runtime_utility.py` is corpus observability only. It may compare
   generated H3.1 availability with generated H4/H5.2 artifacts and report exact
   membership separately from H3.2 projection, but it must not label false positives,

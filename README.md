@@ -1348,6 +1348,12 @@ GUI v1.44 expone la misma operación desde Track Readiness mediante
 `Materializar H3`. El botón sólo se habilita para una fila exacta lista, ejecuta en
 background y refresca los audits; nunca importa History automáticamente.
 
+GUI v1.45 mantiene la importación como un segundo paso explícito. `Importar H3`
+se habilita sólo para el contexto exacto `H3_READY_TO_IMPORT`; antes de mutar
+History ejecuta `CHECKPOINT`, guarda una copia en `data/local/history_backups/`,
+verifica SHA-256 y luego exige `H3_IMPORTED`. La GUI no usa la importación masiva
+de todos los contextos listos. Véase `docs/H3_CONTEXT_IMPORTER_V0_1.md`.
+
 Para auditar cuánto aporta H3 en los artefactos runtime existentes, sin abrir History
 ni ejecutar matcher/LLM:
 

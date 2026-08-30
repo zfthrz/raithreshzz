@@ -46,6 +46,11 @@ Validated baseline:
   It is enabled only by an exact fresh `MATERIALIZATION_READY` row, runs the v0.1
   materializer in background with the observed fingerprint, refreshes both read-only
   snapshots afterward and never invokes History import apply.
+- GUI v1.45 adds the separate context-sensitive `Importar H3` action. The exact
+  context must be `H3_READY_TO_IMPORT`; the operation checkpoints History, creates
+  and SHA-256-verifies a physical backup, runs the official transactional importer
+  and requires `H3_IMPORTED` afterwards. It never imports every ready context
+  implicitly and does not authorize coaching.
 - H3 import maintenance v0.2 audits all newest exact-context materializations in
   one command and keeps History read-only by default. `--apply` remains an explicit
   operator action and imports only existing `H3_READY_TO_IMPORT` bundles through

@@ -89,6 +89,9 @@ python race_engineer.py analyze "telemetria\ARCHIVO.duckdb" --backend ollama
   existing deterministic accumulated-delta comparison. Visual aggregation may
   bound canvas objects for 50 Hz performance, but must not rewrite telemetry,
   alter stored delta or become coaching authority.
+- GUI `Steering Pos` is a signed, optional observational lane. It may help inspect
+  an already-authorized steering recommendation, but its display, sign or visual
+  similarity must never create new steering coaching or relax the existing gate.
 - `audit_h3_runtime_utility.py` is corpus observability only. It may compare
   generated H3.1 availability with generated H4/H5.2 artifacts and report exact
   membership separately from H3.2 projection, but it must not label false positives,

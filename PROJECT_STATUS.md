@@ -56,6 +56,11 @@ Validated baseline:
   for both session-reference and H4 History comparisons. Rendering aggregates at
   most 240 visual blocks so 50 Hz traces do not reintroduce GUI lag; analysis data
   and deterministic comparison math remain unchanged.
+- GUI v1.47 adds `Steering Pos` as the optional fourth telemetry lane through the
+  `Marcha / Volante` selector. A 15-context real-data sample had 15/15 channel
+  availability at 100 Hz with the normalized signed range bounded by roughly
+  -100..+100; end-to-end Spa loading passed at both 20 and 50 Hz. Steering remains
+  visual/observational and gains no new coaching authority.
 - H3 import maintenance v0.2 audits all newest exact-context materializations in
   one command and keeps History read-only by default. `--apply` remains an explicit
   operator action and imports only existing `H3_READY_TO_IMPORT` bundles through

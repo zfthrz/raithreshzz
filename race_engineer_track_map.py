@@ -46,6 +46,7 @@ class TrackMapPoint:
     brake_percent: float | None = None
     gear: int | None = None
     elapsed_s: float | None = None
+    steering_percent: float | None = None
 
 
 @dataclass(frozen=True)
@@ -128,6 +129,7 @@ class TrackTelemetryChart:
     distance_max_m: float
     gear: tuple[tuple[float, float], ...] = ()
     gear_max: int = 1
+    steering: tuple[tuple[float, float], ...] = ()
 
 
 @dataclass(frozen=True)
@@ -275,6 +277,7 @@ def load_track_map(
             "Throttle Pos",
             "Brake Pos",
             "Gear",
+            "Steering Pos",
         )
         channels = {
             name: read_value_table(connection, name)
@@ -305,6 +308,9 @@ def load_track_map(
         )
         gear = align_discrete_channel(
             channels.get("Gear"), master_times, gps_time_reference
+        )
+        steering = align_channel(
+            channels.get("Steering Pos"), master_times, gps_time_reference
         )
         gear = sanitize_gear_trace(gear, master_times)
         boundaries = read_lap_event_times(connection, tables)
@@ -415,6 +421,7 @@ def load_track_map(
                         0.0,
                         float(row["session_time_s"]) - selected_start_s,
                     ),
+                    steering_percent=_finite_at(steering, master_index),
                 )
             )
         # Re-evaluate event-style zero sentinels inside the selected lap. This
@@ -434,6 +441,7 @@ def load_track_map(
                 point.brake_percent,
                 selected_gears[index],
                 point.elapsed_s,
+                point.steering_percent,
             )
             for index, point in enumerate(points)
         ]
@@ -1218,6 +1226,7 @@ def build_track_telemetry_chart(
     axis_end_distance_m: float | None = None,
     include_gear: bool = False,
     gear_max: int | None = None,
+    include_steering: bool = False,
 ) -> TrackTelemetryChart | None:
     """Fit native channels into three deterministic distance-based chart lanes."""
 
@@ -1304,7 +1313,9 @@ def build_track_telemetry_chart(
     )
     usable_width = float(width_px - left_px - right_px)
     usable_height = float(height_px - top_px - bottom_px)
-    lane_count = 4 if include_gear else 3
+    if include_gear and include_steering:
+        raise ValueError("gear y steering comparten el carril auxiliar")
+    lane_count = 4 if include_gear or include_steering else 3
     lane_height = usable_height / float(lane_count)
     resolved_gear_max = (
         telemetry_gear_scale(points)
@@ -1423,6 +1434,40 @@ def build_track_telemetry_chart(
                 result.append(endpoint)
         gear_points = tuple(result)
 
+    steering_points = ()
+    if include_steering:
+        result = []
+        lane_top = top_px + 3 * lane_height
+        previous_distance = None
+        seen_distances = set()
+        for point in chart_points:
+            distance = point.lap_distance_m
+            if distance is None or not math.isfinite(distance):
+                continue
+            distance = float(distance)
+            if previous_distance is not None:
+                backward_jump = previous_distance - distance
+                if backward_jump > LAP_DISTANCE_RESET_THRESHOLD_M or backward_jump > 5.0:
+                    break
+                if backward_jump > 0.0:
+                    continue
+            previous_distance = distance
+            if distance in seen_distances:
+                continue
+            seen_distances.add(distance)
+            value = point.steering_percent
+            if (
+                not requested_start <= distance <= requested_end
+                or value is None
+                or not math.isfinite(value)
+            ):
+                continue
+            normalized = (min(max(float(value), -100.0), 100.0) + 100.0) / 200.0
+            result.append(
+                (x_for(distance), lane_top + (1.0 - normalized) * lane_height)
+            )
+        steering_points = decimate_for_canvas(result)
+
     return TrackTelemetryChart(
         speed_max_kmh=speed_max,
         speed=series("speed_kmh", 0, speed_max),
@@ -1432,6 +1477,7 @@ def build_track_telemetry_chart(
         distance_max_m=distance_max,
         gear=gear_points,
         gear_max=resolved_gear_max,
+        steering=steering_points,
     )
 
 

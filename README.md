@@ -1360,6 +1360,12 @@ Funciona contra la referencia de sesión y contra History H4. La reducción a un
 máximo de 240 bloques es exclusivamente visual para conservar fluidez a 50 Hz; no
 suaviza ni modifica el delta determinista almacenado.
 
+GUI v1.47 permite alternar el cuarto carril entre `Marcha` y `Volante`. El canal
+`Steering Pos` conserva su signo y escala normalizada `-100..+100`, muestra las
+referencias con el mismo contrato visual discontinuo y funciona a 20/50 Hz. Es
+evidencia observacional para inspeccionar recomendaciones de dirección que ya
+fueron validadas; no crea ni autoriza coaching nuevo.
+
 Para auditar cuánto aporta H3 en los artefactos runtime existentes, sin abrir History
 ni ejecutar matcher/LLM:
 

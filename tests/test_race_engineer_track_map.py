@@ -509,6 +509,33 @@ def test_telemetry_chart_adds_discrete_fourth_gear_lane_only_when_requested():
     assert max(y for _, y in four_lane.brake) <= 93.0
 
 
+def test_telemetry_chart_can_use_signed_steering_as_auxiliary_lane():
+    points = (
+        TrackMapPoint(0.0, 0.0, 0.0, 100.0, 0.0, 0.0, 2, 0.0, -100.0),
+        TrackMapPoint(0.0, 0.0, 50.0, 100.0, 0.0, 0.0, 3, 1.0, 0.0),
+        TrackMapPoint(0.0, 0.0, 100.0, 100.0, 0.0, 0.0, 4, 2.0, 100.0),
+    )
+
+    chart = build_track_telemetry_chart(
+        points,
+        width_px=200,
+        height_px=132,
+        include_steering=True,
+    )
+
+    assert chart is not None
+    assert chart.gear == ()
+    assert [y for _, y in chart.steering] == pytest.approx([120.0, 106.5, 93.0])
+    with pytest.raises(ValueError, match="carril auxiliar"):
+        build_track_telemetry_chart(
+            points,
+            width_px=200,
+            height_px=132,
+            include_gear=True,
+            include_steering=True,
+        )
+
+
 def test_high_density_50hz_chart_is_decimated_but_remains_visible():
     points = tuple(
         TrackMapPoint(

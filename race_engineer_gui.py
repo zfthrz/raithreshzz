@@ -97,7 +97,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.46"
+GUI_VERSION = "1.47"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 STATE_REFRESH_INTERVAL_MS = 5_000
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -3885,6 +3885,24 @@ class RaceEngineerApp:
             "<<ComboboxSelected>>",
             self._on_track_comparison_changed,
         )
+        self.ttk.Label(
+            lap_controls,
+            text="Canal inferior:",
+            style="Muted.TLabel",
+        ).pack(side="left", padx=(24, 6))
+        self.track_aux_channel_var = self.tk.StringVar(value="Marcha")
+        self.track_aux_channel_selector = self.ttk.Combobox(
+            lap_controls,
+            textvariable=self.track_aux_channel_var,
+            values=("Marcha", "Volante"),
+            state="readonly",
+            width=10,
+        )
+        self.track_aux_channel_selector.pack(side="left")
+        self.track_aux_channel_selector.bind(
+            "<<ComboboxSelected>>",
+            lambda _event: self._render_track_telemetry_chart(),
+        )
 
         self.track_map_zone_status = self.tk.StringVar(
             value="Sin zonas H5.2 para esta sesión."
@@ -5492,10 +5510,16 @@ class RaceEngineerApp:
             "—" if point.throttle_percent is None else f"{point.throttle_percent:.0f}%"
         )
         gear = "—" if point.gear is None else ("N" if point.gear == 0 else str(point.gear))
+        steering = (
+            "—"
+            if point.steering_percent is None
+            else f"{point.steering_percent:+.0f}%"
+        )
         label = "Telemetría · " if prefix else ""
         return (
             f"{label}{distance} · velocidad {speed} · "
-            f"freno {brake} · acelerador {throttle} · marcha {gear}"
+            f"freno {brake} · acelerador {throttle} · marcha {gear} · "
+            f"volante {steering}"
         )
 
     @staticmethod
@@ -5844,6 +5868,10 @@ class RaceEngineerApp:
             data.points,
             comparison_points,
         )
+        show_steering = (
+            getattr(self, "track_aux_channel_var", None) is not None
+            and self.track_aux_channel_var.get() == "Volante"
+        )
         zoom_start = (
             None if self.telemetry_zoom_range is None else self.telemetry_zoom_range[0]
         )
@@ -5857,8 +5885,9 @@ class RaceEngineerApp:
             start_distance_m=zoom_start,
             end_distance_m=zoom_end,
             speed_max_kmh=shared_speed_max,
-            include_gear=True,
+            include_gear=not show_steering,
             gear_max=shared_gear_max,
+            include_steering=show_steering,
         )
         if chart is None:
             canvas.create_text(
@@ -5883,8 +5912,9 @@ class RaceEngineerApp:
                 axis_end_distance_m=chart.distance_max_m,
                 speed_max_kmh=shared_speed_max,
             
-                include_gear=True,
+                include_gear=not show_steering,
                 gear_max=shared_gear_max,
+                include_steering=show_steering,
 )
 
         historical_chart = None
@@ -5899,8 +5929,9 @@ class RaceEngineerApp:
                 axis_end_distance_m=chart.distance_max_m,
                 speed_max_kmh=shared_speed_max,
             
-                include_gear=True,
+                include_gear=not show_steering,
                 gear_max=shared_gear_max,
+                include_steering=show_steering,
 )
 
         if telemetry_comparison is not None:
@@ -5975,7 +6006,10 @@ class RaceEngineerApp:
             (f"Velocidad\n0–{chart.speed_max_kmh:.0f}", "#55b7e8"),
             ("Acelerador\n0–100%", "#45c98c"),
             ("Freno\n0–100%", "#e45a5a"),
-            (f"Marcha\nN–{chart.gear_max}", "#d5a94f"),
+            (
+                "Volante\n−100…+100" if show_steering else f"Marcha\nN–{chart.gear_max}",
+                "#b78cff" if show_steering else "#d5a94f",
+            ),
         )
         for lane, (label, color) in enumerate(lane_labels):
             canvas.create_text(
@@ -6003,6 +6037,7 @@ class RaceEngineerApp:
                 (historical_chart.throttle, "#6f9b84"),
                 (historical_chart.brake, "#a06f6f"),
                 (historical_chart.gear, "#9a8a63"),
+                (historical_chart.steering, "#806c94"),
             ):
                 for chunk in canvas_polyline_chunks(values):
                     coordinates = [
@@ -6022,6 +6057,7 @@ class RaceEngineerApp:
                 (reference_chart.throttle, "#76d6a8"),
                 (reference_chart.brake, "#ea8b8b"),
                 (reference_chart.gear, "#e0bf68"),
+                (reference_chart.steering, "#c4a7e8"),
             ):
                 for chunk in canvas_polyline_chunks(values):
                     coordinates = [
@@ -6040,6 +6076,7 @@ class RaceEngineerApp:
             (chart.throttle, "#45c98c"),
             (chart.brake, "#e45a5a"),
             (chart.gear, "#d5a94f"),
+            (chart.steering, "#b78cff"),
         ):
             for chunk in canvas_polyline_chunks(values):
                 coordinates = [coordinate for point in chunk for coordinate in point]

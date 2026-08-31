@@ -88,7 +88,7 @@ def test_validator_rejects_authority_and_nonfinite_evidence(tmp_path, monkeypatc
 def test_validator_rejects_duplicate_interval_ids():
     document = {
         "metadata": {
-            "version": "0.3",
+            "version": "0.4",
             "status": "NO_COMMON_COVERAGE",
             "current_coverage_ratio": 0.0,
             "reference_coverage_ratio": 0.0,
@@ -115,6 +115,11 @@ def test_validator_rejects_duplicate_interval_ids():
                 "steering_magnitude_delta_mean_percent": None,
                 "steering_magnitude_delta_peak_percent": None,
                 "steering_comparable_sample_count": 0,
+                "current_steering_total_variation_percent": None,
+                "reference_steering_total_variation_percent": None,
+                "steering_total_variation_delta_percent": None,
+                "current_steering_sign_change_count": None,
+                "reference_steering_sign_change_count": None,
             },
             {
                 "interval_id": "same",
@@ -131,6 +136,11 @@ def test_validator_rejects_duplicate_interval_ids():
                 "steering_magnitude_delta_mean_percent": None,
                 "steering_magnitude_delta_peak_percent": None,
                 "steering_comparable_sample_count": 0,
+                "current_steering_total_variation_percent": None,
+                "reference_steering_total_variation_percent": None,
+                "steering_total_variation_delta_percent": None,
+                "current_steering_sign_change_count": None,
+                "reference_steering_sign_change_count": None,
             },
         ],
     }
@@ -155,7 +165,7 @@ def test_validator_rejects_contradictory_interval_status(
 ):
     document = {
         "metadata": {
-            "version": "0.3",
+            "version": "0.4",
             "status": "FULL_COMMON_COVERAGE",
             "current_coverage_ratio": 1.0,
             "reference_coverage_ratio": 1.0,
@@ -181,13 +191,18 @@ def test_validator_rejects_contradictory_interval_status(
             "steering_magnitude_delta_mean_percent": None,
             "steering_magnitude_delta_peak_percent": None,
             "steering_comparable_sample_count": 0,
+            "current_steering_total_variation_percent": None,
+            "reference_steering_total_variation_percent": None,
+            "steering_total_variation_delta_percent": None,
+            "current_steering_sign_change_count": None,
+            "reference_steering_sign_change_count": None,
         }],
     }
 
     assert any(expected in error for error in validate_document(document))
 
 
-def test_validator_requires_explicit_steering_fields_in_v0_3(
+def test_validator_requires_explicit_steering_fields_in_v0_4(
     tmp_path,
     monkeypatch,
 ):
@@ -209,6 +224,6 @@ def test_validator_requires_explicit_steering_fields_in_v0_3(
     )
 
     assert any(
-        "steering_magnitude_delta_mean_percent ausente en schema v0.3" in error
+        "steering_magnitude_delta_mean_percent ausente en schema v0.4" in error
         for error in validate_document(document)
     )

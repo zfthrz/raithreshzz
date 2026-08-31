@@ -57,6 +57,11 @@ def test_interval_evidence_aggregates_only_existing_interval():
     assert evidence.steering_magnitude_delta_mean_percent == pytest.approx(10.0)
     assert evidence.steering_magnitude_delta_peak_percent == pytest.approx(10.0)
     assert evidence.steering_comparable_sample_count == 3
+    assert evidence.current_steering_total_variation_percent == pytest.approx(0.0)
+    assert evidence.reference_steering_total_variation_percent == pytest.approx(0.0)
+    assert evidence.steering_total_variation_delta_percent == pytest.approx(0.0)
+    assert evidence.current_steering_sign_change_count == 0
+    assert evidence.reference_steering_sign_change_count == 0
 
 
 def test_interval_evidence_reports_partial_coverage_without_extrapolation():
@@ -111,6 +116,11 @@ def test_steering_signed_cancellation_does_not_hide_magnitude_difference():
     assert evidence.steering_magnitude_delta_mean_percent == pytest.approx(10.0)
     assert evidence.steering_magnitude_delta_peak_percent == pytest.approx(10.0)
     assert evidence.steering_comparable_sample_count == 2
+    assert evidence.current_steering_total_variation_percent == pytest.approx(60.0)
+    assert evidence.reference_steering_total_variation_percent == pytest.approx(40.0)
+    assert evidence.steering_total_variation_delta_percent == pytest.approx(20.0)
+    assert evidence.current_steering_sign_change_count == 1
+    assert evidence.reference_steering_sign_change_count == 1
 
 
 def test_interval_evidence_fails_closed_without_coverage():
@@ -158,7 +168,7 @@ def test_evidence_document_is_json_ready_and_has_no_action_authority():
 
     document = build_historical_interval_evidence_document(comparison, intervals)
 
-    assert document["metadata"]["version"] == "0.3"
+    assert document["metadata"]["version"] == "0.4"
     assert document["metadata"]["status"] == "FULL_COMMON_COVERAGE"
     assert document["contract"] == {
         "observational_only": True,

@@ -1,4 +1,4 @@
-"""Validate Historical Telemetry Evidence v0.3 artifacts."""
+"""Validate Historical Telemetry Evidence v0.4 artifacts."""
 
 from __future__ import annotations
 
@@ -22,8 +22,8 @@ def validate_document(document: object) -> list[str]:
     if not isinstance(metadata, dict):
         errors.append("metadata ausente o inválido")
     else:
-        if metadata.get("version") != "0.3":
-            errors.append("metadata.version debe ser 0.3")
+        if metadata.get("version") != "0.4":
+            errors.append("metadata.version debe ser 0.4")
         if metadata.get("status") not in {
             "FULL_COMMON_COVERAGE", "PARTIAL_COMMON_COVERAGE", "NO_COMMON_COVERAGE"
         }:
@@ -52,6 +52,9 @@ def validate_document(document: object) -> list[str]:
         "steering_signed_delta_mean_percent",
         "steering_magnitude_delta_mean_percent",
         "steering_magnitude_delta_peak_percent",
+        "current_steering_total_variation_percent",
+        "reference_steering_total_variation_percent",
+        "steering_total_variation_delta_percent",
     )
     for index, item in enumerate(intervals):
         prefix = f"interval_evidence[{index}]"
@@ -103,11 +106,27 @@ def validate_document(document: object) -> list[str]:
             )
         for key in evidence_fields:
             if key not in item:
-                errors.append(f"{prefix}.{key} ausente en schema v0.3")
+                errors.append(f"{prefix}.{key} ausente en schema v0.4")
                 continue
             value = item.get(key)
             if value is not None and not _finite(value):
                 errors.append(f"{prefix}.{key} debe ser finito o null")
+            elif status == "UNAVAILABLE" and value is not None:
+                errors.append(f"{prefix}.{key} debe ser null cuando UNAVAILABLE")
+        for key in (
+            "current_steering_sign_change_count",
+            "reference_steering_sign_change_count",
+        ):
+            if key not in item:
+                errors.append(f"{prefix}.{key} ausente en schema v0.4")
+                continue
+            value = item.get(key)
+            if value is not None and (
+                not isinstance(value, int)
+                or isinstance(value, bool)
+                or value < 0
+            ):
+                errors.append(f"{prefix}.{key} debe ser entero no negativo o null")
             elif status == "UNAVAILABLE" and value is not None:
                 errors.append(f"{prefix}.{key} debe ser null cuando UNAVAILABLE")
     return errors

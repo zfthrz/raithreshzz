@@ -174,7 +174,7 @@ D3.x deterministic-first default and D2.9 production ranker (2026-08-25).
 | H4 historical reference | v0.2 |
 | H5.1 dual reference | v0.2 |
 | H5.2 | v0.2 profile-localized raw comparison + v0.1 validated observational LLM narrative |
-| H5.2 interval telemetry evidence | v0.3 / deterministic observational samples with signed and magnitude steering facts |
+| H5.2 interval telemetry evidence | v0.4 / signed, magnitude and trace-shape steering facts |
 | H5.3 historical coaching debrief | roadmap only / shadow complete (H5.3a-f) + Nivel 2 action policy / production gated |
 | H5.4 coaching precision | P1–P11 implemented / P10–P11 presentation-only |
 
@@ -1008,7 +1008,7 @@ and localization mode are validated. Without an exact profile, H5.2 keeps an exp
 unlocalized fallback rather than guessing circuit boundaries.
 
 After a valid H5.2 raw comparison, the orchestrator may also build
-`h5_2_telemetry_evidence` v0.3. It aligns the current and historical reference laps
+`h5_2_telemetry_evidence` v0.4. It aligns the current and historical reference laps
 on their common `Lap Dist` coverage and emits deterministic interval samples for
 speed, throttle, brake, discrete gear, accumulated delta, and separate signed versus
 magnitude steering facts. The steering evidence is observational and cannot authorize
@@ -1017,6 +1017,9 @@ under `data/generated/h5_2_telemetry_evidence/<session>/`, has its own validator
 reuse signature, and fails non-blocking so H5.3 and the normal debrief can continue.
 It is strictly observational: it does not modify the H5.2 zone summaries, authorize
 historical actions, change ranking or replace `session_reference`.
+Version 0.4 also records total steering variation and exact sign-change counts
+for both traces. These are unclassified morphology facts: no threshold labels a
+trace as intentional or corrective and they do not affect coaching authority.
 
 Session coaching also exposes `steering_coaching_shadow` v0.1. It derives only
 from Python priority findings that already contain a `steering_magnitude`

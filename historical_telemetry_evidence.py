@@ -14,7 +14,7 @@ from race_engineer_track_map import (
 )
 
 
-HISTORICAL_TELEMETRY_EVIDENCE_VERSION = "0.3"
+HISTORICAL_TELEMETRY_EVIDENCE_VERSION = "0.4"
 
 
 @dataclass(frozen=True)
@@ -44,6 +44,11 @@ class HistoricalTelemetryIntervalEvidence:
     steering_magnitude_delta_mean_percent: float | None
     steering_magnitude_delta_peak_percent: float | None
     steering_comparable_sample_count: int
+    current_steering_total_variation_percent: float | None
+    reference_steering_total_variation_percent: float | None
+    steering_total_variation_delta_percent: float | None
+    current_steering_sign_change_count: int | None
+    reference_steering_sign_change_count: int | None
 
 
 def intervals_from_track_turns(
@@ -80,6 +85,19 @@ def intervals_from_track_zones(
 
 def _mean(values: list[float]) -> float | None:
     return fmean(values) if values else None
+
+
+def _total_variation(values: list[float]) -> float | None:
+    if not values:
+        return None
+    return sum(abs(right - left) for left, right in zip(values, values[1:]))
+
+
+def _sign_change_count(values: list[float]) -> int | None:
+    if not values:
+        return None
+    signs = [1 if value > 0.0 else -1 for value in values if value != 0.0]
+    return sum(left != right for left, right in zip(signs, signs[1:]))
 
 
 def build_historical_interval_evidence(
@@ -146,6 +164,14 @@ def build_historical_interval_evidence(
             if steering_samples
             else None
         )
+        current_steering = [
+            sample.current_steering_percent for sample in steering_samples
+        ]
+        reference_steering = [
+            sample.reference_steering_percent for sample in steering_samples
+        ]
+        current_steering_variation = _total_variation(current_steering)
+        reference_steering_variation = _total_variation(reference_steering)
         results.append(
             HistoricalTelemetryIntervalEvidence(
                 interval_id=interval.interval_id,
@@ -187,6 +213,24 @@ def build_historical_interval_evidence(
                 ),
                 steering_magnitude_delta_peak_percent=steering_peak_delta,
                 steering_comparable_sample_count=len(steering_samples),
+                current_steering_total_variation_percent=(
+                    current_steering_variation
+                ),
+                reference_steering_total_variation_percent=(
+                    reference_steering_variation
+                ),
+                steering_total_variation_delta_percent=(
+                    current_steering_variation - reference_steering_variation
+                    if current_steering_variation is not None
+                    and reference_steering_variation is not None
+                    else None
+                ),
+                current_steering_sign_change_count=(
+                    _sign_change_count(current_steering)
+                ),
+                reference_steering_sign_change_count=(
+                    _sign_change_count(reference_steering)
+                ),
             )
         )
     return tuple(results)

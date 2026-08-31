@@ -1458,6 +1458,9 @@ diferencias media/máxima de magnitud. El volante permanece
 observacional y no autoriza coaching ni relaja su gate validado. Se reutiliza por firma, falla de forma no
 bloqueante y queda bajo `data/generated/h5_2_telemetry_evidence/`. Es material de
 inspección observacional: no cambia el plan, el ranking ni la autoridad de coaching.
+La versión 0.4 añade variación total y cantidad exacta de cruces de signo para
+ambas trazas. Son métricas descriptivas sin umbrales: todavía no etiquetan una
+entrada como intencional o como corrección.
 
 Como paso previo a cualquier ampliación futura, el coaching de sesión expone
 además un bloque `steering_coaching_shadow` v0.1. Sólo acepta direcciones Python

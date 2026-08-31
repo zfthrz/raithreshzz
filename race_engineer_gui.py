@@ -88,6 +88,7 @@ from race_engineer_track_map import (
     canvas_polyline_chunks,
     historical_telemetry_sample_at_distance,
     telemetry_delta_change_spans,
+    summarize_telemetry_interval_delta,
     historical_telemetry_uncovered_ranges,
     transform_fitted_track_points,
     turn_for_number,
@@ -765,6 +766,33 @@ def resolve_historical_telemetry_reference(
         "duration_s": duration_s,
         "session_id": session_id,
     }
+
+
+def select_active_telemetry_reference(
+    comparison_mode: str,
+    current: TrackMapData | None,
+    session_reference: TrackMapData | None,
+    historical_reference: TrackMapData | None,
+) -> TrackMapData | None:
+    """Select one comparable overlay consistently for every telemetry consumer."""
+
+    if current is None:
+        return None
+    reference = (
+        session_reference
+        if comparison_mode == "Referencia sesión"
+        else historical_reference
+        if comparison_mode == "History H4"
+        else None
+    )
+    if reference is None:
+        return None
+    if (
+        reference.database_path == current.database_path
+        and reference.lap == current.lap
+    ):
+        return None
+    return reference
 
 
 class RaceEngineerApp:
@@ -5992,10 +6020,61 @@ class RaceEngineerApp:
                 self._point_telemetry_text(selected_point)
             )
             return
+        delta_text = self._interval_delta_text(
+            data,
+            start_distance_m,
+            end_distance_m,
+        )
         self.track_map_telemetry_status.set(
             self._interval_telemetry_text(summary)
+            + delta_text
             + " · punto seleccionado: "
             + self._point_telemetry_text(selected_point, prefix=False)
+        )
+
+    def _interval_delta_text(
+        self,
+        data: TrackMapData,
+        start_distance_m: float,
+        end_distance_m: float,
+    ) -> str:
+        comparison_mode = (
+            self.track_comparison_var.get()
+            if hasattr(self, "track_comparison_var")
+            else "Referencia sesión"
+        )
+        reference = select_active_telemetry_reference(
+            comparison_mode,
+            data,
+            self.current_session_reference_track_map,
+            self.current_historical_track_map,
+        )
+        if reference is None:
+            return ""
+        comparison = build_historical_telemetry_comparison(
+            data.points,
+            tuple(reference.points),
+        )
+        interval = summarize_telemetry_interval_delta(
+            comparison,
+            start_distance_m,
+            end_distance_m,
+        )
+        if interval is None:
+            return " · delta de zona —"
+        direction = {
+            "GAIN": "ganancia",
+            "LOSS": "pérdida",
+            "NEUTRAL": "neutral",
+        }[interval.direction]
+        reference_label = (
+            "referencia de sesión"
+            if comparison_mode == "Referencia sesión"
+            else "History H4"
+        )
+        return (
+            f" · delta de zona {interval.delta_change_s:+.3f} s "
+            f"({direction} vs {reference_label})"
         )
 
     @staticmethod
@@ -6334,21 +6413,16 @@ class RaceEngineerApp:
             else "Referencia sesión"
         )
         session_reference = self.current_session_reference_track_map
+        active_reference = select_active_telemetry_reference(
+            comparison_mode,
+            data,
+            session_reference,
+            self.current_historical_track_map,
+        )
         reference_overlay = (
-            session_reference
-            if comparison_mode == "Referencia sesión"
-            and session_reference is not None
-            and (
-                session_reference.database_path != data.database_path
-                or session_reference.lap != data.lap
-            )
-            else None
+            active_reference if comparison_mode == "Referencia sesión" else None
         )
-        historical = (
-            self.current_historical_track_map
-            if comparison_mode == "History H4"
-            else None
-        )
+        historical = active_reference if comparison_mode == "History H4" else None
         comparison_points = (
             tuple(reference_overlay.points)
             if reference_overlay is not None

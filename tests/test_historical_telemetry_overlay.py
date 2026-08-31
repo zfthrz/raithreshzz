@@ -4,7 +4,10 @@ import json
 from pathlib import Path
 from types import SimpleNamespace
 
-from race_engineer_gui import resolve_historical_telemetry_reference
+from race_engineer_gui import (
+    resolve_historical_telemetry_reference,
+    select_active_telemetry_reference,
+)
 
 
 def test_h4_source_json_resolves_to_existing_session_duckdb(tmp_path: Path):
@@ -61,3 +64,28 @@ def test_h4_overlay_resolution_is_fail_soft_without_source(tmp_path: Path):
     )
 
     assert resolve_historical_telemetry_reference(selection, []) is None
+
+
+def test_active_telemetry_reference_selection_is_mode_specific_and_fail_closed():
+    current = SimpleNamespace(database_path=Path("current.duckdb"), lap=3)
+    session = SimpleNamespace(database_path=Path("current.duckdb"), lap=1)
+    historical = SimpleNamespace(database_path=Path("historical.duckdb"), lap=4)
+
+    assert select_active_telemetry_reference(
+        "Referencia sesión", current, session, historical
+    ) is session
+    assert select_active_telemetry_reference(
+        "History H4", current, session, historical
+    ) is historical
+    assert select_active_telemetry_reference(
+        "modo desconocido", current, session, historical
+    ) is None
+
+
+def test_active_telemetry_reference_rejects_current_lap_as_its_own_reference():
+    current = SimpleNamespace(database_path=Path("session.duckdb"), lap=3)
+    same_lap = SimpleNamespace(database_path=Path("session.duckdb"), lap=3)
+
+    assert select_active_telemetry_reference(
+        "Referencia sesión", current, same_lap, None
+    ) is None

@@ -173,6 +173,15 @@ class TelemetryDeltaSpan:
     delta_change_s: float
 
 
+@dataclass(frozen=True)
+class TelemetryIntervalDelta:
+    start_distance_m: float
+    end_distance_m: float
+    delta_change_s: float
+    direction: str
+    sample_count: int
+
+
 def list_track_map_laps(
     database_path: Path,
     *,
@@ -1210,6 +1219,68 @@ def telemetry_delta_change_spans(
         else:
             spans.append(interval)
     return tuple(spans)
+
+
+def summarize_telemetry_interval_delta(
+    comparison: HistoricalTelemetryComparison,
+    start_distance_m: float,
+    end_distance_m: float,
+) -> TelemetryIntervalDelta | None:
+    """Summarize existing accumulated delta inside one physical interval.
+
+    This is an observational projection of the comparison trace. It introduces
+    no smoothing, thresholds or coaching authority and fails closed unless at
+    least two comparable samples with accumulated delta cover the interval.
+    """
+
+    start = min(float(start_distance_m), float(end_distance_m))
+    end = max(float(start_distance_m), float(end_distance_m))
+    samples = tuple(
+        sample
+        for sample in comparison.samples
+        if sample.accumulated_delta_s is not None
+    )
+    if (
+        len(samples) < 2
+        or end <= start
+        or start < samples[0].distance_m
+        or end > samples[-1].distance_m
+    ):
+        return None
+
+    distances = [sample.distance_m for sample in samples]
+
+    def delta_at(distance_m: float) -> float | None:
+        right_index = bisect_right(distances, distance_m)
+        if right_index == 0:
+            return None
+        left = samples[right_index - 1]
+        if math.isclose(left.distance_m, distance_m):
+            return float(left.accumulated_delta_s)
+        if right_index >= len(samples):
+            return None
+        right = samples[right_index]
+        span = right.distance_m - left.distance_m
+        if span <= 0:
+            return None
+        ratio = (distance_m - left.distance_m) / span
+        return float(left.accumulated_delta_s) + ratio * (
+            float(right.accumulated_delta_s) - float(left.accumulated_delta_s)
+        )
+
+    start_delta = delta_at(start)
+    end_delta = delta_at(end)
+    if start_delta is None or end_delta is None:
+        return None
+    change = end_delta - start_delta
+    direction = "LOSS" if change > 0.0 else "GAIN" if change < 0.0 else "NEUTRAL"
+    return TelemetryIntervalDelta(
+        start_distance_m=start,
+        end_distance_m=end,
+        delta_change_s=change,
+        direction=direction,
+        sample_count=sum(start <= sample.distance_m <= end for sample in samples),
+    )
 
 
 def build_track_telemetry_chart(

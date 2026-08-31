@@ -33,6 +33,7 @@ from race_engineer_track_map import (
     profile_location_for_distance,
     profile_turns,
     priority_for_distance,
+    summarize_telemetry_interval_delta,
     summarize_track_interval,
     sanitize_gear_trace,
     telemetry_chart_x_for_distance,
@@ -1219,6 +1220,68 @@ def test_delta_change_visual_reduction_bounds_span_count_without_changing_source
     assert len(spans) <= 40
     assert comparison.samples[0].distance_m == 0.0
     assert comparison.samples[-1].distance_m == 1000.0
+
+
+def test_interval_delta_summarizes_existing_trace_without_new_threshold():
+    current = (
+        TrackMapPoint(0.0, 0.0, 0.0, 200.0),
+        TrackMapPoint(0.0, 0.0, 100.0, 180.0),
+        TrackMapPoint(0.0, 0.0, 200.0, 240.0),
+    )
+    reference = (
+        TrackMapPoint(0.0, 0.0, 0.0, 200.0),
+        TrackMapPoint(0.0, 0.0, 100.0, 200.0),
+        TrackMapPoint(0.0, 0.0, 200.0, 200.0),
+    )
+
+    summary = summarize_telemetry_interval_delta(
+        build_historical_telemetry_comparison(current, reference),
+        0.0,
+        100.0,
+    )
+
+    assert summary is not None
+    assert summary.direction == "LOSS"
+    assert summary.delta_change_s > 0.0
+    assert summary.sample_count == 2
+
+
+def test_interval_delta_fails_closed_without_two_comparable_samples():
+    comparison = build_historical_telemetry_comparison(
+        (
+            TrackMapPoint(0.0, 0.0, 0.0, 200.0),
+            TrackMapPoint(0.0, 0.0, 100.0, 180.0),
+        ),
+        (
+            TrackMapPoint(0.0, 0.0, 0.0, 200.0),
+            TrackMapPoint(0.0, 0.0, 100.0, 200.0),
+        ),
+    )
+
+    assert summarize_telemetry_interval_delta(comparison, -10.0, 20.0) is None
+
+
+def test_interval_delta_interpolates_exact_zone_boundaries_from_existing_trace():
+    comparison = build_historical_telemetry_comparison(
+        (
+            TrackMapPoint(0.0, 0.0, 0.0, 200.0),
+            TrackMapPoint(0.0, 0.0, 100.0, 180.0),
+        ),
+        (
+            TrackMapPoint(0.0, 0.0, 0.0, 200.0),
+            TrackMapPoint(0.0, 0.0, 100.0, 200.0),
+        ),
+    )
+
+    full = summarize_telemetry_interval_delta(comparison, 0.0, 100.0)
+    narrow = summarize_telemetry_interval_delta(comparison, 25.0, 75.0)
+
+    assert full is not None
+    assert narrow is not None
+    assert narrow.start_distance_m == 25.0
+    assert narrow.end_distance_m == 75.0
+    assert narrow.delta_change_s == pytest.approx(full.delta_change_s / 2.0)
+    assert narrow.sample_count == 0
 
 
 def test_historical_comparison_fails_closed_without_common_distance():

@@ -1,4 +1,4 @@
-"""Validate Historical Telemetry Evidence v0.5 artifacts."""
+"""Validate Historical Telemetry Evidence v0.6 artifacts."""
 
 from __future__ import annotations
 
@@ -22,8 +22,8 @@ def validate_document(document: object) -> list[str]:
     if not isinstance(metadata, dict):
         errors.append("metadata ausente o inválido")
     else:
-        if metadata.get("version") != "0.5":
-            errors.append("metadata.version debe ser 0.5")
+        if metadata.get("version") != "0.6":
+            errors.append("metadata.version debe ser 0.6")
         if metadata.get("status") not in {
             "FULL_COMMON_COVERAGE", "PARTIAL_COMMON_COVERAGE", "NO_COMMON_COVERAGE"
         }:
@@ -55,6 +55,10 @@ def validate_document(document: object) -> list[str]:
         "current_steering_total_variation_percent",
         "reference_steering_total_variation_percent",
         "steering_total_variation_delta_percent",
+        "steering_observed_span_m",
+        "current_steering_total_variation_per_100m",
+        "reference_steering_total_variation_per_100m",
+        "steering_total_variation_delta_per_100m",
     )
     for index, item in enumerate(intervals):
         prefix = f"interval_evidence[{index}]"
@@ -114,7 +118,7 @@ def validate_document(document: object) -> list[str]:
             )
         for key in evidence_fields:
             if key not in item:
-                errors.append(f"{prefix}.{key} ausente en schema v0.5")
+                errors.append(f"{prefix}.{key} ausente en schema v0.6")
                 continue
             value = item.get(key)
             if value is not None and not _finite(value):
@@ -126,7 +130,7 @@ def validate_document(document: object) -> list[str]:
             "reference_steering_sign_change_count",
         ):
             if key not in item:
-                errors.append(f"{prefix}.{key} ausente en schema v0.5")
+                errors.append(f"{prefix}.{key} ausente en schema v0.6")
                 continue
             value = item.get(key)
             if value is not None and (
@@ -137,6 +141,44 @@ def validate_document(document: object) -> list[str]:
                 errors.append(f"{prefix}.{key} debe ser entero no negativo o null")
             elif status == "UNAVAILABLE" and value is not None:
                 errors.append(f"{prefix}.{key} debe ser null cuando UNAVAILABLE")
+        trace_scope = item.get("steering_trace_scope")
+        if trace_scope not in {
+            "COMPARABLE_CORNER",
+            "OBSERVATIONAL_NON_CORNER",
+            "UNAVAILABLE",
+        }:
+            errors.append(f"{prefix}.steering_trace_scope inválido")
+        relation = item.get("steering_sign_change_relation")
+        if relation not in {None, "current_more", "equal", "current_fewer"}:
+            errors.append(f"{prefix}.steering_sign_change_relation inválido")
+        normalized_fields = (
+            "steering_observed_span_m",
+            "current_steering_total_variation_per_100m",
+            "reference_steering_total_variation_per_100m",
+            "steering_total_variation_delta_per_100m",
+        )
+        if trace_scope == "COMPARABLE_CORNER":
+            if location_type != "corner":
+                errors.append(f"{prefix} COMPARABLE_CORNER requiere location_type=corner")
+            for key in normalized_fields:
+                if not _finite(item.get(key)):
+                    errors.append(f"{prefix}.{key} debe ser finito en COMPARABLE_CORNER")
+            if not _finite(item.get("steering_observed_span_m")) or item.get(
+                "steering_observed_span_m", 0.0
+            ) <= 0.0:
+                errors.append(f"{prefix}.steering_observed_span_m debe ser positivo")
+            if relation is None:
+                errors.append(
+                    f"{prefix}.steering_sign_change_relation requerido en COMPARABLE_CORNER"
+                )
+        else:
+            for key in normalized_fields:
+                if item.get(key) is not None:
+                    errors.append(f"{prefix}.{key} debe ser null fuera de COMPARABLE_CORNER")
+            if relation is not None:
+                errors.append(
+                    f"{prefix}.steering_sign_change_relation debe ser null fuera de COMPARABLE_CORNER"
+                )
     return errors
 
 

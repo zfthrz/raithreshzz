@@ -14,7 +14,7 @@ from race_engineer_track_map import (
 )
 
 
-HISTORICAL_TELEMETRY_EVIDENCE_VERSION = "0.5"
+HISTORICAL_TELEMETRY_EVIDENCE_VERSION = "0.6"
 
 
 @dataclass(frozen=True)
@@ -51,6 +51,12 @@ class HistoricalTelemetryIntervalEvidence:
     steering_total_variation_delta_percent: float | None
     current_steering_sign_change_count: int | None
     reference_steering_sign_change_count: int | None
+    steering_trace_scope: str
+    steering_observed_span_m: float | None
+    current_steering_total_variation_per_100m: float | None
+    reference_steering_total_variation_per_100m: float | None
+    steering_total_variation_delta_per_100m: float | None
+    steering_sign_change_relation: str | None
 
 
 def intervals_from_track_turns(
@@ -176,6 +182,43 @@ def build_historical_interval_evidence(
         ]
         current_steering_variation = _total_variation(current_steering)
         reference_steering_variation = _total_variation(reference_steering)
+        steering_observed_span = (
+            steering_samples[-1].distance_m - steering_samples[0].distance_m
+            if len(steering_samples) >= 2
+            else None
+        )
+        comparable_corner_trace = (
+            interval.location_type == "corner"
+            and steering_observed_span is not None
+            and steering_observed_span > 0.0
+            and current_steering_variation is not None
+            and reference_steering_variation is not None
+        )
+        current_sign_changes = _sign_change_count(current_steering)
+        reference_sign_changes = _sign_change_count(reference_steering)
+        if comparable_corner_trace:
+            steering_trace_scope = "COMPARABLE_CORNER"
+            current_variation_per_100m = (
+                current_steering_variation * 100.0 / steering_observed_span
+            )
+            reference_variation_per_100m = (
+                reference_steering_variation * 100.0 / steering_observed_span
+            )
+            if current_sign_changes > reference_sign_changes:
+                sign_change_relation = "current_more"
+            elif current_sign_changes < reference_sign_changes:
+                sign_change_relation = "current_fewer"
+            else:
+                sign_change_relation = "equal"
+        else:
+            steering_trace_scope = (
+                "OBSERVATIONAL_NON_CORNER"
+                if interval.location_type != "corner" and steering_samples
+                else "UNAVAILABLE"
+            )
+            current_variation_per_100m = None
+            reference_variation_per_100m = None
+            sign_change_relation = None
         results.append(
             HistoricalTelemetryIntervalEvidence(
                 interval_id=interval.interval_id,
@@ -231,11 +274,28 @@ def build_historical_interval_evidence(
                     else None
                 ),
                 current_steering_sign_change_count=(
-                    _sign_change_count(current_steering)
+                    current_sign_changes
                 ),
                 reference_steering_sign_change_count=(
-                    _sign_change_count(reference_steering)
+                    reference_sign_changes
                 ),
+                steering_trace_scope=steering_trace_scope,
+                steering_observed_span_m=(
+                    steering_observed_span if comparable_corner_trace else None
+                ),
+                current_steering_total_variation_per_100m=(
+                    current_variation_per_100m
+                ),
+                reference_steering_total_variation_per_100m=(
+                    reference_variation_per_100m
+                ),
+                steering_total_variation_delta_per_100m=(
+                    current_variation_per_100m - reference_variation_per_100m
+                    if current_variation_per_100m is not None
+                    and reference_variation_per_100m is not None
+                    else None
+                ),
+                steering_sign_change_relation=sign_change_relation,
             )
         )
     return tuple(results)

@@ -108,7 +108,9 @@ def test_steering_signed_cancellation_does_not_hide_magnitude_difference():
         ),
     )
     comparison = build_historical_telemetry_comparison(current, reference)
-    interval = HistoricalTelemetryInterval("complex", "Complex", 0.0, 100.0)
+    interval = HistoricalTelemetryInterval(
+        "complex", "Complex", 0.0, 100.0, "corner"
+    )
 
     evidence = build_historical_interval_evidence(comparison, (interval,))[0]
 
@@ -121,6 +123,28 @@ def test_steering_signed_cancellation_does_not_hide_magnitude_difference():
     assert evidence.steering_total_variation_delta_percent == pytest.approx(20.0)
     assert evidence.current_steering_sign_change_count == 1
     assert evidence.reference_steering_sign_change_count == 1
+    assert evidence.steering_trace_scope == "COMPARABLE_CORNER"
+    assert evidence.steering_observed_span_m == pytest.approx(100.0)
+    assert evidence.current_steering_total_variation_per_100m == pytest.approx(60.0)
+    assert evidence.reference_steering_total_variation_per_100m == pytest.approx(40.0)
+    assert evidence.steering_total_variation_delta_per_100m == pytest.approx(20.0)
+    assert evidence.steering_sign_change_relation == "equal"
+
+
+def test_normalized_steering_trace_fails_closed_outside_corners():
+    comparison = comparison_with_reference_coverage(0.0, 200.0)
+    interval = HistoricalTelemetryInterval(
+        "transition", "Transition", 50.0, 150.0, "between_corners"
+    )
+
+    evidence = build_historical_interval_evidence(comparison, (interval,))[0]
+
+    assert evidence.steering_trace_scope == "OBSERVATIONAL_NON_CORNER"
+    assert evidence.steering_observed_span_m is None
+    assert evidence.current_steering_total_variation_per_100m is None
+    assert evidence.reference_steering_total_variation_per_100m is None
+    assert evidence.steering_total_variation_delta_per_100m is None
+    assert evidence.steering_sign_change_relation is None
 
 
 def test_interval_evidence_fails_closed_without_coverage():
@@ -170,7 +194,7 @@ def test_evidence_document_is_json_ready_and_has_no_action_authority():
 
     document = build_historical_interval_evidence_document(comparison, intervals)
 
-    assert document["metadata"]["version"] == "0.5"
+    assert document["metadata"]["version"] == "0.6"
     assert document["metadata"]["status"] == "FULL_COMMON_COVERAGE"
     assert document["contract"] == {
         "observational_only": True,

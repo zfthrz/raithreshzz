@@ -1463,6 +1463,12 @@ ambas trazas. Son métricas descriptivas sin umbrales: todavía no etiquetan una
 entrada como intencional o como corrección.
 La versión 0.5 conserva además el `location_type` estructurado de H5.2, evitando
 que análisis posteriores distingan curvas y transiciones mediante texto libre.
+La versión 0.6 usa ese contrato para exponer comparación descriptiva de forma
+solamente en intervalos `corner`: normaliza la variación total de cada traza por
+100 m realmente observados y declara si la vuelta actual tiene más, igual o menos
+cruces de signo que la referencia. No define un deadband, no interpreta esos
+hechos como correcciones y no modifica coaching ni ranking. Los intervalos no
+corner quedan explícitamente fuera de esa comparación normalizada.
 
 Como paso previo a cualquier ampliación futura, el coaching de sesión expone
 además un bloque `steering_coaching_shadow` v0.1. Sólo acepta direcciones Python

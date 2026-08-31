@@ -174,9 +174,16 @@ D3.x deterministic-first default and D2.9 production ranker (2026-08-25).
 | H4 historical reference | v0.2 |
 | H5.1 dual reference | v0.2 |
 | H5.2 | v0.2 profile-localized raw comparison + v0.1 validated observational LLM narrative |
-| H5.2 interval telemetry evidence | v0.5 / structured location plus steering trace-shape facts |
+| H5.2 interval telemetry evidence | v0.6 / corner-scoped normalized steering trace facts |
 | H5.3 historical coaching debrief | roadmap only / shadow complete (H5.3a-f) + Nivel 2 action policy / production gated |
 | H5.4 coaching precision | P1–P11 implemented / P10–P11 presentation-only |
+
+Historical telemetry evidence v0.6 exposes normalized steering trace facts only
+for intervals whose structured `location_type` is `corner`. Total variation is
+normalized per 100 metres of actually observed comparable samples, while the
+sign-change comparison is stored as an exact descriptive relation. This evidence
+does not define a steering centre deadband, infer driver corrections, authorize
+coaching, or alter ranking.
 
 Validated checkpoints relevant to the current working tree:
 

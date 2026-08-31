@@ -14,7 +14,7 @@ from race_engineer_track_map import (
 )
 
 
-HISTORICAL_TELEMETRY_EVIDENCE_VERSION = "0.4"
+HISTORICAL_TELEMETRY_EVIDENCE_VERSION = "0.5"
 
 
 @dataclass(frozen=True)
@@ -23,6 +23,7 @@ class HistoricalTelemetryInterval:
     label: str
     start_distance_m: float
     end_distance_m: float
+    location_type: str | None = None
 
 
 @dataclass(frozen=True)
@@ -31,6 +32,7 @@ class HistoricalTelemetryIntervalEvidence:
     label: str
     start_distance_m: float
     end_distance_m: float
+    location_type: str | None
     status: str
     coverage_ratio: float
     sample_count: int
@@ -62,6 +64,7 @@ def intervals_from_track_turns(
             label=f"T{turn.turn} — {turn.name}" if turn.name else f"T{turn.turn}",
             start_distance_m=turn.start_distance_m,
             end_distance_m=turn.end_distance_m,
+            location_type="corner",
         )
         for turn in turns
     )
@@ -78,6 +81,7 @@ def intervals_from_track_zones(
             label=zone.label,
             start_distance_m=zone.start_distance_m,
             end_distance_m=zone.end_distance_m,
+            location_type=zone.location_type,
         )
         for zone in zones
     )
@@ -178,6 +182,7 @@ def build_historical_interval_evidence(
                 label=interval.label,
                 start_distance_m=start,
                 end_distance_m=end,
+                location_type=interval.location_type,
                 status=status,
                 coverage_ratio=coverage_ratio,
                 sample_count=len(samples),

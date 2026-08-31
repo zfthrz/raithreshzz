@@ -174,7 +174,7 @@ D3.x deterministic-first default and D2.9 production ranker (2026-08-25).
 | H4 historical reference | v0.2 |
 | H5.1 dual reference | v0.2 |
 | H5.2 | v0.2 profile-localized raw comparison + v0.1 validated observational LLM narrative |
-| H5.2 interval telemetry evidence | v0.4 / signed, magnitude and trace-shape steering facts |
+| H5.2 interval telemetry evidence | v0.5 / structured location plus steering trace-shape facts |
 | H5.3 historical coaching debrief | roadmap only / shadow complete (H5.3a-f) + Nivel 2 action policy / production gated |
 | H5.4 coaching precision | P1–P11 implemented / P10–P11 presentation-only |
 
@@ -1008,7 +1008,7 @@ and localization mode are validated. Without an exact profile, H5.2 keeps an exp
 unlocalized fallback rather than guessing circuit boundaries.
 
 After a valid H5.2 raw comparison, the orchestrator may also build
-`h5_2_telemetry_evidence` v0.4. It aligns the current and historical reference laps
+`h5_2_telemetry_evidence` v0.5. It aligns the current and historical reference laps
 on their common `Lap Dist` coverage and emits deterministic interval samples for
 speed, throttle, brake, discrete gear, accumulated delta, and separate signed versus
 magnitude steering facts. The steering evidence is observational and cannot authorize

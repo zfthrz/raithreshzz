@@ -527,7 +527,7 @@ H5.2 resolves both raw DuckDBs through History, applies exact context gates, com
 independent historical/current `LapAnalyzer` sources, validates the temporal delta and
 emits observational spatial zone summaries.
 
-H5.2 interval telemetry evidence v0.4 is now integrated as the non-blocking
+H5.2 interval telemetry evidence v0.5 is now integrated as the non-blocking
 `h5_2_telemetry_evidence` orchestrator stage. It aligns both raw reference laps by
 common lap distance and records speed/throttle/brake/gear plus accumulated delta.
 Steering keeps signed direction separate from mean/peak magnitude differences and
@@ -536,6 +536,9 @@ coaching or relax the validated steering gate.
 It additionally records current/reference total steering variation, their delta
 and exact sign-change counts. These trace-shape facts remain unclassified and do
 not yet distinguish intentional input from correction.
+Version 0.5 additionally preserves the structured H5.2 `location_type`
+(`corner`, `between_corners`, `before_corner`, `after_corner`) so morphology
+consumers do not infer circuit semantics from rendered labels.
 
 Deterministic steering coaching shadow v0.1 is implemented over the existing
 Python priority findings. It reports unambiguous steering-magnitude directions

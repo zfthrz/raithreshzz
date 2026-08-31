@@ -155,7 +155,7 @@ def test_existing_turns_and_zones_keep_their_validated_bounds():
     zone_interval = intervals_from_track_zones(zones)[0]
 
     assert turn_interval == HistoricalTelemetryInterval(
-        "turn:1", "T1 — First", 10.0, 30.0
+        "turn:1", "T1 — First", 10.0, 30.0, "corner"
     )
     assert zone_interval == HistoricalTelemetryInterval(
         "zone:zone_001", "Loss 1", 40.0, 70.0
@@ -164,11 +164,13 @@ def test_existing_turns_and_zones_keep_their_validated_bounds():
 
 def test_evidence_document_is_json_ready_and_has_no_action_authority():
     comparison = comparison_with_reference_coverage(0.0, 200.0)
-    intervals = (HistoricalTelemetryInterval("T1", "Turn 1", 50.0, 150.0),)
+    intervals = (
+        HistoricalTelemetryInterval("T1", "Turn 1", 50.0, 150.0, "corner"),
+    )
 
     document = build_historical_interval_evidence_document(comparison, intervals)
 
-    assert document["metadata"]["version"] == "0.4"
+    assert document["metadata"]["version"] == "0.5"
     assert document["metadata"]["status"] == "FULL_COMMON_COVERAGE"
     assert document["contract"] == {
         "observational_only": True,

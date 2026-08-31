@@ -35,7 +35,9 @@ def test_builder_uses_existing_h5_zones_and_validates_output(tmp_path, monkeypat
         builder,
         "load_track_zones",
         lambda _path: (
-            TrackMapZone("zone_001", "T1", "loss", 50.0, 150.0, 0.2),
+            TrackMapZone(
+                "zone_001", "T1", "loss", 50.0, 150.0, 0.2, "corner"
+            ),
         ),
     )
 
@@ -68,7 +70,9 @@ def test_validator_rejects_authority_and_nonfinite_evidence(tmp_path, monkeypatc
     monkeypatch.setattr(
         builder,
         "load_track_zones",
-        lambda _path: (TrackMapZone("z", "Z", "loss", 0.0, 200.0, 0.2),),
+        lambda _path: (
+            TrackMapZone("z", "Z", "loss", 0.0, 200.0, 0.2, "corner"),
+        ),
     )
     document = builder.build_artifact(
         current,
@@ -88,7 +92,7 @@ def test_validator_rejects_authority_and_nonfinite_evidence(tmp_path, monkeypatc
 def test_validator_rejects_duplicate_interval_ids():
     document = {
         "metadata": {
-            "version": "0.4",
+            "version": "0.5",
             "status": "NO_COMMON_COVERAGE",
             "current_coverage_ratio": 0.0,
             "reference_coverage_ratio": 0.0,
@@ -104,6 +108,7 @@ def test_validator_rejects_duplicate_interval_ids():
                 "interval_id": "same",
                 "start_distance_m": 0.0,
                 "end_distance_m": 1.0,
+                "location_type": "corner",
                 "status": "UNAVAILABLE",
                 "coverage_ratio": 0.0,
                 "sample_count": 0,
@@ -125,6 +130,7 @@ def test_validator_rejects_duplicate_interval_ids():
                 "interval_id": "same",
                 "start_distance_m": 1.0,
                 "end_distance_m": 2.0,
+                "location_type": "corner",
                 "status": "UNAVAILABLE",
                 "coverage_ratio": 0.0,
                 "sample_count": 0,
@@ -165,7 +171,7 @@ def test_validator_rejects_contradictory_interval_status(
 ):
     document = {
         "metadata": {
-            "version": "0.4",
+            "version": "0.5",
             "status": "FULL_COMMON_COVERAGE",
             "current_coverage_ratio": 1.0,
             "reference_coverage_ratio": 1.0,
@@ -180,6 +186,7 @@ def test_validator_rejects_contradictory_interval_status(
             "interval_id": "zone:test",
             "start_distance_m": 10.0,
             "end_distance_m": 20.0,
+            "location_type": "corner",
             "status": status,
             "coverage_ratio": coverage,
             "sample_count": 0 if status == "UNAVAILABLE" else 2,
@@ -202,7 +209,7 @@ def test_validator_rejects_contradictory_interval_status(
     assert any(expected in error for error in validate_document(document))
 
 
-def test_validator_requires_explicit_steering_fields_in_v0_4(
+def test_validator_requires_explicit_steering_fields_in_v0_5(
     tmp_path,
     monkeypatch,
 ):
@@ -211,7 +218,9 @@ def test_validator_requires_explicit_steering_fields_in_v0_4(
     monkeypatch.setattr(
         builder,
         "load_track_zones",
-        lambda _path: (TrackMapZone("z", "Z", "loss", 0.0, 200.0, 0.2),),
+        lambda _path: (
+            TrackMapZone("z", "Z", "loss", 0.0, 200.0, 0.2, "corner"),
+        ),
     )
     document = builder.build_artifact(
         current,
@@ -224,6 +233,6 @@ def test_validator_requires_explicit_steering_fields_in_v0_4(
     )
 
     assert any(
-        "steering_magnitude_delta_mean_percent ausente en schema v0.4" in error
+        "steering_magnitude_delta_mean_percent ausente en schema v0.5" in error
         for error in validate_document(document)
     )

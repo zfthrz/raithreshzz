@@ -1461,6 +1461,8 @@ inspección observacional: no cambia el plan, el ranking ni la autoridad de coac
 La versión 0.4 añade variación total y cantidad exacta de cruces de signo para
 ambas trazas. Son métricas descriptivas sin umbrales: todavía no etiquetan una
 entrada como intencional o como corrección.
+La versión 0.5 conserva además el `location_type` estructurado de H5.2, evitando
+que análisis posteriores distingan curvas y transiciones mediante texto libre.
 
 Como paso previo a cualquier ampliación futura, el coaching de sesión expone
 además un bloque `steering_coaching_shadow` v0.1. Sólo acepta direcciones Python

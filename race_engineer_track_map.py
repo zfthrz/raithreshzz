@@ -78,6 +78,7 @@ class TrackMapZone:
     start_distance_m: float
     end_distance_m: float
     delta_change_s: float | None
+    location_type: str | None = None
 
 
 @dataclass(frozen=True)
@@ -1704,6 +1705,11 @@ def load_track_zones(path: Path | None) -> tuple[TrackMapZone, ...]:
                 start_distance_m=start,
                 end_distance_m=end,
                 delta_change_s=delta,
+                location_type=(
+                    str(location.get("location_type"))
+                    if location.get("location_type")
+                    else None
+                ),
             )
         )
     zones.sort(key=lambda zone: (zone.start_distance_m, zone.end_distance_m, zone.zone_id))

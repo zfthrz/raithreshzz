@@ -123,7 +123,7 @@ def main() -> int:
         json.dumps(document, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
-    print("RACE ENGINEER - HISTORICAL TELEMETRY EVIDENCE v0.4")
+    print("RACE ENGINEER - HISTORICAL TELEMETRY EVIDENCE v0.5")
     print(f"Status: {document['metadata']['status']}")
     print(f"Intervals: {len(document['interval_evidence'])}")
     print(f"Output: {args.output.resolve()}")

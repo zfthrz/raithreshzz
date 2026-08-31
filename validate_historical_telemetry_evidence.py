@@ -1,4 +1,4 @@
-"""Validate Historical Telemetry Evidence v0.4 artifacts."""
+"""Validate Historical Telemetry Evidence v0.5 artifacts."""
 
 from __future__ import annotations
 
@@ -22,8 +22,8 @@ def validate_document(document: object) -> list[str]:
     if not isinstance(metadata, dict):
         errors.append("metadata ausente o inválido")
     else:
-        if metadata.get("version") != "0.4":
-            errors.append("metadata.version debe ser 0.4")
+        if metadata.get("version") != "0.5":
+            errors.append("metadata.version debe ser 0.5")
         if metadata.get("status") not in {
             "FULL_COMMON_COVERAGE", "PARTIAL_COMMON_COVERAGE", "NO_COMMON_COVERAGE"
         }:
@@ -74,6 +74,14 @@ def validate_document(document: object) -> list[str]:
             errors.append(f"{prefix} tiene límites inválidos")
         if item.get("status") not in {"FULL_COVERAGE", "PARTIAL_COVERAGE", "UNAVAILABLE"}:
             errors.append(f"{prefix}.status inválido")
+        location_type = item.get("location_type")
+        if location_type not in {
+            "corner",
+            "between_corners",
+            "before_corner",
+            "after_corner",
+        }:
+            errors.append(f"{prefix}.location_type inválido")
         status = item.get("status")
         coverage = item.get("coverage_ratio")
         if not _finite(coverage) or not 0.0 <= coverage <= 1.0:
@@ -106,7 +114,7 @@ def validate_document(document: object) -> list[str]:
             )
         for key in evidence_fields:
             if key not in item:
-                errors.append(f"{prefix}.{key} ausente en schema v0.4")
+                errors.append(f"{prefix}.{key} ausente en schema v0.5")
                 continue
             value = item.get(key)
             if value is not None and not _finite(value):
@@ -118,7 +126,7 @@ def validate_document(document: object) -> list[str]:
             "reference_steering_sign_change_count",
         ):
             if key not in item:
-                errors.append(f"{prefix}.{key} ausente en schema v0.4")
+                errors.append(f"{prefix}.{key} ausente en schema v0.5")
                 continue
             value = item.get(key)
             if value is not None and (

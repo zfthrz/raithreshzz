@@ -781,14 +781,20 @@ def test_h5_2_zones_are_loaded_in_track_order_and_mapped_by_lap_distance(
                             "start_distance": 100,
                             "end_distance": 180,
                             "delta_change": -0.18,
-                            "location": {"label": "T2"},
+                            "location": {
+                                "label": "T2",
+                                "location_type": "between_corners",
+                            },
                         },
                         {
                             "type": "loss",
                             "start_distance": 20,
                             "end_distance": 80,
                             "delta_change": 0.24,
-                            "location": {"label": "T1"},
+                            "location": {
+                                "label": "T1",
+                                "location_type": "corner",
+                            },
                         },
                     ]
                 }
@@ -806,6 +812,8 @@ def test_h5_2_zones_are_loaded_in_track_order_and_mapped_by_lap_distance(
     assert [zone.label for zone in zones] == ["T1", "T2"]
     assert zones[0].kind == "loss"
     assert zones[1].kind == "gain"
+    assert zones[0].location_type == "corner"
+    assert zones[1].location_type == "between_corners"
     assert zone_for_distance(zones, 50).label == "T1"
     assert zone_for_distance(zones, 90) is None
     assert zone_point_ranges(points, zones[0]) == ((1, 3),)

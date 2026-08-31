@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import math
 from bisect import bisect_right
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any, Callable
 
@@ -79,6 +79,10 @@ class TrackMapZone:
     end_distance_m: float
     delta_change_s: float | None
     location_type: str | None = None
+    steering_current_variation_per_100m: float | None = None
+    steering_reference_variation_per_100m: float | None = None
+    steering_current_sign_change_count: int | None = None
+    steering_reference_sign_change_count: int | None = None
 
 
 @dataclass(frozen=True)
@@ -1714,6 +1718,84 @@ def load_track_zones(path: Path | None) -> tuple[TrackMapZone, ...]:
         )
     zones.sort(key=lambda zone: (zone.start_distance_m, zone.end_distance_m, zone.zone_id))
     return tuple(zones)
+
+
+def enrich_track_zones_with_historical_steering(
+    zones: tuple[TrackMapZone, ...],
+    historical_section_path: Path | None,
+) -> tuple[TrackMapZone, ...]:
+    """Attach validated H5.3d v0.2 corner facts without changing zone identity."""
+
+    if historical_section_path is None or not zones:
+        return zones
+    source = Path(historical_section_path).expanduser().resolve()
+    payload = json.loads(source.read_text(encoding="utf-8"))
+    metadata = payload.get("metadata")
+    authority = payload.get("coaching_authority")
+    values = payload.get("zones")
+    if not isinstance(metadata, dict) or metadata.get("render_version") != "0.2":
+        raise ValueError("La sección H5.3 no usa render_version 0.2.")
+    if (
+        not isinstance(authority, dict)
+        or authority.get("historical_actions_authorized") is not False
+    ):
+        raise ValueError("La sección H5.3 no conserva autoridad observacional.")
+    if not isinstance(values, list) or len(values) != len(zones):
+        raise ValueError("Las zonas H5.3 no coinciden con H5.2.")
+
+    enriched = []
+    for zone, value in zip(zones, values):
+        if not isinstance(value, dict):
+            raise ValueError("La sección H5.3 contiene una zona inválida.")
+        try:
+            start = float(value.get("start_distance"))
+            end = float(value.get("end_distance"))
+        except (TypeError, ValueError) as exc:
+            raise ValueError("La sección H5.3 contiene límites inválidos.") from exc
+        if not (
+            math.isclose(start, zone.start_distance_m)
+            and math.isclose(end, zone.end_distance_m)
+        ):
+            raise ValueError("Los límites H5.3 no coinciden físicamente con H5.2.")
+        observation = value.get("steering_trace_observation")
+        if not isinstance(observation, dict):
+            enriched.append(zone)
+            continue
+        if (
+            observation.get("scope") != "COMPARABLE_CORNER"
+            or observation.get("observational_only") is not True
+            or observation.get("action_authorized") is not False
+            or observation.get("interpretation_authorized") is not False
+        ):
+            raise ValueError("La observación de volante H5.3 no es read-only.")
+        try:
+            current_variation = float(
+                observation["current_total_variation_per_100m"]
+            )
+            reference_variation = float(
+                observation["reference_total_variation_per_100m"]
+            )
+            current_signs = int(observation["current_sign_change_count"])
+            reference_signs = int(observation["reference_sign_change_count"])
+        except (KeyError, TypeError, ValueError) as exc:
+            raise ValueError("La observación de volante H5.3 está incompleta.") from exc
+        if (
+            not math.isfinite(current_variation)
+            or not math.isfinite(reference_variation)
+            or current_variation < 0.0
+            or reference_variation < 0.0
+            or current_signs < 0
+            or reference_signs < 0
+        ):
+            raise ValueError("La observación de volante H5.3 contiene valores inválidos.")
+        enriched.append(replace(
+            zone,
+            steering_current_variation_per_100m=current_variation,
+            steering_reference_variation_per_100m=reference_variation,
+            steering_current_sign_change_count=current_signs,
+            steering_reference_sign_change_count=reference_signs,
+        ))
+    return tuple(enriched)
 
 
 def load_track_profile(

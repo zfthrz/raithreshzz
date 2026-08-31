@@ -67,6 +67,7 @@ from race_engineer_track_map import (
     build_track_telemetry_chart,
     fit_track_points,
     focus_track_canvas_view,
+    enrich_track_zones_with_historical_steering,
     load_track_map,
     list_track_map_laps,
     load_track_profile,
@@ -99,7 +100,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.48"
+GUI_VERSION = "1.49"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 STATE_REFRESH_INTERVAL_MS = 5_000
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -195,6 +196,27 @@ SESSION_CHANGE_STATUS_LABELS = {
     "NEW": "Nuevo",
     "RESOLVED": "Ya no aparece",
 }
+
+
+def historical_steering_zone_text(zone: TrackMapZone) -> str:
+    """Render validated corner morphology without turning it into coaching."""
+
+    values = (
+        zone.steering_current_variation_per_100m,
+        zone.steering_reference_variation_per_100m,
+        zone.steering_current_sign_change_count,
+        zone.steering_reference_sign_change_count,
+    )
+    if any(value is None for value in values):
+        return ""
+    return (
+        "Volante histórico (observacional): variación actual/referencia "
+        f"{zone.steering_current_variation_per_100m:.1f}/"
+        f"{zone.steering_reference_variation_per_100m:.1f} p.p./100 m · "
+        "cruces de signo "
+        f"{zone.steering_current_sign_change_count}/"
+        f"{zone.steering_reference_sign_change_count}"
+    )
 
 
 def compact_session_change_rows(view, *, max_groups: int = 3, max_changes: int = 3):
@@ -5357,6 +5379,16 @@ class RaceEngineerApp:
             except (OSError, UnicodeDecodeError, ValueError) as exc:
                 self.current_track_zones = ()
                 layer_errors.append(f"H5.2: {exc}")
+            if self.current_track_zones and record.historical_path is not None:
+                try:
+                    self.current_track_zones = (
+                        enrich_track_zones_with_historical_steering(
+                            self.current_track_zones,
+                            record.historical_path,
+                        )
+                    )
+                except (OSError, UnicodeDecodeError, ValueError) as exc:
+                    layer_errors.append(f"H5.3 volante: {exc}")
             try:
                 priority_path = (
                     record.debrief_path if record.has_validated_debrief else None
@@ -5400,6 +5432,14 @@ class RaceEngineerApp:
                 except (OSError, UnicodeDecodeError, ValueError) as exc:
                     zones = ()
                     layer_errors = [f"H5.2: {exc}"]
+                if zones and record.historical_path is not None:
+                    try:
+                        zones = enrich_track_zones_with_historical_steering(
+                            zones,
+                            record.historical_path,
+                        )
+                    except (OSError, UnicodeDecodeError, ValueError) as exc:
+                        layer_errors.append(f"H5.3 volante: {exc}")
                 try:
                     priority_path = (
                         record.debrief_path if record.has_validated_debrief else None
@@ -6001,6 +6041,13 @@ class RaceEngineerApp:
                 zone.end_distance_m,
                 point,
             )
+            steering_context = historical_steering_zone_text(zone)
+            if steering_context:
+                self.track_map_telemetry_status.set(
+                    self.track_map_telemetry_status.get()
+                    + "\n"
+                    + steering_context
+                )
         self._render_track_map()
 
     def _set_interval_telemetry(

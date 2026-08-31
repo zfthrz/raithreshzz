@@ -154,7 +154,7 @@ D3.x deterministic-first default and D2.9 production ranker (2026-08-25).
 | Component | Current operational baseline |
 |---|---|
 | `race_engineer.py` | orchestrator v0.3 |
-| `race_engineer_gui.py` | v1.48 / lazy read-only History statistics |
+| `race_engineer_gui.py` | v1.49 / historical steering context in telemetry zones |
 | `analyze_telemetry.py` | v3.8 + Objective Python v6 |
 | Brake point | 2.1 / schema 2.1 |
 | Throttle point | 1.2.1 / schema 1.2 |
@@ -1636,6 +1636,11 @@ as `Oreca 07`. Other classes fail closed to the LMU-recorded entry because Histo
 does not yet own a canonical model field. DuckDB opens read-only in a background
 worker and an mtime/size fingerprint avoids repeat work. See
 `docs/RACE_ENGINEER_GUI_V1_48.md`.
+
+GUI v1.49 enriches H5.2 map zones with H5.3d v0.2 steering morphology when their
+physical bounds match exactly. Selecting a comparable corner shows current/reference
+variation per 100 m and exact sign-change counts below the telemetry map. Invalid or
+missing H5.3 context is ignored without hiding the base H5.2 zones.
 
 GUI v1.18 integra el scheduler con el catálogo abierto mediante un fingerprint
 read-only de los `state.json`. Cada cinco segundos comprueba ruta, `mtime_ns` y

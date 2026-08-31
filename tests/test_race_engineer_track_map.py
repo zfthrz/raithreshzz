@@ -10,10 +10,12 @@ import pytest
 
 from race_engineer_track_map import (
     TrackMapPoint,
+    TrackMapZone,
     build_historical_telemetry_comparison,
     build_track_telemetry_chart,
     canvas_polyline_chunks,
     fit_track_points,
+    enrich_track_zones_with_historical_steering,
     focus_track_canvas_view,
     historical_telemetry_sample_at_distance,
     telemetry_delta_change_spans,
@@ -1008,6 +1010,50 @@ def test_validated_next_stint_priorities_map_to_gps_intervals(tmp_path: Path):
     assert priority_for_distance(priorities, 400) is None
     assert zone_point_ranges(points, priorities[0]) == ((1, 3),)
     assert zone_point_ranges(points, priorities[1]) == ((5, 7),)
+
+
+def test_enriches_track_zone_with_read_only_historical_steering(tmp_path: Path):
+    zones = (TrackMapZone("zone_001", "T1", "loss", 100.0, 200.0, 0.2, "corner"),)
+    section = tmp_path / "historical_section.json"
+    section.write_text(json.dumps({
+        "metadata": {"render_version": "0.2"},
+        "coaching_authority": {"historical_actions_authorized": False},
+        "zones": [{
+            "start_distance": 100.0,
+            "end_distance": 200.0,
+            "steering_trace_observation": {
+                "scope": "COMPARABLE_CORNER",
+                "current_total_variation_per_100m": 140.0,
+                "reference_total_variation_per_100m": 100.0,
+                "current_sign_change_count": 2,
+                "reference_sign_change_count": 1,
+                "observational_only": True,
+                "action_authorized": False,
+                "interpretation_authorized": False,
+            },
+        }],
+    }), encoding="utf-8")
+
+    enriched = enrich_track_zones_with_historical_steering(zones, section)
+
+    assert zones[0].steering_current_variation_per_100m is None
+    assert enriched[0].steering_current_variation_per_100m == 140.0
+    assert enriched[0].steering_reference_variation_per_100m == 100.0
+    assert enriched[0].steering_current_sign_change_count == 2
+    assert enriched[0].steering_reference_sign_change_count == 1
+
+
+def test_historical_steering_enrichment_rejects_different_bounds(tmp_path: Path):
+    zones = (TrackMapZone("zone_001", "T1", "loss", 100.0, 200.0, 0.2, "corner"),)
+    section = tmp_path / "historical_section.json"
+    section.write_text(json.dumps({
+        "metadata": {"render_version": "0.2"},
+        "coaching_authority": {"historical_actions_authorized": False},
+        "zones": [{"start_distance": 101.0, "end_distance": 200.0}],
+    }), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="coinciden físicamente"):
+        enrich_track_zones_with_historical_steering(zones, section)
 
 
 @pytest.mark.parametrize(

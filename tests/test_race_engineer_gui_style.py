@@ -16,6 +16,7 @@ from race_engineer_gui import (
     calibration_status_tooltip,
     file_fingerprint,
     format_comparison_columns,
+    historical_steering_zone_text,
     session_status_color,
     session_status_tooltip,
     session_change_rows,
@@ -24,7 +25,32 @@ from race_engineer_gui import (
     status_wraplength,
     telemetry_canvas_ready,
 )
-from race_engineer_track_map import TrackMapPoint
+from race_engineer_track_map import TrackMapPoint, TrackMapZone
+
+
+def test_historical_steering_zone_text_is_observational_and_exact():
+    zone = TrackMapZone(
+        "zone_001",
+        "T1",
+        "loss",
+        100.0,
+        200.0,
+        0.2,
+        "corner",
+        140.0,
+        100.0,
+        2,
+        1,
+    )
+
+    text = historical_steering_zone_text(zone)
+
+    assert "observacional" in text
+    assert "140.0/100.0 p.p./100 m" in text
+    assert "cruces de signo 2/1" in text
+    assert historical_steering_zone_text(
+        TrackMapZone("zone_002", "T2", "gain", 200.0, 250.0, -0.1)
+    ) == ""
 
 
 def test_telemetry_pointer_selects_nearest_map_point_on_visible_axis():

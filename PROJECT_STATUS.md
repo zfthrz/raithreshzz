@@ -527,12 +527,25 @@ H5.2 resolves both raw DuckDBs through History, applies exact context gates, com
 independent historical/current `LapAnalyzer` sources, validates the temporal delta and
 emits observational spatial zone summaries.
 
-H5.2 interval telemetry evidence v0.2 is now integrated as the non-blocking
+H5.2 interval telemetry evidence v0.3 is now integrated as the non-blocking
 `h5_2_telemetry_evidence` orchestrator stage. It aligns both raw reference laps by
-common lap distance, records speed/throttle/brake/gear, signed steering and
-accumulated delta for validated H5.2 intervals, validates the artifact and supports
-signature-based reuse. Steering remains observational: it cannot authorize coaching
-or relax the validated steering gate.
+common lap distance and records speed/throttle/brake/gear plus accumulated delta.
+Steering keeps signed direction separate from mean/peak magnitude differences and
+declares its comparable sample count. It remains observational: it cannot authorize
+coaching or relax the validated steering gate.
+
+Deterministic steering coaching shadow v0.1 is implemented over the existing
+Python priority findings. It reports unambiguous steering-magnitude directions
+and the corresponding action toward the reference without consulting LLM text.
+The output is explicitly observational, does not mutate the next-stint plan or
+ranking, and cannot authorize steering coaching. Mixed directions or findings
+without a valid physical interval are withheld with reason codes.
+Repeated exact-direction regions form the narrower candidate set. At most one
+secondary candidate is selected per session using the existing recurrence-region
+order; no new score or threshold is introduced and the selection remains shadow.
+Steering coaching policy v1.0 can now attach that selection as a tier-5 secondary
+cue to an already-existing plan zone only when a cue slot is free. It cannot
+create a zone, displace two stronger cues, alter ranking or claim causality.
 The real Spa checkpoint passed end to end with 27 fully covered zones and one partial
 zone. This remains observational and does not authorize historical coaching.
 

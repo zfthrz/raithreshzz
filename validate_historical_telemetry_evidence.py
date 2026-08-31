@@ -1,4 +1,4 @@
-"""Validate Historical Telemetry Evidence v0.2 artifacts."""
+"""Validate Historical Telemetry Evidence v0.3 artifacts."""
 
 from __future__ import annotations
 
@@ -22,8 +22,8 @@ def validate_document(document: object) -> list[str]:
     if not isinstance(metadata, dict):
         errors.append("metadata ausente o inválido")
     else:
-        if metadata.get("version") != "0.2":
-            errors.append("metadata.version debe ser 0.2")
+        if metadata.get("version") != "0.3":
+            errors.append("metadata.version debe ser 0.3")
         if metadata.get("status") not in {
             "FULL_COMMON_COVERAGE", "PARTIAL_COMMON_COVERAGE", "NO_COMMON_COVERAGE"
         }:
@@ -44,6 +44,15 @@ def validate_document(document: object) -> list[str]:
         errors.append("interval_evidence debe ser una lista")
         return errors
     seen_ids = set()
+    evidence_fields = (
+        "delta_change_s",
+        "speed_delta_mean_kmh",
+        "throttle_delta_mean_percent",
+        "brake_delta_mean_percent",
+        "steering_signed_delta_mean_percent",
+        "steering_magnitude_delta_mean_percent",
+        "steering_magnitude_delta_peak_percent",
+    )
     for index, item in enumerate(intervals):
         prefix = f"interval_evidence[{index}]"
         if not isinstance(item, dict):
@@ -77,11 +86,25 @@ def validate_document(document: object) -> list[str]:
         count = item.get("sample_count")
         if not isinstance(count, int) or isinstance(count, bool) or count < 0:
             errors.append(f"{prefix}.sample_count inválido")
-        for key in (
-            "delta_change_s", "speed_delta_mean_kmh",
-            "throttle_delta_mean_percent", "brake_delta_mean_percent",
-            "steering_delta_mean_percent",
+        steering_count = item.get("steering_comparable_sample_count")
+        if (
+            not isinstance(steering_count, int)
+            or isinstance(steering_count, bool)
+            or steering_count < 0
+            or (isinstance(count, int) and steering_count > count)
         ):
+            errors.append(
+                f"{prefix}.steering_comparable_sample_count inválido"
+            )
+        elif status == "UNAVAILABLE" and steering_count != 0:
+            errors.append(
+                f"{prefix}.steering_comparable_sample_count debe ser 0 "
+                "cuando UNAVAILABLE"
+            )
+        for key in evidence_fields:
+            if key not in item:
+                errors.append(f"{prefix}.{key} ausente en schema v0.3")
+                continue
             value = item.get(key)
             if value is not None and not _finite(value):
                 errors.append(f"{prefix}.{key} debe ser finito o null")

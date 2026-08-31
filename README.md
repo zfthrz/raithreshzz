@@ -1258,6 +1258,7 @@ H4 historical benchmark selector
 H5.1 dual reference
 H5.2 raw cross-session comparison     <- disponible en modo observacional
 H5.2 interval telemetry evidence      <- determinista, observacional y validada
+Steering coaching shadow              <- dirección Python, sin autoridad ni efecto en el plan
 H5.2 LLM historical narrative         <- observacional y validada
 H5.3 historical coaching debrief       <- roadmap productivo; H5.3a-f implementadas en shadow
 ```
@@ -1452,10 +1453,24 @@ H5.2 v0.2 compara ambas vueltas desde sus DuckDB raw cuando están disponibles. 
 Cuando H5.2 dispone de ambos DuckDB, el orquestador genera además
 `h5_2_telemetry_evidence`: una evidencia validada por intervalo que alinea ambas
 vueltas sobre la cobertura común de `Lap Dist` y conserva velocidad, acelerador,
-freno, marcha discreta, volante firmado y delta acumulado. El volante permanece
+freno, marcha discreta, delta acumulado y volante separado en dirección firmada y
+diferencias media/máxima de magnitud. El volante permanece
 observacional y no autoriza coaching ni relaja su gate validado. Se reutiliza por firma, falla de forma no
 bloqueante y queda bajo `data/generated/h5_2_telemetry_evidence/`. Es material de
 inspección observacional: no cambia el plan, el ranking ni la autoridad de coaching.
+
+Como paso previo a cualquier ampliación futura, el coaching de sesión expone
+además un bloque `steering_coaching_shadow` v0.1. Sólo acepta direcciones Python
+no ambiguas dentro de intervalos físicos válidos y traduce el dato a una acción
+hacia la referencia. No usa texto del LLM; los casos ambiguos quedan
+retenidos con motivos explícitos.
+Las coincidencias repetidas de dirección se filtran mediante las regiones de
+recurrencia existentes y se conserva como máximo un candidato secundario por
+sesión. El orden ya calculado por Python se reutiliza sin introducir otra
+puntuación ni umbrales. La policy v1.0 sólo lo añade al debrief como cue
+secundario tier 5 si coincide con una zona existente y queda libre uno de sus dos
+slots. Nunca crea una prioridad sólo de volante, desplaza freno/acelerador,
+cambia el ranking ni afirma causalidad.
 
 La GUI v1.40 conserva la alineación seleccionada a 10/20/50 Hz, pero reduce el
 trazado a los extremos temporales relevantes por píxel para no saturar Tk a 50 Hz.

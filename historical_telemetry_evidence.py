@@ -14,7 +14,7 @@ from race_engineer_track_map import (
 )
 
 
-HISTORICAL_TELEMETRY_EVIDENCE_VERSION = "0.2"
+HISTORICAL_TELEMETRY_EVIDENCE_VERSION = "0.3"
 
 
 @dataclass(frozen=True)
@@ -40,7 +40,10 @@ class HistoricalTelemetryIntervalEvidence:
     speed_delta_mean_kmh: float | None
     throttle_delta_mean_percent: float | None
     brake_delta_mean_percent: float | None
-    steering_delta_mean_percent: float | None
+    steering_signed_delta_mean_percent: float | None
+    steering_magnitude_delta_mean_percent: float | None
+    steering_magnitude_delta_peak_percent: float | None
+    steering_comparable_sample_count: int
 
 
 def intervals_from_track_turns(
@@ -123,6 +126,26 @@ def build_historical_interval_evidence(
             and covered_end is not None
             else None
         )
+        steering_samples = tuple(
+            sample
+            for sample in samples
+            if sample.current_steering_percent is not None
+            and sample.reference_steering_percent is not None
+        )
+        steering_magnitude_deltas = [
+            abs(sample.current_steering_percent)
+            - abs(sample.reference_steering_percent)
+            for sample in steering_samples
+        ]
+        steering_peak_delta = (
+            max(abs(sample.current_steering_percent) for sample in steering_samples)
+            - max(
+                abs(sample.reference_steering_percent)
+                for sample in steering_samples
+            )
+            if steering_samples
+            else None
+        )
         results.append(
             HistoricalTelemetryIntervalEvidence(
                 interval_id=interval.interval_id,
@@ -154,11 +177,16 @@ def build_historical_interval_evidence(
                     for sample in samples
                     if sample.brake_delta_percent is not None
                 ]),
-                steering_delta_mean_percent=_mean([
+                steering_signed_delta_mean_percent=_mean([
                     sample.steering_delta_percent
-                    for sample in samples
+                    for sample in steering_samples
                     if sample.steering_delta_percent is not None
                 ]),
+                steering_magnitude_delta_mean_percent=_mean(
+                    steering_magnitude_deltas
+                ),
+                steering_magnitude_delta_peak_percent=steering_peak_delta,
+                steering_comparable_sample_count=len(steering_samples),
             )
         )
     return tuple(results)

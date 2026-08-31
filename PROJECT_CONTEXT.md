@@ -174,7 +174,7 @@ D3.x deterministic-first default and D2.9 production ranker (2026-08-25).
 | H4 historical reference | v0.2 |
 | H5.1 dual reference | v0.2 |
 | H5.2 | v0.2 profile-localized raw comparison + v0.1 validated observational LLM narrative |
-| H5.2 interval telemetry evidence | v0.2 / deterministic observational samples including signed steering |
+| H5.2 interval telemetry evidence | v0.3 / deterministic observational samples with signed and magnitude steering facts |
 | H5.3 historical coaching debrief | roadmap only / shadow complete (H5.3a-f) + Nivel 2 action policy / production gated |
 | H5.4 coaching precision | P1–P11 implemented / P10–P11 presentation-only |
 
@@ -1008,15 +1008,31 @@ and localization mode are validated. Without an exact profile, H5.2 keeps an exp
 unlocalized fallback rather than guessing circuit boundaries.
 
 After a valid H5.2 raw comparison, the orchestrator may also build
-`h5_2_telemetry_evidence` v0.2. It aligns the current and historical reference laps
+`h5_2_telemetry_evidence` v0.3. It aligns the current and historical reference laps
 on their common `Lap Dist` coverage and emits deterministic interval samples for
-speed, throttle, brake, discrete gear, signed steering and accumulated delta. The
-steering evidence is observational and cannot authorize steering coaching or relax
-its existing gate. The artifact is written
+speed, throttle, brake, discrete gear, accumulated delta, and separate signed versus
+magnitude steering facts. The steering evidence is observational and cannot authorize
+steering coaching or relax its existing gate. The artifact is written
 under `data/generated/h5_2_telemetry_evidence/<session>/`, has its own validator and
 reuse signature, and fails non-blocking so H5.3 and the normal debrief can continue.
 It is strictly observational: it does not modify the H5.2 zone summaries, authorize
 historical actions, change ranking or replace `session_reference`.
+
+Session coaching also exposes `steering_coaching_shadow` v0.1. It derives only
+from Python priority findings that already contain a `steering_magnitude`
+channel, an unambiguous Python direction and a valid physical interval. It
+records the corresponding adjustment toward the reference, but remains
+observational: it does not call an LLM, mutate `next_stint_plan`, affect ranking
+or authorize a steering instruction. Mixed directions and missing/invalid
+intervals fail closed with explicit reason codes.
+Repeated candidates reuse the existing recurrence-region ordering and exact
+direction agreement. The shadow exposes at most one selected secondary
+candidate per session; this selection still has no driver-facing authority.
+The separate deterministic steering policy v1.0 may promote that single
+candidate as a secondary cue only when it overlaps an existing plan zone with
+fewer than two stronger cues. It never creates a steering-only plan item,
+displaces brake/throttle/profile cues, changes ranking or makes a causal claim.
+This is the only path that can turn the shadow selection into visible coaching.
 
 At v0.2 it deliberately keeps:
 

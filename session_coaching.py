@@ -53,8 +53,10 @@ from session_coaching_recurrence import (
     _sanitize_recurrence_regions,
 )
 from session_coaching_reference import _attach_reference_action_profiles
+from steering_coaching_shadow import build_steering_coaching_shadow
+from steering_coaching_policy import attach_repeated_steering_secondary
 
-SESSION_ACTIONABILITY_POLICY_VERSION = "1.7"
+SESSION_ACTIONABILITY_POLICY_VERSION = "1.8"
 
 THROTTLE_ONSET_PATTERN_REFERENCE_TOLERANCE_M = 12.0
 
@@ -754,6 +756,11 @@ def build_session_coaching_facts(
         source_data,
     )
 
+    steering_coaching_shadow = build_steering_coaching_shadow(
+        priority_findings,
+        recurrence_regions,
+    )
+
     for item in next_stint_plan:
         if not isinstance(item, dict):
             continue
@@ -763,6 +770,20 @@ def build_session_coaching_facts(
             item["driver_cues"],
         )
         item["actionable_cue_count"] = len(item["driver_cues"])
+
+    steering_secondary_promotion = attach_repeated_steering_secondary(
+        next_stint_plan,
+        steering_coaching_shadow.get("selected_secondary_candidate"),
+        max_cues=2,
+    )
+    if steering_secondary_promotion.get("plan_mutated"):
+        for item in next_stint_plan:
+            if not isinstance(item, dict):
+                continue
+            item["driver_cues"] = enrich_cues_with_deterministic_priority(
+                item.get("driver_cues", []) or []
+            )
+            item["actionable_cue_count"] = len(item["driver_cues"])
 
     # Deterministic semantic dedupe of already-authorized physical actions.
     # Presentation/ranking layers below must see the compacted plan.
@@ -816,6 +837,10 @@ def build_session_coaching_facts(
             next_stint_plan_presentation,
         "next_stint_focus":
             next_stint_focus,
+        "steering_coaching_shadow":
+            steering_coaching_shadow,
+        "steering_secondary_promotion":
+            steering_secondary_promotion,
         "session_priority_policy": {
             "version":
                 SESSION_PRIORITY_POLICY_VERSION,
@@ -857,7 +882,9 @@ def build_session_coaching_facts(
             "generic_channel_difference_policy":
                 "qualitative_reference_alignment_for_unambiguous_brake_throttle; steering_separate_validated_path",
             "steering_target_policy":
-                "validated_llm_direct_or_secondary_low_priority_no_causal_claim",
+                "validated_llm_or_repeated_python_secondary_no_causal_claim",
+            "steering_shadow_policy":
+                "python_direction_observational_only_no_plan_or_ranking_effect",
             "driver_cue_limit_per_zone":
                 2,
             "reference_action_profile_source": {

@@ -708,6 +708,7 @@ _PRIORITY_KINDS = {
     "reference_action_profile": 3,
     "qualitative_reference_level": 4,
     "validated_llm_steering": 5,
+    "repeated_steering_secondary": 5,
 }
 
 
@@ -881,7 +882,7 @@ def _derive_action_family(cue: dict) -> str:
       spatial_points throttle   -> THROTTLE_TIMING
       reference_action_profile brake  -> BRAKE_PROFILE
       reference_action_profile throttle -> THROTTLE_PROFILE
-      validated_llm_steering      -> STEERING
+      validated_llm_steering / repeated_steering_secondary -> STEERING
       otherwise                   -> OTHER_AUTHORIZED
 
     Speed is context only and never creates an action family.
@@ -904,7 +905,7 @@ def _derive_action_family(cue: dict) -> str:
         return "BRAKE_PROFILE" if channel == "brake" else "THROTTLE_PROFILE"
     if kind == "combined_spatial_sequence":
         return "BRAKE_THROTTLE_SEQUENCE"
-    if kind == "validated_llm_steering":
+    if kind in {"validated_llm_steering", "repeated_steering_secondary"}:
         return "STEERING"
 
     return "OTHER_AUTHORIZED"

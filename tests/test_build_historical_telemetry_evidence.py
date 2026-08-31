@@ -88,7 +88,7 @@ def test_validator_rejects_authority_and_nonfinite_evidence(tmp_path, monkeypatc
 def test_validator_rejects_duplicate_interval_ids():
     document = {
         "metadata": {
-            "version": "0.2",
+            "version": "0.3",
             "status": "NO_COMMON_COVERAGE",
             "current_coverage_ratio": 0.0,
             "reference_coverage_ratio": 0.0,
@@ -111,7 +111,10 @@ def test_validator_rejects_duplicate_interval_ids():
                 "speed_delta_mean_kmh": None,
                 "throttle_delta_mean_percent": None,
                 "brake_delta_mean_percent": None,
-                "steering_delta_mean_percent": None,
+                "steering_signed_delta_mean_percent": None,
+                "steering_magnitude_delta_mean_percent": None,
+                "steering_magnitude_delta_peak_percent": None,
+                "steering_comparable_sample_count": 0,
             },
             {
                 "interval_id": "same",
@@ -124,7 +127,10 @@ def test_validator_rejects_duplicate_interval_ids():
                 "speed_delta_mean_kmh": None,
                 "throttle_delta_mean_percent": None,
                 "brake_delta_mean_percent": None,
-                "steering_delta_mean_percent": None,
+                "steering_signed_delta_mean_percent": None,
+                "steering_magnitude_delta_mean_percent": None,
+                "steering_magnitude_delta_peak_percent": None,
+                "steering_comparable_sample_count": 0,
             },
         ],
     }
@@ -149,7 +155,7 @@ def test_validator_rejects_contradictory_interval_status(
 ):
     document = {
         "metadata": {
-            "version": "0.2",
+            "version": "0.3",
             "status": "FULL_COMMON_COVERAGE",
             "current_coverage_ratio": 1.0,
             "reference_coverage_ratio": 1.0,
@@ -171,8 +177,38 @@ def test_validator_rejects_contradictory_interval_status(
             "speed_delta_mean_kmh": None,
             "throttle_delta_mean_percent": None,
             "brake_delta_mean_percent": None,
-            "steering_delta_mean_percent": None,
+            "steering_signed_delta_mean_percent": None,
+            "steering_magnitude_delta_mean_percent": None,
+            "steering_magnitude_delta_peak_percent": None,
+            "steering_comparable_sample_count": 0,
         }],
     }
 
     assert any(expected in error for error in validate_document(document))
+
+
+def test_validator_requires_explicit_steering_fields_in_v0_3(
+    tmp_path,
+    monkeypatch,
+):
+    current = track_map(tmp_path / "current.duckdb", speed=180.0)
+    reference = track_map(tmp_path / "reference.duckdb", speed=200.0)
+    monkeypatch.setattr(
+        builder,
+        "load_track_zones",
+        lambda _path: (TrackMapZone("z", "Z", "loss", 0.0, 200.0, 0.2),),
+    )
+    document = builder.build_artifact(
+        current,
+        reference,
+        track_profiles_dir=tmp_path,
+        zones_path=tmp_path / "zones.json",
+    )
+    document["interval_evidence"][0].pop(
+        "steering_magnitude_delta_mean_percent"
+    )
+
+    assert any(
+        "steering_magnitude_delta_mean_percent ausente en schema v0.3" in error
+        for error in validate_document(document)
+    )

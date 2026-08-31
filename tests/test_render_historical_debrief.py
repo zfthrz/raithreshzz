@@ -99,6 +99,37 @@ def _write_sources(tmp_path: Path, localization_mode: str = "validated_track_pro
     return dual_path, comparison_path
 
 
+def _write_telemetry_evidence(tmp_path: Path, *, start_distance: float = 100.0):
+    path = tmp_path / "interval_evidence_v0_1.json"
+    path.write_text(
+        json.dumps({
+            "metadata": {"version": "0.6"},
+            "contract": {
+                "observational_only": True,
+                "affects_next_stint_plan": False,
+                "historical_actions_authorized": False,
+                "llm_called": False,
+            },
+            "interval_evidence": [{
+                "interval_id": "zone:zone_001",
+                "start_distance_m": start_distance,
+                "end_distance_m": 200.0,
+                "location_type": "corner",
+                "steering_trace_scope": "COMPARABLE_CORNER",
+                "steering_observed_span_m": 98.0,
+                "current_steering_total_variation_per_100m": 140.0,
+                "reference_steering_total_variation_per_100m": 100.0,
+                "steering_total_variation_delta_per_100m": 40.0,
+                "steering_sign_change_relation": "current_more",
+                "current_steering_sign_change_count": 2,
+                "reference_steering_sign_change_count": 1,
+            }],
+        }, ensure_ascii=False),
+        encoding="utf-8",
+    )
+    return path
+
+
 def test_builds_deterministic_historical_section(tmp_path: Path):
     dual_path, comparison_path = _write_sources(tmp_path)
 
@@ -133,6 +164,40 @@ def test_output_is_byte_stable_for_same_inputs(tmp_path: Path):
     )
 
     assert first == second
+
+
+def test_adds_corner_steering_trace_as_observational_context(tmp_path: Path):
+    dual_path, comparison_path = _write_sources(tmp_path)
+    evidence_path = _write_telemetry_evidence(tmp_path)
+
+    section = build_section(dual_path, comparison_path, evidence_path)
+
+    observation = section["zones"][0]["steering_trace_observation"]
+    assert observation == {
+        "scope": "COMPARABLE_CORNER",
+        "current_total_variation_per_100m": 140.0,
+        "reference_total_variation_per_100m": 100.0,
+        "total_variation_delta_per_100m": 40.0,
+        "sign_change_relation": "current_more",
+        "current_sign_change_count": 2,
+        "reference_sign_change_count": 1,
+        "observed_span_m": 98.0,
+        "observational_only": True,
+        "action_authorized": False,
+        "interpretation_authorized": False,
+    }
+    assert "Volante (forma observada)" in section["rendered_section"]
+    assert "cruces de signo actual/referencia 2/1" in section["rendered_section"]
+    assert section["metadata"]["source_telemetry_evidence_sha256"]
+    assert section["coaching_authority"]["historical_actions_authorized"] is False
+
+
+def test_rejects_telemetry_evidence_with_different_physical_bounds(tmp_path: Path):
+    dual_path, comparison_path = _write_sources(tmp_path)
+    evidence_path = _write_telemetry_evidence(tmp_path, start_distance=101.0)
+
+    with pytest.raises(ValueError, match="coincide físicamente"):
+        build_section(dual_path, comparison_path, evidence_path)
 
 
 def test_unlocalized_comparison_includes_explicit_limitation(tmp_path: Path):

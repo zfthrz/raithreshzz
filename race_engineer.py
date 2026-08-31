@@ -1198,6 +1198,11 @@ def analyze_command(args: argparse.Namespace) -> int:
                     # ------------------------------------------
                     h5_3_candidates = h5_3_candidates_path(database)
                     h5_3_section = h5_3_section_path(database)
+                    telemetry_evidence_available = (
+                        stage_results.get("h5_2_telemetry_evidence")
+                        in {STATUS_RUN, STATUS_REUSED}
+                        and telemetry_evidence_output.is_file()
+                    )
                     h5_3_signature = {
                         "h5_1_sha256": sha256_file(h5_output),
                         "h5_2_sha256": sha256_file(h5_2_output),
@@ -1206,6 +1211,11 @@ def analyze_command(args: argparse.Namespace) -> int:
                         ),
                         "renderer": script_signature(h5_3_render_script),
                         "validator": script_signature(h5_3_validator_script),
+                        "telemetry_evidence_sha256": (
+                            sha256_file(telemetry_evidence_output)
+                            if telemetry_evidence_available
+                            else None
+                        ),
                     }
                     reuse_h5_3 = (
                         not args.force
@@ -1229,14 +1239,20 @@ def analyze_command(args: argparse.Namespace) -> int:
                                 "--output",
                                 str(h5_3_candidates),
                             ])
-                            run_checked([
+                            render_command = [
                                 sys.executable,
                                 str(h5_3_render_script),
                                 str(h5_output),
                                 str(h5_2_output),
                                 "--output",
                                 str(h5_3_section),
-                            ])
+                            ]
+                            if telemetry_evidence_available:
+                                render_command.extend([
+                                    "--telemetry-evidence",
+                                    str(telemetry_evidence_output),
+                                ])
+                            run_checked(render_command)
                             run_checked([
                                 sys.executable,
                                 str(h5_3_validator_script),

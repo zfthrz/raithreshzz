@@ -37,8 +37,19 @@ def validate(document: dict[str, Any]) -> list[str]:
     if metadata.get("source_comparison_sha256") != sha256_file(comparison_path):
         errors.append("source_comparison_sha256 no coincide")
 
+    telemetry_value = metadata.get("source_telemetry_evidence_json")
+    telemetry_path = Path(str(telemetry_value)) if telemetry_value else None
+    if telemetry_path is not None:
+        if not telemetry_path.is_file():
+            errors.append("fuente H5.2 telemetry evidence no existe")
+            return errors
+        if metadata.get("source_telemetry_evidence_sha256") != sha256_file(
+            telemetry_path
+        ):
+            errors.append("source_telemetry_evidence_sha256 no coincide")
+
     try:
-        expected = build_section(dual_path, comparison_path)
+        expected = build_section(dual_path, comparison_path, telemetry_path)
     except (OSError, ValueError, json.JSONDecodeError) as exc:
         errors.append(f"fuentes H5.3 inválidas: {exc}")
         return errors

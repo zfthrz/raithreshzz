@@ -1469,6 +1469,11 @@ solamente en intervalos `corner`: normaliza la variación total de cada traza po
 cruces de signo que la referencia. No define un deadband, no interpreta esos
 hechos como correcciones y no modifica coaching ni ranking. Los intervalos no
 corner quedan explícitamente fuera de esa comparación normalizada.
+H5.3d v0.2 incorpora esos hechos a la sección histórica cuando el artefacto v0.6
+validado está disponible. La unión exige límites físicos coincidentes y conserva
+el SHA-256 de la tercera fuente. El texto muestra variación de volante en
+puntos porcentuales por 100 m y conteos exactos de cruces de signo; continúa
+siendo observacional y no crea ni modifica recomendaciones.
 
 Como paso previo a cualquier ampliación futura, el coaching de sesión expone
 además un bloque `steering_coaching_shadow` v0.1. Sólo acepta direcciones Python

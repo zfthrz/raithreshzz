@@ -34,6 +34,8 @@ def test_orchestrator_runs_deterministic_evidence_before_optional_llm():
     assert '"--zones"' in source
     assert '"observational_only": True' in source
     assert "historical_actions_authorized" not in source
+    assert '"telemetry_evidence_sha256"' in source
+    assert '"--telemetry-evidence"' in source
 
 
 def test_orchestrator_evidence_failure_is_recorded_without_returning():

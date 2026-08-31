@@ -3,11 +3,12 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 from pathlib import Path
 from typing import Any
 
 
-RENDER_VERSION = "0.1"
+RENDER_VERSION = "0.2"
 SCHEMA_VERSION = "1.0"
 STATUS_SECTION = "DETERMINISTIC_HISTORICAL_SECTION"
 
@@ -15,6 +16,7 @@ EXPECTED_H5_1_SCHEMA = "1.0"
 EXPECTED_H5_1_VERSION = "0.2"
 EXPECTED_H5_2_SCHEMA = "1.1"
 EXPECTED_H5_2_VERSION = "0.2"
+EXPECTED_TELEMETRY_EVIDENCE_VERSION = "0.6"
 
 
 def sha256_file(path: Path) -> str:
@@ -123,6 +125,16 @@ def render_section_text(
             f"{zone.get('start_distance', 0.0):.0f}-"
             f"{zone.get('end_distance', 0.0):.0f} m): observacional"
         )
+        steering_trace = zone.get("steering_trace_observation")
+        if isinstance(steering_trace, dict):
+            lines.append(
+                "  Volante (forma observada): variación/100 m "
+                f"actual {steering_trace['current_total_variation_per_100m']:.1f} p.p., "
+                f"referencia {steering_trace['reference_total_variation_per_100m']:.1f} p.p.; "
+                "cruces de signo actual/referencia "
+                f"{steering_trace['current_sign_change_count']}/"
+                f"{steering_trace['reference_sign_change_count']}."
+            )
     lines.append("Limitaciones: " + "; ".join(limitations))
     lines.append(
         "Autoridad: la referencia de la sesión no cambia; las acciones "
@@ -134,10 +146,28 @@ def render_section_text(
 def build_section(
     dual_reference_path: Path,
     comparison_path: Path,
+    telemetry_evidence_path: Path | None = None,
 ) -> dict[str, Any]:
     dual_reference_path = Path(dual_reference_path).resolve()
     comparison_path = Path(comparison_path).resolve()
     h5_1, h5_2 = load_validated_sources(dual_reference_path, comparison_path)
+    telemetry_evidence = None
+    if telemetry_evidence_path is not None:
+        telemetry_evidence_path = Path(telemetry_evidence_path).resolve()
+        telemetry_evidence = load_json(telemetry_evidence_path)
+        evidence_metadata = telemetry_evidence.get("metadata") or {}
+        evidence_contract = telemetry_evidence.get("contract") or {}
+        if evidence_metadata.get("version") != EXPECTED_TELEMETRY_EVIDENCE_VERSION:
+            raise ValueError("telemetry evidence metadata.version no soportada")
+        if evidence_contract != {
+            "observational_only": True,
+            "affects_next_stint_plan": False,
+            "historical_actions_authorized": False,
+            "llm_called": False,
+        }:
+            raise ValueError("telemetry evidence perdió autoridad observacional")
+        if not isinstance(telemetry_evidence.get("interval_evidence"), list):
+            raise ValueError("telemetry evidence interval_evidence inválido")
 
     current = h5_2.get("current_session_reference") or {}
     historical = h5_2.get("historical_reference") or {}
@@ -164,10 +194,58 @@ def build_section(
         limitations.append("track_profile_localization_unavailable")
 
     zone_records = []
-    for zone in zones:
+    evidence_intervals = (
+        telemetry_evidence["interval_evidence"]
+        if telemetry_evidence is not None
+        else []
+    )
+    if evidence_intervals and len(evidence_intervals) != len(zones):
+        raise ValueError("telemetry evidence no coincide con las zonas H5.2")
+    for index, zone in enumerate(zones):
         record = dict(zone)
         record["observational_only"] = True
         record["action_authorized"] = False
+        if evidence_intervals:
+            evidence = evidence_intervals[index]
+            if not isinstance(evidence, dict):
+                raise ValueError("telemetry evidence contiene un intervalo inválido")
+            if not (
+                math.isclose(
+                    float(record.get("start_distance")),
+                    float(evidence.get("start_distance_m")),
+                )
+                and math.isclose(
+                    float(record.get("end_distance")),
+                    float(evidence.get("end_distance_m")),
+                )
+            ):
+                raise ValueError("telemetry evidence no coincide físicamente con H5.2")
+            if evidence.get("steering_trace_scope") == "COMPARABLE_CORNER":
+                record["steering_trace_observation"] = {
+                    "scope": "COMPARABLE_CORNER",
+                    "current_total_variation_per_100m": float(
+                        evidence["current_steering_total_variation_per_100m"]
+                    ),
+                    "reference_total_variation_per_100m": float(
+                        evidence["reference_steering_total_variation_per_100m"]
+                    ),
+                    "total_variation_delta_per_100m": float(
+                        evidence["steering_total_variation_delta_per_100m"]
+                    ),
+                    "sign_change_relation": evidence[
+                        "steering_sign_change_relation"
+                    ],
+                    "current_sign_change_count": int(
+                        evidence["current_steering_sign_change_count"]
+                    ),
+                    "reference_sign_change_count": int(
+                        evidence["reference_steering_sign_change_count"]
+                    ),
+                    "observed_span_m": float(evidence["steering_observed_span_m"]),
+                    "observational_only": True,
+                    "action_authorized": False,
+                    "interpretation_authorized": False,
+                }
         zone_records.append(record)
 
     labels = {
@@ -189,20 +267,28 @@ def build_section(
         "zone_count": len(zone_records),
     }
 
-    return {
-        "metadata": {
-            "schema_version": SCHEMA_VERSION,
-            "render_version": RENDER_VERSION,
-            "source_dual_reference_json": str(dual_reference_path),
-            "source_dual_reference_sha256": sha256_file(dual_reference_path),
-            "source_comparison_json": str(comparison_path),
-            "source_comparison_sha256": sha256_file(comparison_path),
-            "policy": {
-                "no_llm_called": True,
-                "historical_actions_authorized": False,
-                "session_reference_remains_authority": True,
-            },
+    metadata = {
+        "schema_version": SCHEMA_VERSION,
+        "render_version": RENDER_VERSION,
+        "source_dual_reference_json": str(dual_reference_path),
+        "source_dual_reference_sha256": sha256_file(dual_reference_path),
+        "source_comparison_json": str(comparison_path),
+        "source_comparison_sha256": sha256_file(comparison_path),
+        "policy": {
+            "no_llm_called": True,
+            "historical_actions_authorized": False,
+            "session_reference_remains_authority": True,
         },
+    }
+    if telemetry_evidence_path is not None:
+        metadata.update({
+            "source_telemetry_evidence_json": str(telemetry_evidence_path),
+            "source_telemetry_evidence_sha256": sha256_file(
+                telemetry_evidence_path
+            ),
+        })
+    return {
+        "metadata": metadata,
         "status": STATUS_SECTION,
         "labels": labels,
         "zones": zone_records,
@@ -226,12 +312,18 @@ def main() -> int:
     )
     parser.add_argument("dual_reference_json")
     parser.add_argument("comparison_json")
+    parser.add_argument("--telemetry-evidence")
     parser.add_argument("--output", required=True)
     args = parser.parse_args()
 
     payload = build_section(
         Path(args.dual_reference_json),
         Path(args.comparison_json),
+        (
+            Path(args.telemetry_evidence)
+            if args.telemetry_evidence is not None
+            else None
+        ),
     )
     output_path = Path(args.output).resolve()
     output_path.parent.mkdir(parents=True, exist_ok=True)

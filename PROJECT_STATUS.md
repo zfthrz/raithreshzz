@@ -558,6 +558,11 @@ Steering coaching policy v1.0 can now attach that selection as a tier-5 secondar
 cue to an already-existing plan zone only when a cue slot is free. It cannot
 create a zone, become the only cue, displace two stronger cues, alter ranking or
 claim causality.
+H5.3d deterministic historical rendering v0.2 now consumes validated H5.2
+telemetry evidence v0.6 when available. It joins intervals only on exact physical
+bounds, records source provenance, and exposes corner steering variation per
+100 observed metres plus exact current/reference sign-change counts. The added
+context remains observational and cannot authorize or rank an action.
 The real Spa checkpoint passed end to end with 27 fully covered zones and one partial
 zone. This remains observational and does not authorize historical coaching.
 

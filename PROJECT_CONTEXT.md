@@ -184,6 +184,10 @@ normalized per 100 metres of actually observed comparable samples, while the
 sign-change comparison is stored as an exact descriptive relation. This evidence
 does not define a steering centre deadband, infer driver corrections, authorize
 coaching, or alter ranking.
+H5.3d renderer v0.2 may present those validated corner facts in the historical
+section. It requires exact H5.2 interval bounds, stores the evidence source hash,
+and renders only measurements (variation per 100 m and sign-change counts), never
+an inferred correction or steering instruction.
 
 Validated checkpoints relevant to the current working tree:
 

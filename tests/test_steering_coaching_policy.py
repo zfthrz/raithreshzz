@@ -81,6 +81,17 @@ def test_steering_does_not_create_a_new_plan_zone():
     assert plan == original
 
 
+def test_steering_cannot_be_the_only_cue_in_an_existing_zone():
+    plan = _plan()
+    original = deepcopy(plan)
+
+    result = attach_repeated_steering_secondary(plan, _candidate())
+
+    assert result["status"] == "WITHHELD"
+    assert result["reason_code"] == "no_stronger_primary_cue"
+    assert plan == original
+
+
 def test_ambiguous_shadow_candidate_fails_closed():
     plan = _plan()
     candidate = _candidate()

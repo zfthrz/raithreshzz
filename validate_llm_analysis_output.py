@@ -922,6 +922,88 @@ def validate_global_render(
             )
 
 
+def validate_repeated_steering_secondary(data, errors):
+    """Enforce the deterministic tier-5 steering promotion contract."""
+    facts = data.get("session_coaching_facts")
+    if not isinstance(facts, dict):
+        return
+    plan = facts.get("next_stint_plan", [])
+    if not isinstance(plan, list):
+        return
+
+    occurrences = []
+    for item_index, item in enumerate(plan):
+        if not isinstance(item, dict):
+            continue
+        cues = item.get("driver_cues", [])
+        if not isinstance(cues, list):
+            continue
+        for cue_index, cue in enumerate(cues):
+            if not isinstance(cue, dict):
+                continue
+            if cue.get("kind") != "repeated_steering_secondary":
+                continue
+            path = (
+                f"session_coaching_facts.next_stint_plan[{item_index}]"
+                f".driver_cues[{cue_index}]"
+            )
+            occurrences.append((path, item, cues, cue_index, cue))
+
+    if len(occurrences) > 1:
+        errors.append(
+            "session_coaching_facts: sólo se permite un "
+            "repeated_steering_secondary por sesión."
+        )
+
+    for path, item, cues, cue_index, cue in occurrences:
+        if len(cues) != 2 or cue_index != 1:
+            errors.append(
+                f"{path}: steering debe ocupar exclusivamente el segundo "
+                "slot detrás de un cue más fuerte."
+            )
+        elif (
+            not isinstance(cues[0], dict)
+            or cues[0].get("channel") == "steering_magnitude"
+        ):
+            errors.append(f"{path}: falta un cue primario no-steering.")
+        if cue.get("channel") != "steering_magnitude":
+            errors.append(f"{path}.channel inválido.")
+        if cue.get("source") != "deterministic_repeated_steering_recurrence":
+            errors.append(f"{path}.source inválido.")
+        if cue.get("secondary_only") is not True:
+            errors.append(f"{path}.secondary_only debe ser true.")
+        if cue.get("causal_claim") is not False:
+            errors.append(f"{path}.causal_claim debe ser false.")
+        support = cue.get("region_comparison_count")
+        if not isinstance(support, int) or support < 2:
+            errors.append(
+                f"{path}.region_comparison_count requiere recurrencia explícita."
+            )
+        if item.get("actionable_cue_count") != len(cues):
+            errors.append(
+                f"{path}: actionable_cue_count no coincide con driver_cues."
+            )
+
+    promotion = facts.get("steering_secondary_promotion")
+    if isinstance(promotion, dict):
+        authorized = promotion.get("status") == "AUTHORIZED_SECONDARY"
+        if authorized != (len(occurrences) == 1):
+            errors.append(
+                "session_coaching_facts.steering_secondary_promotion no "
+                "coincide con el cue materializado."
+            )
+        if promotion.get("ranking_changed") is not False:
+            errors.append(
+                "session_coaching_facts.steering_secondary_promotion "
+                "no puede cambiar ranking."
+            )
+        if promotion.get("existing_cue_displaced") is not False:
+            errors.append(
+                "session_coaching_facts.steering_secondary_promotion "
+                "no puede desplazar cues existentes."
+            )
+
+
 def validate_file(
     path,
 ):
@@ -998,6 +1080,11 @@ def validate_file(
         )
 
     validate_global_structured(
+        data,
+        errors,
+    )
+
+    validate_repeated_steering_secondary(
         data,
         errors,
     )

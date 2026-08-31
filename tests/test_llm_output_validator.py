@@ -1,6 +1,71 @@
 import validate_llm_analysis_output as validator
 
 
+def test_validator_accepts_repeated_steering_only_as_second_cue():
+    facts = {
+        "next_stint_plan": [{
+            "actionable_cue_count": 2,
+            "driver_cues": [
+                {"channel": "brake", "kind": "spatial_points"},
+                {
+                    "channel": "steering_magnitude",
+                    "kind": "repeated_steering_secondary",
+                    "source": "deterministic_repeated_steering_recurrence",
+                    "secondary_only": True,
+                    "causal_claim": False,
+                    "region_comparison_count": 2,
+                },
+            ],
+        }],
+        "steering_secondary_promotion": {
+            "status": "AUTHORIZED_SECONDARY",
+            "ranking_changed": False,
+            "existing_cue_displaced": False,
+        },
+    }
+    errors = []
+
+    validator.validate_repeated_steering_secondary(
+        {"session_coaching_facts": facts},
+        errors,
+    )
+
+    assert errors == []
+
+
+def test_validator_rejects_steering_as_only_or_unproven_cue():
+    facts = {
+        "next_stint_plan": [{
+            "actionable_cue_count": 1,
+            "driver_cues": [{
+                "channel": "steering_magnitude",
+                "kind": "repeated_steering_secondary",
+                "source": "wrong",
+                "secondary_only": False,
+                "causal_claim": True,
+                "region_comparison_count": 1,
+            }],
+        }],
+        "steering_secondary_promotion": {
+            "status": "AUTHORIZED_SECONDARY",
+            "ranking_changed": True,
+            "existing_cue_displaced": True,
+        },
+    }
+    errors = []
+
+    validator.validate_repeated_steering_secondary(
+        {"session_coaching_facts": facts},
+        errors,
+    )
+
+    assert any("segundo slot" in error for error in errors)
+    assert any("source inválido" in error for error in errors)
+    assert any("recurrencia explícita" in error for error in errors)
+    assert any("no puede cambiar ranking" in error for error in errors)
+    assert any("no puede desplazar" in error for error in errors)
+
+
 def test_validator_replays_python_owned_render_and_session_fields(monkeypatch):
     comparison = {
         "analysis": "render de comparación actual",

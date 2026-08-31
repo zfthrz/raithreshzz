@@ -545,7 +545,8 @@ secondary candidate is selected per session using the existing recurrence-region
 order; no new score or threshold is introduced and the selection remains shadow.
 Steering coaching policy v1.0 can now attach that selection as a tier-5 secondary
 cue to an already-existing plan zone only when a cue slot is free. It cannot
-create a zone, displace two stronger cues, alter ranking or claim causality.
+create a zone, become the only cue, displace two stronger cues, alter ranking or
+claim causality.
 The real Spa checkpoint passed end to end with 27 fully covered zones and one partial
 zone. This remains observational and does not authorize historical coaching.
 

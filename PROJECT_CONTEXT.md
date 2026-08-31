@@ -1030,7 +1030,7 @@ direction agreement. The shadow exposes at most one selected secondary
 candidate per session; this selection still has no driver-facing authority.
 The separate deterministic steering policy v1.0 may promote that single
 candidate as a secondary cue only when it overlaps an existing plan zone with
-fewer than two stronger cues. It never creates a steering-only plan item,
+exactly one stronger cue. It never creates a steering-only plan item,
 displaces brake/throttle/profile cues, changes ranking or makes a causal claim.
 This is the only path that can turn the shadow selection into visible coaching.
 

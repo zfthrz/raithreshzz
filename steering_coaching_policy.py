@@ -74,13 +74,20 @@ def attach_repeated_steering_secondary(
         (
             item
             for item in overlapping
-            if len(item.get("driver_cues", []) or []) < max_cues
+            if len(item.get("driver_cues", []) or []) == max_cues - 1
         ),
         None,
     )
     if target is None:
         base["status"] = "WITHHELD"
-        base["reason_code"] = "stronger_cues_fill_zone_limit"
+        cue_counts = [
+            len(item.get("driver_cues", []) or []) for item in overlapping
+        ]
+        base["reason_code"] = (
+            "no_stronger_primary_cue"
+            if cue_counts and max(cue_counts) == 0
+            else "stronger_cues_fill_zone_limit"
+        )
         return base
 
     cues = target.setdefault("driver_cues", [])

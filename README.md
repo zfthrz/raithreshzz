@@ -1469,7 +1469,8 @@ recurrencia existentes y se conserva como máximo un candidato secundario por
 sesión. El orden ya calculado por Python se reutiliza sin introducir otra
 puntuación ni umbrales. La policy v1.0 sólo lo añade al debrief como cue
 secundario tier 5 si coincide con una zona existente y queda libre uno de sus dos
-slots. Nunca crea una prioridad sólo de volante, desplaza freno/acelerador,
+slots detrás de un cue más fuerte. Nunca queda como única instrucción, crea una
+prioridad sólo de volante, desplaza freno/acelerador,
 cambia el ranking ni afirma causalidad.
 
 La GUI v1.40 conserva la alineación seleccionada a 10/20/50 Hz, pero reduce el

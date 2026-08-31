@@ -21,13 +21,19 @@ def comparison_with_reference_coverage(start: float, end: float):
     current = tuple(
         TrackMapPoint(
             0.0, 0.0, distance,
-            180.0, 60.0, 20.0, 3,
+            180.0, 60.0, 20.0, 3, steering_percent=30.0,
         )
         for distance in (0.0, 50.0, 100.0, 150.0, 200.0)
     )
     reference = (
-        TrackMapPoint(0.0, 0.0, start, 200.0, 40.0, 10.0, 4),
-        TrackMapPoint(0.0, 0.0, end, 200.0, 40.0, 10.0, 4),
+        TrackMapPoint(
+            0.0, 0.0, start, 200.0, 40.0, 10.0, 4,
+            steering_percent=20.0,
+        ),
+        TrackMapPoint(
+            0.0, 0.0, end, 200.0, 40.0, 10.0, 4,
+            steering_percent=20.0,
+        ),
     )
     return build_historical_telemetry_comparison(current, reference)
 
@@ -47,6 +53,7 @@ def test_interval_evidence_aggregates_only_existing_interval():
     assert evidence.speed_delta_mean_kmh == pytest.approx(-20.0)
     assert evidence.throttle_delta_mean_percent == pytest.approx(20.0)
     assert evidence.brake_delta_mean_percent == pytest.approx(10.0)
+    assert evidence.steering_delta_mean_percent == pytest.approx(10.0)
 
 
 def test_interval_evidence_reports_partial_coverage_without_extrapolation():
@@ -60,6 +67,19 @@ def test_interval_evidence_reports_partial_coverage_without_extrapolation():
     assert evidence.observed_start_distance_m == 100.0
     assert evidence.observed_end_distance_m == 150.0
     assert evidence.sample_count == 2
+
+
+def test_interval_evidence_uses_exact_bounds_when_only_one_native_sample_is_inside():
+    comparison = comparison_with_reference_coverage(0.0, 200.0)
+    interval = HistoricalTelemetryInterval("narrow", "Narrow", 25.0, 75.0)
+
+    evidence = build_historical_interval_evidence(comparison, (interval,))[0]
+
+    assert evidence.status == "FULL_COVERAGE"
+    assert evidence.sample_count == 1
+    assert evidence.observed_start_distance_m == 50.0
+    assert evidence.observed_end_distance_m == 50.0
+    assert evidence.delta_change_s == pytest.approx(0.1)
 
 
 def test_interval_evidence_fails_closed_without_coverage():
@@ -107,7 +127,7 @@ def test_evidence_document_is_json_ready_and_has_no_action_authority():
 
     document = build_historical_interval_evidence_document(comparison, intervals)
 
-    assert document["metadata"]["version"] == "0.1"
+    assert document["metadata"]["version"] == "0.2"
     assert document["metadata"]["status"] == "FULL_COMMON_COVERAGE"
     assert document["contract"] == {
         "observational_only": True,

@@ -1,4 +1,4 @@
-"""Validate Historical Telemetry Evidence v0.1 artifacts."""
+"""Validate Historical Telemetry Evidence v0.2 artifacts."""
 
 from __future__ import annotations
 
@@ -22,8 +22,8 @@ def validate_document(document: object) -> list[str]:
     if not isinstance(metadata, dict):
         errors.append("metadata ausente o inválido")
     else:
-        if metadata.get("version") != "0.1":
-            errors.append("metadata.version debe ser 0.1")
+        if metadata.get("version") != "0.2":
+            errors.append("metadata.version debe ser 0.2")
         if metadata.get("status") not in {
             "FULL_COMMON_COVERAGE", "PARTIAL_COMMON_COVERAGE", "NO_COMMON_COVERAGE"
         }:
@@ -62,19 +62,31 @@ def validate_document(document: object) -> list[str]:
             errors.append(f"{prefix} tiene límites inválidos")
         if item.get("status") not in {"FULL_COVERAGE", "PARTIAL_COVERAGE", "UNAVAILABLE"}:
             errors.append(f"{prefix}.status inválido")
+        status = item.get("status")
         coverage = item.get("coverage_ratio")
         if not _finite(coverage) or not 0.0 <= coverage <= 1.0:
             errors.append(f"{prefix}.coverage_ratio inválido")
+        elif status == "FULL_COVERAGE" and not math.isclose(coverage, 1.0):
+            errors.append(f"{prefix} FULL_COVERAGE requiere coverage_ratio=1")
+        elif status == "PARTIAL_COVERAGE" and not 0.0 < coverage < 1.0:
+            errors.append(
+                f"{prefix} PARTIAL_COVERAGE requiere 0<coverage_ratio<1"
+            )
+        elif status == "UNAVAILABLE" and not math.isclose(coverage, 0.0):
+            errors.append(f"{prefix} UNAVAILABLE requiere coverage_ratio=0")
         count = item.get("sample_count")
         if not isinstance(count, int) or isinstance(count, bool) or count < 0:
             errors.append(f"{prefix}.sample_count inválido")
         for key in (
             "delta_change_s", "speed_delta_mean_kmh",
             "throttle_delta_mean_percent", "brake_delta_mean_percent",
+            "steering_delta_mean_percent",
         ):
             value = item.get(key)
             if value is not None and not _finite(value):
                 errors.append(f"{prefix}.{key} debe ser finito o null")
+            elif status == "UNAVAILABLE" and value is not None:
+                errors.append(f"{prefix}.{key} debe ser null cuando UNAVAILABLE")
     return errors
 
 

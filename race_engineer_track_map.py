@@ -149,6 +149,9 @@ class AlignedTelemetrySample:
     current_gear: int | None
     reference_gear: int | None
     accumulated_delta_s: float | None
+    current_steering_percent: float | None = None
+    reference_steering_percent: float | None = None
+    steering_delta_percent: float | None = None
 
 
 @dataclass(frozen=True)
@@ -1070,9 +1073,18 @@ def build_historical_telemetry_comparison(
         reference_speed = _linear_value(left, right, distance, "speed_kmh")
         reference_throttle = _linear_value(left, right, distance, "throttle_percent")
         reference_brake = _linear_value(left, right, distance, "brake_percent")
+        reference_steering = _linear_value(
+            left, right, distance, "steering_percent"
+        )
         current_speed = float(point.speed_kmh) if point.speed_kmh is not None and math.isfinite(point.speed_kmh) else None
         current_throttle = float(point.throttle_percent) if point.throttle_percent is not None and math.isfinite(point.throttle_percent) else None
         current_brake = float(point.brake_percent) if point.brake_percent is not None and math.isfinite(point.brake_percent) else None
+        current_steering = (
+            float(point.steering_percent)
+            if point.steering_percent is not None
+            and math.isfinite(point.steering_percent)
+            else None
+        )
         delta_value = 0.0 if previous is None else None
         if previous is not None:
             dx = distance - previous[0]
@@ -1084,13 +1096,26 @@ def build_historical_telemetry_comparison(
                 delta_value = accumulated_delta
         aligned.append(
             AlignedTelemetrySample(
-                distance, current_speed, reference_speed,
-                _difference(current_speed, reference_speed),
-                current_throttle, reference_throttle,
-                _difference(current_throttle, reference_throttle),
-                current_brake, reference_brake,
-                _difference(current_brake, reference_brake),
-                point.gear, left.gear, delta_value,
+                distance_m=distance,
+                current_speed_kmh=current_speed,
+                reference_speed_kmh=reference_speed,
+                speed_delta_kmh=_difference(current_speed, reference_speed),
+                current_throttle_percent=current_throttle,
+                reference_throttle_percent=reference_throttle,
+                throttle_delta_percent=_difference(
+                    current_throttle, reference_throttle
+                ),
+                current_brake_percent=current_brake,
+                reference_brake_percent=reference_brake,
+                brake_delta_percent=_difference(current_brake, reference_brake),
+                current_gear=point.gear,
+                reference_gear=left.gear,
+                accumulated_delta_s=delta_value,
+                current_steering_percent=current_steering,
+                reference_steering_percent=reference_steering,
+                steering_delta_percent=_difference(
+                    current_steering, reference_steering
+                ),
             )
         )
         previous = (distance, current_speed, reference_speed)

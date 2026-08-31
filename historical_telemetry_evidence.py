@@ -10,10 +10,11 @@ from race_engineer_track_map import (
     HistoricalTelemetryComparison,
     TrackMapTurn,
     TrackMapZone,
+    summarize_telemetry_interval_delta,
 )
 
 
-HISTORICAL_TELEMETRY_EVIDENCE_VERSION = "0.1"
+HISTORICAL_TELEMETRY_EVIDENCE_VERSION = "0.2"
 
 
 @dataclass(frozen=True)
@@ -39,6 +40,7 @@ class HistoricalTelemetryIntervalEvidence:
     speed_delta_mean_kmh: float | None
     throttle_delta_mean_percent: float | None
     brake_delta_mean_percent: float | None
+    steering_delta_mean_percent: float | None
 
 
 def intervals_from_track_turns(
@@ -110,13 +112,15 @@ def build_historical_interval_evidence(
             status = "FULL_COVERAGE"
         else:
             status = "PARTIAL_COVERAGE"
-        timed_samples = tuple(
-            sample for sample in samples if sample.accumulated_delta_s is not None
-        )
-        delta_change = (
-            timed_samples[-1].accumulated_delta_s
-            - timed_samples[0].accumulated_delta_s
-            if len(timed_samples) >= 2
+        interval_delta = (
+            summarize_telemetry_interval_delta(
+                comparison,
+                covered_start,
+                covered_end,
+            )
+            if covered_span > 0.0
+            and covered_start is not None
+            and covered_end is not None
             else None
         )
         results.append(
@@ -130,7 +134,11 @@ def build_historical_interval_evidence(
                 sample_count=len(samples),
                 observed_start_distance_m=(samples[0].distance_m if samples else None),
                 observed_end_distance_m=(samples[-1].distance_m if samples else None),
-                delta_change_s=delta_change,
+                delta_change_s=(
+                    interval_delta.delta_change_s
+                    if interval_delta is not None
+                    else None
+                ),
                 speed_delta_mean_kmh=_mean([
                     sample.speed_delta_kmh
                     for sample in samples
@@ -145,6 +153,11 @@ def build_historical_interval_evidence(
                     sample.brake_delta_percent
                     for sample in samples
                     if sample.brake_delta_percent is not None
+                ]),
+                steering_delta_mean_percent=_mean([
+                    sample.steering_delta_percent
+                    for sample in samples
+                    if sample.steering_delta_percent is not None
                 ]),
             )
         )

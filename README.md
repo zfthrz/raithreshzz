@@ -1452,7 +1452,8 @@ H5.2 v0.2 compara ambas vueltas desde sus DuckDB raw cuando están disponibles. 
 Cuando H5.2 dispone de ambos DuckDB, el orquestador genera además
 `h5_2_telemetry_evidence`: una evidencia validada por intervalo que alinea ambas
 vueltas sobre la cobertura común de `Lap Dist` y conserva velocidad, acelerador,
-freno, marcha discreta y delta acumulado. Se reutiliza por firma, falla de forma no
+freno, marcha discreta, volante firmado y delta acumulado. El volante permanece
+observacional y no autoriza coaching ni relaja su gate validado. Se reutiliza por firma, falla de forma no
 bloqueante y queda bajo `data/generated/h5_2_telemetry_evidence/`. Es material de
 inspección observacional: no cambia el plan, el ranking ni la autoridad de coaching.
 

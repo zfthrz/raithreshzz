@@ -21,9 +21,9 @@ DuckDB de telemetría
     ↓
 analyze          análisis determinista y validación
     ↓
-llm              debrief con DeepSeek u Ollama
+    llm              nombre histórico de la etapa de debrief determinista
     ↓
-llm_validator    validación del resultado LLM
+    llm_validator    nombre histórico del validador del debrief
     ↓
 history          importación idempotente en History
     ↓
@@ -35,7 +35,7 @@ h5_1             contexto de doble referencia
     ↓
 h5_2             comparación determinista entre telemetrías compatibles
     ↓
-h5_2_llm         narrativa histórica observacional controlada
+    h5_2_llm         omitida en el runtime determinista normal
 ```
 
 No todas las etapas tienen que ejecutarse en todas las sesiones. Por ejemplo, H5.2 necesita una referencia histórica compatible y acceso a ambas telemetrías originales.
@@ -55,13 +55,19 @@ Un `SKIPPED_NOT_APPLICABLE` no es necesariamente un error.
 
 ## 2. Comando recomendado
 
-### Ejecución normal con DeepSeek
+### Ejecución normal determinista
 
 ```powershell
 python race_engineer.py analyze "telemetria\ARCHIVO.duckdb"
 ```
 
-DeepSeek es el backend predeterminado. Para usarlo debe estar configurada la API key en el entorno.
+No requiere API key, Ollama ni llama.cpp. El argumento interno `--backend` queda
+oculto exclusivamente para reproducibilidad y herramientas legacy.
+
+La ruta de producto entra por `deterministic_debrief.py`. Durante la migración,
+ese adaptador reutiliza el renderizador Python del módulo histórico, fuerza todos
+los gates deterministas y reemplaza su función de transporte por un bloqueo que
+falla de forma explícita si alguna regresión intentara usarla.
 
 Ejemplo con un archivo real:
 
@@ -69,7 +75,9 @@ Ejemplo con un archivo real:
 python race_engineer.py analyze "telemetria\Autodromo Nazionale Monza_P_2026-08-15T20_03_24Z.duckdb"
 ```
 
-El programa reutiliza automáticamente las etapas que siguen siendo válidas. Repetir el comando normal no debería volver a pagar una llamada LLM si nada relevante cambió.
+El programa reutiliza automáticamente las etapas deterministas que siguen siendo
+válidas. Un artefacto antiguo con llamadas al modelo no se reutiliza como debrief
+determinista.
 
 ---
 
@@ -77,13 +85,11 @@ El programa reutiliza automáticamente las etapas que siguen siendo válidas. Re
 
 | Opción | Para qué sirve |
 |---|---|
-| `--backend deepseek` | Usa DeepSeek. Es el valor predeterminado. |
-| `--backend ollama` | Usa el modelo local configurado mediante Ollama. |
 | `--history-db RUTA` | Usa una base History diferente de la predeterminada. |
-| `--force` | Fuerza todas las etapas aplicables. Puede repetir llamadas con costo. |
+| `--force` | Fuerza todas las etapas deterministas aplicables. |
 | `--force-analyze` | Fuerza solamente el análisis determinista. |
-| `--force-llm` | Fuerza una nueva ejecución del LLM y su validación. |
-| `--no-llm` | No llama a DeepSeek ni a Ollama. |
+| `--force-deterministic-debrief` | Fuerza la reconstrucción del debrief determinista. |
+| `--no-llm` | Omite por completo la etapa histórica de debrief. |
 | `--no-history` | No importa History y omite el contexto histórico posterior. |
 | `--no-historical-context` | Mantiene el análisis/LLM/History, pero omite H3, H4 y H5. |
 | `--dry-run` | Solo evita ejecutar el analizador cuando esa etapa necesita regenerarse; no simula de forma global todo el pipeline. |
@@ -107,37 +113,33 @@ python race_engineer.py analyze "telemetria\ARCHIVO.duckdb" --no-llm
 
 Sirve para verificar la telemetría, generar el análisis determinista e incorporar History sin llamar a un modelo. Las etapas LLM y la narrativa histórica LLM aparecerán como omitidas.
 
-### Flujo completo después de la comprobación
+### Flujo completo determinista
 
 ```powershell
 python race_engineer.py analyze "telemetria\ARCHIVO.duckdb"
 ```
 
-El análisis ya válido normalmente se reutilizará y se ejecutarán las etapas pendientes.
+El análisis ya válido normalmente se reutilizará y se ejecutarán las etapas pendientes,
+sin llamadas a modelos.
 
-### Usar Ollama local
-
-```powershell
-python race_engineer.py analyze "telemetria\ARCHIVO.duckdb" --backend ollama
-```
-
-El backend local normal usa el alias `ingenierov3`. El entry point experimental
-del Qwen3.8 27B ejecuta solamente la etapa LLM sobre un análisis determinista ya
-generado y conserva un output separado:
+### Herramientas LLM heredadas
 
 ```powershell
 python llm_analysis_qwen3_8_27b_iq3m.py "data\generated\analysis\SESSION.json"
 ```
 
+Estas herramientas ya no forman parte del runtime público normal. Se conservan
+temporalmente para reproducción histórica, benchmarks y migración.
+
 Ver [`LLM_BACKEND_BENCHMARK_MONZA_V0_1.md`](LLM_BACKEND_BENCHMARK_MONZA_V0_1.md).
 
-### Regenerar solamente el debrief LLM
+### Regenerar solamente el debrief determinista
 
 ```powershell
-python race_engineer.py analyze "telemetria\ARCHIVO.duckdb" --force-llm
+python race_engineer.py analyze "telemetria\ARCHIVO.duckdb" --force-deterministic-debrief
 ```
 
-Puede generar una nueva llamada a la API y, por lo tanto, costo.
+No llama a ningún proveedor ni genera costo de API.
 
 ### Rerenderizar un resultado existente sin llamar al LLM
 

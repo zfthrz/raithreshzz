@@ -69,7 +69,7 @@ def validate_selected_database(
 def analyze_selected_file(
     argument: str,
     *,
-    backend: str,
+    backend: str | None = None,
     roots: tuple[Path, ...] | None = None,
     runner: Callable[[Path, list[str]], None] = run_race_engineer,
     lap_counter: Callable[[Path], int] = valid_lap_count,
@@ -79,7 +79,7 @@ def analyze_selected_file(
     min_stable_seconds: int = MINIMUM_STABLE_SECONDS,
     now_seconds: float | None = None,
     skip_stability_wait: bool = False,
-    deterministic_debrief: bool = False,
+    deterministic_debrief: bool = True,
 ) -> int:
     print("=" * 72)
     print("RACE ENGINEER - SAFE TELEMETRY LAUNCHER v0.2")
@@ -134,12 +134,10 @@ def analyze_selected_file(
 
     if deterministic_debrief:
         print("Etapa 2/2: debrief determinista, sin acceso a LLM.")
-        final_args = [
-            "--backend",
-            "deepseek",
-            "--force-deterministic-debrief",
-        ]
+        final_args = ["--force-deterministic-debrief"]
     else:
+        if backend is None:
+            raise ValueError("El modo LLM legacy requiere un backend explícito.")
         print(f"Etapa 2/2: pipeline completo con backend {backend}.")
         final_args = ["--backend", backend]
     try:
@@ -161,7 +159,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--backend",
         choices=("deepseek", "ollama", "llamacpp"),
-        default="deepseek",
+        default=None,
+        help=argparse.SUPPRESS,
     )
     parser.add_argument(
         "--skip-stability-wait",
@@ -174,7 +173,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--deterministic-debrief",
         action="store_true",
-        help="genera el debrief validado sin acceso a un backend LLM",
+        help=argparse.SUPPRESS,
     )
     return parser
 
@@ -185,7 +184,7 @@ def main() -> int:
         args.database,
         backend=args.backend,
         skip_stability_wait=args.skip_stability_wait,
-        deterministic_debrief=args.deterministic_debrief,
+        deterministic_debrief=(args.backend is None or args.deterministic_debrief),
     )
 
 

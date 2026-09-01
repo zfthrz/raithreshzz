@@ -17,7 +17,7 @@ def old_enough(path: Path) -> float:
     return path.stat().st_mtime + 601
 
 
-def test_safe_launcher_runs_history_first_then_full_deepseek(tmp_path: Path):
+def test_safe_launcher_runs_history_first_then_deterministic_debrief(tmp_path: Path):
     database = make_database(tmp_path)
     calls: list[tuple[Path, list[str]]] = []
 
@@ -36,7 +36,7 @@ def test_safe_launcher_runs_history_first_then_full_deepseek(tmp_path: Path):
     assert result == 0
     assert calls == [
         (database, ["--no-llm"]),
-        (database, ["--backend", "deepseek"]),
+        (database, ["--force-deterministic-debrief"]),
     ]
 
 
@@ -125,7 +125,6 @@ def test_explicit_override_skips_only_recent_file_wait(tmp_path: Path):
 
     result = launcher.analyze_selected_file(
         str(database),
-        backend="deepseek",
         roots=(database.parent,),
         runner=lambda path, args: calls.append((path, args)),
         lap_counter=lambda path: 2,
@@ -139,7 +138,7 @@ def test_explicit_override_skips_only_recent_file_wait(tmp_path: Path):
     assert result == 0
     assert calls == [
         (database, ["--no-llm"]),
-        (database, ["--backend", "deepseek"]),
+        (database, ["--force-deterministic-debrief"]),
     ]
 
 
@@ -149,7 +148,6 @@ def test_safe_launcher_can_generate_debrief_without_llm_access(tmp_path: Path):
 
     result = launcher.analyze_selected_file(
         str(database),
-        backend="deepseek",
         roots=(database.parent,),
         runner=lambda path, args: calls.append((path, args)),
         lap_counter=lambda path: 3,
@@ -165,8 +163,6 @@ def test_safe_launcher_can_generate_debrief_without_llm_access(tmp_path: Path):
         (
             database,
             [
-                "--backend",
-                "deepseek",
                 "--force-deterministic-debrief",
             ],
         ),

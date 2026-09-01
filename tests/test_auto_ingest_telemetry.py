@@ -12,6 +12,30 @@ import auto_ingest_telemetry as ingest
 NOW = datetime(2026, 8, 17, 12, 0, tzinfo=timezone.utc)
 
 
+def test_automatic_debrief_commands_expose_no_llm_backend_choice():
+    parser = ingest.build_parser()
+
+    for command in ("maintenance", "debrief-next", "debrief-latest"):
+        args = parser.parse_args([command])
+        assert not hasattr(args, "backend")
+
+
+def test_automatic_debrief_environment_is_fail_closed(monkeypatch):
+    monkeypatch.setenv("DEEPSEEK_API_KEY", "must-not-propagate")
+    monkeypatch.setenv("RACE_ENGINEER_EPISODE_DETERMINISTIC", "0")
+    monkeypatch.setenv("RACE_ENGINEER_SUMMARY_DETERMINISTIC", "0")
+    monkeypatch.setenv("RACE_ENGINEER_GLOBAL_DETERMINISTIC", "0")
+    monkeypatch.setenv("RACE_ENGINEER_LLM_RANKER", "1")
+
+    env = ingest.deterministic_debrief_env()
+
+    assert "DEEPSEEK_API_KEY" not in env
+    assert env["RACE_ENGINEER_EPISODE_DETERMINISTIC"] == "1"
+    assert env["RACE_ENGINEER_SUMMARY_DETERMINISTIC"] == "1"
+    assert env["RACE_ENGINEER_GLOBAL_DETERMINISTIC"] == "1"
+    assert env["RACE_ENGINEER_LLM_RANKER"] == "0"
+
+
 def make_db(directory: Path, name: str = "session.duckdb") -> Path:
     directory.mkdir(parents=True, exist_ok=True)
     path = directory / name
@@ -329,8 +353,6 @@ def test_maintenance_runs_one_backfill_when_scan_is_idle_and_cooldown_elapsed(
     )
     assert calls[1][0] == database
     assert calls[1][1] == [
-        "--backend",
-        "deepseek",
         "--force-deterministic-debrief",
     ]
     assert calls[1][2] is not None
@@ -506,15 +528,15 @@ def test_debrief_next_processes_only_oldest_history_ready_session(tmp_path: Path
 
     result = ingest.debrief_next(
         state_path,
-        backend="deepseek",
         now=NOW,
         runner=lambda path, args: calls.append((path, args)),
     )
 
     assert result == 0
-    assert calls == [(first, ["--backend", "deepseek"])]
+    assert calls == [(first, ["--force-deterministic-debrief"])]
     updated = read_state(state_path)["files"]
     assert updated[str(first)]["status"] == ingest.STATUS_DEBRIEF_READY
+    assert updated[str(first)]["debrief_mode"] == "deterministic"
     assert updated[str(second)]["status"] == ingest.STATUS_HISTORY_READY
 
 
@@ -534,7 +556,6 @@ def test_failed_debrief_keeps_history_ready_for_later_retry(tmp_path: Path):
 
     assert ingest.debrief_next(
         state_path,
-        backend="deepseek",
         now=NOW,
         runner=fail,
     ) == 1
@@ -566,15 +587,14 @@ def test_debrief_latest_selects_newest_and_does_not_drain_older_sessions(
 
     assert ingest.debrief_latest(
         state_path,
-        backend="deepseek",
         min_size_mb=5,
         min_valid_laps=2,
         now=NOW,
-        runner=lambda path, args: calls.append((path, args)),
+        runner=lambda path, args, **kwargs: calls.append((path, args)),
         lap_counter=lambda path: 3,
     ) == 0
 
-    assert calls == [(newest, ["--backend", "deepseek"])]
+    assert calls == [(newest, ["--force-deterministic-debrief"])]
     updated = read_state(state_path)["files"]
     assert updated[str(newest)]["status"] == ingest.STATUS_DEBRIEF_READY
     assert updated[str(older)]["status"] == ingest.STATUS_HISTORY_ONLY_SUPERSEDED
@@ -582,14 +602,13 @@ def test_debrief_latest_selects_newest_and_does_not_drain_older_sessions(
 
     assert ingest.debrief_latest(
         state_path,
-        backend="deepseek",
         min_size_mb=5,
         min_valid_laps=2,
         now=NOW + timedelta(minutes=5),
-        runner=lambda path, args: calls.append((path, args)),
+        runner=lambda path, args, **kwargs: calls.append((path, args)),
         lap_counter=lambda path: 3,
     ) == 0
-    assert calls == [(newest, ["--backend", "deepseek"])]
+    assert calls == [(newest, ["--force-deterministic-debrief"])]
 
 
 def test_debrief_latest_requires_size_and_deterministic_valid_laps(tmp_path: Path):
@@ -619,11 +638,10 @@ def test_debrief_latest_requires_size_and_deterministic_valid_laps(tmp_path: Pat
     lap_counts = {small: 4, one_lap: 1, valid: 2}
     assert ingest.debrief_latest(
         state_path,
-        backend="ollama",
         min_size_mb=5,
         min_valid_laps=2,
         now=NOW,
-        runner=lambda path, args: calls.append(path),
+        runner=lambda path, args, **kwargs: calls.append(path),
         lap_counter=lambda path: lap_counts[path],
     ) == 0
 
@@ -808,15 +826,13 @@ def test_maintenance_generates_deterministic_debrief_after_ingest(
     assert calls == [(
         database,
         [
-            "--backend",
-            "deepseek",
             "--force-deterministic-debrief",
         ],
         ingest.deterministic_debrief_env(),
     )]
     entry = read_state(state_path)["files"][str(database)]
     assert entry["status"] == ingest.STATUS_DEBRIEF_READY
-    assert entry["debrief_backend"] == "deepseek"
+    assert entry["debrief_mode"] == "deterministic"
     assert entry["debrief_attempts"] == 1
 
 
@@ -859,8 +875,6 @@ def test_maintenance_ignores_stale_failure_and_generates_pending_debrief(
     assert calls == [(
         ready_database,
         [
-            "--backend",
-            "deepseek",
             "--force-deterministic-debrief",
         ],
         ingest.deterministic_debrief_env(),

@@ -310,7 +310,11 @@ def deterministic_debrief_env() -> dict[str, str]:
     """
     env = dict(os.environ)
     env["RACE_ENGINEER_DETERMINISTIC_FIRST"] = "1"
+    env["RACE_ENGINEER_EPISODE_DETERMINISTIC"] = "1"
+    env["RACE_ENGINEER_SUMMARY_DETERMINISTIC"] = "1"
+    env["RACE_ENGINEER_GLOBAL_DETERMINISTIC"] = "1"
     env["RACE_ENGINEER_LLM_RANKER"] = "0"
+    env.pop("DEEPSEEK_API_KEY", None)
     return env
 
 
@@ -611,7 +615,6 @@ def maintenance(
     settle_seconds: int,
     min_size_mb: float,
     backfill_minutes: int,
-    backend: str = "deepseek",
     now: datetime,
     runner: Callable[..., None] = run_race_engineer,
     probe: Callable[[Path], None] = probe_duckdb,
@@ -706,19 +709,17 @@ def maintenance(
     # subproceso, quita la API key y evita reutilizar un render determinista viejo.
     return debrief_next(
         state_path,
-        backend=backend,
         now=now,
         telemetry_dir=telemetry_dir,
         runner=runner,
         env=deterministic_debrief_env(),
-        extra_args=["--force-deterministic-debrief"],
+        extra_args=[],
     )
 
 
 def debrief_next(
     state_path: Path,
     *,
-    backend: str,
     now: datetime,
     runner: Callable[..., None] = run_race_engineer,
     telemetry_dir: Path | None = None,
@@ -743,7 +744,7 @@ def debrief_next(
     path_text, entry = candidates[0]
     path = Path(path_text)
     try:
-        args = ["--backend", backend] + list(extra_args or [])
+        args = ["--force-deterministic-debrief"] + list(extra_args or [])
         if env is not None:
             runner(path, args, env=env)
         else:
@@ -759,7 +760,7 @@ def debrief_next(
     entry["status"] = STATUS_DEBRIEF_READY
     entry["debrief_ready_at"] = isoformat(now)
     entry["updated_at"] = isoformat(now)
-    entry["debrief_backend"] = backend
+    entry["debrief_mode"] = "deterministic"
     entry["debrief_attempts"] = int(entry.get("debrief_attempts", 0)) + 1
     entry.pop("last_debrief_error", None)
     save_state(state_path, state)
@@ -771,11 +772,10 @@ def debrief_next(
 def debrief_latest(
     state_path: Path,
     *,
-    backend: str,
     min_size_mb: float,
     min_valid_laps: int,
     now: datetime,
-    runner: Callable[[Path, list[str]], None] = run_race_engineer,
+    runner: Callable[..., None] = run_race_engineer,
     lap_counter: Callable[[Path], int] = valid_lap_count,
     telemetry_dir: Path | None = None,
 ) -> int:
@@ -836,7 +836,11 @@ def debrief_latest(
     )
     selected_path, selected_entry = eligible[0]
     try:
-        runner(selected_path, ["--backend", backend])
+        runner(
+            selected_path,
+            ["--force-deterministic-debrief"],
+            env=deterministic_debrief_env(),
+        )
     except Exception as exc:
         selected_entry["last_debrief_error"] = f"{type(exc).__name__}: {exc}"
         selected_entry["debrief_attempts"] = int(
@@ -851,7 +855,7 @@ def debrief_latest(
     selected_entry["status"] = STATUS_DEBRIEF_READY
     selected_entry["debrief_ready_at"] = stamp
     selected_entry["updated_at"] = stamp
-    selected_entry["debrief_backend"] = backend
+    selected_entry["debrief_mode"] = "deterministic"
     selected_entry["debrief_attempts"] = int(
         selected_entry.get("debrief_attempts", 0)
     ) + 1
@@ -908,18 +912,11 @@ def build_parser() -> argparse.ArgumentParser:
     maintenance_parser.add_argument("--settle-seconds", type=int, default=600)
     maintenance_parser.add_argument("--min-size-mb", type=float, default=5.0)
     maintenance_parser.add_argument("--backfill-minutes", type=int, default=30)
-    maintenance_parser.add_argument(
-        "--backend",
-        choices=("deepseek", "ollama"),
-        default="deepseek",
-    )
     debrief = subparsers.add_parser("debrief-next", help="Generar exactamente un debrief pendiente.")
-    debrief.add_argument("--backend", choices=("deepseek", "ollama"), default="deepseek")
     latest = subparsers.add_parser(
         "debrief-latest",
         help="Generar el debrief sólo para la sesión válida más reciente.",
     )
-    latest.add_argument("--backend", choices=("deepseek", "ollama"), default="deepseek")
     latest.add_argument("--min-size-mb", type=float, default=5.0)
     latest.add_argument("--min-valid-laps", type=int, default=2)
     subparsers.add_parser("status", help="Mostrar el estado de la cola.")
@@ -966,22 +963,21 @@ def main() -> int:
             settle_seconds=args.settle_seconds,
             min_size_mb=args.min_size_mb,
             backfill_minutes=args.backfill_minutes,
-            backend=args.backend,
             now=now,
         )
     if args.command == "debrief-next":
         return debrief_next(
             state_path,
-            backend=args.backend,
             now=now,
             telemetry_dir=telemetry_dir,
+            env=deterministic_debrief_env(),
+            extra_args=[],
         )
     if args.command == "debrief-latest":
         if args.min_size_mb < 0 or args.min_valid_laps < 1:
             raise ValueError("Los mínimos de elegibilidad son inválidos.")
         return debrief_latest(
             state_path,
-            backend=args.backend,
             min_size_mb=args.min_size_mb,
             min_valid_laps=args.min_valid_laps,
             now=now,

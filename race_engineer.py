@@ -142,6 +142,9 @@ def deterministic_debrief_subprocess_env() -> dict[str, str]:
     """Fail-closed environment for rebuilding a debrief without model access."""
     env = os.environ.copy()
     env["RACE_ENGINEER_DETERMINISTIC_FIRST"] = "1"
+    env["RACE_ENGINEER_EPISODE_DETERMINISTIC"] = "1"
+    env["RACE_ENGINEER_SUMMARY_DETERMINISTIC"] = "1"
+    env["RACE_ENGINEER_GLOBAL_DETERMINISTIC"] = "1"
     env["RACE_ENGINEER_LLM_RANKER"] = "0"
     env.pop("DEEPSEEK_API_KEY", None)
     return env
@@ -182,6 +185,11 @@ def llm_script(backend: str) -> Path:
     if backend == "llamacpp":
         return PROJECT_ROOT / "llm_analysis_llamacpp.py"
     raise ValueError(f"Backend no soportado: {backend}")
+
+
+def deterministic_debrief_script() -> Path:
+    """Product entrypoint; legacy renderer details stay behind this adapter."""
+    return PROJECT_ROOT / "deterministic_debrief.py"
 
 
 def llm_model_name(backend: str) -> str:
@@ -422,17 +430,38 @@ def h5_2_llm_skip_on_failure(
     )
 
 
+def deterministic_debrief_artifact_matches_run(
+    artifact_path: Path,
+    analysis_json: Path,
+) -> bool:
+    """Accept only legacy-path artifacts proven to contain zero model calls."""
+    if not llm_artifact_matches_run(artifact_path, analysis_json, "deepseek"):
+        return False
+    try:
+        document = json.loads(artifact_path.read_text(encoding="utf-8"))
+        usage = (document.get("metadata") or {}).get("deepseek_usage") or {}
+        return int(usage.get("http_request_count", -1)) == 0
+    except (OSError, ValueError, TypeError, json.JSONDecodeError):
+        return False
+
+
 def analyze_command(args: argparse.Namespace) -> int:
+    deterministic_debrief = (
+        args.backend is None or args.force_deterministic_debrief
+    )
+    selected_backend = args.backend or "deepseek"
     if args.force_deterministic_debrief:
-        if args.backend != "deepseek" or args.no_llm:
+        if selected_backend != "deepseek" or args.no_llm:
             raise ValueError(
-                "--force-deterministic-debrief exige --backend deepseek "
-                "y la etapa de debrief habilitada."
+                "--force-deterministic-debrief sólo admite el renderizador "
+                "determinista heredado y la etapa de debrief habilitada."
             )
+    if args.force_llm and args.backend is None:
+        raise ValueError("--force-llm exige un --backend legacy explícito.")
     force_llm_stage = args.force_llm or args.force_deterministic_debrief
     llm_subprocess_env = (
         deterministic_debrief_subprocess_env()
-        if args.force_deterministic_debrief
+        if deterministic_debrief
         else None
     )
     database = resolve_database(args.database)
@@ -550,12 +579,20 @@ def analyze_command(args: argparse.Namespace) -> int:
             stage_results["llm_validator"] = STATUS_SKIPPED
             print_stage("llm", STATUS_SKIPPED, "insufficient_comparable_laps")
         else:
-            llm = llm_script(args.backend)
-            llm_json = llm_output_path(analysis_json, args.backend)
+            llm = (
+                deterministic_debrief_script()
+                if deterministic_debrief
+                else llm_script(selected_backend)
+            )
+            llm_json = llm_output_path(analysis_json, selected_backend)
             llm_signature = {
                 "analysis_sha256": analysis_sha,
-                "backend": args.backend,
-                "model": llm_model_name(args.backend),
+                "backend": selected_backend,
+                "model": llm_model_name(selected_backend),
+                "debrief_mode": (
+                    "deterministic" if deterministic_debrief else "legacy_llm"
+                ),
+                # Historical key retained in state.json for compatibility.
                 "llm_script": script_signature(llm),
             }
             reusable_from_state = (
@@ -572,10 +609,17 @@ def analyze_command(args: argparse.Namespace) -> int:
                 not args.force
                 and not force_llm_stage
                 and not reusable_from_state
-                and llm_artifact_matches_run(
-                    llm_json,
-                    analysis_json,
-                    args.backend,
+                and (
+                    deterministic_debrief_artifact_matches_run(
+                        llm_json,
+                        analysis_json,
+                    )
+                    if deterministic_debrief
+                    else llm_artifact_matches_run(
+                        llm_json,
+                        analysis_json,
+                        selected_backend,
+                    )
                 )
             )
             reuse_llm = reusable_from_state or recover_existing_llm
@@ -1098,28 +1142,28 @@ def analyze_command(args: argparse.Namespace) -> int:
                     # --------------------------------------------
                     # H5.2 LLM historical narrative (observational)
                     # --------------------------------------------
-                    if args.no_llm or args.force_deterministic_debrief:
+                    if args.no_llm or deterministic_debrief:
                         stage_results["h5_2_llm"] = STATUS_SKIPPED
                         reason = (
                             "debrief determinista: narrativa histórica LLM deshabilitada"
-                            if args.force_deterministic_debrief
+                            if deterministic_debrief
                             else "--no-llm"
                         )
                         print_stage("h5_2_llm", STATUS_SKIPPED, reason)
                     else:
                         h5_2_llm_output = historical_llm_output_path(
                             database,
-                            backend=args.backend,
-                            model=llm_model_name(args.backend),
+                            backend=selected_backend,
+                            model=llm_model_name(selected_backend),
                         )
                         h5_2_llm_signature = {
                             "h5_2_sha256": sha256_file(h5_2_output),
-                            "backend": args.backend,
-                            "model": llm_model_name(args.backend),
+                            "backend": selected_backend,
+                            "model": llm_model_name(selected_backend),
                             "generator": script_signature(h5_2_llm_script),
                             "validator": script_signature(h5_2_llm_validator),
                             "backend_script": script_signature(
-                                llm_script(args.backend)
+                                llm_script(selected_backend)
                             ),
                         }
                         previous_h5_2_llm = (
@@ -1154,14 +1198,14 @@ def analyze_command(args: argparse.Namespace) -> int:
                                     str(h5_2_llm_script),
                                     str(h5_2_output),
                                     "--backend",
-                                    args.backend,
+                                    selected_backend,
                                     "--output",
                                     str(h5_2_llm_output),
                                     "--debug-dir",
                                     str(
                                         historical_llm_debug_dir(
                                             database,
-                                            backend=args.backend,
+                                            backend=selected_backend,
                                         )
                                     ),
                                 ])
@@ -1444,19 +1488,19 @@ def build_parser() -> argparse.ArgumentParser:
 
     analyze = subparsers.add_parser(
         "analyze",
-        help="DuckDB -> análisis -> LLM -> History -> H4 -> H5.1 -> H5.2 -> narrativa -> sección histórica H5.3",
+        help="DuckDB -> análisis y debrief deterministas -> History -> H4/H5",
     )
     analyze.add_argument("database", help="DuckDB de telemetría, normalmente telemetria\\archivo.duckdb")
     analyze.add_argument(
         "--backend",
         choices=("deepseek", "ollama", "llamacpp"),
-        default="deepseek",
-        help="Backend LLM. Default: deepseek.",
+        default=None,
+        help=argparse.SUPPRESS,
     )
     analyze.add_argument("--history-db", default=None)
     analyze.add_argument("--force", action="store_true", help="Reejecutar todas las etapas aplicables.")
     analyze.add_argument("--force-analyze", action="store_true")
-    analyze.add_argument("--force-llm", action="store_true")
+    analyze.add_argument("--force-llm", action="store_true", help=argparse.SUPPRESS)
     analyze.add_argument(
         "--force-deterministic-debrief",
         action="store_true",

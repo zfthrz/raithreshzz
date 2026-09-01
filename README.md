@@ -254,7 +254,13 @@ de Imola está empatado en 4/43 reparaciones; Monza y Fuji cambian también de
 modelo y permanecen como observaciones no pareadas. Ver
 [`docs/LLM_PROMPT_SHADOW_PROMOTION_GATE_V0_1.md`](docs/LLM_PROMPT_SHADOW_PROMOTION_GATE_V0_1.md).
 
-### Backend local vía llama.cpp
+### Herramientas LLM legacy (desarrollo/reproducción)
+
+El runtime normal de `race_engineer.py analyze` es determinista y no necesita
+un modelo. Los backends siguientes se conservan temporalmente fuera de la
+superficie de producto para reproducir benchmarks y artefactos históricos.
+
+#### Backend local vía llama.cpp
 
 Si querés usar otro LLM local servido por llama.cpp (API compatible con OpenAI),
 por ejemplo Qwen 3 14B, configurá el endpoint y el nombre del modelo:

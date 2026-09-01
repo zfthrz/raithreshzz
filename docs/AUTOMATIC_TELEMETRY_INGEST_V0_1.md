@@ -253,8 +253,8 @@ importa como una comparación válida en History y no debilita
 
 Desde el cutover determinista, `maintenance` ya genera automáticamente el
 debrief de carrera determinista (una sesión por corrida, sin LLM). Los comandos
-siguientes quedan para corridas manuales o para el pipeline completo con
-backend LLM cuando se quiera la narrativa histórica.
+siguientes permiten ejecutar manualmente esa misma ruta. El ingest automático
+ya no acepta ni registra una selección de proveedor o modelo.
 
 ### Procesar solamente la última sesión válida
 
@@ -262,7 +262,6 @@ Este es el comando recomendado para automatización:
 
 ```powershell
 python auto_ingest_telemetry.py debrief-latest `
-  --backend deepseek `
   --min-size-mb 5 `
   --min-valid-laps 2
 ```
@@ -278,21 +277,15 @@ recorren hacia atrás la cola ni generan debriefs antiguos.
 
 ### Procesar manualmente la siguiente sesión pendiente
 
-DeepSeek:
-
 ```powershell
-python auto_ingest_telemetry.py debrief-next --backend deepseek
-```
-
-Qwen local mediante Ollama:
-
-```powershell
-python auto_ingest_telemetry.py debrief-next --backend ollama
+python auto_ingest_telemetry.py debrief-next
 ```
 
 Cada ejecución procesa como máximo una sesión, comenzando por la más antigua.
-Si el modelo falla, esa sesión continúa en `HISTORY_READY` para reintentar más
-adelante.
+Si el render determinista falla, esa sesión continúa en `HISTORY_READY` para
+reintentar más adelante. Los estados nuevos registran
+`debrief_mode=deterministic`; el campo histórico `debrief_backend`, si existe en
+un estado anterior, se conserva sólo como provenance y no controla el runtime.
 
 ## Consultar la cola
 

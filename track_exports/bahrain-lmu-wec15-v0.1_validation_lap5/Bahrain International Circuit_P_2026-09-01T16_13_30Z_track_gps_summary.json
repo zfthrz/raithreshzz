@@ -1,0 +1,139 @@
+{
+  "source_file": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Le Mans Ultimate\\UserData\\Telemetry\\Bahrain International Circuit_P_2026-09-01T16_13_30Z.duckdb",
+  "track_name": "Bahrain International Circuit",
+  "track_layout": "Bahrain International Circuit",
+  "selected_lap": 5,
+  "time_source": "GPS Time.value",
+  "lap_boundary_source": "Lap.ts",
+  "lap_distance_boundary_repairs": {
+    "2": {
+      "sample_index": 2657,
+      "original_lap_dist_m": 5380.99560546875,
+      "repaired_lap_dist_m": 0.0,
+      "next_sample_lap_dist_m": 6.20580530166626,
+      "reason": "boundary_linear_interpolation_across_lap_dist_reset"
+    }
+  },
+  "target_hz": 10.0,
+  "channel_modes": {
+    "GPS Time": {
+      "mode": "rowid",
+      "row_count": 76901,
+      "columns": [
+        "value"
+      ]
+    },
+    "GPS Latitude": {
+      "mode": "rowid",
+      "row_count": 7691,
+      "columns": [
+        "value"
+      ]
+    },
+    "GPS Longitude": {
+      "mode": "rowid",
+      "row_count": 7691,
+      "columns": [
+        "value"
+      ]
+    },
+    "Lap Dist": {
+      "mode": "rowid",
+      "row_count": 7691,
+      "columns": [
+        "value"
+      ]
+    }
+  },
+  "selected_lap_metrics": {
+    "sample_count": 1247,
+    "duration_s": 124.60000000000002,
+    "gps_coverage": 1.0,
+    "gps_path_m": 5322.401669536471,
+    "lap_dist_min_m": 2.961627960205078,
+    "lap_dist_max_m": 5383.3203125,
+    "lap_dist_span_m": 5380.358684539795
+  },
+  "exported_point_count": 1247,
+  "bounds": {
+    "latitude_min": 59.993492126464844,
+    "latitude_max": 60.00412368774414,
+    "longitude_min": -0.004267260897904633,
+    "longitude_max": 0.010260457172989844,
+    "x_east_min_m": -18.37165764709998,
+    "x_east_max_m": 789.3323550871017,
+    "y_north_min_m": -458.53378956796365,
+    "y_north_max_m": 723.6435198906124,
+    "lap_distance_min_m": 2.961627960205078,
+    "lap_distance_max_m": 5383.3203125
+  },
+  "laps": {
+    "0": {
+      "sample_count": 1406,
+      "duration_s": 140.5,
+      "gps_coverage": 1.0,
+      "gps_path_m": 5121.659854650317,
+      "lap_dist_min_m": 203.00637817382812,
+      "lap_dist_max_m": 5380.720703124998,
+      "lap_dist_span_m": 5177.71432495117
+    },
+    "1": {
+      "sample_count": 1251,
+      "duration_s": 125.0,
+      "gps_coverage": 1.0,
+      "gps_path_m": 5342.990838306832,
+      "lap_dist_min_m": 0.0,
+      "lap_dist_max_m": 5380.99560546875,
+      "lap_dist_span_m": 5380.99560546875
+    },
+    "2": {
+      "sample_count": 1260,
+      "duration_s": 125.90000000000003,
+      "gps_coverage": 1.0,
+      "gps_path_m": 5362.953682269032,
+      "lap_dist_min_m": 0.0,
+      "lap_dist_max_m": 5383.765625,
+      "lap_dist_span_m": 5383.765625
+    },
+    "3": {
+      "sample_count": 1254,
+      "duration_s": 125.30000000000001,
+      "gps_coverage": 1.0,
+      "gps_path_m": 5324.255540148129,
+      "lap_dist_min_m": 2.9667651653289795,
+      "lap_dist_max_m": 5380.91064453125,
+      "lap_dist_span_m": 5377.943879365921
+    },
+    "4": {
+      "sample_count": 1270,
+      "duration_s": 126.89999999999998,
+      "gps_coverage": 1.0,
+      "gps_path_m": 5335.932769274335,
+      "lap_dist_min_m": 0.08990197628736496,
+      "lap_dist_max_m": 5383.74658203125,
+      "lap_dist_span_m": 5383.656680054963
+    },
+    "5": {
+      "sample_count": 1247,
+      "duration_s": 124.60000000000002,
+      "gps_coverage": 1.0,
+      "gps_path_m": 5322.401669536471,
+      "lap_dist_min_m": 2.961627960205078,
+      "lap_dist_max_m": 5383.3203125,
+      "lap_dist_span_m": 5380.358684539795
+    },
+    "6": {
+      "sample_count": 3,
+      "duration_s": 0.1999999999999318,
+      "gps_coverage": 1.0,
+      "gps_path_m": 12.30959472347843,
+      "lap_dist_min_m": 2.509549379355594,
+      "lap_dist_max_m": 14.55384635925293,
+      "lap_dist_span_m": 12.044296979897336
+    }
+  },
+  "outputs": {
+    "csv": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\track_exports\\bahrain-lmu-wec15-v0.1_validation_lap5\\Bahrain International Circuit_P_2026-09-01T16_13_30Z_track_gps.csv",
+    "geojson": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\track_exports\\bahrain-lmu-wec15-v0.1_validation_lap5\\Bahrain International Circuit_P_2026-09-01T16_13_30Z_track_gps.geojson"
+  }
+}

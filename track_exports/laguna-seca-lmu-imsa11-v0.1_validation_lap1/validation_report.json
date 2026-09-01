@@ -1,0 +1,135 @@
+{
+  "version": "0.1",
+  "mode": "AUDIT_READ_ONLY",
+  "profile_mutated": false,
+  "automatic_promotion": false,
+  "profile_id": "laguna-seca-lmu-imsa11-v0.1",
+  "profile_status": "VALIDATED_MULTI_SESSION",
+  "profile_track": "WeatherTech Raceway Laguna Seca",
+  "profile_layout": "WeatherTech Raceway Laguna Seca",
+  "independent_session": "WeatherTech Raceway Laguna Seca_P_2026-09-01T15_27_11Z",
+  "selected_lap": 1,
+  "method": "same-direction nearest local extremum inside each calibrated interval; 2 m resampling, 20 m heading window, 14 m smoothing",
+  "apex_pass_tolerance_m": 35.0,
+  "apex_warning_tolerance_m": 70.0,
+  "pass_count": 11,
+  "warning_count": 0,
+  "failure_count": 0,
+  "median_abs_offset_m": 2.001,
+  "max_abs_offset_m": 10.001,
+  "overall_status": "PASS",
+  "promotion_readiness": "READY_FOR_EXPLICIT_PROMOTION",
+  "contract_errors": [],
+  "turn_results": [
+    {
+      "turn": 1,
+      "name": "Turn 1",
+      "direction": "left",
+      "expected_apex_m": 192.0,
+      "observed_apex_m": 190.001,
+      "offset_m": -1.999,
+      "observed_signed_curvature_rad_per_m": 0.0018116247094330795,
+      "status": "PASS"
+    },
+    {
+      "turn": 2,
+      "name": "Andretti Hairpin",
+      "direction": "left",
+      "expected_apex_m": 502.0,
+      "observed_apex_m": 512.001,
+      "offset_m": 10.001,
+      "observed_signed_curvature_rad_per_m": 0.020646856880915054,
+      "status": "PASS"
+    },
+    {
+      "turn": 3,
+      "name": "Turn 3",
+      "direction": "right",
+      "expected_apex_m": 650.0,
+      "observed_apex_m": 650.001,
+      "offset_m": 0.001,
+      "observed_signed_curvature_rad_per_m": -0.0023815338821392418,
+      "status": "PASS"
+    },
+    {
+      "turn": 4,
+      "name": "Turn 4",
+      "direction": "right",
+      "expected_apex_m": 814.0,
+      "observed_apex_m": 810.001,
+      "offset_m": -3.999,
+      "observed_signed_curvature_rad_per_m": -0.013597851222659968,
+      "status": "PASS"
+    },
+    {
+      "turn": 5,
+      "name": "Turn 5",
+      "direction": "left",
+      "expected_apex_m": 1550.0,
+      "observed_apex_m": 1550.001,
+      "offset_m": 0.001,
+      "observed_signed_curvature_rad_per_m": 0.015399900456437188,
+      "status": "PASS"
+    },
+    {
+      "turn": 6,
+      "name": "Turn 6",
+      "direction": "left",
+      "expected_apex_m": 1944.0,
+      "observed_apex_m": 1940.001,
+      "offset_m": -3.999,
+      "observed_signed_curvature_rad_per_m": 0.009892684160023146,
+      "status": "PASS"
+    },
+    {
+      "turn": 7,
+      "name": "Turn 7",
+      "direction": "right",
+      "expected_apex_m": 2326.0,
+      "observed_apex_m": 2326.001,
+      "offset_m": 0.001,
+      "observed_signed_curvature_rad_per_m": -0.0033132663573886556,
+      "status": "PASS"
+    },
+    {
+      "turn": 8,
+      "name": "Corkscrew",
+      "direction": "left",
+      "expected_apex_m": 2462.0,
+      "observed_apex_m": 2462.001,
+      "offset_m": 0.001,
+      "observed_signed_curvature_rad_per_m": 0.03130150959839395,
+      "status": "PASS"
+    },
+    {
+      "turn": 9,
+      "name": "Rainey Curve",
+      "direction": "left",
+      "expected_apex_m": 2732.0,
+      "observed_apex_m": 2734.001,
+      "offset_m": 2.001,
+      "observed_signed_curvature_rad_per_m": 0.01064713802197359,
+      "status": "PASS"
+    },
+    {
+      "turn": 10,
+      "name": "Turn 10",
+      "direction": "right",
+      "expected_apex_m": 2990.0,
+      "observed_apex_m": 2994.001,
+      "offset_m": 4.001,
+      "observed_signed_curvature_rad_per_m": -0.009805278944121087,
+      "status": "PASS"
+    },
+    {
+      "turn": 11,
+      "name": "Turn 11",
+      "direction": "left",
+      "expected_apex_m": 3288.0,
+      "observed_apex_m": 3278.001,
+      "offset_m": -9.999,
+      "observed_signed_curvature_rad_per_m": 0.03189207115277859,
+      "status": "PASS"
+    }
+  ]
+}

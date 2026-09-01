@@ -1,0 +1,175 @@
+{
+  "version": "0.1",
+  "mode": "AUDIT_READ_ONLY",
+  "profile_mutated": false,
+  "automatic_promotion": false,
+  "profile_id": "bahrain-lmu-wec15-v0.1",
+  "profile_status": "VALIDATED_SINGLE_SESSION",
+  "profile_track": "Bahrain International Circuit",
+  "profile_layout": "Bahrain International Circuit",
+  "independent_session": "Bahrain International Circuit_P_2026-09-01T16_13_30Z",
+  "selected_lap": 3,
+  "method": "same-direction nearest local extremum inside each calibrated interval; 2 m resampling, 20 m heading window, 14 m smoothing",
+  "apex_pass_tolerance_m": 35.0,
+  "apex_warning_tolerance_m": 70.0,
+  "pass_count": 15,
+  "warning_count": 0,
+  "failure_count": 0,
+  "median_abs_offset_m": 2.967,
+  "max_abs_offset_m": 31.033,
+  "overall_status": "PASS",
+  "promotion_readiness": "READY_FOR_EXPLICIT_PROMOTION",
+  "contract_errors": [],
+  "turn_results": [
+    {
+      "turn": 1,
+      "name": "Turn 1",
+      "direction": "right",
+      "expected_apex_m": 742.0,
+      "observed_apex_m": 746.967,
+      "offset_m": 4.967,
+      "observed_signed_curvature_rad_per_m": -0.033135070453205,
+      "status": "PASS"
+    },
+    {
+      "turn": 2,
+      "name": "Turn 2",
+      "direction": "left",
+      "expected_apex_m": 810.0,
+      "observed_apex_m": 806.967,
+      "offset_m": -3.033,
+      "observed_signed_curvature_rad_per_m": 0.01213134298818927,
+      "status": "PASS"
+    },
+    {
+      "turn": 3,
+      "name": "Turn 3",
+      "direction": "right",
+      "expected_apex_m": 990.0,
+      "observed_apex_m": 988.967,
+      "offset_m": -1.033,
+      "observed_signed_curvature_rad_per_m": -0.0033397090981790115,
+      "status": "PASS"
+    },
+    {
+      "turn": 4,
+      "name": "Turn 4",
+      "direction": "right",
+      "expected_apex_m": 1500.0,
+      "observed_apex_m": 1500.967,
+      "offset_m": 0.967,
+      "observed_signed_curvature_rad_per_m": -0.02501226785080332,
+      "status": "PASS"
+    },
+    {
+      "turn": 5,
+      "name": "Turn 5",
+      "direction": "left",
+      "expected_apex_m": 1728.0,
+      "observed_apex_m": 1726.967,
+      "offset_m": -1.033,
+      "observed_signed_curvature_rad_per_m": 0.0003974756983413652,
+      "status": "PASS"
+    },
+    {
+      "turn": 6,
+      "name": "Turn 6",
+      "direction": "right",
+      "expected_apex_m": 1874.0,
+      "observed_apex_m": 1870.967,
+      "offset_m": -3.033,
+      "observed_signed_curvature_rad_per_m": -0.00984216925752568,
+      "status": "PASS"
+    },
+    {
+      "turn": 7,
+      "name": "Turn 7",
+      "direction": "left",
+      "expected_apex_m": 2030.0,
+      "observed_apex_m": 2032.967,
+      "offset_m": 2.967,
+      "observed_signed_curvature_rad_per_m": 0.007459817880485109,
+      "status": "PASS"
+    },
+    {
+      "turn": 8,
+      "name": "Turn 8",
+      "direction": "right",
+      "expected_apex_m": 2280.0,
+      "observed_apex_m": 2280.967,
+      "offset_m": 0.967,
+      "observed_signed_curvature_rad_per_m": -0.026729579061375297,
+      "status": "PASS"
+    },
+    {
+      "turn": 9,
+      "name": "Turn 9",
+      "direction": "left",
+      "expected_apex_m": 2654.0,
+      "observed_apex_m": 2622.967,
+      "offset_m": -31.033,
+      "observed_signed_curvature_rad_per_m": 0.004552319485093381,
+      "status": "PASS"
+    },
+    {
+      "turn": 10,
+      "name": "Turn 10",
+      "direction": "left",
+      "expected_apex_m": 2728.0,
+      "observed_apex_m": 2730.967,
+      "offset_m": 2.967,
+      "observed_signed_curvature_rad_per_m": 0.034735313786473876,
+      "status": "PASS"
+    },
+    {
+      "turn": 11,
+      "name": "Turn 11",
+      "direction": "left",
+      "expected_apex_m": 3450.0,
+      "observed_apex_m": 3464.967,
+      "offset_m": 14.967,
+      "observed_signed_curvature_rad_per_m": 0.019178050761470028,
+      "status": "PASS"
+    },
+    {
+      "turn": 12,
+      "name": "Turn 12",
+      "direction": "right",
+      "expected_apex_m": 3846.0,
+      "observed_apex_m": 3846.967,
+      "offset_m": 0.967,
+      "observed_signed_curvature_rad_per_m": -0.009056344549815881,
+      "status": "PASS"
+    },
+    {
+      "turn": 13,
+      "name": "Turn 13",
+      "direction": "right",
+      "expected_apex_m": 4126.0,
+      "observed_apex_m": 4126.967,
+      "offset_m": 0.967,
+      "observed_signed_curvature_rad_per_m": -0.016396269795048546,
+      "status": "PASS"
+    },
+    {
+      "turn": 14,
+      "name": "Turn 14",
+      "direction": "right",
+      "expected_apex_m": 4912.0,
+      "observed_apex_m": 4914.967,
+      "offset_m": 2.967,
+      "observed_signed_curvature_rad_per_m": -0.01644320011948719,
+      "status": "PASS"
+    },
+    {
+      "turn": 15,
+      "name": "Turn 15",
+      "direction": "right",
+      "expected_apex_m": 4950.0,
+      "observed_apex_m": 4952.967,
+      "offset_m": 2.967,
+      "observed_signed_curvature_rad_per_m": -0.01746916082570027,
+      "status": "PASS"
+    }
+  ]
+}

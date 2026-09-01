@@ -1,0 +1,126 @@
+{
+  "source_file": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Le Mans Ultimate\\UserData\\Telemetry\\Sebring International Raceway_P_2026-09-01T16_06_03Z.duckdb",
+  "track_name": "Sebring International Raceway",
+  "track_layout": "Sebring International Raceway",
+  "selected_lap": 1,
+  "time_source": "GPS Time.value",
+  "lap_boundary_source": "Lap.ts",
+  "lap_distance_boundary_repairs": {
+    "1": {
+      "sample_index": 400,
+      "original_lap_dist_m": 5817.79345703125,
+      "repaired_lap_dist_m": 0.0,
+      "next_sample_lap_dist_m": 8.835341547303576,
+      "reason": "boundary_linear_interpolation_across_lap_dist_reset"
+    },
+    "2": {
+      "sample_index": 1695,
+      "original_lap_dist_m": 5819.74365234375,
+      "repaired_lap_dist_m": 0.0,
+      "next_sample_lap_dist_m": 9.519372192186559,
+      "reason": "boundary_linear_interpolation_across_lap_dist_reset"
+    },
+    "3": {
+      "sample_index": 2990,
+      "original_lap_dist_m": 5817.54345703125,
+      "repaired_lap_dist_m": 0.0,
+      "next_sample_lap_dist_m": 8.35629279819045,
+      "reason": "boundary_linear_interpolation_across_lap_dist_reset"
+    }
+  },
+  "target_hz": 10.0,
+  "channel_modes": {
+    "GPS Time": {
+      "mode": "rowid",
+      "row_count": 34432,
+      "columns": [
+        "value"
+      ]
+    },
+    "GPS Latitude": {
+      "mode": "rowid",
+      "row_count": 3444,
+      "columns": [
+        "value"
+      ]
+    },
+    "GPS Longitude": {
+      "mode": "rowid",
+      "row_count": 3444,
+      "columns": [
+        "value"
+      ]
+    },
+    "Lap Dist": {
+      "mode": "rowid",
+      "row_count": 3444,
+      "columns": [
+        "value"
+      ]
+    }
+  },
+  "selected_lap_metrics": {
+    "sample_count": 1295,
+    "duration_s": 129.4,
+    "gps_coverage": 1.0,
+    "gps_path_m": 5791.6026409230235,
+    "lap_dist_min_m": 0.0,
+    "lap_dist_max_m": 5819.385992504144,
+    "lap_dist_span_m": 5819.385992504144
+  },
+  "exported_point_count": 1295,
+  "bounds": {
+    "latitude_min": 59.99808120727539,
+    "latitude_max": 60.00699234008789,
+    "longitude_min": -0.009998738205965476,
+    "longitude_max": 0.011619402962161698,
+    "x_east_min_m": -453.88405120070473,
+    "x_east_max_m": 748.0100547128799,
+    "y_north_min_m": -219.29876892393173,
+    "y_north_max_m": 771.5753591338799,
+    "lap_distance_min_m": 0.0,
+    "lap_distance_max_m": 5819.385992504144
+  },
+  "laps": {
+    "0": {
+      "sample_count": 400,
+      "duration_s": 39.900000000000006,
+      "gps_coverage": 1.0,
+      "gps_path_m": 1186.1422008659058,
+      "lap_dist_min_m": 0.0010000000474974513,
+      "lap_dist_max_m": 5817.727621598496,
+      "lap_dist_span_m": 5817.726621598448
+    },
+    "1": {
+      "sample_count": 1295,
+      "duration_s": 129.4,
+      "gps_coverage": 1.0,
+      "gps_path_m": 5791.6026409230235,
+      "lap_dist_min_m": 0.0,
+      "lap_dist_max_m": 5819.385992504144,
+      "lap_dist_span_m": 5819.385992504144
+    },
+    "2": {
+      "sample_count": 1295,
+      "duration_s": 129.40000000000006,
+      "gps_coverage": 1.0,
+      "gps_path_m": 5796.0556933261405,
+      "lap_dist_min_m": 0.0,
+      "lap_dist_max_m": 5817.041367239691,
+      "lap_dist_span_m": 5817.041367239691
+    },
+    "3": {
+      "sample_count": 454,
+      "duration_s": 45.30000000000007,
+      "gps_coverage": 1.0,
+      "gps_path_m": 2014.3529220424111,
+      "lap_dist_min_m": 0.0,
+      "lap_dist_max_m": 2000.0924212271918,
+      "lap_dist_span_m": 2000.0924212271918
+    }
+  },
+  "outputs": {
+    "csv": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\track_exports\\sebring-lmu-wec17-v0.1_validation_lap1\\Sebring International Raceway_P_2026-09-01T16_06_03Z_track_gps.csv",
+    "geojson": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\track_exports\\sebring-lmu-wec17-v0.1_validation_lap1\\Sebring International Raceway_P_2026-09-01T16_06_03Z_track_gps.geojson"
+  }
+}

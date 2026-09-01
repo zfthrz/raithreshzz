@@ -17,12 +17,13 @@ def load_profile() -> dict:
     return json.loads(PROFILE_PATH.read_text(encoding="utf-8"))
 
 
-def test_sebring_profile_has_exact_lmu_identity_and_single_session_status() -> None:
+def test_sebring_profile_has_exact_lmu_identity_and_multi_session_status() -> None:
     profile = load_profile()
     assert profile["track"] == "Sebring International Raceway"
     assert profile["layout"] == "Sebring International Raceway"
-    assert profile["status"] == "VALIDATED_SINGLE_SESSION"
-    assert profile["calibration"]["requires_cross_session_validation"] is True
+    assert profile["status"] == "VALIDATED_MULTI_SESSION"
+    assert profile["calibration"]["requires_cross_session_validation"] is False
+    assert profile["calibration"]["validation_status"] == "PASS"
     assert profile["calibration"]["source_lap_internal_index"] == 3
     assert len(profile["calibration"]["same_session_validation_laps"]) == 3
 
@@ -41,14 +42,14 @@ def test_sebring_profile_preserves_official_seventeen_turn_sequence() -> None:
     assert all(first["end_m"] <= second["start_m"] for first, second in zip(turns, turns[1:]))
 
 
-def test_sebring_single_session_profile_fails_closed_for_production_lookup() -> None:
+def test_sebring_multi_session_profile_is_available_for_production_lookup() -> None:
     profile, path = find_validated_track_profile(
         PROFILE_DIR,
         track="Sebring International Raceway",
         layout="Sebring International Raceway",
     )
-    assert profile is None
-    assert path is None
+    assert profile is not None
+    assert path == PROFILE_PATH
 
 
 def test_sebring_profile_resolves_named_regions_deterministically() -> None:

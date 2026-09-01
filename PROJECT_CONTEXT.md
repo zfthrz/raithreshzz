@@ -1251,6 +1251,12 @@ intentional: long complexes generate multiple line-dependent curvature maxima, s
 the named interval is authoritative. See
 `docs/LA_SARTHE_TRACK_PROFILE_V0_1.md`.
 
+The authoritative operational workflow for creating and promoting LMU track
+profiles is `docs/TRACK_PROFILE_CREATION_AND_VALIDATION.md`. It requires exact
+track/layout identity, a fail-closed `VALIDATED_SINGLE_SESSION` phase, a stable
+independent session, per-lap deterministic geometry audits and explicit reviewed
+promotion. LLM output is never geometry or nomenclature authority.
+
 ### Schema v2 — CLOSED SHADOW_ONLY
 
 Schema v2 adds explicit `segments` array (straight/transition types) on top of

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "profile_id": "bahrain-lmu-wec15-v0.1",
-  "status": "VALIDATED_SINGLE_SESSION",
+  "status": "VALIDATED_MULTI_SESSION",
   "track": "Bahrain International Circuit",
   "layout": "Bahrain International Circuit",
   "distance_coordinate": "LMU Lap Dist",
@@ -15,8 +15,8 @@
     "gps_coverage": 1.0,
     "geometry_method": "GPS trajectory + signed curvature + FIA/WEC 15-turn sequence constrained calibration",
     "numbering_scheme": "FIA/WEC Bahrain Grand Prix 15-turn scheme",
-    "requires_cross_session_validation": true,
-    "validation_status": "PASS_SINGLE_SESSION",
+    "requires_cross_session_validation": false,
+    "validation_status": "PASS",
     "same_session_validation_laps": [
       {"lap_internal_index": 1, "lap_time_s_approx": 126.0, "lap_dist_max_m": 5381.5, "gps_path_m_approx": 5346.1, "gps_coverage": 1.0},
       {"lap_internal_index": 3, "lap_time_s_approx": 126.4, "lap_dist_max_m": 5379.4, "gps_path_m_approx": 5337.0, "gps_coverage": 1.0}
@@ -24,7 +24,34 @@
     "excluded_laps": [
       {"lap_internal_index": 2, "lap_time_s_approx": 138.1, "reason": "driver-reported spin; excluded from profile calibration"}
     ],
-    "interpretation": "The FIA/WEC 15-turn sequence is present in the source lap. T1-T3, T9-T10 and T14-T15 are continuous complexes, so signed local curvature and official ordering were used instead of treating repeated absolute-curvature maxima as separate corners. Independent-session validation is still required."
+    "validation_summary": {
+      "independent_sessions": [
+        {
+          "session": "Bahrain International Circuit_P_2026-09-01T16_13_30Z",
+          "lap_internal_index": 5,
+          "lap_time_s_approx": 124.6,
+          "lap_dist_max_m": 5383.3,
+          "gps_path_m_approx": 5322.4,
+          "gps_coverage": 1.0,
+          "method": "same-direction nearest local extremum inside each calibrated interval; 2 m resampling, 20 m heading window, 14 m smoothing",
+          "apex_pass_tolerance_m": 35.0,
+          "apex_warning_tolerance_m": 70.0,
+          "pass_count": 15,
+          "warning_count": 0,
+          "failure_count": 0,
+          "median_abs_offset_m": 2.962,
+          "max_abs_offset_m": 13.038,
+          "overall_status": "PASS"
+        }
+      ],
+      "additional_complete_laps": [
+        {"lap_internal_index": 1, "lap_time_s_approx": 125.0, "pass_count": 15, "warning_count": 0, "failure_count": 0, "median_abs_offset_m": 4.0, "max_abs_offset_m": 14.0, "overall_status": "PASS"},
+        {"lap_internal_index": 2, "lap_time_s_approx": 125.9, "pass_count": 15, "warning_count": 0, "failure_count": 0, "median_abs_offset_m": 4.0, "max_abs_offset_m": 18.0, "overall_status": "PASS"},
+        {"lap_internal_index": 3, "lap_time_s_approx": 125.3, "pass_count": 15, "warning_count": 0, "failure_count": 0, "median_abs_offset_m": 2.967, "max_abs_offset_m": 31.033, "overall_status": "PASS"},
+        {"lap_internal_index": 4, "lap_time_s_approx": 126.9, "pass_count": 15, "warning_count": 0, "failure_count": 0, "median_abs_offset_m": 5.91, "max_abs_offset_m": 18.09, "overall_status": "PASS"}
+      ]
+    },
+    "interpretation": "The FIA/WEC 15-turn sequence is present in the source lap and independently reproduced in a separate GT3 session. All five complete independent-session laps pass every calibrated region without warnings. T1-T3, T9-T10 and T14-T15 remain continuous complexes constrained by signed local curvature and official ordering."
   },
   "manual_low_curvature_turns": [
     {"turn": 2, "reason": "left exit of the T1 complex; absolute-curvature region is dominated by T1"},
@@ -59,7 +86,14 @@
     "gps_exports": [
       "track_exports/bahrain_profile/Bahrain International Circuit_P_2026-09-01T03_04_11Z_track_gps.csv",
       "track_exports/bahrain_profile/Bahrain International Circuit_P_2026-09-01T03_04_11Z_track_gps_summary.json",
-      "track_exports/bahrain_profile/Bahrain International Circuit_P_2026-09-01T03_04_11Z_turn_candidates.json"
+      "track_exports/bahrain_profile/Bahrain International Circuit_P_2026-09-01T03_04_11Z_turn_candidates.json",
+      "track_exports/bahrain-lmu-wec15-v0.1_validation_lap5/Bahrain International Circuit_P_2026-09-01T16_13_30Z_track_gps.csv",
+      "track_exports/bahrain-lmu-wec15-v0.1_validation_lap5/Bahrain International Circuit_P_2026-09-01T16_13_30Z_track_gps_summary.json",
+      "track_exports/bahrain-lmu-wec15-v0.1_validation_lap5/validation_report.json",
+      "track_exports/bahrain-lmu-wec15-v0.1_validation_lap1/validation_report.json",
+      "track_exports/bahrain-lmu-wec15-v0.1_validation/validation_report.json",
+      "track_exports/bahrain-lmu-wec15-v0.1_validation_lap3/validation_report.json",
+      "track_exports/bahrain-lmu-wec15-v0.1_validation_lap4/validation_report.json"
     ],
     "reference_urls": [
       "https://www.fia.com/system/files/decision-document/2025_bahrain_grand_prix_-_event_notes_-_circuit_map_v4.pdf",

@@ -1,0 +1,94 @@
+{
+  "source_file": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Le Mans Ultimate\\UserData\\Telemetry\\Algarve International Circuit_P_2026-09-01T02_48_22Z.duckdb",
+  "track_name": "Algarve International Circuit",
+  "track_layout": "Algarve International Circuit",
+  "selected_lap": 0,
+  "time_source": "GPS Time.value",
+  "lap_boundary_source": "Lap.ts",
+  "lap_distance_boundary_repairs": {
+    "1": {
+      "sample_index": 1296,
+      "original_lap_dist_m": 4631.0322265625,
+      "repaired_lap_dist_m": 0.0,
+      "next_sample_lap_dist_m": 5.703488462382001,
+      "reason": "boundary_linear_interpolation_across_lap_dist_reset"
+    }
+  },
+  "target_hz": 10.0,
+  "channel_modes": {
+    "GPS Time": {
+      "mode": "rowid",
+      "row_count": 13967,
+      "columns": [
+        "value"
+      ]
+    },
+    "GPS Latitude": {
+      "mode": "rowid",
+      "row_count": 1397,
+      "columns": [
+        "value"
+      ]
+    },
+    "GPS Longitude": {
+      "mode": "rowid",
+      "row_count": 1397,
+      "columns": [
+        "value"
+      ]
+    },
+    "Lap Dist": {
+      "mode": "rowid",
+      "row_count": 1397,
+      "columns": [
+        "value"
+      ]
+    }
+  },
+  "selected_lap_metrics": {
+    "sample_count": 1296,
+    "duration_s": 129.5,
+    "gps_coverage": 1.0,
+    "gps_path_m": 4597.362073614356,
+    "lap_dist_min_m": 2.6636117547566645e-05,
+    "lap_dist_max_m": 4627.187753265744,
+    "lap_dist_span_m": 4627.187726629626
+  },
+  "exported_point_count": 1296,
+  "bounds": {
+    "latitude_min": 59.99452590942383,
+    "latitude_max": 60.004825592041016,
+    "longitude_min": -0.004848514270631175,
+    "longitude_max": 0.007233764845293726,
+    "x_east_min_m": -129.01400145210096,
+    "x_east_max_m": 542.7277885137273,
+    "y_north_min_m": -667.6523448471073,
+    "y_north_max_m": 477.6216901519413,
+    "lap_distance_min_m": 2.6636117547566645e-05,
+    "lap_distance_max_m": 4627.187753265744
+  },
+  "laps": {
+    "0": {
+      "sample_count": 1296,
+      "duration_s": 129.5,
+      "gps_coverage": 1.0,
+      "gps_path_m": 4597.362073614356,
+      "lap_dist_min_m": 2.6636117547566645e-05,
+      "lap_dist_max_m": 4627.187753265744,
+      "lap_dist_span_m": 4627.187726629626
+    },
+    "1": {
+      "sample_count": 101,
+      "duration_s": 10.0,
+      "gps_coverage": 1.0,
+      "gps_path_m": 523.7540133048385,
+      "lap_dist_min_m": 0.0,
+      "lap_dist_max_m": 515.4995690741408,
+      "lap_dist_span_m": 515.4995690741408
+    }
+  },
+  "outputs": {
+    "csv": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\track_exports\\portimao-lmu-wec15-v0.1_validation\\Algarve International Circuit_P_2026-09-01T02_48_22Z_track_gps.csv",
+    "geojson": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\track_exports\\portimao-lmu-wec15-v0.1_validation\\Algarve International Circuit_P_2026-09-01T02_48_22Z_track_gps.geojson"
+  }
+}

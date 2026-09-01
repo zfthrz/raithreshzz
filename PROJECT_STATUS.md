@@ -588,6 +588,19 @@ Circuit de la Sarthe track-profile checkpoint:
 
 See `docs/LA_SARTHE_TRACK_PROFILE_V0_1.md`.
 
+Track-profile expansion checkpoint (2026-09-01):
+- Portimao, Silverstone WEC and Laguna Seca have independent-session deterministic
+  geometry evidence and are `VALIDATED_MULTI_SESSION`;
+- Bahrain is `VALIDATED_MULTI_SESSION` after five clean independent-session laps;
+- Sebring is `VALIDATED_MULTI_SESSION` after two clean independent-session laps;
+- `discover_track_profile_validation_candidates.py` finds exact independent LMU
+  candidates read-only, excludes the source session, respects stability and rejects
+  partial GPS laps;
+- `validate_track_profile_session.py` audits every calibrated turn without modifying
+  or promoting the profile;
+- the complete manual/local-LLM workflow is documented in
+  `docs/TRACK_PROFILE_CREATION_AND_VALIDATION.md`.
+
 ### Track profile schema v2 — CLOSED SHADOW_ONLY
 
 Schema v2 adds explicit `segments` array (straight/transition types) on top of

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "profile_id": "laguna-seca-lmu-imsa11-v0.1",
-  "status": "VALIDATED_SINGLE_SESSION",
+  "status": "VALIDATED_MULTI_SESSION",
   "track": "WeatherTech Raceway Laguna Seca",
   "layout": "WeatherTech Raceway Laguna Seca",
   "distance_coordinate": "LMU Lap Dist",
@@ -15,15 +15,60 @@
     "gps_coverage": 1.0,
     "geometry_method": "GPS trajectory + signed curvature + IMSA 11-turn/T8A constrained calibration",
     "numbering_scheme": "IMSA WeatherTech Raceway Laguna Seca 11-turn scheme with T8A subturn",
-    "requires_cross_session_validation": true,
-    "validation_status": "PASS_SINGLE_SESSION",
+    "requires_cross_session_validation": false,
+    "validation_status": "PASS",
     "same_session_validation_laps": [
       {"lap_internal_index": 1, "lap_time_s_approx": 87.1, "lap_dist_max_m": 3585.0, "gps_path_m_approx": 3546.5, "gps_coverage": 1.0},
       {"lap_internal_index": 2, "lap_time_s_approx": 87.5, "lap_dist_max_m": 3583.5, "gps_path_m_approx": 3536.6, "gps_coverage": 1.0},
       {"lap_internal_index": 4, "lap_time_s_approx": 86.8, "lap_dist_max_m": 3585.2, "gps_path_m_approx": 3545.1, "gps_coverage": 1.0}
     ],
     "excluded_laps": [],
-    "interpretation": "The IMSA sequence is present in the source lap. T1 and T7 are low-curvature bends. T8 and T8A are represented as one numbered Corkscrew interval because the current profile contract requires integer turn identities; explicit structured components preserve the left-right geometry without inventing a twelfth turn. Independent-session validation is still required."
+    "validation_summary": {
+      "independent_sessions": [
+        {
+          "session": "WeatherTech Raceway Laguna Seca_P_2026-09-01T15_27_11Z",
+          "lap_internal_index": 1,
+          "lap_time_s_approx": 87.1,
+          "lap_dist_max_m": 3585.3,
+          "gps_path_m_approx": 3549.4,
+          "gps_coverage": 1.0,
+          "method": "same-direction nearest local extremum inside each calibrated interval; 2 m resampling, 20 m heading window, 14 m smoothing",
+          "apex_pass_tolerance_m": 35.0,
+          "apex_warning_tolerance_m": 70.0,
+          "pass_count": 11,
+          "warning_count": 0,
+          "failure_count": 0,
+          "median_abs_offset_m": 2.001,
+          "max_abs_offset_m": 10.001,
+          "overall_status": "PASS"
+        }
+      ],
+      "additional_complete_laps": [
+        {
+          "session": "WeatherTech Raceway Laguna Seca_P_2026-09-01T15_27_11Z",
+          "lap_internal_index": 3,
+          "lap_time_s_approx": 88.1,
+          "pass_count": 11,
+          "warning_count": 0,
+          "failure_count": 0,
+          "median_abs_offset_m": 3.841,
+          "max_abs_offset_m": 14.159,
+          "overall_status": "PASS"
+        },
+        {
+          "session": "WeatherTech Raceway Laguna Seca_P_2026-09-01T15_27_11Z",
+          "lap_internal_index": 4,
+          "lap_time_s_approx": 88.6,
+          "pass_count": 11,
+          "warning_count": 0,
+          "failure_count": 0,
+          "median_abs_offset_m": 4.84,
+          "max_abs_offset_m": 11.16,
+          "overall_status": "PASS"
+        }
+      ]
+    },
+    "interpretation": "The IMSA sequence is present in the source lap and independently reproduced in a separate GT3 session. All 11 calibrated regions pass the signed-curvature cross-session audit; two additional complete laps from the independent session also pass without warnings. T1 and T7 are low-curvature bends. T8 and T8A remain one integer Corkscrew identity with structured left-right components."
   },
   "manual_low_curvature_turns": [
     {"turn": 1, "reason": "flat left crest on the start-finish run before Andretti Hairpin"},
@@ -52,7 +97,12 @@
     "gps_exports": [
       "track_exports/laguna_seca_profile/WeatherTech Raceway Laguna Seca_P_2026-09-01T03_33_35Z_track_gps.csv",
       "track_exports/laguna_seca_profile/WeatherTech Raceway Laguna Seca_P_2026-09-01T03_33_35Z_track_gps_summary.json",
-      "track_exports/laguna_seca_profile/WeatherTech Raceway Laguna Seca_P_2026-09-01T03_33_35Z_turn_candidates.json"
+      "track_exports/laguna_seca_profile/WeatherTech Raceway Laguna Seca_P_2026-09-01T03_33_35Z_turn_candidates.json",
+      "track_exports/laguna-seca-lmu-imsa11-v0.1_validation_lap1/WeatherTech Raceway Laguna Seca_P_2026-09-01T15_27_11Z_track_gps.csv",
+      "track_exports/laguna-seca-lmu-imsa11-v0.1_validation_lap1/WeatherTech Raceway Laguna Seca_P_2026-09-01T15_27_11Z_track_gps_summary.json",
+      "track_exports/laguna-seca-lmu-imsa11-v0.1_validation_lap1/validation_report.json",
+      "track_exports/laguna-seca-lmu-imsa11-v0.1_validation_lap3/validation_report.json",
+      "track_exports/laguna-seca-lmu-imsa11-v0.1_validation_lap4/validation_report.json"
     ],
     "reference_urls": [
       "https://www.imsa.com/wp-content/uploads/sites/32/2026/04/23/2026-IMSA-WRLS-Photo-Video-Meeting_v3.pdf",

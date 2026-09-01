@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "profile_id": "portimao-lmu-wec15-v0.1",
-  "status": "VALIDATED_SINGLE_SESSION",
+  "status": "VALIDATED_MULTI_SESSION",
   "track": "Algarve International Circuit",
   "layout": "Algarve International Circuit",
   "distance_coordinate": "LMU Lap Dist",
@@ -15,8 +15,8 @@
     "gps_coverage": 1.0,
     "geometry_method": "GPS trajectory + signed curvature + FIA/WEC 15-turn direction-sequence constrained calibration",
     "numbering_scheme": "FIA/WEC Portimao 15-turn scheme",
-    "requires_cross_session_validation": true,
-    "validation_status": "PASS_SINGLE_SESSION",
+    "requires_cross_session_validation": false,
+    "validation_status": "PASS",
     "same_session_validation_laps": [
       {"lap_internal_index": 1, "lap_time_s_approx": 111.4, "lap_dist_max_m": 4632.4, "gps_path_m_approx": 4575.1, "gps_coverage": 1.0},
       {"lap_internal_index": 4, "lap_time_s_approx": 111.5, "lap_dist_max_m": 4628.7, "gps_path_m_approx": 4573.3, "gps_coverage": 1.0}
@@ -24,7 +24,28 @@
     "excluded_laps": [
       {"lap_internal_index": 2, "lap_time_s_approx": 127.4, "reason": "driver-reported spin; excluded from profile calibration"}
     ],
-    "interpretation": "All 15 FIA/WEC turns are represented in the clean source lap. Repeated local maxima inside T7-T8, T10-T11, T14 and T15 were reconciled by official sequence and direction rather than treated as additional turns. Independent-session validation is still required."
+    "validation_summary": {
+      "independent_sessions": [
+        {
+          "session": "Algarve International Circuit_P_2026-09-01T02_48_22Z",
+          "lap_internal_index": 0,
+          "lap_time_s_approx": 129.5,
+          "lap_dist_max_m": 4627.2,
+          "gps_path_m_approx": 4597.4,
+          "gps_coverage": 1.0,
+          "method": "same-direction nearest local extremum inside each calibrated interval; 2 m resampling, 20 m heading window, 14 m smoothing",
+          "apex_pass_tolerance_m": 35.0,
+          "apex_warning_tolerance_m": 70.0,
+          "pass_count": 15,
+          "warning_count": 0,
+          "failure_count": 0,
+          "median_abs_offset_m": 6.0,
+          "max_abs_offset_m": 22.0,
+          "overall_status": "PASS"
+        }
+      ]
+    },
+    "interpretation": "All 15 FIA/WEC turns are represented in the clean source lap and independently reproduced in a separate GT3 session. Every calibrated region passes the signed-curvature cross-session audit. Repeated local maxima inside T7-T8, T10-T11, T14 and T15 remain reconciled by official sequence and direction rather than treated as additional turns."
   },
   "manual_low_curvature_turns": [
     {"turn": 6, "reason": "gentle uphill left below the strongest automatic curvature candidates"},
@@ -59,7 +80,10 @@
     "gps_exports": [
       "track_exports/portimao_profile/Algarve International Circuit_P_2026-09-01T02_52_16Z_track_gps.csv",
       "track_exports/portimao_profile/Algarve International Circuit_P_2026-09-01T02_52_16Z_track_gps_summary.json",
-      "track_exports/portimao_profile/Algarve International Circuit_P_2026-09-01T02_52_16Z_turn_candidates.json"
+      "track_exports/portimao_profile/Algarve International Circuit_P_2026-09-01T02_52_16Z_turn_candidates.json",
+      "track_exports/portimao-lmu-wec15-v0.1_validation/Algarve International Circuit_P_2026-09-01T02_48_22Z_track_gps.csv",
+      "track_exports/portimao-lmu-wec15-v0.1_validation/Algarve International Circuit_P_2026-09-01T02_48_22Z_track_gps_summary.json",
+      "track_exports/portimao-lmu-wec15-v0.1_validation/validation_report.json"
     ],
     "reference_urls": [
       "https://www.fiawec.com/en/news/two-weeks-until-portimao-the-track-explained/7613",

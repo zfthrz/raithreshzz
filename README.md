@@ -415,6 +415,10 @@ Sólo perfiles `VALIDATED` o `VALIDATED_MULTI_SESSION` deben activarse automáti
 
 Para el procedimiento detallado de construcción de perfiles, consultar `README_GUIA_USUARIO.md`.
 
+El procedimiento reproducible vigente —creación provisional, detección de una
+segunda sesión, auditoría vuelta por vuelta y promoción explícita— está en
+[`docs/TRACK_PROFILE_CREATION_AND_VALIDATION.md`](docs/TRACK_PROFILE_CREATION_AND_VALIDATION.md).
+
 ### Circuit de la Sarthe
 
 `track_profiles/la_sarthe_profile_v0_1.json` está validado sobre cinco vueltas

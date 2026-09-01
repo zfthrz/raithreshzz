@@ -1,0 +1,205 @@
+{
+  "version": "0.1",
+  "mode": "AUDIT_READ_ONLY",
+  "profile_mutated": false,
+  "automatic_promotion": false,
+  "profile_id": "silverstone-lmu-wec18-v0.1",
+  "profile_status": "VALIDATED_SINGLE_SESSION",
+  "profile_track": "Silverstone Circuit",
+  "profile_layout": "Silverstone Grand Prix Circuit - WEC",
+  "independent_session": "Silverstone Circuit_P_2026-09-01T03_42_58Z",
+  "selected_lap": 1,
+  "method": "same-direction nearest local extremum inside each calibrated interval; 2 m resampling, 20 m heading window, 14 m smoothing",
+  "apex_pass_tolerance_m": 35.0,
+  "apex_warning_tolerance_m": 70.0,
+  "pass_count": 18,
+  "warning_count": 0,
+  "failure_count": 0,
+  "median_abs_offset_m": 4.0,
+  "max_abs_offset_m": 26.0,
+  "overall_status": "PASS",
+  "promotion_readiness": "READY_FOR_EXPLICIT_PROMOTION",
+  "contract_errors": [],
+  "turn_results": [
+    {
+      "turn": 1,
+      "name": "Abbey",
+      "direction": "right",
+      "expected_apex_m": 278.0,
+      "observed_apex_m": 280.0,
+      "offset_m": 2.0,
+      "observed_signed_curvature_rad_per_m": -0.005592549021444071,
+      "status": "PASS"
+    },
+    {
+      "turn": 2,
+      "name": "Farm",
+      "direction": "left",
+      "expected_apex_m": 536.0,
+      "observed_apex_m": 534.0,
+      "offset_m": -2.0,
+      "observed_signed_curvature_rad_per_m": 0.00403522238134707,
+      "status": "PASS"
+    },
+    {
+      "turn": 3,
+      "name": "Village",
+      "direction": "right",
+      "expected_apex_m": 762.0,
+      "observed_apex_m": 762.0,
+      "offset_m": 0.0,
+      "observed_signed_curvature_rad_per_m": -0.02142843150088082,
+      "status": "PASS"
+    },
+    {
+      "turn": 4,
+      "name": "The Loop",
+      "direction": "left",
+      "expected_apex_m": 946.0,
+      "observed_apex_m": 942.0,
+      "offset_m": -4.0,
+      "observed_signed_curvature_rad_per_m": 0.02823245589569867,
+      "status": "PASS"
+    },
+    {
+      "turn": 5,
+      "name": "Aintree",
+      "direction": "left",
+      "expected_apex_m": 1128.0,
+      "observed_apex_m": 1136.0,
+      "offset_m": 8.0,
+      "observed_signed_curvature_rad_per_m": 0.0065867334405714795,
+      "status": "PASS"
+    },
+    {
+      "turn": 6,
+      "name": "Brooklands",
+      "direction": "left",
+      "expected_apex_m": 1892.0,
+      "observed_apex_m": 1890.0,
+      "offset_m": -2.0,
+      "observed_signed_curvature_rad_per_m": 0.019945289870178406,
+      "status": "PASS"
+    },
+    {
+      "turn": 7,
+      "name": "Luffield",
+      "direction": "right",
+      "expected_apex_m": 2078.0,
+      "observed_apex_m": 2074.0,
+      "offset_m": -4.0,
+      "observed_signed_curvature_rad_per_m": -0.019866247298515494,
+      "status": "PASS"
+    },
+    {
+      "turn": 8,
+      "name": "Woodcote",
+      "direction": "right",
+      "expected_apex_m": 2460.0,
+      "observed_apex_m": 2456.0,
+      "offset_m": -4.0,
+      "observed_signed_curvature_rad_per_m": -0.0018144189612998435,
+      "status": "PASS"
+    },
+    {
+      "turn": 9,
+      "name": "Copse",
+      "direction": "right",
+      "expected_apex_m": 2948.0,
+      "observed_apex_m": 2950.0,
+      "offset_m": 2.0,
+      "observed_signed_curvature_rad_per_m": -0.004466565240454051,
+      "status": "PASS"
+    },
+    {
+      "turn": 10,
+      "name": "Maggotts",
+      "direction": "left",
+      "expected_apex_m": 3450.0,
+      "observed_apex_m": 3446.0,
+      "offset_m": -4.0,
+      "observed_signed_curvature_rad_per_m": 0.0036385401374176563,
+      "status": "PASS"
+    },
+    {
+      "turn": 11,
+      "name": "Maggotts",
+      "direction": "right",
+      "expected_apex_m": 3620.0,
+      "observed_apex_m": 3614.0,
+      "offset_m": -6.0,
+      "observed_signed_curvature_rad_per_m": -0.006506495606349472,
+      "status": "PASS"
+    },
+    {
+      "turn": 12,
+      "name": "Becketts",
+      "direction": "left",
+      "expected_apex_m": 3742.0,
+      "observed_apex_m": 3748.0,
+      "offset_m": 6.0,
+      "observed_signed_curvature_rad_per_m": 0.0069354593041890955,
+      "status": "PASS"
+    },
+    {
+      "turn": 13,
+      "name": "Becketts",
+      "direction": "right",
+      "expected_apex_m": 3920.0,
+      "observed_apex_m": 3930.0,
+      "offset_m": 10.0,
+      "observed_signed_curvature_rad_per_m": -0.01323471166560175,
+      "status": "PASS"
+    },
+    {
+      "turn": 14,
+      "name": "Chapel",
+      "direction": "left",
+      "expected_apex_m": 4068.0,
+      "observed_apex_m": 4072.0,
+      "offset_m": 4.0,
+      "observed_signed_curvature_rad_per_m": 0.004020100645887759,
+      "status": "PASS"
+    },
+    {
+      "turn": 15,
+      "name": "Stowe",
+      "direction": "right",
+      "expected_apex_m": 4968.0,
+      "observed_apex_m": 4968.0,
+      "offset_m": 0.0,
+      "observed_signed_curvature_rad_per_m": -0.006903898199349667,
+      "status": "PASS"
+    },
+    {
+      "turn": 16,
+      "name": "Vale",
+      "direction": "left",
+      "expected_apex_m": 5396.0,
+      "observed_apex_m": 5400.0,
+      "offset_m": 4.0,
+      "observed_signed_curvature_rad_per_m": 0.03706520364714461,
+      "status": "PASS"
+    },
+    {
+      "turn": 17,
+      "name": "Club",
+      "direction": "right",
+      "expected_apex_m": 5448.0,
+      "observed_apex_m": 5446.0,
+      "offset_m": -2.0,
+      "observed_signed_curvature_rad_per_m": -0.031350659591186436,
+      "status": "PASS"
+    },
+    {
+      "turn": 18,
+      "name": "Club",
+      "direction": "right",
+      "expected_apex_m": 5618.0,
+      "observed_apex_m": 5644.0,
+      "offset_m": 26.0,
+      "observed_signed_curvature_rad_per_m": -0.007140001286564945,
+      "status": "PASS"
+    }
+  ]
+}

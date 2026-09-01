@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "profile_id": "sebring-lmu-wec17-v0.1",
-  "status": "VALIDATED_SINGLE_SESSION",
+  "status": "VALIDATED_MULTI_SESSION",
   "track": "Sebring International Raceway",
   "layout": "Sebring International Raceway",
   "distance_coordinate": "LMU Lap Dist",
@@ -15,15 +15,48 @@
     "gps_coverage": 1.0,
     "geometry_method": "GPS trajectory + signed curvature + FIA WEC/Sebring 17-turn sequence constrained calibration",
     "numbering_scheme": "FIA WEC / Sebring 17-turn scheme",
-    "requires_cross_session_validation": true,
-    "validation_status": "PASS_SINGLE_SESSION",
+    "requires_cross_session_validation": false,
+    "validation_status": "PASS",
     "same_session_validation_laps": [
       {"lap_internal_index": 1, "lap_time_s_approx": 133.4, "lap_dist_max_m": 5815.4, "gps_path_m_approx": 5810.1, "gps_coverage": 1.0},
       {"lap_internal_index": 2, "lap_time_s_approx": 131.9, "lap_dist_max_m": 5813.9, "gps_path_m_approx": 5799.3, "gps_coverage": 1.0},
       {"lap_internal_index": 4, "lap_time_s_approx": 129.1, "lap_dist_max_m": 5817.4, "gps_path_m_approx": 5789.3, "gps_coverage": 1.0}
     ],
     "excluded_laps": [],
-    "interpretation": "The 17-turn official sequence is present in the source lap. Flat or continuous bends T2, T6, T8 and T12 were retained from official ordering even where absolute-curvature peak selection absorbs them into adjacent geometry. Independent-session validation is still required."
+    "validation_summary": {
+      "independent_sessions": [
+        {
+          "session": "Sebring International Raceway_P_2026-09-01T16_06_03Z",
+          "lap_internal_index": 1,
+          "lap_time_s_approx": 129.4,
+          "lap_dist_max_m": 5819.4,
+          "gps_path_m_approx": 5791.6,
+          "gps_coverage": 1.0,
+          "method": "same-direction nearest local extremum inside each calibrated interval; 2 m resampling, 20 m heading window, 14 m smoothing",
+          "apex_pass_tolerance_m": 35.0,
+          "apex_warning_tolerance_m": 70.0,
+          "pass_count": 17,
+          "warning_count": 0,
+          "failure_count": 0,
+          "median_abs_offset_m": 4.0,
+          "max_abs_offset_m": 10.0,
+          "overall_status": "PASS"
+        }
+      ],
+      "additional_complete_laps": [
+        {
+          "lap_internal_index": 2,
+          "lap_time_s_approx": 129.4,
+          "pass_count": 17,
+          "warning_count": 0,
+          "failure_count": 0,
+          "median_abs_offset_m": 2.0,
+          "max_abs_offset_m": 12.0,
+          "overall_status": "PASS"
+        }
+      ]
+    },
+    "interpretation": "The official 17-turn sequence is present in the source lap and independently reproduced in two complete laps from a separate GT3 session. Every calibrated region passes without warnings. Flat or continuous bends T2, T6, T8 and T12 remain constrained by official ordering where absolute-curvature selection merges them into adjacent geometry."
   },
   "manual_low_curvature_turns": [
     {"turn": 2, "reason": "short right kink between T1 and the T3 braking zone"},
@@ -60,7 +93,11 @@
     "gps_exports": [
       "track_exports/sebring_profile/Sebring International Raceway_P_2026-09-01T03_22_24Z_track_gps.csv",
       "track_exports/sebring_profile/Sebring International Raceway_P_2026-09-01T03_22_24Z_track_gps_summary.json",
-      "track_exports/sebring_profile/Sebring International Raceway_P_2026-09-01T03_22_24Z_turn_candidates.json"
+      "track_exports/sebring_profile/Sebring International Raceway_P_2026-09-01T03_22_24Z_turn_candidates.json",
+      "track_exports/sebring-lmu-wec17-v0.1_validation_lap1/Sebring International Raceway_P_2026-09-01T16_06_03Z_track_gps.csv",
+      "track_exports/sebring-lmu-wec17-v0.1_validation_lap1/Sebring International Raceway_P_2026-09-01T16_06_03Z_track_gps_summary.json",
+      "track_exports/sebring-lmu-wec17-v0.1_validation_lap1/validation_report.json",
+      "track_exports/sebring-lmu-wec17-v0.1_validation/validation_report.json"
     ],
     "reference_urls": [
       "https://dgaddcosprod.blob.core.windows.net/b2c-experience-production/attachments/cl1ftc9pz0cl901k4k380o0wl-racecard-2022-wec-r01.pdf",

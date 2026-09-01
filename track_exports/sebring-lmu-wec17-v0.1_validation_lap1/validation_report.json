@@ -1,0 +1,195 @@
+{
+  "version": "0.1",
+  "mode": "AUDIT_READ_ONLY",
+  "profile_mutated": false,
+  "automatic_promotion": false,
+  "profile_id": "sebring-lmu-wec17-v0.1",
+  "profile_status": "VALIDATED_SINGLE_SESSION",
+  "profile_track": "Sebring International Raceway",
+  "profile_layout": "Sebring International Raceway",
+  "independent_session": "Sebring International Raceway_P_2026-09-01T16_06_03Z",
+  "selected_lap": 1,
+  "method": "same-direction nearest local extremum inside each calibrated interval; 2 m resampling, 20 m heading window, 14 m smoothing",
+  "apex_pass_tolerance_m": 35.0,
+  "apex_warning_tolerance_m": 70.0,
+  "pass_count": 17,
+  "warning_count": 0,
+  "failure_count": 0,
+  "median_abs_offset_m": 4.0,
+  "max_abs_offset_m": 10.0,
+  "overall_status": "PASS",
+  "promotion_readiness": "READY_FOR_EXPLICIT_PROMOTION",
+  "contract_errors": [],
+  "turn_results": [
+    {
+      "turn": 1,
+      "name": "Turn 1",
+      "direction": "left",
+      "expected_apex_m": 562.0,
+      "observed_apex_m": 558.0,
+      "offset_m": -4.0,
+      "observed_signed_curvature_rad_per_m": 0.008339669180710718,
+      "status": "PASS"
+    },
+    {
+      "turn": 2,
+      "name": "Turn 2",
+      "direction": "right",
+      "expected_apex_m": 748.0,
+      "observed_apex_m": 752.0,
+      "offset_m": 4.0,
+      "observed_signed_curvature_rad_per_m": -0.0016252553342833154,
+      "status": "PASS"
+    },
+    {
+      "turn": 3,
+      "name": "Turn 3",
+      "direction": "left",
+      "expected_apex_m": 938.0,
+      "observed_apex_m": 940.0,
+      "offset_m": 2.0,
+      "observed_signed_curvature_rad_per_m": 0.01760932732153342,
+      "status": "PASS"
+    },
+    {
+      "turn": 4,
+      "name": "Turn 4",
+      "direction": "right",
+      "expected_apex_m": 1010.0,
+      "observed_apex_m": 1000.0,
+      "offset_m": -10.0,
+      "observed_signed_curvature_rad_per_m": -0.007980784532832907,
+      "status": "PASS"
+    },
+    {
+      "turn": 5,
+      "name": "Turn 5",
+      "direction": "left",
+      "expected_apex_m": 1130.0,
+      "observed_apex_m": 1138.0,
+      "offset_m": 8.0,
+      "observed_signed_curvature_rad_per_m": 0.016626244575512983,
+      "status": "PASS"
+    },
+    {
+      "turn": 6,
+      "name": "Gurney Bend",
+      "direction": "right",
+      "expected_apex_m": 1508.0,
+      "observed_apex_m": 1512.0,
+      "offset_m": 4.0,
+      "observed_signed_curvature_rad_per_m": -0.0003808831529242829,
+      "status": "PASS"
+    },
+    {
+      "turn": 7,
+      "name": "Hairpin",
+      "direction": "right",
+      "expected_apex_m": 1994.0,
+      "observed_apex_m": 1986.0,
+      "offset_m": -8.0,
+      "observed_signed_curvature_rad_per_m": -0.03479164708823296,
+      "status": "PASS"
+    },
+    {
+      "turn": 8,
+      "name": "Kristensen Corner",
+      "direction": "right",
+      "expected_apex_m": 2176.0,
+      "observed_apex_m": 2176.0,
+      "offset_m": 0.0,
+      "observed_signed_curvature_rad_per_m": -0.003213885122597987,
+      "status": "PASS"
+    },
+    {
+      "turn": 9,
+      "name": "Turn 9",
+      "direction": "left",
+      "expected_apex_m": 2396.0,
+      "observed_apex_m": 2404.0,
+      "offset_m": 8.0,
+      "observed_signed_curvature_rad_per_m": 0.004569873150425327,
+      "status": "PASS"
+    },
+    {
+      "turn": 10,
+      "name": "Cunningham Corner",
+      "direction": "right",
+      "expected_apex_m": 2754.0,
+      "observed_apex_m": 2756.0,
+      "offset_m": 2.0,
+      "observed_signed_curvature_rad_per_m": -0.0266553870896504,
+      "status": "PASS"
+    },
+    {
+      "turn": 11,
+      "name": "Collier Curve",
+      "direction": "left",
+      "expected_apex_m": 2908.0,
+      "observed_apex_m": 2902.0,
+      "offset_m": -6.0,
+      "observed_signed_curvature_rad_per_m": 0.0034671385014321404,
+      "status": "PASS"
+    },
+    {
+      "turn": 12,
+      "name": "Turn 12",
+      "direction": "right",
+      "expected_apex_m": 3262.0,
+      "observed_apex_m": 3258.0,
+      "offset_m": -4.0,
+      "observed_signed_curvature_rad_per_m": -0.015511511230049152,
+      "status": "PASS"
+    },
+    {
+      "turn": 13,
+      "name": "Tower Turn",
+      "direction": "right",
+      "expected_apex_m": 4026.0,
+      "observed_apex_m": 4036.0,
+      "offset_m": 10.0,
+      "observed_signed_curvature_rad_per_m": -0.016965853445706336,
+      "status": "PASS"
+    },
+    {
+      "turn": 14,
+      "name": "Bishop Bend",
+      "direction": "left",
+      "expected_apex_m": 4106.0,
+      "observed_apex_m": 4102.0,
+      "offset_m": -4.0,
+      "observed_signed_curvature_rad_per_m": 0.0040280582735029435,
+      "status": "PASS"
+    },
+    {
+      "turn": 15,
+      "name": "Turn 15",
+      "direction": "right",
+      "expected_apex_m": 4236.0,
+      "observed_apex_m": 4236.0,
+      "offset_m": 0.0,
+      "observed_signed_curvature_rad_per_m": -0.016171786963962154,
+      "status": "PASS"
+    },
+    {
+      "turn": 16,
+      "name": "Le Mans Curve",
+      "direction": "right",
+      "expected_apex_m": 4282.0,
+      "observed_apex_m": 4292.0,
+      "offset_m": 10.0,
+      "observed_signed_curvature_rad_per_m": -0.008355815520037613,
+      "status": "PASS"
+    },
+    {
+      "turn": 17,
+      "name": "Turn 17",
+      "direction": "right",
+      "expected_apex_m": 5436.0,
+      "observed_apex_m": 5438.0,
+      "offset_m": 2.0,
+      "observed_signed_curvature_rad_per_m": -0.010494182289559173,
+      "status": "PASS"
+    }
+  ]
+}

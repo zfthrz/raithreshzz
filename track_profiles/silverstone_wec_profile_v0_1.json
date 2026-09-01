@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "profile_id": "silverstone-lmu-wec18-v0.1",
-  "status": "VALIDATED_SINGLE_SESSION",
+  "status": "VALIDATED_MULTI_SESSION",
   "track": "Silverstone Circuit",
   "layout": "Silverstone Grand Prix Circuit - WEC",
   "distance_coordinate": "LMU Lap Dist",
@@ -15,14 +15,35 @@
     "gps_coverage": 1.0,
     "geometry_method": "GPS trajectory + signed curvature + FIA Silverstone 18-turn sequence constrained calibration",
     "numbering_scheme": "FIA Silverstone Grand Prix 18-turn scheme",
-    "requires_cross_session_validation": true,
-    "validation_status": "PASS_SINGLE_SESSION",
+    "requires_cross_session_validation": false,
+    "validation_status": "PASS",
     "same_session_validation_laps": [
       {"lap_internal_index": 1, "lap_time_s_approx": 115.2, "lap_dist_max_m": 5863.2, "gps_path_m_approx": 5808.1, "gps_coverage": 1.0},
       {"lap_internal_index": 2, "lap_time_s_approx": 115.0, "lap_dist_max_m": 5857.7, "gps_path_m_approx": 5793.2, "gps_coverage": 1.0}
     ],
     "excluded_laps": [],
-    "interpretation": "The FIA 18-turn sequence is present in the source lap. Abbey/Farm, Luffield/Woodcote, Maggotts/Becketts/Chapel and Vale/Club are continuous complexes, so signed curvature and official ordering were used instead of treating repeated absolute-curvature maxima as independent corners. Independent-session validation is still required."
+    "validation_summary": {
+      "independent_sessions": [
+        {
+          "session": "Silverstone Circuit_P_2026-09-01T03_42_58Z",
+          "lap_internal_index": 1,
+          "lap_time_s_approx": 138.7,
+          "lap_dist_max_m": 5866.8,
+          "gps_path_m_approx": 5855.8,
+          "gps_coverage": 1.0,
+          "method": "same-direction nearest local extremum inside each calibrated interval; 2 m resampling, 20 m heading window, 14 m smoothing",
+          "apex_pass_tolerance_m": 35.0,
+          "apex_warning_tolerance_m": 70.0,
+          "pass_count": 18,
+          "warning_count": 0,
+          "failure_count": 0,
+          "median_abs_offset_m": 4.0,
+          "max_abs_offset_m": 26.0,
+          "overall_status": "PASS"
+        }
+      ]
+    },
+    "interpretation": "The FIA 18-turn sequence is present in the source lap and independently reproduced in a separate GT3 session. All 18 calibrated regions pass the signed-curvature cross-session audit. Abbey/Farm, Luffield/Woodcote, Maggotts/Becketts/Chapel and Vale/Club remain continuous complexes constrained by official ordering."
   },
   "manual_low_curvature_turns": [
     {"turn": 8, "reason": "sweeping Woodcote continuation after Luffield"}
@@ -57,7 +78,10 @@
     "gps_exports": [
       "track_exports/silverstone_profile/Silverstone Circuit_P_2026-09-01T03_49_06Z_track_gps.csv",
       "track_exports/silverstone_profile/Silverstone Circuit_P_2026-09-01T03_49_06Z_track_gps_summary.json",
-      "track_exports/silverstone_profile/Silverstone Circuit_P_2026-09-01T03_49_06Z_turn_candidates.json"
+      "track_exports/silverstone_profile/Silverstone Circuit_P_2026-09-01T03_49_06Z_turn_candidates.json",
+      "track_exports/silverstone-lmu-wec18-v0.1_validation/Silverstone Circuit_P_2026-09-01T03_42_58Z_track_gps.csv",
+      "track_exports/silverstone-lmu-wec18-v0.1_validation/Silverstone Circuit_P_2026-09-01T03_42_58Z_track_gps_summary.json",
+      "track_exports/silverstone-lmu-wec18-v0.1_validation/validation_report.json"
     ],
     "reference_urls": [
       "https://www.fia.com/sites/default/files/2019_british_gp_preview_1.pdf",

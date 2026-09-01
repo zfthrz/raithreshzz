@@ -617,3 +617,33 @@ normalizadas con `os.path.normcase` (sin distinguir mayúsculas en Windows).
 Si la ruta de `--output` (resolviendo `.` y `..`) apunta al mismo archivo que
 `--history-db`, el comando se rechaza, escribe el error solo a stderr y no
 toca la base; una ruta diferente sigue permitida.
+
+## 11. Detectar segundas sesiones para perfiles provisionales
+
+Mientras un perfil conserva `VALIDATED_SINGLE_SESSION`, este audit busca en la
+carpeta de telemetría sesiones independientes con el mismo `TrackName` y
+`TrackLayout` exactos:
+
+```powershell
+python discover_track_profile_validation_candidates.py
+```
+
+El reporte excluye la sesión usada para crear el perfil, respeta la espera de
+estabilidad de 10 minutos y reutiliza la selección conservadora de vuelta GPS
+del extractor. Además exige que tanto `Lap Dist` como el recorrido GPS cubran
+al menos el 90% de la longitud ya declarada por el perfil, para no presentar
+vueltas parciales largas como evidencia independiente. Para cada candidato listo entrega los comandos exactos de
+exportación y de `validate_track_profile_session.py`.
+
+Es completamente read-only: no exporta, no cambia perfiles y no promueve un
+perfil automáticamente. Para otra carpeta o una comprobación inmediata manual:
+
+```powershell
+python discover_track_profile_validation_candidates.py `
+  --telemetry-dir "C:\ruta\Telemetry" `
+  --settle-seconds 0
+```
+
+La guía integral de creación, nomenclatura, comparación de múltiples vueltas,
+promoción explícita y handoff a un LLM local está en
+[`TRACK_PROFILE_CREATION_AND_VALIDATION.md`](TRACK_PROFILE_CREATION_AND_VALIDATION.md).

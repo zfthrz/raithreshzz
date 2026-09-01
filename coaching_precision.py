@@ -711,6 +711,49 @@ _PRIORITY_KINDS = {
     "repeated_steering_secondary": 5,
 }
 
+_SPATIAL_EVENT_LABELS = {
+    "braking_onset": "frenada",
+    "brake_release": "liberación",
+    "throttle_onset": "reaplicación",
+    "throttle_release": "levantada",
+}
+
+
+def _render_spatial_anchor_context(cue: dict) -> dict:
+    """Append validated corner-relative anchors to a copied physical cue."""
+
+    if cue.get("kind") != "spatial_points":
+        return cue
+    anchors: list[tuple[str, str]] = []
+    for evidence in cue.get("precision_evidence", []) or []:
+        if not isinstance(evidence, dict):
+            continue
+        anchor = evidence.get("corner_relative_reference")
+        if not isinstance(anchor, dict):
+            continue
+        driver_label = str(anchor.get("driver_label") or "").strip()
+        if not driver_label:
+            continue
+        event_kind = str(evidence.get("event_kind") or "").strip()
+        event_label = _SPATIAL_EVENT_LABELS.get(event_kind, "punto")
+        anchors.append((event_label, driver_label))
+    if not anchors:
+        return cue
+
+    text = str(cue.get("text") or "").strip()
+    if all(driver_label in text for _, driver_label in anchors):
+        return cue
+    if len(anchors) == 1:
+        suffix = f" (referencia: {anchors[0][1]})"
+    else:
+        rendered = "; ".join(
+            f"{event_label}: {driver_label}"
+            for event_label, driver_label in anchors
+        )
+        suffix = f". Referencias: {rendered}"
+    cue["text"] = text + suffix
+    return cue
+
 
 def _cue_priority_rank(cue: dict) -> int:
     """Return the integer priority rank for a cue; unrecognized kinds sink."""
@@ -733,10 +776,11 @@ def _spatial_event_distance_m(cue: dict) -> float | None:
         if isinstance(first, dict):
             anchor = first.get("corner_relative_reference")
             if isinstance(anchor, dict):
-                dist = anchor.get("event_distance_m")
-                if isinstance(dist, (int, float)):
-                    return float(dist)
-    return cue.get("event_distance_m")
+                distance_m = _finite_float(anchor.get("event_distance_m"))
+                if distance_m is not None and distance_m >= 0.0:
+                    return distance_m
+    distance_m = _finite_float(cue.get("event_distance_m"))
+    return distance_m if distance_m is not None and distance_m >= 0.0 else None
 
 
 def _remove_suppressed_spatial_cues(
@@ -822,10 +866,14 @@ def _prioritize_cues(
     cues = _deduplicate_coaching_cues(cues)
 
     # Sort by priority rank, then physical event order for spatial cues.
-    cues.sort(key=lambda cue: (
-        _cue_priority_rank(cue),
-        (_spatial_event_distance_m(cue) or float("inf")),
-    ))
+    def sort_key(cue: dict) -> tuple[int, float]:
+        event_distance_m = _spatial_event_distance_m(cue)
+        return (
+            _cue_priority_rank(cue),
+            float("inf") if event_distance_m is None else event_distance_m,
+        )
+
+    cues.sort(key=sort_key)
 
     return cues
 
@@ -845,6 +893,16 @@ def enrich_cues_with_deterministic_priority(
     """
     if not isinstance(cues, list):
         return cues
+
+    # P8 is an enrichment/presentation layer. Preserve the caller-owned list and
+    # cue dictionaries so audits or alternative renderers can still inspect the
+    # original authorized evidence after this function returns.
+    cues = [
+        _render_spatial_anchor_context(dict(cue))
+        if isinstance(cue, dict)
+        else cue
+        for cue in cues
+    ]
 
     # Apply rules in order: suppression, then priority ordering.
     cues = _remove_suppressed_spatial_cues(cues)

@@ -10,6 +10,8 @@ from coaching_precision import (
 
 import copy
 
+import pytest
+
 
 PROFILE = {
     "turns": [
@@ -645,6 +647,104 @@ def test_p8_two_independent_physical_cues_ordered_by_event_distance_m():
     assert result[1]["event_distance_m"] == 4700.0
 
 
+def test_p8_zero_distance_is_a_valid_physical_event_position():
+    cues = [
+        _cue("spatial_points", "throttle", "acelerá", None),
+        _cue("spatial_points", "brake", "frená", 0.0),
+    ]
+
+    result = enrich_cues_with_deterministic_priority(cues)
+
+    assert [cue["channel"] for cue in result] == ["brake", "throttle"]
+    assert result[0]["event_distance_m"] == 0.0
+
+
+@pytest.mark.parametrize("invalid_distance", [float("nan"), float("inf"), -1.0])
+def test_p8_invalid_physical_distance_fails_closed(invalid_distance):
+    cues = [
+        _cue("spatial_points", "brake", "frená", invalid_distance),
+        _cue("spatial_points", "throttle", "acelerá", 25.0),
+    ]
+
+    result = enrich_cues_with_deterministic_priority(cues)
+
+    assert [cue["channel"] for cue in result] == ["throttle", "brake"]
+
+
+def test_p8_numeric_string_distance_is_normalized_for_ordering():
+    cues = [
+        _cue("spatial_points", "throttle", "acelerá", 25.0),
+        _cue("spatial_points", "brake", "frená", "5.0"),
+    ]
+
+    result = enrich_cues_with_deterministic_priority(cues)
+
+    assert [cue["channel"] for cue in result] == ["brake", "throttle"]
+
+
+def test_p8_spatial_cue_renders_validated_corner_anchor_context():
+    cue = _cue(
+        "spatial_points",
+        "throttle",
+        "reaplicá el acelerador aproximadamente 14 m más temprano",
+        precision_evidence=[{
+            "event_kind": "throttle_onset",
+            "corner_relative_reference": {
+                "driver_label": "~14 m antes del ápice de T7 — Mulsanne Corner",
+            },
+        }],
+    )
+
+    first = enrich_cues_with_deterministic_priority([cue])
+    second = enrich_cues_with_deterministic_priority(first)
+
+    expected = (
+        "reaplicá el acelerador aproximadamente 14 m más temprano "
+        "(referencia: ~14 m antes del ápice de T7 — Mulsanne Corner)"
+    )
+    assert first[0]["text"] == expected
+    assert second[0]["text"] == expected
+    assert cue["text"] == "reaplicá el acelerador aproximadamente 14 m más temprano"
+
+
+def test_p8_spatial_cue_renders_multiple_structured_anchor_labels():
+    cue = _cue(
+        "spatial_points",
+        "brake",
+        "frená más tarde y soltá el freno más tarde",
+        precision_evidence=[
+            {
+                "event_kind": "braking_onset",
+                "corner_relative_reference": {"driver_label": "~80 m antes de T1"},
+            },
+            {
+                "event_kind": "brake_release",
+                "corner_relative_reference": {"driver_label": "~5 m después del ápice de T1"},
+            },
+        ],
+    )
+
+    result = enrich_cues_with_deterministic_priority([cue])
+
+    assert result[0]["text"].endswith(
+        ". Referencias: frenada: ~80 m antes de T1; "
+        "liberación: ~5 m después del ápice de T1"
+    )
+
+
+def test_p8_spatial_cue_without_valid_anchor_keeps_text_unchanged():
+    cue = _cue(
+        "spatial_points",
+        "brake",
+        "frená aproximadamente 10 m más tarde",
+        precision_evidence=[{"event_kind": "braking_onset"}],
+    )
+
+    result = enrich_cues_with_deterministic_priority([cue])
+
+    assert result[0]["text"] == cue["text"]
+
+
 def test_p8_physical_cue_beats_reference_profile():
     """Test D: physical cue beats reference_action_profile by priority rank."""
     cues = [
@@ -690,6 +790,25 @@ def test_p8_single_cue_legacy_behavior_unchanged():
     result = enrich_cues_with_deterministic_priority(cues)
     assert len(result) == 1
     assert result[0]["kind"] == "validated_llm_steering"
+
+
+def test_p8_enrichment_does_not_mutate_caller_owned_cues():
+    cues = [
+        _cue("validated_llm_steering", "steering_magnitude", "volante", 9000.0),
+        _cue("spatial_points", "brake", "frená", 4500.0),
+    ]
+    original_order = [cue["kind"] for cue in cues]
+
+    result = enrich_cues_with_deterministic_priority(cues)
+
+    assert [cue["kind"] for cue in cues] == original_order
+    assert all("_p8_priority_rank" not in cue for cue in cues)
+    assert [cue["kind"] for cue in result] == [
+        "spatial_points",
+        "validated_llm_steering",
+    ]
+    assert all("_p8_priority_rank" in cue for cue in result)
+    assert all(output is not source for output, source in zip(result[::-1], cues))
 
 
 def test_p8_backend_parity():

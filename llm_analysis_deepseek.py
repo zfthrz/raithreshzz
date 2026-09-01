@@ -122,6 +122,15 @@ from deterministic_coaching import (
     _single_objective_channel_direction,
     build_deterministic_repeated_observations,
 )
+
+from deterministic_global_fallback import (
+    build_deterministic_global_fallback,
+)
+from deterministic_text_validation import (
+    text_contains_forbidden_numeric_content,
+    text_contains_number_word,
+)
+from comparison_response_pipeline import build_validated_comparison_response
 import hashlib
 import json
 import math
@@ -4104,101 +4113,6 @@ def validate_grounded_text_list(
 # ============================================================
 
 
-SPANISH_NUMBER_WORD_TOKEN = (
-    r"(?:"
-    r"cero|uno|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|"
-    r"diez|once|doce|trece|catorce|quince|dieciseis|diecisiete|"
-    r"dieciocho|diecinueve|veinte|veintiuno|veintidos|veintitres|"
-    r"veinticuatro|veinticinco|veintiseis|veintisiete|veintiocho|"
-    r"veintinueve|treinta|cuarenta|cincuenta|sesenta|setenta|"
-    r"ochenta|noventa|cien|ciento|doscientos|trescientos|"
-    r"cuatrocientos|quinientos|seiscientos|setecientos|"
-    r"ochocientos|novecientos|mil"
-    r")"
-)
-
-SPANISH_NUMBER_WORD_SEQUENCE = (
-    rf"{SPANISH_NUMBER_WORD_TOKEN}"
-    rf"(?:\s+(?:y\s+)?{SPANISH_NUMBER_WORD_TOKEN}){{0,5}}"
-)
-
-SPANISH_SPELLED_MEASUREMENT_RE = re.compile(
-    rf"\b{SPANISH_NUMBER_WORD_SEQUENCE}\s+"
-    r"(?:"
-    r"m|metros?|"
-    r"s|segundos?|"
-    r"por\s+ciento|"
-    r"pp|puntos?\s+porcentuales?|"
-    r"km/?h|kilometros?\s+por\s+hora|"
-    r"unidades?(?:\s+de\s+input)?"
-    r")\b"
-)
-
-SPANISH_SPELLED_IDENTIFIER_RE = re.compile(
-    rf"\b(?:curva|vuelta|lap|episodio)\s+{SPANISH_NUMBER_WORD_SEQUENCE}\b"
-)
-
-
-def text_contains_number_word(
-    value,
-):
-    """
-    Detecta números escritos con palabras sólo cuando expresan una magnitud
-    o un identificador numérico prohibido.
-
-    No rechaza conteos cualitativos como "dos tramos": el objetivo es impedir
-    que el LLM burle el contrato numérico con "veinte metros", "dos segundos"
-    o "curva tres", sin volver a sobrevalidar el lenguaje natural.
-    """
-    if not isinstance(value, str):
-        return False
-
-    normalized = normalize_grounding_text(
-        value
-    )
-
-    return bool(
-        SPANISH_SPELLED_MEASUREMENT_RE.search(
-            normalized
-        )
-        or SPANISH_SPELLED_IDENTIFIER_RE.search(
-            normalized
-        )
-    )
-
-
-def text_contains_forbidden_numeric_content(
-    value,
-):
-    """
-    Los números autoritativos siempre los renderiza Python.
-
-    Por eso el texto libre del modelo no puede contener cifras.
-    """
-
-    if not isinstance(
-        value,
-        str,
-    ):
-        return False
-
-    if re.search(
-        r"\d",
-        value,
-    ):
-        return True
-
-    if "%" in value:
-        return True
-
-    if text_contains_number_word(
-        value
-    ):
-        return True
-
-    return False
-
-
 def validate_text_list(
     value,
     field_name,
@@ -7432,185 +7346,19 @@ def get_validated_comparison_response(
 
     El contrato externo histórico de llm_structured se conserva.
     """
-    episode_assessments = []
-    attempt_counts = []
-    episode_audit = []
-
-    print(
-        "  Modo aislado v3.8.18: interpretación por episodio + "
-        "ranker comparativo separado."
-    )
-
-    for episode in episode_catalog:
-        validated = get_validated_episode_response(
-            metadata,
-            comparison,
-            episode,
-            output_dir,
-        )
-
-        attempt_counts.append(validated["attempts"])
-        audit_item = {
-            "episode_id": episode["episode_id"],
-            "attempts": validated["attempts"],
-            "fallback": validated.get("fallback"),
-            "deterministic_repairs": validated.get(
-                "deterministic_repairs", {}
-            ),
-            "pruned_hypothesis_indexes": validated.get(
-                "pruned_hypothesis_indexes", []
-            ),
-            "original_validation_errors": validated.get(
-                "original_validation_errors", []
-            ),
-        }
-        episode_audit.append(audit_item)
-
-        if validated["status"] != "VALID":
-            return {
-                "status": "REJECTED",
-                "attempts": max(attempt_counts or [1]),
-                "response": None,
-                "validation_errors": [
-                    f"Episodio {episode['episode_id']}: {error}"
-                    for error in validated["validation_errors"]
-                ],
-                "audit": {"episodes": episode_audit},
-            }
-
-        episode_assessments.append(validated["response"])
-
-    print("    Clasificando prioridad relativa entre episodios...")
-    ranker = get_validated_comparison_ranker_response(
-        episode_catalog,
-        episode_assessments,
+    return build_validated_comparison_response(
+        metadata,
         comparison,
+        episode_catalog,
         output_dir,
+        get_episode_response=get_validated_episode_response,
+        get_ranker_response=get_validated_comparison_ranker_response,
+        build_ranker_shadow=build_deterministic_ranker_shadow_audit,
+        apply_classifications=apply_priority_classifications,
+        get_summary_response=get_validated_comparison_summary_response,
+        validate_response=validate_comparison_llm_response,
+        derive_classifications=derive_priority_classifications,
     )
-    attempt_counts.append(ranker["attempts"])
-
-    if ranker["status"] != "VALID":
-        return {
-            "status": "REJECTED",
-            "attempts": max(attempt_counts or [1]),
-            "response": None,
-            "validation_errors": [
-                f"Ranker: {error}" for error in ranker["validation_errors"]
-            ],
-            "audit": {
-                "episodes": episode_audit,
-                "priority_ranking": {"attempts": ranker["attempts"]},
-            },
-        }
-
-    try:
-        deterministic_ranker_shadow = (
-            build_deterministic_ranker_shadow_audit(
-                episode_catalog,
-                ranker["response"],
-            )
-        )
-    except Exception as exc:
-        # D2.2 is observational only: a shadow failure must never alter,
-        # reject or block the LLM-authoritative production path.
-        deterministic_ranker_shadow = {
-            "status": "ERROR",
-            "error": str(exc),
-        }
-
-    classified_assessments = apply_priority_classifications(
-        episode_assessments,
-        episode_catalog,
-        ranker["response"],
-    )
-
-    summary = get_validated_comparison_summary_response(
-        classified_assessments,
-        episode_catalog,
-        comparison,
-        output_dir,
-    )
-    attempt_counts.append(summary["attempts"])
-
-    if summary["status"] != "VALID":
-        return {
-            "status": "REJECTED",
-            "attempts": max(attempt_counts or [1]),
-            "response": None,
-            "validation_errors": [
-                f"Resumen: {error}" for error in summary["validation_errors"]
-            ],
-            "audit": {
-                "episodes": episode_audit,
-                "priority_ranking": {
-                    "attempts": ranker["attempts"],
-                    "deterministic_shadow": deterministic_ranker_shadow,
-                },
-                "summary": {"attempts": summary["attempts"]},
-            },
-        }
-
-    structured = {
-        "episode_assessments": classified_assessments,
-        "comparison_observations": summary["response"]["comparison_observations"],
-        "limitations": summary["response"]["limitations"],
-        "conclusion": summary["response"]["conclusion"],
-    }
-
-    final_errors = validate_comparison_llm_response(
-        structured,
-        episode_catalog,
-    )
-    if final_errors:
-        return {
-            "status": "REJECTED",
-            "attempts": max(attempt_counts or [1]),
-            "response": None,
-            "validation_errors": final_errors,
-            "audit": {
-                "episodes": episode_audit,
-                "priority_ranking": {
-                    "attempts": ranker["attempts"],
-                    "deterministic_shadow": deterministic_ranker_shadow,
-                },
-                "summary": {"attempts": summary["attempts"]},
-            },
-        }
-
-    audit = {
-        "episodes": episode_audit,
-        "priority_ranking": {
-            "attempts": ranker["attempts"],
-            "ordered_episode_ids": ranker["response"][
-                "ordered_episode_ids"
-            ],
-            "priority_cut_rank": ranker["response"][
-                "priority_cut_rank"
-            ],
-            "no_actionable_start_rank": ranker["response"][
-                "no_actionable_start_rank"
-            ],
-            "classifications": derive_priority_classifications(
-                ranker["response"],
-                episode_catalog,
-            ),
-            "deterministic_shadow": deterministic_ranker_shadow,
-        },
-        "summary": {
-            "attempts": summary["attempts"],
-            "fallback": summary.get("fallback"),
-            "pruned_summary_items": summary.get("pruned_summary_items", {}),
-            "deterministic_repairs": summary.get("deterministic_repairs", {}),
-        },
-    }
-
-    return {
-        "status": "VALID",
-        "attempts": max(attempt_counts or [1]),
-        "response": structured,
-        "validation_errors": [],
-        "audit": audit,
-    }
 
 
 # ============================================================
@@ -10702,99 +10450,6 @@ def prune_only_invalid_global_list_items(
         return None, {}
 
     return pruned, removed
-
-
-
-def build_deterministic_global_fallback(
-    session_coaching_facts,
-):
-    """
-    Fallback global v3.10.8.5.4.
-
-    La síntesis narrativa del LLM nunca debe ser un punto único de fallo.
-    Si el backend no logra entregar un JSON global válido, Python construye
-    un cierre mínimo únicamente desde next_stint_plan y los hechos recurrentes
-    ya validados. No inventa causas, dominios ni objetivos nuevos.
-    """
-    plan = (
-        session_coaching_facts.get("next_stint_plan", [])
-        if isinstance(session_coaching_facts, dict)
-        else []
-    ) or []
-
-    opportunities = []
-    qualitative_by_label = {}
-
-    for item in plan[:3]:
-        if not isinstance(item, dict):
-            continue
-
-        label = str(item.get("plan_label") or "").strip().upper()
-        if not label:
-            continue
-
-        parts = []
-        for target in item.get("targets", []) or []:
-            direct = _direct_coaching_target_text(target)
-            if not direct:
-                continue
-
-            # opportunities/conclusion no admiten cifras. Los targets de punto
-            # espacial permanecen exclusivamente en next_session_priorities.
-            if text_contains_forbidden_numeric_content(direct):
-                continue
-
-            if direct not in parts:
-                parts.append(direct)
-
-        if not parts:
-            continue
-
-        qualitative_by_label[label] = parts
-        opportunities.append(
-            f"Zona {label}: " + "; ".join(parts) + "."
-        )
-
-    if not opportunities:
-        opportunities = [
-            "Concentrá la próxima tanda en los inputs repetidos de las zonas prioritarias."
-        ]
-
-    repeated_observations = build_deterministic_repeated_observations(
-        session_coaching_facts
-    )
-
-    primary_label = None
-    primary_parts = None
-    for item in plan[:3]:
-        if not isinstance(item, dict):
-            continue
-        label = str(item.get("plan_label") or "").strip().upper()
-        parts = qualitative_by_label.get(label)
-        if label and parts:
-            primary_label = label
-            primary_parts = parts
-            break
-
-    if primary_label and primary_parts:
-        conclusion = (
-            f"Empezá la próxima tanda por la zona {primary_label}: "
-            + "; ".join(primary_parts)
-            + ". Después continuá con las demás zonas prioritarias."
-        )
-    else:
-        conclusion = (
-            "En la próxima tanda, concentrá la ejecución en los inputs repetidos "
-            "de las zonas prioritarias."
-        )
-
-    return {
-        "opportunities": opportunities[:4],
-        "repeated_observations": repeated_observations[:4],
-        "hypotheses": [],
-        "limitations": [],
-        "conclusion": conclusion,
-    }
 
 
 GLOBAL_STEERING_CONCLUSION_ANCHOR_ERROR = (

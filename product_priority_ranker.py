@@ -138,15 +138,31 @@ def has_direct_authorized_target(episode: dict[str, Any]) -> bool:
     coaching; steering solo es observacional.
     """
     evidence_by_channel = episode.get("action_evidence_by_channel") or {}
-    for channel in episode.get("action_channels", []) or []:
+    action_channels = episode.get("action_channels", []) or []
+    if not isinstance(evidence_by_channel, dict) or not isinstance(
+        action_channels, (list, tuple, set)
+    ):
+        return False
+    for channel in action_channels:
         if channel not in {"brake", "throttle"}:
             continue
         info = evidence_by_channel.get(channel) or {}
+        if not isinstance(info, dict):
+            continue
         events = info.get("events") or []
-        if any(
-            isinstance(event, dict) and event.get("direction")
+        if not isinstance(events, (list, tuple)):
+            continue
+        directions = {
+            str(event.get("direction"))
             for event in events
-        ):
+            if isinstance(event, dict)
+            and event.get("persistent", True)
+            and event.get("direction")
+        }
+        if len(directions) == 1 and directions <= {
+            "higher_in_comparison_lap",
+            "lower_in_comparison_lap",
+        }:
             return True
     return False
 

@@ -60,6 +60,45 @@ def test_has_direct_authorized_target_matches_audit_rule():
     )
 
 
+def test_direct_target_rejects_unknown_nonpersistent_and_mixed_directions():
+    episode = _episode(1, 0.1, channels=("brake",))
+    events = episode["action_evidence_by_channel"]["brake"]["events"]
+
+    events[:] = [{"direction": "unknown_direction"}]
+    assert not has_direct_authorized_target(episode)
+
+    events[:] = [{"direction": "lower_in_comparison_lap", "persistent": False}]
+    assert not has_direct_authorized_target(episode)
+
+    events[:] = [
+        {"direction": "lower_in_comparison_lap"},
+        {"direction": "higher_in_comparison_lap"},
+    ]
+    assert not has_direct_authorized_target(episode)
+
+    events[:] = [
+        {"direction": "lower_in_comparison_lap"},
+        {"direction": "lower_in_comparison_lap"},
+    ]
+    assert has_direct_authorized_target(episode)
+
+
+def test_direct_target_malformed_evidence_fails_closed():
+    episode = _episode(1, 0.1, channels=("brake",))
+
+    episode["action_evidence_by_channel"] = ["invalid"]
+    assert not has_direct_authorized_target(episode)
+
+    episode["action_evidence_by_channel"] = {"brake": "invalid"}
+    assert not has_direct_authorized_target(episode)
+
+    episode["action_evidence_by_channel"] = {"brake": {"events": "invalid"}}
+    assert not has_direct_authorized_target(episode)
+
+    episode["action_channels"] = "brake"
+    assert not has_direct_authorized_target(episode)
+
+
 def test_priority_cut_extends_only_for_strong_direct_target():
     strong_target = [
         _episode(1, 0.6),

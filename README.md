@@ -5,9 +5,14 @@ Proyecto de análisis de telemetría y coaching para **Le Mans Ultimate (LMU)**.
 > **Threshzz's Telemetry Analysis LMU = Race Engineer** (mismo proyecto; la
 > aplicación se muestra con el nombre "Threshzz's Telemetry Analysis LMU").
 
-Este README documenta el flujo operativo actual del proyecto: análisis de una sesión, track profiles, historial persistente, calibración cross-session H2, matcher provisional y revisión asistida por DeepSeek.
+Este README documenta el flujo operativo actual del proyecto: análisis y debrief
+deterministas, track profiles, historial persistente, calibración cross-session H2
+y matcher provisional. El producto normal no requiere ni llama a un LLM.
 
-> Para comandos de uso normal se usan nombres **genéricos sin sufijos de versión** (`llm_analysis.py`, `episode_pair_matcher.py`, etc.). Los archivos versionados se conservan como releases/historial, pero no hace falta escribir la versión en cada comando.
+> Para comandos de uso normal se usan nombres **genéricos sin sufijos de versión**
+> (`race_engineer.py`, `episode_pair_matcher.py`, etc.). Los archivos versionados
+> y los entrypoints LLM se conservan como releases/historial o herramientas
+> legacy, pero no forman parte del comando normal del producto.
 
 > Guía práctica del orquestador: [`docs/RACE_ENGINEER_COMMAND_GUIDE.md`](docs/RACE_ENGINEER_COMMAND_GUIDE.md).
 
@@ -26,8 +31,8 @@ Componentes principales:
 | Componente | Estado actual |
 |---|---|
 | `analyze_telemetry.py` | v3.8 — análisis determinista intra-session |
-| `llm_analysis.py` / `llm_analysis_deepseek.py` | baseline operativa 3.10.8.5.4 |
-| `llm_analysis_llamacpp.py` | 3.10.8.5.4 — backend local llama.cpp (OpenAI-compatible), default `qwen3-14b` |
+| `deterministic_debrief.py` | entrada de producto fail-closed para el debrief Python |
+| `llm_analysis*.py` | renderizadores y backends legacy para reproducción/benchmarks |
 | `session_history.py` | v1.4 — History schema 4 |
 | `validate_history_db.py` | v1.3 |
 | `episode_pair_features.py` | v1.2 — hard context gate con layout |
@@ -166,7 +171,18 @@ Conservar el `.duckdb` original de LMU en:
 telemetria/
 ```
 
-### 5.2 Generar análisis determinista
+### 5.2 Ejecutar el flujo normal
+
+El comando recomendado produce el análisis, el debrief validado, History y las
+etapas históricas aplicables:
+
+```powershell
+python race_engineer.py analyze "telemetria\ARCHIVO.duckdb"
+```
+
+No requiere API key, Ollama, llama.cpp ni selección de modelo.
+
+Para generar solamente el contrato de análisis Python:
 
 ```powershell
 python analyze_telemetry.py "telemetria\ARCHIVO.duckdb"
@@ -178,62 +194,42 @@ Con validación:
 python analyze_telemetry.py --validate "telemetria\ARCHIVO.duckdb"
 ```
 
-El JSON generado por `analyze_telemetry.py` es el contrato determinista consumido por los backends LLM y por el historial.
+El JSON generado por `analyze_telemetry.py` es el contrato determinista consumido
+por el debrief, History y los comparadores posteriores.
 
-### 5.3 Ejecutar DeepSeek
+### 5.3 Contrato deterministic-first
 
-Configurar credenciales:
-
-```powershell
-$env:DEEPSEEK_API_KEY="TU_API_KEY"
-$env:DEEPSEEK_MODEL="deepseek-v4-pro"
-```
-
-Ejecutar:
-
-```powershell
-python llm_analysis_deepseek.py "ARCHIVO.json"
-```
-
-DeepSeek es actualmente el backend preferido para desarrollo y pruebas frecuentes.
-
-### Modo deterministic-first (default desde 2026-08-25)
-
-La etapa LLM es **100% determinista por default**: interpretación de episodios,
+El debrief es **100% determinista por defecto**: interpretación de episodios,
 summary por comparación, prosa global y el ranker de prioridad
 (clasificación PRIORITARIO / SECUNDARIO / NO_ACCIONABLE, política D2.9) se
 construyen en Python sin llamar al transporte LLM. El análisis/debrief corre
 sin API key.
 
-Para volver al comportamiento LLM-first (temporal o por modo):
+`deterministic_debrief.py` bloquea además el transporte como defensa en profundidad:
+una regresión que intentara efectuar una llamada externa falla explícitamente.
 
-```powershell
-$env:RACE_ENGINEER_DETERMINISTIC_FIRST = "0"   # desactiva el default global
-$env:RACE_ENGINEER_SUMMARY_DETERMINISTIC = "0" # o por modo
-$env:RACE_ENGINEER_GLOBAL_DETERMINISTIC = "0"
-$env:RACE_ENGINEER_EPISODE_DETERMINISTIC = "0"
-$env:RACE_ENGINEER_LLM_RANKER = "1"          # vuelve al ranker LLM (rollback)
-```
+Los toggles históricos y el modo LLM-first ya no forman parte del contrato de
+producto. Se conservan sólo para reproducción controlada de artefactos antiguos.
 
 Ver [`docs/D3_LLM_RUNTIME_DEPENDENCY_AUDIT_V0_1.md`](docs/D3_LLM_RUNTIME_DEPENDENCY_AUDIT_V0_1.md).
 
-### 5.4 Ejecutar el modelo local
+### 5.4 Herramientas LLM legacy (desarrollo/reproducción)
 
-El backend local se mantiene para checkpoints de paridad:
+Los backends DeepSeek, Ollama y llama.cpp no están expuestos en la GUI ni en el
+menú contextual. Permanecen temporalmente en el repositorio para reproducir
+benchmarks y validar provenance histórica.
 
-```powershell
-python llm_analysis.py "ARCHIVO.json"
-```
-
-La configuración local habitual usa Ollama y `ingenierov3`.
-
-Para evaluar el Qwen3.8 27B local sin reemplazar `ingenierov3`:
+Ejemplo opt-in de desarrollo:
 
 ```powershell
-python llm_analysis_qwen3_8_27b_iq3m.py "ARCHIVO.json"
+$env:DEEPSEEK_API_KEY="TU_API_KEY"
+python race_engineer.py analyze "telemetria\ARCHIVO.duckdb" --backend deepseek
 ```
 
-Resultados y recomendación: [`docs/LLM_BACKEND_BENCHMARK_MONZA_V0_1.md`](docs/LLM_BACKEND_BENCHMARK_MONZA_V0_1.md).
+`--backend` está oculto intencionalmente en la ayuda normal. Su presencia no
+autoriza su uso en el runtime automático ni convierte al modelo en autoridad.
+Los resultados comparativos antiguos están documentados en
+[`docs/LLM_BACKEND_BENCHMARK_MONZA_V0_1.md`](docs/LLM_BACKEND_BENCHMARK_MONZA_V0_1.md).
 
 #### LLM episode prompt shadow gate
 
@@ -254,12 +250,6 @@ de Imola está empatado en 4/43 reparaciones; Monza y Fuji cambian también de
 modelo y permanecen como observaciones no pareadas. Ver
 [`docs/LLM_PROMPT_SHADOW_PROMOTION_GATE_V0_1.md`](docs/LLM_PROMPT_SHADOW_PROMOTION_GATE_V0_1.md).
 
-### Herramientas LLM legacy (desarrollo/reproducción)
-
-El runtime normal de `race_engineer.py analyze` es determinista y no necesita
-un modelo. Los backends siguientes se conservan temporalmente fuera de la
-superficie de producto para reproducir benchmarks y artefactos históricos.
-
 #### Backend local vía llama.cpp
 
 Si querés usar otro LLM local servido por llama.cpp (API compatible con OpenAI),
@@ -277,7 +267,7 @@ con el modelo `qwen3-14b`; solo hace falta tener el server de llama.cpp
 levantado. El mismo backend se puede usar para la narrativa histórica H5.2 y la
 selección de candidatos H5.3c pasando `--backend llamacpp`.
 
-### 5.5 Validar salida LLM
+### 5.5 Validar un artefacto LLM legacy
 
 ```powershell
 python validate_llm_analysis_output.py "ARCHIVO_LLM_GENERADO.json"
@@ -1637,8 +1627,8 @@ Contrato:
 - Scripts de uso normal: nombres genéricos sin versión.
 - Releases/artifacts: pueden conservar versión explícita.
 - `telemetria/`: ubicación estándar de DuckDB LMU.
-- DeepSeek: backend principal de iteración mientras se mantiene LMU abierto.
-- Ollama/ingenierov3: checkpoints de paridad local.
+- El runtime de producto y la automatización no seleccionan proveedores ni modelos.
+- DeepSeek/Ollama/llama.cpp se conservan sólo para reproducción y benchmarks legacy.
 - Python conserva la autoridad sobre hechos y reglas deterministas.
 - El LLM no re-detecta zonas, no suma eventos y no inventa targets.
 - El matcher H2 debe preferir `AMBIGUOUS` a una decisión no respaldada.

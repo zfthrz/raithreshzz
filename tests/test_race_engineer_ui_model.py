@@ -281,7 +281,8 @@ def test_detail_reads_debrief_and_authorized_plan(tmp_path: Path):
     assert "Texto validado" in detail.debrief_markdown
     assert "Zona A — T1" in detail.plan_text
     assert "Frená 10 m más tarde" in detail.plan_text
-    assert "llm_validator" in detail.pipeline_text
+    assert "debrief_validator" in detail.pipeline_text
+    assert "llm_validator" not in detail.pipeline_text
 
 
 def test_session_change_view_is_safely_unavailable_without_previous(tmp_path: Path):
@@ -490,11 +491,14 @@ def test_detail_renders_h5_2_comparison_and_validated_observation(tmp_path: Path
 
     assert "History #7 · vuelta 8 · 1:30.980" in detail.historical_comparison_text
     assert "Actual - histórica: +1.280 s" in detail.historical_comparison_text
-    assert "deepseek / deepseek-v4-pro" in detail.historical_comparison_text
+    assert "Provenance original: deepseek / deepseek-v4-pro" in detail.historical_comparison_text
+    assert "Narrativa histórica legacy validada" in detail.historical_comparison_text
     assert "Observación histórica validada" in detail.historical_comparison_text
     assert "No autoriza acciones" in detail.historical_comparison_text
     assert str(raw) in detail.pipeline_text
     assert str(llm) in detail.pipeline_text
+    assert "h5_2_narrative_legacy" in detail.pipeline_text
+    assert "\n  h5_2_llm" not in detail.pipeline_text
 
 
 def test_detail_builds_structured_historical_comparison_view(tmp_path: Path):

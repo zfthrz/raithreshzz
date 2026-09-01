@@ -1,4 +1,8 @@
-"""Local, non-secret backend settings for the Race Engineer desktop GUI."""
+"""Legacy backend settings retained for developer-tool compatibility.
+
+The product GUI no longer imports this module: its debrief runtime is
+deterministic and does not expose provider or model selection.
+"""
 
 from __future__ import annotations
 

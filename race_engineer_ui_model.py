@@ -28,6 +28,14 @@ SESSION_METADATA_CACHE_VERSION = 1
 READY_STAGE_STATUSES = {"RUN", "REUSED"}
 FAILED_STAGE_STATUSES = {"FAILED"}
 SESSION_FILTERS = {"ALL", "DEBRIEF_READY", "HISTORY_READY", "FAILED"}
+PIPELINE_STAGE_DISPLAY_NAMES = {
+    # Los state.json históricos conservan estas claves por compatibilidad. La
+    # interfaz muestra el rol actual del artefacto, no el proveedor que alguna
+    # vez lo generó.
+    "llm": "debrief",
+    "llm_validator": "debrief_validator",
+    "h5_2_llm": "h5_2_narrative_legacy",
+}
 
 
 @dataclass(frozen=True)
@@ -527,6 +535,10 @@ def load_session_record(
     )
 
 
+def _stage_display_name(name: str) -> str:
+    return PIPELINE_STAGE_DISPLAY_NAMES.get(name, name)
+
+
 def discover_sessions(
     runs_root: Path,
     *,
@@ -720,11 +732,14 @@ def _pipeline_text(record: SessionRecord) -> str:
         f"Histórico H5.3: {record.historical_path or '—'}",
         f"Selección H4: {record.reference_selection_path or '—'}",
         f"Comparación H5.2: {record.cross_session_path or '—'}",
-        f"Lectura H5.2 LLM: {record.historical_llm_path or '—'}",
+        f"Narrativa histórica legacy H5.2: {record.historical_llm_path or '—'}",
         "",
         "Etapas:",
     ]
-    lines.extend(f"  {name:<18} {status}" for name, status in record.stages)
+    lines.extend(
+        f"  {_stage_display_name(name):<24} {status}"
+        for name, status in record.stages
+    )
     return "\n".join(lines)
 
 
@@ -816,8 +831,8 @@ def _historical_comparison_text(
         lines.extend(
             (
                 "",
-                "Lectura histórica validada:",
-                f"  Backend/modelo: {metadata.get('backend', '—')} / "
+                "Narrativa histórica legacy validada:",
+                f"  Provenance original: {metadata.get('backend', '—')} / "
                 f"{metadata.get('model', '—')}",
                 "",
                 rendered,
@@ -1143,7 +1158,7 @@ def load_session_detail(
     sessions: list[SessionRecord] | None = None,
 ) -> SessionDetail:
     warnings = []
-    debrief = "Esta sesión todavía no tiene un debrief LLM validado."
+    debrief = "Esta sesión todavía no tiene un debrief determinista validado."
     plan = "No hay un plan de próxima tanda disponible."
     plan_items: tuple[dict[str, Any], ...] = ()
     focus_plan_labels: tuple[str, ...] = ()
@@ -1189,7 +1204,7 @@ def load_session_detail(
         try:
             historical_comparison_llm = _json(record.historical_llm_path)
         except (OSError, UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
-            warnings.append(f"No se pudo leer la lectura H5.2 LLM: {exc}")
+            warnings.append(f"No se pudo leer la narrativa histórica legacy H5.2: {exc}")
     stage_status = dict(record.stages).get("h5_2", "NO_EJECUTADA")
     historical_comparison = _historical_comparison_text(
         historical_comparison_raw,

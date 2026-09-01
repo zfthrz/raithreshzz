@@ -248,10 +248,19 @@ def test_context_menu_installer_is_per_user_and_reversible():
     assert "[switch]$Uninstall" in source
     assert "Remove-Item" in source
     assert "HKLM:" not in source
-    assert "RaceEngineerAnalyzeOllama" in source
-    assert "ingenierov3" in source
-    assert "RaceEngineerAnalyzeLlamacpp" in source
-    assert "llama.cpp" in source
+    assert '"Analizar con Race Engineer"' in source
+    assert "legacyVerbKeys" in source
+    assert "New-Item -Path $ollamaVerbKey" not in source
+    assert "New-Item -Path $llamacppVerbKey" not in source
+
+
+def test_primary_context_menu_cmd_uses_deterministic_product_path():
+    source = (
+        launcher.PROJECT_ROOT / "race_engineer_context_menu.cmd"
+    ).read_text(encoding="utf-8")
+    assert "analyze_telemetry_file.py" in source
+    assert "--backend" not in source
+    assert ".venv\\Scripts\\python.exe" in source
 
 
 def test_ollama_context_menu_cmd_uses_ollama_backend():

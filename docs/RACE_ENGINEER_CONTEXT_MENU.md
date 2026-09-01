@@ -2,28 +2,15 @@
 
 ## Purpose
 
-Add reversible per-user Windows Explorer actions for explicitly requesting a full
-analysis of one telemetry DuckDB with either backend:
+Add one reversible, per-user Windows Explorer action:
 
 ```text
-Analizar con Race Engineer (DeepSeek)
-Analizar con Race Engineer (ingenierov3)
-Analizar con Race Engineer (llama.cpp)
+Analizar con Race Engineer
 ```
 
-The DeepSeek action runs the default remote backend; the `ingenierov3` action runs
-the local Ollama backend; the `llama.cpp` action runs the OpenAI-compatible local
-server (default `http://localhost:8080/v1/chat/completions`, model
-`qwen3-14b`). Neither replaces the global `.duckdb` default application.
-
-Before using the `ingenierov3` action, Ollama must be running locally with the
-`ingenierov3` model available:
-
-```powershell
-ollama pull ingenierov3
-```
-
-The local backend defaults to `http://localhost:11434/api/chat`.
+The action runs the product's deterministic telemetry and debrief pipeline. It
+does not require an API key, Ollama, llama.cpp or model selection, and it does
+not replace the global `.duckdb` default application.
 
 ## Install
 
@@ -37,59 +24,35 @@ The installer writes only below:
 
 ```text
 HKCU\Software\Classes\SystemFileAssociations\.duckdb\shell\RaceEngineerAnalyze
-HKCU\Software\Classes\SystemFileAssociations\.duckdb\shell\RaceEngineerAnalyzeOllama
-HKCU\Software\Classes\SystemFileAssociations\.duckdb\shell\RaceEngineerAnalyzeLlamacpp
 ```
 
-Administrator privileges are not required.
+Administrator privileges are not required. Reinstalling also removes the old
+Ollama and llama.cpp provider-specific Race Engineer verbs, if present.
 
 ## Use
 
-1. Close Le Mans Ultimate.
-2. Wait at least 10 minutes after telemetry stopped changing.
-3. Right-click the telemetry `.duckdb`.
-4. Select `Analizar con Race Engineer (DeepSeek)`.
-5. Keep the console open until it displays `RESULT: PASS` or a blocking reason.
+1. Right-click an authorized telemetry `.duckdb`.
+2. Select `Analizar con Race Engineer`.
+3. Keep the console open until it displays `RESULT: PASS` or a blocking reason.
 
-For the local backends, select `Analizar con Race Engineer (ingenierov3)` or
-`Analizar con Race Engineer (llama.cpp)` instead. All verbs run the same safety
-gates; only the LLM backend differs.
-
-The launcher accepts only files under:
-
-```text
-C:\Program Files (x86)\Steam\steamapps\common\Le Mans Ultimate\UserData\Telemetry
-<repository>\telemetria
-```
+The launcher accepts only files under the LMU telemetry directory or the
+repository's `telemetria` directory. It applies the existing path, size,
+stability and valid-lap gates before producing the deterministic debrief.
 
 ## Execution contract
 
-The launcher performs these gates in order:
+The launcher:
 
-1. refuse while `Le Mans Ultimate.exe` is running;
-2. require an authorized `.duckdb` path;
-3. reject any filename containing `race_engineer_history`;
-4. require at least 5 MiB;
-5. require file mtime to be at least 10 minutes old;
-6. run deterministic analysis and History import without LLM;
-7. read Python's `metadata.valid_laps` result;
-8. require at least two valid laps;
-9. run the full selected backend pipeline (DeepSeek, Ollama/`ingenierov3` or
-   llama.cpp).
+1. validates the telemetry path and rejects History databases;
+2. checks file size and stability;
+3. runs deterministic analysis and imports the session into History;
+4. reads Python's `metadata.valid_laps` result;
+5. requires enough valid laps for a debrief;
+6. generates and validates the debrief with Python in fail-closed mode;
+7. continues with the applicable deterministic H3/H4/H5 stages.
 
-The first stage can safely remain in History if the LLM gate is withheld. Existing
-valid stage outputs are reused by `race_engineer.py`; the launcher does not use
-`--force` and therefore does not intentionally duplicate model calls.
-
-## Validation status
-
-The per-user registration was installed successfully and the action
-`Analizar con Race Engineer (DeepSeek)` appeared in Windows Explorer. The focused
-launcher/automation checkpoint passed 22 tests. The first complete Explorer-triggered
-DeepSeek run remains the final manual validation step.
-
-Temporarily disable the scheduled ingest task during that first run and re-enable it
-afterward to avoid concurrent History writers.
+Existing valid outputs are reused unless an explicit force option is used by a
+developer workflow. The Explorer action never selects or calls an LLM backend.
 
 ## Uninstall
 
@@ -97,5 +60,6 @@ afterward to avoid concurrent History writers.
 powershell -ExecutionPolicy Bypass -File .\install_race_engineer_context_menu.ps1 -Uninstall
 ```
 
-This removes only the Race Engineer verb created under HKCU. It does not alter
-DuckDB files, History, generated results or another program's default association.
+This removes only Race Engineer's current and legacy verbs under HKCU. It does
+not alter DuckDB files, History, generated results or another program's default
+association.

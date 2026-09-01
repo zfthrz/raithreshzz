@@ -3,18 +3,15 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$deepseekVerbKey = "HKCU:\Software\Classes\SystemFileAssociations\.duckdb\shell\RaceEngineerAnalyze"
-$deepseekCommandKey = Join-Path $deepseekVerbKey "command"
+$productVerbKey = "HKCU:\Software\Classes\SystemFileAssociations\.duckdb\shell\RaceEngineerAnalyze"
+$productCommandKey = Join-Path $productVerbKey "command"
 $ollamaVerbKey = "HKCU:\Software\Classes\SystemFileAssociations\.duckdb\shell\RaceEngineerAnalyzeOllama"
-$ollamaCommandKey = Join-Path $ollamaVerbKey "command"
 $llamacppVerbKey = "HKCU:\Software\Classes\SystemFileAssociations\.duckdb\shell\RaceEngineerAnalyzeLlamacpp"
-$llamacppCommandKey = Join-Path $llamacppVerbKey "command"
-$deepseekLauncher = Join-Path $PSScriptRoot "race_engineer_context_menu.cmd"
-$ollamaLauncher = Join-Path $PSScriptRoot "race_engineer_context_menu_ollama.cmd"
-$llamacppLauncher = Join-Path $PSScriptRoot "race_engineer_context_menu_llamacpp.cmd"
+$productLauncher = Join-Path $PSScriptRoot "race_engineer_context_menu.cmd"
+$legacyVerbKeys = @($ollamaVerbKey, $llamacppVerbKey)
 
 if ($Uninstall) {
-    foreach ($verbKey in @($deepseekVerbKey, $ollamaVerbKey, $llamacppVerbKey)) {
+    foreach ($verbKey in @($productVerbKey) + $legacyVerbKeys) {
         if (Test-Path -LiteralPath $verbKey) {
             Remove-Item -LiteralPath $verbKey -Recurse -Force
         }
@@ -23,32 +20,22 @@ if ($Uninstall) {
     exit 0
 }
 
-foreach ($launcher in @($deepseekLauncher, $ollamaLauncher, $llamacppLauncher)) {
-    if (-not (Test-Path -LiteralPath $launcher -PathType Leaf)) {
-        throw "No se encontró el launcher: $launcher"
+if (-not (Test-Path -LiteralPath $productLauncher -PathType Leaf)) {
+    throw "No se encontró el launcher: $productLauncher"
+}
+
+foreach ($verbKey in $legacyVerbKeys) {
+    if (Test-Path -LiteralPath $verbKey) {
+        Remove-Item -LiteralPath $verbKey -Recurse -Force
     }
 }
 
-New-Item -Path $deepseekVerbKey -Force | Out-Null
-Set-ItemProperty -Path $deepseekVerbKey -Name "MUIVerb" -Value "Analizar con Race Engineer (DeepSeek)"
-Set-ItemProperty -Path $deepseekVerbKey -Name "Icon" -Value "shell32.dll,-16739"
-New-Item -Path $deepseekCommandKey -Force | Out-Null
-Set-Item -Path $deepseekCommandKey -Value ('"{0}" "%1"' -f $deepseekLauncher)
+New-Item -Path $productVerbKey -Force | Out-Null
+Set-ItemProperty -Path $productVerbKey -Name "MUIVerb" -Value "Analizar con Race Engineer"
+Set-ItemProperty -Path $productVerbKey -Name "Icon" -Value "shell32.dll,-16739"
+New-Item -Path $productCommandKey -Force | Out-Null
+Set-Item -Path $productCommandKey -Value ('"{0}" "%1"' -f $productLauncher)
 
-New-Item -Path $ollamaVerbKey -Force | Out-Null
-Set-ItemProperty -Path $ollamaVerbKey -Name "MUIVerb" -Value "Analizar con Race Engineer (ingenierov3)"
-Set-ItemProperty -Path $ollamaVerbKey -Name "Icon" -Value "shell32.dll,-16739"
-New-Item -Path $ollamaCommandKey -Force | Out-Null
-Set-Item -Path $ollamaCommandKey -Value ('"{0}" "%1"' -f $ollamaLauncher)
-
-New-Item -Path $llamacppVerbKey -Force | Out-Null
-Set-ItemProperty -Path $llamacppVerbKey -Name "MUIVerb" -Value "Analizar con Race Engineer (llama.cpp)"
-Set-ItemProperty -Path $llamacppVerbKey -Name "Icon" -Value "shell32.dll,-16739"
-New-Item -Path $llamacppCommandKey -Force | Out-Null
-Set-Item -Path $llamacppCommandKey -Value ('"{0}" "%1"' -f $llamacppLauncher)
-
-Write-Host "Race Engineer context menus: INSTALLED"
-Write-Host "DeepSeek launcher: $deepseekLauncher"
-Write-Host "Ollama launcher: $ollamaLauncher"
-Write-Host "llama.cpp launcher: $llamacppLauncher"
+Write-Host "Race Engineer context menu: INSTALLED"
+Write-Host "Deterministic launcher: $productLauncher"
 Write-Host "Scope: current Windows user only"

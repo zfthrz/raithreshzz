@@ -42,6 +42,26 @@ def test_force_deterministic_debrief_parser_contract():
     assert args.no_historical_context is False
 
 
+def test_product_debrief_flags_are_public_and_legacy_aliases_are_hidden():
+    parser = race_engineer.build_parser()
+    product = parser.parse_args(
+        ["analyze", "session.duckdb", "--force-debrief", "--no-debrief"]
+    )
+    legacy = parser.parse_args(
+        ["analyze", "session.duckdb", "--force-deterministic-debrief", "--no-llm"]
+    )
+    help_text = parser._subparsers._group_actions[0].choices["analyze"].format_help()
+
+    assert product.force_deterministic_debrief is True
+    assert product.no_llm is True
+    assert legacy.force_deterministic_debrief is True
+    assert legacy.no_llm is True
+    assert "--force-debrief" in help_text
+    assert "--no-debrief" in help_text
+    assert "--force-deterministic-debrief" not in help_text
+    assert "--no-llm" not in help_text
+
+
 @pytest.mark.parametrize("backend", ["ollama", "llamacpp"])
 def test_force_deterministic_debrief_rejects_non_deepseek_before_file_access(backend):
     parser = race_engineer.build_parser()
@@ -79,6 +99,28 @@ def test_default_analyze_route_has_no_public_backend_requirement():
     args = race_engineer.build_parser().parse_args(["analyze", "session.duckdb"])
 
     assert args.backend is None
+
+
+def test_canonical_debrief_stage_reuses_legacy_state(tmp_path: Path):
+    artifact = tmp_path / "debrief.json"
+    artifact.write_text("{}", encoding="utf-8")
+    signature = {"source": "same"}
+    state = {
+        "stages": {
+            "llm": {
+                "status": "RUN",
+                "signature": signature,
+                "output": str(artifact),
+            }
+        }
+    }
+
+    assert race_engineer.stage_is_reusable(
+        state,
+        race_engineer.DEBRIEF_STAGE,
+        signature,
+        required_paths=(artifact,),
+    )
 
 
 def test_deterministic_artifact_reuse_requires_zero_model_calls(tmp_path: Path):

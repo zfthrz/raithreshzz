@@ -296,7 +296,7 @@ class TestH53ShadowPipeline:
         assert not has_llm_call or has_not_involved, \
             "pipeline must not reference LLM in source or must state NOT CALLED"
 
-        assert ORCHESTRATOR_VERSION == "0.3"
+        assert ORCHESTRATOR_VERSION == "0.4"
 
     def test_12_historical_authority_false(self, tmp_path: Any) -> None:
         """Caso 12: historical coaching/actions production authority stays false."""

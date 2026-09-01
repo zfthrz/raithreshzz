@@ -35,7 +35,7 @@ def test_safe_launcher_runs_history_first_then_deterministic_debrief(tmp_path: P
 
     assert result == 0
     assert calls == [
-        (database, ["--no-llm"]),
+        (database, ["--no-debrief"]),
         (database, ["--force-deterministic-debrief"]),
     ]
 
@@ -137,7 +137,7 @@ def test_explicit_override_skips_only_recent_file_wait(tmp_path: Path):
 
     assert result == 0
     assert calls == [
-        (database, ["--no-llm"]),
+        (database, ["--no-debrief"]),
         (database, ["--force-deterministic-debrief"]),
     ]
 
@@ -159,7 +159,7 @@ def test_safe_launcher_can_generate_debrief_without_llm_access(tmp_path: Path):
 
     assert result == 0
     assert calls == [
-        (database, ["--no-llm"]),
+        (database, ["--no-debrief"]),
         (
             database,
             [
@@ -235,7 +235,7 @@ def test_safe_launcher_withholds_llm_when_valid_laps_are_insufficient(tmp_path: 
 
     assert result == 2
     assert calls == [
-        (database, ["--no-llm"]),
+        (database, ["--no-debrief"]),
     ]
 
 

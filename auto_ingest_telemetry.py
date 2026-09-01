@@ -11,6 +11,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
 
+from pipeline_stage_contract import DEBRIEF_VALIDATOR_STAGE, stage_payload
+
 
 PROJECT_ROOT = Path(__file__).resolve().parent
 DEFAULT_TELEMETRY_DIR = PROJECT_ROOT / "telemetria"
@@ -102,7 +104,7 @@ def existing_pipeline_status(path: Path) -> tuple[str, int] | None:
     session_id = details.get("session_id") if isinstance(details, dict) else None
     if not isinstance(session_id, int):
         return None
-    validator = stages.get("llm_validator")
+    validator = stage_payload(stages, DEBRIEF_VALIDATOR_STAGE)
     validator_status = validator.get("status") if isinstance(validator, dict) else None
     status = (
         STATUS_DEBRIEF_READY
@@ -445,7 +447,7 @@ def scan(
 
         try:
             probe(path)
-            runner(path, ["--no-llm"])
+            runner(path, ["--no-debrief"])
         except Exception as exc:
             entry["status"] = STATUS_FAILED
             entry["last_error"] = f"{type(exc).__name__}: {exc}"
@@ -558,7 +560,7 @@ def backfill_next(
         if not selected_path.is_file():
             raise FileNotFoundError(selected_path)
         probe(selected_path)
-        runner(selected_path, ["--no-llm"])
+        runner(selected_path, ["--no-debrief"])
     except Exception as exc:
         if insufficient_valid_laps(
             selected_path,

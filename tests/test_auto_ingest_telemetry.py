@@ -126,7 +126,7 @@ def test_scan_waits_for_stability_then_imports_history_without_llm(tmp_path: Pat
     ) == 0
     assert calls == [(
         database,
-        ["--no-llm"],
+        ["--no-debrief"],
     )]
     assert read_state(state_path)["files"][str(database)]["status"] == (
         ingest.STATUS_HISTORY_READY
@@ -168,7 +168,7 @@ def test_backfill_next_processes_only_newest_large_baseline(tmp_path: Path):
 
     assert calls == [(
         newest,
-        ["--no-llm"],
+        ["--no-debrief"],
     )]
     updated = read_state(state_path)["files"]
     assert updated[str(newest)]["status"] == ingest.STATUS_HISTORY_READY
@@ -348,7 +348,7 @@ def test_maintenance_runs_one_backfill_when_scan_is_idle_and_cooldown_elapsed(
     ) == 0
     assert calls[0] == (
         database,
-        ["--no-llm"],
+        ["--no-debrief"],
         None,
     )
     assert calls[1][0] == database
@@ -763,7 +763,7 @@ def test_changed_failed_file_returns_to_stability_and_can_retry(tmp_path: Path):
         probe=lambda path: None,
     ) == 0
 
-    assert calls == [(database, ["--no-llm"])]
+    assert calls == [(database, ["--no-debrief"])]
     entry = read_state(state_path)["files"][str(database)]
     assert entry["status"] == ingest.STATUS_HISTORY_READY
     assert entry["attempts"] == 2
@@ -980,3 +980,32 @@ def test_maintenance_debrief_env_overrides_rollback_without_touching_parent(
     assert captured["RACE_ENGINEER_DETERMINISTIC_FIRST"] == "1"
     assert captured["RACE_ENGINEER_LLM_RANKER"] == "0"
     assert os.environ["RACE_ENGINEER_LLM_RANKER"] == "1"
+
+
+def test_existing_pipeline_status_reads_canonical_debrief_validator(
+    tmp_path: Path,
+    monkeypatch,
+):
+    database = tmp_path / "session.duckdb"
+    database.write_bytes(b"telemetry")
+    generated = tmp_path / "generated"
+    monkeypatch.setenv("RACE_ENGINEER_GENERATED_DIR", str(generated))
+    state_path = generated / "runs" / database.stem / "state.json"
+    state_path.parent.mkdir(parents=True)
+    state_path.write_text(
+        json.dumps(
+            {
+                "database": str(database),
+                "stages": {
+                    "history": {"details": {"session_id": 42}},
+                    "debrief_validator": {"status": "RUN"},
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    assert ingest.existing_pipeline_status(database) == (
+        ingest.STATUS_DEBRIEF_READY,
+        42,
+    )

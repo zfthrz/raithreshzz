@@ -285,6 +285,24 @@ def test_detail_reads_debrief_and_authorized_plan(tmp_path: Path):
     assert "llm_validator" not in detail.pipeline_text
 
 
+def test_catalog_reads_canonical_debrief_stage_names(tmp_path: Path):
+    state_path = make_session(tmp_path, "session-canonical")
+    state = json.loads(state_path.read_text(encoding="utf-8"))
+    state["stages"]["debrief"] = state["stages"].pop("llm")
+    state["stages"]["debrief_validator"] = state["stages"].pop("llm_validator")
+    state["last_summary"]["debrief"] = state["last_summary"].pop("llm")
+    state["last_summary"]["debrief_validator"] = state["last_summary"].pop(
+        "llm_validator"
+    )
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+
+    record = discover_sessions(tmp_path / "runs")[0][0]
+
+    assert record.has_validated_debrief is True
+    assert record.debrief_path is not None
+    assert dict(record.stages)["debrief_validator"] == "RUN"
+
+
 def test_session_change_view_is_safely_unavailable_without_previous(tmp_path: Path):
     make_change_session(
         tmp_path,

@@ -29,11 +29,16 @@ from cross_session_context import (
     CrossSessionNotApplicableError,
     resolve_cross_session_pair,
 )
+from pipeline_stage_contract import (
+    DEBRIEF_STAGE,
+    DEBRIEF_VALIDATOR_STAGE,
+    stage_payload,
+)
 
 import historical_candidates_pipeline as _h5_3_shadow_pipeline
 
 
-ORCHESTRATOR_VERSION = "0.3"
+ORCHESTRATOR_VERSION = "0.4"
 LLM_ANALYSIS_VERSION_FILE = "3_10_8_5_4"
 
 STATUS_RUN = "RUN"
@@ -104,7 +109,7 @@ def stage_is_reusable(
     *,
     required_paths: tuple[Path, ...] = (),
 ) -> bool:
-    stage = (state.get("stages") or {}).get(name)
+    stage = stage_payload(state.get("stages"), name)
     if not isinstance(stage, dict):
         return False
     if stage.get("signature") != signature:
@@ -551,22 +556,22 @@ def analyze_command(args: argparse.Namespace) -> int:
     analysis_sha = sha256_file(analysis_json)
 
     # --------------------------------------------------------
-    # LLM + validator
+    # Primary debrief + validator. Variable and artifact names remain legacy
+    # compatible while state stages use product terminology.
     # --------------------------------------------------------
     llm_json: Path | None = None
     if args.no_llm:
-        stage_results["llm"] = STATUS_SKIPPED
-        stage_results["llm_validator"] = STATUS_SKIPPED
-        print_stage("llm", STATUS_SKIPPED, "--no-llm")
+        stage_results[DEBRIEF_STAGE] = STATUS_SKIPPED
+        stage_results[DEBRIEF_VALIDATOR_STAGE] = STATUS_SKIPPED
+        print_stage(DEBRIEF_STAGE, STATUS_SKIPPED, "--no-debrief")
     else:
         # Check whether the analyzer excluded comparable laps for this session.
-        # If so, skip LLM entirely to avoid invoking a backend with no
-        # comparisons to analyze.
+        # If so, skip the debrief because there are no comparisons to render.
         try:
             with open(analysis_json, "r", encoding="utf-8") as fh:
                 analysis_payload = json.load(fh)
         except (OSError, json.JSONDecodeError):
-            # JSON is unreadable — proceed to LLM; validator will catch it.
+            # JSON is unreadable — proceed; the validator will catch it.
             analysis_payload = {}
 
         comparative_status = (
@@ -575,9 +580,9 @@ def analyze_command(args: argparse.Namespace) -> int:
         )
 
         if comparative_status == "SKIPPED_NOT_APPLICABLE":
-            stage_results["llm"] = STATUS_SKIPPED
-            stage_results["llm_validator"] = STATUS_SKIPPED
-            print_stage("llm", STATUS_SKIPPED, "insufficient_comparable_laps")
+            stage_results[DEBRIEF_STAGE] = STATUS_SKIPPED
+            stage_results[DEBRIEF_VALIDATOR_STAGE] = STATUS_SKIPPED
+            print_stage(DEBRIEF_STAGE, STATUS_SKIPPED, "insufficient_comparable_laps")
         else:
             llm = (
                 deterministic_debrief_script()
@@ -600,7 +605,7 @@ def analyze_command(args: argparse.Namespace) -> int:
                 and not force_llm_stage
                 and stage_is_reusable(
                     state,
-                    "llm",
+                    DEBRIEF_STAGE,
                     llm_signature,
                     required_paths=(llm_json,),
                 )
@@ -624,17 +629,17 @@ def analyze_command(args: argparse.Namespace) -> int:
             )
             reuse_llm = reusable_from_state or recover_existing_llm
             if reuse_llm:
-                stage_results["llm"] = STATUS_REUSED
+                stage_results[DEBRIEF_STAGE] = STATUS_REUSED
                 detail = (
                     "recovered existing validated artifact"
                     if recover_existing_llm
                     else str(llm_json)
                 )
-                print_stage("llm", STATUS_REUSED, detail)
+                print_stage(DEBRIEF_STAGE, STATUS_REUSED, detail)
                 if recover_existing_llm:
                     record_stage(
                         state,
-                        "llm",
+                        DEBRIEF_STAGE,
                         signature=llm_signature,
                         status=STATUS_REUSED,
                         output=str(llm_json),
@@ -651,25 +656,25 @@ def analyze_command(args: argparse.Namespace) -> int:
                         env=llm_subprocess_env,
                     )
                 except subprocess.CalledProcessError:
-                    stage_results["llm"] = STATUS_FAILED
-                    print_stage("llm", STATUS_FAILED)
+                    stage_results[DEBRIEF_STAGE] = STATUS_FAILED
+                    print_stage(DEBRIEF_STAGE, STATUS_FAILED)
                     return 1
                 if not llm_json.is_file():
                     raise RuntimeError(
-                        "El backend LLM terminó sin generar el JSON esperado: "
+                        "El generador de debrief terminó sin producir el JSON esperado: "
                         f"{llm_json}"
                     )
                 record_stage(
                     state,
-                    "llm",
+                    DEBRIEF_STAGE,
                     signature=llm_signature,
                     status=STATUS_RUN,
                     output=str(llm_json),
                     details={"llm_sha256": sha256_file(llm_json)},
                 )
                 save_state(state_path, state)
-                stage_results["llm"] = STATUS_RUN
-                print_stage("llm", STATUS_RUN, str(llm_json))
+                stage_results[DEBRIEF_STAGE] = STATUS_RUN
+                print_stage(DEBRIEF_STAGE, STATUS_RUN, str(llm_json))
 
             validator_signature = {
                 "llm_sha256": sha256_file(llm_json),
@@ -679,14 +684,14 @@ def analyze_command(args: argparse.Namespace) -> int:
                 not args.force
                 and stage_is_reusable(
                     state,
-                    "llm_validator",
+                    DEBRIEF_VALIDATOR_STAGE,
                     validator_signature,
                     required_paths=(llm_json,),
                 )
             )
             if reuse_validator:
-                stage_results["llm_validator"] = STATUS_REUSED
-                print_stage("llm_validator", STATUS_REUSED)
+                stage_results[DEBRIEF_VALIDATOR_STAGE] = STATUS_REUSED
+                print_stage(DEBRIEF_VALIDATOR_STAGE, STATUS_REUSED)
             else:
                 try:
                     run_checked([
@@ -695,19 +700,19 @@ def analyze_command(args: argparse.Namespace) -> int:
                         str(llm_json),
                     ])
                 except subprocess.CalledProcessError:
-                    stage_results["llm_validator"] = STATUS_FAILED
-                    print_stage("llm_validator", STATUS_FAILED)
+                    stage_results[DEBRIEF_VALIDATOR_STAGE] = STATUS_FAILED
+                    print_stage(DEBRIEF_VALIDATOR_STAGE, STATUS_FAILED)
                     return 1
                 record_stage(
                     state,
-                    "llm_validator",
+                    DEBRIEF_VALIDATOR_STAGE,
                     signature=validator_signature,
                     status=STATUS_RUN,
                     output=str(llm_json),
                 )
                 save_state(state_path, state)
-                stage_results["llm_validator"] = STATUS_RUN
-                print_stage("llm_validator", STATUS_RUN)
+                stage_results[DEBRIEF_VALIDATOR_STAGE] = STATUS_RUN
+                print_stage(DEBRIEF_VALIDATOR_STAGE, STATUS_RUN)
 
     # --------------------------------------------------------
     # History
@@ -1147,7 +1152,7 @@ def analyze_command(args: argparse.Namespace) -> int:
                         reason = (
                             "debrief determinista: narrativa histórica LLM deshabilitada"
                             if deterministic_debrief
-                            else "--no-llm"
+                            else "--no-debrief"
                         )
                         print_stage("h5_2_llm", STATUS_SKIPPED, reason)
                     else:
@@ -1502,15 +1507,29 @@ def build_parser() -> argparse.ArgumentParser:
     analyze.add_argument("--force-analyze", action="store_true")
     analyze.add_argument("--force-llm", action="store_true", help=argparse.SUPPRESS)
     analyze.add_argument(
-        "--force-deterministic-debrief",
+        "--force-debrief",
+        dest="force_deterministic_debrief",
         action="store_true",
-        help=(
-            "Reconstruir el debrief principal en modo Python fail-closed; "
-            "conserva el contexto histórico determinista, omite la narrativa "
-            "histórica LLM y elimina la API key del subproceso."
-        ),
+        help="Reconstruir solamente el debrief determinista y validarlo.",
     )
-    analyze.add_argument("--no-llm", action="store_true")
+    analyze.add_argument(
+        "--force-deterministic-debrief",
+        dest="force_deterministic_debrief",
+        action="store_true",
+        help=argparse.SUPPRESS,
+    )
+    analyze.add_argument(
+        "--no-debrief",
+        dest="no_llm",
+        action="store_true",
+        help="Omitir el debrief; conserva análisis determinista e History.",
+    )
+    analyze.add_argument(
+        "--no-llm",
+        dest="no_llm",
+        action="store_true",
+        help=argparse.SUPPRESS,
+    )
     analyze.add_argument("--no-history", action="store_true")
     analyze.add_argument("--no-historical-context", action="store_true")
     analyze.add_argument("--dry-run", action="store_true")

@@ -153,7 +153,7 @@ D3.x deterministic-first default and D2.9 production ranker (2026-08-25).
 
 | Component | Current operational baseline |
 |---|---|
-| `race_engineer.py` | orchestrator v0.3 |
+| `race_engineer.py` | orchestrator v0.4 — estados nuevos usan `debrief`/`debrief_validator`; lectura legacy compatible |
 | `race_engineer_gui.py` | v1.51 / sortable session catalogue with local sort preference |
 | `analyze_telemetry.py` | v3.8 + Objective Python v6 |
 | Brake point | 2.1 / schema 2.1 |
@@ -404,12 +404,11 @@ python race_engineer.py analyze "telemetria\ARCHIVO.duckdb"
 Useful switches:
 
 ```text
---backend deepseek|ollama
 --history-db PATH
 --force
 --force-analyze
---force-llm
---no-llm
+--force-debrief
+--no-debrief
 --no-history
 --no-historical-context
 --dry-run
@@ -1507,13 +1506,12 @@ windows remain clamped to the selected complete lap. This inspection is
 read-only and cannot create or reprioritize coaching. The next-stint tab and GPS map
 also distinguish a consistent H5.4 P11 two-item driver focus from the preserved
 complete plan; inconsistent/legacy P11 data fails back to the complete plan. A valid debrief remains available when a later
-historical pipeline stage fails, as proven by `llm_validator` RUN/REUSED.
+historical pipeline stage fails, as proven by `debrief_validator` RUN/REUSED
+(with legacy `llm_validator` states still readable).
 History, telemetry and generated artifacts are opened
-read-only. Non-secret DeepSeek and
-llama.cpp model settings are stored under ignored `data/local/`, while API keys remain
-environment-only and llama.cpp GUI endpoints are restricted to localhost. The GUI
-can explicitly invoke `analyze_telemetry_file.py` with a selected backend while
-streaming progress. A per-run, opt-in override can omit only the 10-minute
+read-only. Legacy provider settings remain outside the product GUI. The GUI invokes
+the deterministic `analyze_telemetry_file.py` path while streaming progress. A
+per-run, opt-in override can omit only the 10-minute
 file-age wait; LMU-running, authorized-root, telemetry type, 5 MiB and two-valid-lap
 gates remain mandatory. The scheduled automatic ingest never uses this override.
 The launcher remains the sole safety authority and the GUI never offers
@@ -1702,7 +1700,7 @@ The scheduled `maintenance` contract is History-first:
 - wait 10 minutes after the last game observation (`POST_GAME_SETTLE`);
 - give new stable telemetry priority over backlog;
 - run deterministic analysis, History import and applicable H3/H4/H5 Python
-  context with `--no-llm`;
+  context with `--no-debrief`;
 - after successful History maintenance, audit existing official H3 import
   readiness read-only and atomically publish `data/local/h3_import_maintenance.json`;
   unchanged inputs reuse the prior snapshot and H3 audit failures remain

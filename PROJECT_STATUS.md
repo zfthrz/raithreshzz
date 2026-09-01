@@ -795,7 +795,8 @@ inspection and does not promote zones to coaching. See `docs/RACE_ENGINEER_GUI_V
 GUI v1.0 adds validated `next_stint_plan` intervals as an independent blue map
 layer. Priority clicks take precedence over overlapping H5.2 zones and show the
 plan label, localized track name, distance interval and existing driver cues. The
-layer requires an existing debrief plus `llm_validator = RUN/REUSED`; a failure in
+layer requires an existing debrief plus `debrief_validator = RUN/REUSED` (or the
+legacy `llm_validator` equivalent); a failure in
 a later H5 stage does not hide that valid artifact. See `docs/RACE_ENGINEER_GUI_V1_0.md`.
 
 GUI v1.1 aligns native `Ground Speed`, `Brake Pos` and `Throttle Pos` to the same

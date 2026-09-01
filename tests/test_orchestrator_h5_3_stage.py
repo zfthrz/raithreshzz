@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 def test_orchestrator_declares_h5_3_observational_stage():
     source = (ROOT / "race_engineer.py").read_text(encoding="utf-8")
 
-    assert 'ORCHESTRATOR_VERSION = "0.3"' in source
+    assert 'ORCHESTRATOR_VERSION = "0.4"' in source
     assert '"h5_3"' in source
     assert "build_historical_coaching_candidates.py" in source
     assert "render_historical_debrief.py" in source

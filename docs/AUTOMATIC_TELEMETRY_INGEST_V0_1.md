@@ -2,17 +2,17 @@
 
 ## Objetivo
 
-Detectar archivos `.duckdb` nuevos y guardarlos en History sin iniciar varios
-debriefs LLM juntos.
+Detectar archivos `.duckdb` nuevos, guardarlos en History y construir debriefs
+deterministas de a uno.
 
 El flujo separa dos responsabilidades:
 
 1. `scan` ejecuta el análisis determinista, importa History y permite el
-   contexto histórico Python aplicable con `--no-llm`.
+   contexto histórico Python aplicable con `--no-debrief`.
 2. `debrief-next` completa el debrief determinista para una sola sesión sin
    acceso a un modelo.
 
-Un fallo del LLM no elimina ni revierte la sesión ya importada.
+Un fallo del debrief no elimina ni revierte la sesión ya importada.
 
 ## Primera activación
 

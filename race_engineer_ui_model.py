@@ -20,6 +20,13 @@ from session_change_tracking import (
     analysis_context,
     build_session_change_tracking,
 )
+from pipeline_stage_contract import (
+    CANONICAL_TO_LEGACY,
+    DEBRIEF_STAGE,
+    DEBRIEF_VALIDATOR_STAGE,
+    canonical_stage_names,
+    stage_payload,
+)
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -29,11 +36,7 @@ READY_STAGE_STATUSES = {"RUN", "REUSED"}
 FAILED_STAGE_STATUSES = {"FAILED"}
 SESSION_FILTERS = {"ALL", "DEBRIEF_READY", "HISTORY_READY", "FAILED"}
 PIPELINE_STAGE_DISPLAY_NAMES = {
-    # Los state.json históricos conservan estas claves por compatibilidad. La
-    # interfaz muestra el rol actual del artefacto, no el proveedor que alguna
-    # vez lo generó.
-    "llm": "debrief",
-    "llm_validator": "debrief_validator",
+    # H5.2 conserva esta clave histórica; no forma parte del debrief primario.
     "h5_2_llm": "h5_2_narrative_legacy",
 }
 
@@ -65,7 +68,8 @@ class SessionRecord:
     def has_validated_debrief(self) -> bool:
         return (
             self.debrief_path is not None
-            and dict(self.stages).get("llm_validator") in READY_STAGE_STATUSES
+            and dict(self.stages).get(DEBRIEF_VALIDATOR_STAGE)
+            in READY_STAGE_STATUSES
         )
 
 
@@ -386,15 +390,19 @@ def load_calibration_summary(
 def _stage_statuses(state: dict[str, Any]) -> tuple[tuple[str, str], ...]:
     stages = _dict(state.get("stages"))
     summary = _dict(state.get("last_summary"))
-    names = list(summary)
-    names.extend(name for name in stages if name not in summary)
-    return tuple(
-        (
-            name,
-            str(summary.get(name) or _dict(stages.get(name)).get("status") or "UNKNOWN"),
+    names = canonical_stage_names(summary, stages)
+
+    def status_for(name: str) -> str:
+        legacy_name = CANONICAL_TO_LEGACY.get(name)
+        return str(
+            summary.get(name)
+            or _dict(stages.get(name)).get("status")
+            or (summary.get(legacy_name) if legacy_name else None)
+            or (_dict(stages.get(legacy_name)).get("status") if legacy_name else None)
+            or "UNKNOWN"
         )
-        for name in names
-    )
+
+    return tuple((name, status_for(name)) for name in names)
 
 
 def _overall_status(stages: tuple[tuple[str, str], ...]) -> tuple[str, str]:
@@ -402,9 +410,9 @@ def _overall_status(stages: tuple[tuple[str, str], ...]) -> tuple[str, str]:
     failed = [name for name, status in stages if status in FAILED_STAGE_STATUSES]
     if failed:
         return "FAILED", "Falló: " + ", ".join(failed)
-    if values.get("llm_validator") in READY_STAGE_STATUSES:
+    if values.get(DEBRIEF_VALIDATOR_STAGE) in READY_STAGE_STATUSES:
         return "DEBRIEF_READY", "Debrief validado"
-    if values.get("llm") in READY_STAGE_STATUSES:
+    if values.get(DEBRIEF_STAGE) in READY_STAGE_STATUSES:
         return "DEBRIEF_UNVALIDATED", "Debrief generado; validación no confirmada"
     if values.get("history") in READY_STAGE_STATUSES:
         return "HISTORY_READY", "Guardada en History; debrief automático pendiente"
@@ -493,7 +501,7 @@ def load_session_record(
     state = _json(state_path)
     stages_payload = _dict(state.get("stages"))
     analyze_stage = _dict(stages_payload.get("analyze"))
-    llm_stage = _dict(stages_payload.get("llm"))
+    debrief_stage = stage_payload(stages_payload, DEBRIEF_STAGE)
     historical_stage = _dict(stages_payload.get("h5_3"))
     reference_selection_stage = _dict(stages_payload.get("h4"))
     cross_session_stage = _dict(stages_payload.get("h5_2"))
@@ -525,7 +533,7 @@ def load_session_record(
         status=status,
         status_detail=status_detail,
         analysis_path=analysis_path,
-        debrief_path=_existing_path(llm_stage.get("output")),
+        debrief_path=_existing_path(debrief_stage.get("output")),
         historical_path=_existing_path(historical_stage.get("output")),
         reference_selection_path=_existing_path(reference_selection_stage.get("output")),
         cross_session_path=_existing_path(cross_session_stage.get("output")),

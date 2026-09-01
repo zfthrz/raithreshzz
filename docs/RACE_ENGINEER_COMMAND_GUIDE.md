@@ -21,9 +21,9 @@ DuckDB de telemetría
     ↓
 analyze          análisis determinista y validación
     ↓
-    llm              nombre histórico de la etapa de debrief determinista
+    debrief          generación determinista del debrief
     ↓
-    llm_validator    nombre histórico del validador del debrief
+    debrief_validator validación del debrief
     ↓
 history          importación idempotente en History
     ↓
@@ -88,10 +88,10 @@ determinista.
 | `--history-db RUTA` | Usa una base History diferente de la predeterminada. |
 | `--force` | Fuerza todas las etapas deterministas aplicables. |
 | `--force-analyze` | Fuerza solamente el análisis determinista. |
-| `--force-deterministic-debrief` | Fuerza la reconstrucción del debrief determinista. |
-| `--no-llm` | Omite por completo la etapa histórica de debrief. |
+| `--force-debrief` | Fuerza la reconstrucción y validación del debrief determinista. |
+| `--no-debrief` | Omite el debrief, pero conserva análisis determinista e History. |
 | `--no-history` | No importa History y omite el contexto histórico posterior. |
-| `--no-historical-context` | Mantiene el análisis/LLM/History, pero omite H3, H4 y H5. |
+| `--no-historical-context` | Mantiene análisis/debrief/History, pero omite H3, H4 y H5. |
 | `--dry-run` | Solo evita ejecutar el analizador cuando esa etapa necesita regenerarse; no simula de forma global todo el pipeline. |
 
 Para ver la ayuda incorporada:
@@ -108,10 +108,11 @@ python race_engineer.py analyze --help
 ### Primera comprobación sin gastar API
 
 ```powershell
-python race_engineer.py analyze "telemetria\ARCHIVO.duckdb" --no-llm
+python race_engineer.py analyze "telemetria\ARCHIVO.duckdb" --no-debrief
 ```
 
-Sirve para verificar la telemetría, generar el análisis determinista e incorporar History sin llamar a un modelo. Las etapas LLM y la narrativa histórica LLM aparecerán como omitidas.
+Sirve para verificar la telemetría, generar el análisis determinista e incorporar
+History sin construir el debrief. Las etapas de debrief aparecerán como omitidas.
 
 ### Flujo completo determinista
 
@@ -155,7 +156,7 @@ ruta diferente. Si el destino ya existe, solo puede reemplazarse explícitamente
 ### Regenerar el análisis determinista sin usar LLM
 
 ```powershell
-python race_engineer.py analyze "telemetria\ARCHIVO.duckdb" --force-analyze --no-llm
+python race_engineer.py analyze "telemetria\ARCHIVO.duckdb" --force-analyze --no-debrief
 ```
 
 Es útil después de modificar `analyze_telemetry.py` o sus contratos.
@@ -453,7 +454,7 @@ Para una sesión recién grabada, el orden recomendado es:
 2. Ejecutar primero sin LLM:
 
    ```powershell
-   python race_engineer.py analyze "telemetria\ARCHIVO.duckdb" --no-llm
+   python race_engineer.py analyze "telemetria\ARCHIVO.duckdb" --no-debrief
    ```
 
 3. Confirmar que el resumen termina en `RESULT: PASS`.
@@ -465,26 +466,28 @@ Para una sesión recién grabada, el orden recomendado es:
 
 5. Si se repite el comando, comprobar que las etapas válidas aparezcan como `REUSED`.
 
-Este flujo permite detectar primero problemas de telemetría o validación sin consumir una llamada LLM.
+Este flujo permite detectar primero problemas de telemetría o validación antes de
+construir el debrief.
 
 ---
 
 ## 6. Advertencias importantes
 
-### `--force` puede tener costo
+### `--force` rehace más trabajo
 
-`--force` invalida la reutilización de todas las etapas aplicables. Si DeepSeek está habilitado, puede volver a llamar a la API aunque el resultado anterior sea válido.
+`--force` invalida la reutilización de todas las etapas deterministas aplicables.
 
-Para regenerar únicamente lo necesario, preferir `--force-analyze` o `--force-llm`.
+Para regenerar únicamente lo necesario, preferir `--force-analyze` o
+`--force-debrief`.
 
 ### `--dry-run` no es una simulación global
 
 En la versión actual, `--dry-run` intercepta la ejecución del analizador solamente cuando el análisis necesita volver a generarse. Si existe un análisis reutilizable, el orquestador puede continuar con etapas posteriores.
 
-Por eso, para garantizar que no se llame a ningún modelo, usar:
+Para detener el flujo después de Analysis/History y omitir el debrief, usar:
 
 ```powershell
-python race_engineer.py analyze "telemetria\ARCHIVO.duckdb" --no-llm
+python race_engineer.py analyze "telemetria\ARCHIVO.duckdb" --no-debrief
 ```
 
 ### Una referencia histórica puede no existir

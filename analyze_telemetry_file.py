@@ -111,7 +111,7 @@ def analyze_selected_file(
     print(f"Archivo: {database}")
     print("Etapa 1/2: análisis determinista + History, sin LLM.")
     try:
-        runner(database, ["--no-llm"])
+        runner(database, ["--no-debrief"])
     except Exception as exc:
         print(f"FAILED: etapa determinista/History: {type(exc).__name__}: {exc}")
         return 1

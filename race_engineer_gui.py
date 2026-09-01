@@ -101,7 +101,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.50"
+GUI_VERSION = "1.51"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 STATE_REFRESH_INTERVAL_MS = 5_000
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -203,6 +203,43 @@ SESSION_SORT_LABELS = {
     "track": "Circuito",
     "status": "Estado",
 }
+
+
+def load_session_sort_preference(path: Path) -> tuple[str, bool]:
+    """Load the local catalogue order, falling back safely on invalid data."""
+
+    default = ("date", True)
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+        return default
+    if not isinstance(payload, dict):
+        return default
+    column = payload.get("session_sort_column")
+    descending = payload.get("session_sort_descending")
+    if column not in SESSION_SORT_LABELS or not isinstance(descending, bool):
+        return default
+    return column, descending
+
+
+def save_session_sort_preference(path: Path, column: str, descending: bool) -> None:
+    """Persist only the read-only catalogue presentation preference."""
+
+    if column not in SESSION_SORT_LABELS:
+        raise ValueError(f"Columna de orden desconocida: {column}")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps(
+            {
+                "session_sort_column": column,
+                "session_sort_descending": bool(descending),
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
 
 
 def _session_date_sort_value(session: SessionRecord) -> float:
@@ -941,6 +978,9 @@ class RaceEngineerApp:
         self.session_metadata_cache_path = (
             PROJECT_ROOT / "data" / "local" / "gui_session_metadata_cache.json"
         )
+        self.gui_preferences_path = (
+            PROJECT_ROOT / "data" / "local" / "gui_preferences.json"
+        )
         self.scheduler_runtime_path = (
             PROJECT_ROOT / "data" / "local" / "telemetry_scheduler_runtime.json"
         )
@@ -1573,8 +1613,10 @@ class RaceEngineerApp:
         self.session_query_var.trace_add("write", lambda *_: self._apply_session_filters())
 
         columns = ("date", "track", "vehicle", "laps", "best", "status")
-        self.session_sort_column = "date"
-        self.session_sort_descending = True
+        (
+            self.session_sort_column,
+            self.session_sort_descending,
+        ) = load_session_sort_preference(self.gui_preferences_path)
         self.tree = ttk.Treeview(
             browser,
             columns=columns,
@@ -5081,6 +5123,14 @@ class RaceEngineerApp:
         else:
             self.session_sort_column = column
             self.session_sort_descending = column == "date"
+        try:
+            save_session_sort_preference(
+                self.gui_preferences_path,
+                self.session_sort_column,
+                self.session_sort_descending,
+            )
+        except OSError as exc:
+            self.settings_warning = f"No se pudo guardar el orden: {exc}"
         self._update_session_sort_headings()
         self._populate_session_tree(
             errors=self.session_read_errors,

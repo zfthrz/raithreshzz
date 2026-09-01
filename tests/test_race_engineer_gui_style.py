@@ -17,6 +17,8 @@ from race_engineer_gui import (
     file_fingerprint,
     format_comparison_columns,
     historical_steering_zone_text,
+    load_session_sort_preference,
+    save_session_sort_preference,
     session_status_color,
     session_status_tooltip,
     sort_session_records,
@@ -86,6 +88,27 @@ def test_session_catalog_sorting_supports_visible_columns_and_missing_values():
     assert [item.session_key for item in sort_session_records(
         sessions, column="best", descending=False
     )] == ["c", "b", "a"]
+
+
+def test_session_catalog_sort_preference_round_trip_and_fails_closed(tmp_path):
+    path = tmp_path / "gui_preferences.json"
+
+    assert load_session_sort_preference(path) == ("date", True)
+
+    save_session_sort_preference(path, "track", False)
+    assert load_session_sort_preference(path) == ("track", False)
+
+    path.write_text(
+        '{"session_sort_column": "unknown", "session_sort_descending": false}',
+        encoding="utf-8",
+    )
+    assert load_session_sort_preference(path) == ("date", True)
+
+    path.write_text("not json", encoding="utf-8")
+    assert load_session_sort_preference(path) == ("date", True)
+
+    with pytest.raises(ValueError):
+        save_session_sort_preference(path, "unknown", False)
 
 
 def test_telemetry_pointer_selects_nearest_map_point_on_visible_axis():

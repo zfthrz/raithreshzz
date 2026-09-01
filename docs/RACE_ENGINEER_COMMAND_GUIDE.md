@@ -564,3 +564,39 @@ Para inspeccionar espacio y evidencia sin eliminar nada:
 ```powershell
 python audit_calibration_batch_retention.py
 ```
+
+## 10. Exportar estadísticas de History a JSON
+
+Genera un snapshot determinista y read-only de las estadísticas generales,
+mensuales, por sesión y sus distribuciones:
+
+```powershell
+python race_engineer_statistics.py --output "data\local\history_statistics.json"
+```
+
+Para leer otra base History:
+
+```powershell
+python race_engineer_statistics.py `
+  --history-db "C:\ruta\race_engineer_history.duckdb" `
+  --output "C:\ruta\history_statistics.json"
+```
+
+La base se abre en modo read-only. El export no contiene una hora de generación,
+por lo que dos ejecuciones sobre la misma History producen el mismo documento. Las
+distancias se redondean a tres decimales sólo al serializar el JSON.
+
+Con `--output -` el JSON se escribe únicamente a stdout (termina con un salto
+de línea), sin crear ningún archivo; los errores continúan en stderr:
+
+```powershell
+python race_engineer_statistics.py --output -
+```
+
+`--output` nunca puede ser la propia History DB: el guard compara la
+identidad real del archivo con `os.path.samefile` cuando ambos existen y,
+si esa comparación no se puede aplicar o falla, compara las rutas resueltas
+normalizadas con `os.path.normcase` (sin distinguir mayúsculas en Windows).
+Si la ruta de `--output` (resolviendo `.` y `..`) apunta al mismo archivo que
+`--history-db`, el comando se rechaza, escribe el error solo a stderr y no
+toca la base; una ruta diferente sigue permitida.

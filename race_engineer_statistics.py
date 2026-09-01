@@ -1,9 +1,15 @@
 from __future__ import annotations
 
+import argparse
+import json
+import os
+import sys
 from collections import defaultdict
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
+
+from runtime_paths import history_db_default_path
 
 
 @dataclass(frozen=True)
@@ -226,3 +232,165 @@ def load_history_statistics(history_db: Path) -> HistoryStatistics:
         category_distribution=_distribution(rows, "category"),
         car_distribution=_distribution(rows, "car"),
     )
+
+
+HISTORY_STATISTICS_SCHEMA_VERSION = 1
+
+
+def _usage_summary_payload(summary: UsageSummary) -> dict:
+    return {
+        "session_count": int(summary.session_count),
+        "valid_lap_count": int(summary.valid_lap_count),
+        "total_distance_km": round(summary.total_distance_km, 3),
+        "favorite_track": summary.favorite_track,
+        "favorite_category": summary.favorite_category,
+        "favorite_car": summary.favorite_car,
+    }
+
+
+def _monthly_payload(item: MonthlyUsage) -> dict:
+    return {
+        "month": item.month,
+        "summary": _usage_summary_payload(item.summary),
+    }
+
+
+def _session_payload(item: SessionUsage) -> dict:
+    return {
+        "session_id": int(item.session_id),
+        "timestamp": item.timestamp,
+        "month": item.month,
+        "track": item.track,
+        "category": item.category,
+        "car": item.car,
+        "valid_lap_count": int(item.valid_lap_count),
+        "total_distance_km": round(item.total_distance_km, 3),
+    }
+
+
+def _distribution_payload(item: DistributionItem) -> dict:
+    return {
+        "label": item.label,
+        "valid_lap_count": int(item.valid_lap_count),
+        "total_distance_km": round(item.total_distance_km, 3),
+    }
+
+
+def history_statistics_document(
+    history: HistoryStatistics,
+    *,
+    generated_from: str,
+) -> dict:
+    return {
+        "schema_version": HISTORY_STATISTICS_SCHEMA_VERSION,
+        "generated_from": generated_from,
+        "overall": _usage_summary_payload(history.overall),
+        "monthly": [_monthly_payload(item) for item in history.monthly],
+        "sessions": [_session_payload(item) for item in history.sessions],
+        "track_distribution": [
+            _distribution_payload(item) for item in history.track_distribution
+        ],
+        "category_distribution": [
+            _distribution_payload(item) for item in history.category_distribution
+        ],
+        "car_distribution": [
+            _distribution_payload(item) for item in history.car_distribution
+        ],
+    }
+
+
+def _statistics_error_message(database: Path) -> None:
+    print(f"ERROR: no se pudo leer la History DB ({database})", file=sys.stderr)
+
+
+def _effective_file_path(path: Path) -> Path:
+    # Absolute, sin segmentos relativos, . o ..: compara el archivo real.
+    return path.resolve()
+
+
+def _normalized_path_key(path: Path) -> str:
+    # Ruta resuelta pasada por normcase: compara sin distinguir mayúsculas
+    # en sistemas case-insensitive (Windows) y preserva la resolución.
+    return os.path.normcase(str(_effective_file_path(path)))
+
+
+def _is_same_file_destination(database: Path, output: Path) -> bool:
+    # Decide si database y output apuntan al mismo archivo (misma ruta,
+    # alias de case, o segmentos . / ..).
+    # Fail closed únicamente ante identidad confirmada.
+    if database.exists() and output.exists():
+        try:
+            if os.path.samefile(str(database), str(output)):
+                return True
+        except OSError:
+            pass
+    return _normalized_path_key(database) == _normalized_path_key(output)
+
+
+def _refuse_same_file_output(database: Path, output: str) -> bool:
+    output_path = Path(output)
+    if _is_same_file_destination(database, output_path):
+        print(
+            f"ERROR: --output no puede ser la propia History DB ({output_path})",
+            file=sys.stderr,
+        )
+        return True
+    return False
+
+
+def main(argv: list | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        description="Exporta de forma read-only las estadísticas de History a un JSON determinista.",
+    )
+    parser.add_argument(
+        "--history-db",
+        default=None,
+        help="Ruta de la History DB DuckDB. Si se omite, se usa history_db_default_path().",
+    )
+    parser.add_argument(
+        "--output",
+        required=True,
+        help="Ruta del JSON de salida que se creará. Con el valor '-' se escribe a stdout.",
+    )
+    args = parser.parse_args(argv)
+
+    database = Path(args.history_db) if args.history_db else history_db_default_path()
+    if args.output != "-" and _refuse_same_file_output(database, args.output):
+        return 1
+    try:
+        statistics = load_history_statistics(database)
+    except Exception as exc:  # noqa: BLE001 - el mensaje de stderr debe ser claro
+        _statistics_error_message(database)
+        print(f"Detalle: {exc}", file=sys.stderr)
+        return 1
+
+    payload = (
+        json.dumps(
+            history_statistics_document(statistics, generated_from=str(database)),
+            ensure_ascii=False,
+            indent=2,
+        )
+        + "\n"
+    )
+    if args.output == "-":
+        print(payload, end="")
+        return 0
+    output_path = Path(args.output)
+    tmp_path = output_path.with_name(output_path.name + ".tmp")
+    try:
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        tmp_path.write_text(payload, encoding="utf-8")
+        tmp_path.replace(output_path)
+    except OSError as exc:
+        try:
+            tmp_path.unlink(missing_ok=True)
+        except OSError:
+            pass
+        print(f"ERROR: no se pudo escribir {output_path}", file=sys.stderr)
+        print(f"Detalle: {exc}", file=sys.stderr)
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -1,0 +1,190 @@
+{
+  "source_csv": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\track_exports\\sebring_profile\\Sebring International Raceway_P_2026-09-01T03_22_24Z_track_gps.csv",
+  "algorithm": {
+    "step_m": 2.0,
+    "heading_window_m": 20.0,
+    "smooth_window_m": 14.0,
+    "min_separation_m": 45.0,
+    "threshold_percentile": 0.7,
+    "global_abs_curvature_threshold_rad_per_m": 0.004491709643858799,
+    "requested_turn_count": 17
+  },
+  "track_distance_range_m": [
+    0.0,
+    5813.859239204742
+  ],
+  "candidate_count": 17,
+  "candidates": [
+    {
+      "candidate_number": 1,
+      "start_distance_m": 366.0,
+      "center_distance_m": 562.0,
+      "end_distance_m": 632.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.009215097831429141,
+      "mean_abs_curvature_rad_per_m": 0.006416088659438921,
+      "estimated_heading_change_deg": 98.45840289487145
+    },
+    {
+      "candidate_number": 2,
+      "start_distance_m": 892.0,
+      "center_distance_m": 938.0,
+      "end_distance_m": 1032.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.019663510387312646,
+      "mean_abs_curvature_rad_per_m": 0.012909672602251,
+      "estimated_heading_change_deg": 52.57696768620007
+    },
+    {
+      "candidate_number": 3,
+      "start_distance_m": 880.0,
+      "center_distance_m": 1010.0,
+      "end_distance_m": 1038.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.019663510387312646,
+      "mean_abs_curvature_rad_per_m": 0.011968414288590697,
+      "estimated_heading_change_deg": 53.96962949530746
+    },
+    {
+      "candidate_number": 4,
+      "start_distance_m": 1066.0,
+      "center_distance_m": 1130.0,
+      "end_distance_m": 1178.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.02062855860409031,
+      "mean_abs_curvature_rad_per_m": 0.013952394914890193,
+      "estimated_heading_change_deg": 90.78508768548883
+    },
+    {
+      "candidate_number": 5,
+      "start_distance_m": 1962.0,
+      "center_distance_m": 1994.0,
+      "end_distance_m": 2012.0,
+      "direction": "right",
+      "peak_abs_curvature_rad_per_m": 0.05279095637745357,
+      "mean_abs_curvature_rad_per_m": 0.03761607125772146,
+      "estimated_heading_change_deg": -112.96144328379255
+    },
+    {
+      "candidate_number": 6,
+      "start_distance_m": 2724.0,
+      "center_distance_m": 2754.0,
+      "end_distance_m": 2800.0,
+      "direction": "right",
+      "peak_abs_curvature_rad_per_m": 0.025517457794482508,
+      "mean_abs_curvature_rad_per_m": 0.01840865617775001,
+      "estimated_heading_change_deg": -81.63266731704493
+    },
+    {
+      "candidate_number": 7,
+      "start_distance_m": 2832.0,
+      "center_distance_m": 2908.0,
+      "end_distance_m": 3026.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.009314058480766127,
+      "mean_abs_curvature_rad_per_m": 0.006636200874447348,
+      "estimated_heading_change_deg": 74.99885026134933
+    },
+    {
+      "candidate_number": 8,
+      "start_distance_m": 2832.0,
+      "center_distance_m": 2954.0,
+      "end_distance_m": 3026.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.009314058480766127,
+      "mean_abs_curvature_rad_per_m": 0.006636200874447348,
+      "estimated_heading_change_deg": 74.99885026134933
+    },
+    {
+      "candidate_number": 9,
+      "start_distance_m": 3180.0,
+      "center_distance_m": 3204.0,
+      "end_distance_m": 3320.0,
+      "direction": "right",
+      "peak_abs_curvature_rad_per_m": 0.018385347645736714,
+      "mean_abs_curvature_rad_per_m": 0.01103499880178368,
+      "estimated_heading_change_deg": -89.81164480376911
+    },
+    {
+      "candidate_number": 10,
+      "start_distance_m": 3194.0,
+      "center_distance_m": 3262.0,
+      "end_distance_m": 3308.0,
+      "direction": "right",
+      "peak_abs_curvature_rad_per_m": 0.018385347645736714,
+      "mean_abs_curvature_rad_per_m": 0.01262061342788885,
+      "estimated_heading_change_deg": -83.90767335351151
+    },
+    {
+      "candidate_number": 11,
+      "start_distance_m": 3966.0,
+      "center_distance_m": 4026.0,
+      "end_distance_m": 4072.0,
+      "direction": "right",
+      "peak_abs_curvature_rad_per_m": 0.017088973008537463,
+      "mean_abs_curvature_rad_per_m": 0.011707080034291412,
+      "estimated_heading_change_deg": -72.42769441557567
+    },
+    {
+      "candidate_number": 12,
+      "start_distance_m": 4208.0,
+      "center_distance_m": 4236.0,
+      "end_distance_m": 4310.0,
+      "direction": "right",
+      "peak_abs_curvature_rad_per_m": 0.018265024318755922,
+      "mean_abs_curvature_rad_per_m": 0.012692825185641885,
+      "estimated_heading_change_deg": -75.80483217998666
+    },
+    {
+      "candidate_number": 13,
+      "start_distance_m": 4204.0,
+      "center_distance_m": 4282.0,
+      "end_distance_m": 4326.0,
+      "direction": "right",
+      "peak_abs_curvature_rad_per_m": 0.018265024318755922,
+      "mean_abs_curvature_rad_per_m": 0.011392429297067791,
+      "estimated_heading_change_deg": -81.44151984802524
+    },
+    {
+      "candidate_number": 14,
+      "start_distance_m": 5182.0,
+      "center_distance_m": 5218.0,
+      "end_distance_m": 5528.0,
+      "direction": "right",
+      "peak_abs_curvature_rad_per_m": 0.018504735411855735,
+      "mean_abs_curvature_rad_per_m": 0.00867371611928172,
+      "estimated_heading_change_deg": -172.83750069630534
+    },
+    {
+      "candidate_number": 15,
+      "start_distance_m": 5182.0,
+      "center_distance_m": 5362.0,
+      "end_distance_m": 5528.0,
+      "direction": "right",
+      "peak_abs_curvature_rad_per_m": 0.018504735411855735,
+      "mean_abs_curvature_rad_per_m": 0.00867371611928172,
+      "estimated_heading_change_deg": -172.83750069630534
+    },
+    {
+      "candidate_number": 16,
+      "start_distance_m": 5286.0,
+      "center_distance_m": 5436.0,
+      "end_distance_m": 5506.0,
+      "direction": "right",
+      "peak_abs_curvature_rad_per_m": 0.018504735411855735,
+      "mean_abs_curvature_rad_per_m": 0.010169002833481525,
+      "estimated_heading_change_deg": -128.86459796276503
+    },
+    {
+      "candidate_number": 17,
+      "start_distance_m": 5182.0,
+      "center_distance_m": 5482.0,
+      "end_distance_m": 5526.0,
+      "direction": "right",
+      "peak_abs_curvature_rad_per_m": 0.018504735411855735,
+      "mean_abs_curvature_rad_per_m": 0.008706873686288719,
+      "estimated_heading_change_deg": -172.32263510119898
+    }
+  ],
+  "warning": "Estos son candidatos geométricos. No son nombres/números oficiales hasta completar la calibración contra una referencia verificada."
+}

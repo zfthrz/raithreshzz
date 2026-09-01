@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "profile_id": "silverstone-lmu-wec18-v0.1",
+  "status": "VALIDATED_SINGLE_SESSION",
+  "track": "Silverstone Circuit",
+  "layout": "Silverstone Grand Prix Circuit - WEC",
+  "distance_coordinate": "LMU Lap Dist",
+  "lap_length_m": 5860.0,
+  "calibration": {
+    "source_session": "Silverstone Circuit_P_2026-09-01T03_49_06Z",
+    "source_lap_internal_index": 3,
+    "source_lap_time_s_approx": 113.2,
+    "source_lap_dist_max_m": 5859.7,
+    "source_gps_path_m_approx": 5798.9,
+    "gps_coverage": 1.0,
+    "geometry_method": "GPS trajectory + signed curvature + FIA Silverstone 18-turn sequence constrained calibration",
+    "numbering_scheme": "FIA Silverstone Grand Prix 18-turn scheme",
+    "requires_cross_session_validation": true,
+    "validation_status": "PASS_SINGLE_SESSION",
+    "same_session_validation_laps": [
+      {"lap_internal_index": 1, "lap_time_s_approx": 115.2, "lap_dist_max_m": 5863.2, "gps_path_m_approx": 5808.1, "gps_coverage": 1.0},
+      {"lap_internal_index": 2, "lap_time_s_approx": 115.0, "lap_dist_max_m": 5857.7, "gps_path_m_approx": 5793.2, "gps_coverage": 1.0}
+    ],
+    "excluded_laps": [],
+    "interpretation": "The FIA 18-turn sequence is present in the source lap. Abbey/Farm, Luffield/Woodcote, Maggotts/Becketts/Chapel and Vale/Club are continuous complexes, so signed curvature and official ordering were used instead of treating repeated absolute-curvature maxima as independent corners. Independent-session validation is still required."
+  },
+  "manual_low_curvature_turns": [
+    {"turn": 8, "reason": "sweeping Woodcote continuation after Luffield"}
+  ],
+  "turns": [
+    {"turn": 1, "name": "Abbey", "group": "Abbey–Farm", "direction": "right", "start_m": 160.0, "apex_m": 278.0, "end_m": 400.0},
+    {"turn": 2, "name": "Farm", "group": "Abbey–Farm", "direction": "left", "start_m": 420.0, "apex_m": 536.0, "end_m": 620.0},
+    {"turn": 3, "name": "Village", "group": "Village", "direction": "right", "start_m": 724.0, "apex_m": 762.0, "end_m": 834.0},
+    {"turn": 4, "name": "The Loop", "group": "The Loop", "direction": "left", "start_m": 856.0, "apex_m": 946.0, "end_m": 986.0},
+    {"turn": 5, "name": "Aintree", "group": "Aintree", "direction": "left", "start_m": 1022.0, "apex_m": 1128.0, "end_m": 1194.0},
+    {"turn": 6, "name": "Brooklands", "group": "Brooklands", "direction": "left", "start_m": 1740.0, "apex_m": 1892.0, "end_m": 1928.0},
+    {"turn": 7, "name": "Luffield", "group": "Luffield–Woodcote", "direction": "right", "start_m": 1948.0, "apex_m": 2078.0, "end_m": 2180.0},
+    {"turn": 8, "name": "Woodcote", "group": "Luffield–Woodcote", "direction": "right", "start_m": 2200.0, "apex_m": 2460.0, "end_m": 2576.0},
+    {"turn": 9, "name": "Copse", "group": "Copse", "direction": "right", "start_m": 2880.0, "apex_m": 2948.0, "end_m": 3042.0},
+    {"turn": 10, "name": "Maggotts", "group": "Maggotts–Becketts–Chapel", "direction": "left", "start_m": 3370.0, "apex_m": 3450.0, "end_m": 3520.0},
+    {"turn": 11, "name": "Maggotts", "group": "Maggotts–Becketts–Chapel", "direction": "right", "start_m": 3520.0, "apex_m": 3620.0, "end_m": 3660.0},
+    {"turn": 12, "name": "Becketts", "group": "Maggotts–Becketts–Chapel", "direction": "left", "start_m": 3660.0, "apex_m": 3742.0, "end_m": 3810.0},
+    {"turn": 13, "name": "Becketts", "group": "Maggotts–Becketts–Chapel", "direction": "right", "start_m": 3826.0, "apex_m": 3920.0, "end_m": 3990.0},
+    {"turn": 14, "name": "Chapel", "group": "Maggotts–Becketts–Chapel", "direction": "left", "start_m": 4010.0, "apex_m": 4068.0, "end_m": 4196.0},
+    {"turn": 15, "name": "Stowe", "group": "Stowe", "direction": "right", "start_m": 4826.0, "apex_m": 4968.0, "end_m": 5036.0},
+    {"turn": 16, "name": "Vale", "group": "Vale–Club", "direction": "left", "start_m": 5354.0, "apex_m": 5396.0, "end_m": 5422.0},
+    {"turn": 17, "name": "Club", "group": "Vale–Club", "direction": "right", "start_m": 5422.0, "apex_m": 5448.0, "end_m": 5500.0},
+    {"turn": 18, "name": "Club", "group": "Vale–Club", "direction": "right", "start_m": 5500.0, "apex_m": 5618.0, "end_m": 5690.0}
+  ],
+  "display_policy": {
+    "prefer_corner_name": true,
+    "turn_number_is_secondary": true,
+    "turn_number_suffix": "FIA",
+    "always_preserve_lmu_distance_m": true
+  },
+  "provenance": {
+    "gps_exports": [
+      "track_exports/silverstone_profile/Silverstone Circuit_P_2026-09-01T03_49_06Z_track_gps.csv",
+      "track_exports/silverstone_profile/Silverstone Circuit_P_2026-09-01T03_49_06Z_track_gps_summary.json",
+      "track_exports/silverstone_profile/Silverstone Circuit_P_2026-09-01T03_49_06Z_turn_candidates.json"
+    ],
+    "reference_urls": [
+      "https://www.fia.com/sites/default/files/2019_british_gp_preview_1.pdf",
+      "https://www.formula1.com/en/latest/article/explained-how-every-silverstone-corner-got-its-name.idMlxFC2gfN2ApcPmifxN.idMlxFC2gfN2ApcPmifxN"
+    ]
+  }
+}

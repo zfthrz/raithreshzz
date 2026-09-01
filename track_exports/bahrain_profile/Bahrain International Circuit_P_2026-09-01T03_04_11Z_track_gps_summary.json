@@ -1,0 +1,158 @@
+{
+  "source_file": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Le Mans Ultimate\\UserData\\Telemetry\\Bahrain International Circuit_P_2026-09-01T03_04_11Z.duckdb",
+  "track_name": "Bahrain International Circuit",
+  "track_layout": "Bahrain International Circuit",
+  "selected_lap": 4,
+  "time_source": "GPS Time.value",
+  "lap_boundary_source": "Lap.ts",
+  "lap_distance_boundary_repairs": {
+    "1": {
+      "sample_index": 1438,
+      "original_lap_dist_m": 5379.23583984375,
+      "repaired_lap_dist_m": 0.0,
+      "next_sample_lap_dist_m": 3.563285422364496,
+      "reason": "boundary_linear_interpolation_across_lap_dist_reset"
+    },
+    "2": {
+      "sample_index": 2699,
+      "original_lap_dist_m": 5383.6630859375,
+      "repaired_lap_dist_m": 0.0,
+      "next_sample_lap_dist_m": 6.719896789762751,
+      "reason": "boundary_linear_interpolation_across_lap_dist_reset"
+    },
+    "3": {
+      "sample_index": 4081,
+      "original_lap_dist_m": 5383.78271484375,
+      "repaired_lap_dist_m": 0.0,
+      "next_sample_lap_dist_m": 5.728123575316642,
+      "reason": "boundary_linear_interpolation_across_lap_dist_reset"
+    },
+    "4": {
+      "sample_index": 5346,
+      "original_lap_dist_m": 5383.73095703125,
+      "repaired_lap_dist_m": 0.0,
+      "next_sample_lap_dist_m": 4.591991082789816,
+      "reason": "boundary_linear_interpolation_across_lap_dist_reset"
+    },
+    "5": {
+      "sample_index": 6595,
+      "original_lap_dist_m": 5380.49462890625,
+      "repaired_lap_dist_m": 0.0,
+      "next_sample_lap_dist_m": 0.6328708465157823,
+      "reason": "boundary_linear_interpolation_across_lap_dist_reset"
+    }
+  },
+  "target_hz": 10.0,
+  "channel_modes": {
+    "GPS Time": {
+      "mode": "rowid",
+      "row_count": 66600,
+      "columns": [
+        "value"
+      ]
+    },
+    "GPS Latitude": {
+      "mode": "rowid",
+      "row_count": 6660,
+      "columns": [
+        "value"
+      ]
+    },
+    "GPS Longitude": {
+      "mode": "rowid",
+      "row_count": 6660,
+      "columns": [
+        "value"
+      ]
+    },
+    "Lap Dist": {
+      "mode": "rowid",
+      "row_count": 6660,
+      "columns": [
+        "value"
+      ]
+    }
+  },
+  "selected_lap_metrics": {
+    "sample_count": 1249,
+    "duration_s": 124.79999999999995,
+    "gps_coverage": 1.0,
+    "gps_path_m": 5328.549127529679,
+    "lap_dist_min_m": 0.0,
+    "lap_dist_max_m": 5375.11368886832,
+    "lap_dist_span_m": 5375.11368886832
+  },
+  "exported_point_count": 1249,
+  "bounds": {
+    "latitude_min": 59.99346160888672,
+    "latitude_max": 60.004150390625,
+    "longitude_min": -0.004200705234316538,
+    "longitude_max": 0.010251539258331973,
+    "x_east_min_m": -14.705765834273748,
+    "x_east_max_m": 788.8018646616326,
+    "y_north_min_m": -457.21281950178127,
+    "y_north_max_m": 731.327123486202,
+    "lap_distance_min_m": 0.0,
+    "lap_distance_max_m": 5375.11368886832
+  },
+  "laps": {
+    "0": {
+      "sample_count": 1438,
+      "duration_s": 143.70000000000002,
+      "gps_coverage": 1.0,
+      "gps_path_m": 5109.874260624482,
+      "lap_dist_min_m": 203.006989671879,
+      "lap_dist_max_m": 5378.0761867949295,
+      "lap_dist_span_m": 5175.069197123051
+    },
+    "1": {
+      "sample_count": 1261,
+      "duration_s": 126.0,
+      "gps_coverage": 1.0,
+      "gps_path_m": 5346.100844142098,
+      "lap_dist_min_m": 0.0,
+      "lap_dist_max_m": 5381.474239331437,
+      "lap_dist_span_m": 5381.474239331437
+    },
+    "2": {
+      "sample_count": 1382,
+      "duration_s": 138.09999999999997,
+      "gps_coverage": 1.0,
+      "gps_path_m": 5335.439848910412,
+      "lap_dist_min_m": 0.0,
+      "lap_dist_max_m": 5380.465134413677,
+      "lap_dist_span_m": 5380.465134413677
+    },
+    "3": {
+      "sample_count": 1265,
+      "duration_s": 126.39999999999992,
+      "gps_coverage": 1.0,
+      "gps_path_m": 5336.972750512769,
+      "lap_dist_min_m": 0.0,
+      "lap_dist_max_m": 5379.415448029846,
+      "lap_dist_span_m": 5379.415448029846
+    },
+    "4": {
+      "sample_count": 1249,
+      "duration_s": 124.79999999999995,
+      "gps_coverage": 1.0,
+      "gps_path_m": 5328.549127529679,
+      "lap_dist_min_m": 0.0,
+      "lap_dist_max_m": 5375.11368886832,
+      "lap_dist_span_m": 5375.11368886832
+    },
+    "5": {
+      "sample_count": 65,
+      "duration_s": 6.400000000000091,
+      "gps_coverage": 1.0,
+      "gps_path_m": 418.71250855840407,
+      "lap_dist_min_m": 0.0,
+      "lap_dist_max_m": 413.02286740429014,
+      "lap_dist_span_m": 413.02286740429014
+    }
+  },
+  "outputs": {
+    "csv": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\track_exports\\bahrain_profile\\Bahrain International Circuit_P_2026-09-01T03_04_11Z_track_gps.csv",
+    "geojson": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\track_exports\\bahrain_profile\\Bahrain International Circuit_P_2026-09-01T03_04_11Z_track_gps.geojson"
+  }
+}

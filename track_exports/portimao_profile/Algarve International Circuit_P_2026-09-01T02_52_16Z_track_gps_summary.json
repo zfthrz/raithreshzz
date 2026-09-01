@@ -1,0 +1,158 @@
+{
+  "source_file": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Le Mans Ultimate\\UserData\\Telemetry\\Algarve International Circuit_P_2026-09-01T02_52_16Z.duckdb",
+  "track_name": "Algarve International Circuit",
+  "track_layout": "Algarve International Circuit",
+  "selected_lap": 3,
+  "time_source": "GPS Time.value",
+  "lap_boundary_source": "Lap.ts",
+  "lap_distance_boundary_repairs": {
+    "1": {
+      "sample_index": 1333,
+      "original_lap_dist_m": 4634.85302734375,
+      "repaired_lap_dist_m": 0.0,
+      "next_sample_lap_dist_m": 11.817782041625485,
+      "reason": "boundary_linear_interpolation_across_lap_dist_reset"
+    },
+    "2": {
+      "sample_index": 2448,
+      "original_lap_dist_m": 4633.22265625,
+      "repaired_lap_dist_m": 0.0,
+      "next_sample_lap_dist_m": 10.928720875891617,
+      "reason": "boundary_linear_interpolation_across_lap_dist_reset"
+    },
+    "3": {
+      "sample_index": 3723,
+      "original_lap_dist_m": 4630.072265625,
+      "repaired_lap_dist_m": 0.0,
+      "next_sample_lap_dist_m": 7.307809068080045,
+      "reason": "boundary_linear_interpolation_across_lap_dist_reset"
+    },
+    "4": {
+      "sample_index": 4837,
+      "original_lap_dist_m": 4634.85205078125,
+      "repaired_lap_dist_m": 0.0,
+      "next_sample_lap_dist_m": 10.531458835075902,
+      "reason": "boundary_linear_interpolation_across_lap_dist_reset"
+    },
+    "5": {
+      "sample_index": 5953,
+      "original_lap_dist_m": 4630.8095703125,
+      "repaired_lap_dist_m": 0.0,
+      "next_sample_lap_dist_m": 7.222248657575785,
+      "reason": "boundary_linear_interpolation_across_lap_dist_reset"
+    }
+  },
+  "target_hz": 10.0,
+  "channel_modes": {
+    "GPS Time": {
+      "mode": "rowid",
+      "row_count": 59704,
+      "columns": [
+        "value"
+      ]
+    },
+    "GPS Latitude": {
+      "mode": "rowid",
+      "row_count": 5971,
+      "columns": [
+        "value"
+      ]
+    },
+    "GPS Longitude": {
+      "mode": "rowid",
+      "row_count": 5971,
+      "columns": [
+        "value"
+      ]
+    },
+    "Lap Dist": {
+      "mode": "rowid",
+      "row_count": 5971,
+      "columns": [
+        "value"
+      ]
+    }
+  },
+  "selected_lap_metrics": {
+    "sample_count": 1114,
+    "duration_s": 111.30000000000007,
+    "gps_coverage": 1.0,
+    "gps_path_m": 4592.102115465156,
+    "lap_dist_min_m": 0.0,
+    "lap_dist_max_m": 4632.863770021966,
+    "lap_dist_span_m": 4632.863770021966
+  },
+  "exported_point_count": 1114,
+  "bounds": {
+    "latitude_min": 59.99453353881836,
+    "latitude_max": 60.004852294921875,
+    "longitude_min": -0.004911623795746426,
+    "longitude_max": 0.00722636360240626,
+    "x_east_min_m": -100.29093650140277,
+    "x_east_max_m": 574.550435069956,
+    "y_north_min_m": -663.4134665905025,
+    "y_north_max_m": 483.98144625026725,
+    "lap_distance_min_m": 0.0,
+    "lap_distance_max_m": 4632.863770021966
+  },
+  "laps": {
+    "0": {
+      "sample_count": 1333,
+      "duration_s": 133.20000000000002,
+      "gps_coverage": 1.0,
+      "gps_path_m": 4613.873690878743,
+      "lap_dist_min_m": 3.1656702172489556e-06,
+      "lap_dist_max_m": 4634.320877675549,
+      "lap_dist_span_m": 4634.320874509879
+    },
+    "1": {
+      "sample_count": 1115,
+      "duration_s": 111.4,
+      "gps_coverage": 1.0,
+      "gps_path_m": 4575.078402517119,
+      "lap_dist_min_m": 0.0,
+      "lap_dist_max_m": 4632.371671953906,
+      "lap_dist_span_m": 4632.371671953906
+    },
+    "2": {
+      "sample_count": 1275,
+      "duration_s": 127.40000000000003,
+      "gps_coverage": 1.0,
+      "gps_path_m": 4625.648954955247,
+      "lap_dist_min_m": 0.0,
+      "lap_dist_max_m": 4628.781532060262,
+      "lap_dist_span_m": 4628.781532060262
+    },
+    "3": {
+      "sample_count": 1114,
+      "duration_s": 111.30000000000007,
+      "gps_coverage": 1.0,
+      "gps_path_m": 4592.102115465156,
+      "lap_dist_min_m": 0.0,
+      "lap_dist_max_m": 4632.863770021966,
+      "lap_dist_span_m": 4632.863770021966
+    },
+    "4": {
+      "sample_count": 1116,
+      "duration_s": 111.5,
+      "gps_coverage": 1.0,
+      "gps_path_m": 4573.309273984795,
+      "lap_dist_min_m": 0.0,
+      "lap_dist_max_m": 4628.749741346618,
+      "lap_dist_span_m": 4628.749741346618
+    },
+    "5": {
+      "sample_count": 18,
+      "duration_s": 1.6999999999999318,
+      "gps_coverage": 1.0,
+      "gps_path_m": 118.4057968485067,
+      "lap_dist_min_m": 0.0,
+      "lap_dist_max_m": 118.71086512752343,
+      "lap_dist_span_m": 118.71086512752343
+    }
+  },
+  "outputs": {
+    "csv": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\track_exports\\portimao_profile\\Algarve International Circuit_P_2026-09-01T02_52_16Z_track_gps.csv",
+    "geojson": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\track_exports\\portimao_profile\\Algarve International Circuit_P_2026-09-01T02_52_16Z_track_gps.geojson"
+  }
+}

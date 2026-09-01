@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "track": "Algarve International Circuit",
+  "layout": "Algarve International Circuit",
+  "numbering_scheme": "FIA/WEC Portimao 15-turn scheme",
+  "status": "NOMENCLATURE_VERIFIED_DISTANCE_CALIBRATED_SINGLE_SESSION",
+  "sources": [
+    {
+      "authority": "FIA World Endurance Championship",
+      "url": "https://www.fiawec.com/en/news/two-weeks-until-portimao-the-track-explained/7613",
+      "supports": [
+        "4.653 km and 15 turns",
+        "official turn sequence and directions",
+        "Primeira, Lagos, Torre VIP, Portimao, Sagres and Galp usage"
+      ]
+    },
+    {
+      "authority": "Autodromo Internacional do Algarve",
+      "url": "https://autodromodoalgarve.com/pt/the-park/racing-track/",
+      "supports": [
+        "Samsung, Craig Jones, Torre VIP, Portimao, Sagres and Galp naming"
+      ]
+    }
+  ],
+  "turns": [
+    {"number": 1, "name": "Primeira", "direction": "right"},
+    {"number": 2, "name": "Turn 2", "direction": "right"},
+    {"number": 3, "name": "Lagos", "direction": "right"},
+    {"number": 4, "name": "Turn 4", "direction": "left"},
+    {"number": 5, "name": "Torre VIP", "direction": "left"},
+    {"number": 6, "name": "Turn 6", "direction": "left"},
+    {"number": 7, "name": "Turn 7", "direction": "right"},
+    {"number": 8, "name": "Samsung", "direction": "right"},
+    {"number": 9, "name": "Craig Jones", "direction": "left"},
+    {"number": 10, "name": "Turn 10", "direction": "right"},
+    {"number": 11, "name": "Portimao", "aliases": ["Portimão"], "direction": "right"},
+    {"number": 12, "name": "Turn 12", "direction": "left"},
+    {"number": 13, "name": "Turn 13", "direction": "left"},
+    {"number": 14, "name": "Sagres", "direction": "right"},
+    {"number": 15, "name": "Galp", "direction": "right"}
+  ],
+  "integration_policy": {
+    "llm_may_invent_track_location": false,
+    "single_session_profile_is_production_authority": false,
+    "required_for_production": "independent-session validation and promotion"
+  }
+}

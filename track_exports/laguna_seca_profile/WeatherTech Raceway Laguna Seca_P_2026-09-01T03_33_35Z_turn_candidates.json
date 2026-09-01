@@ -1,0 +1,130 @@
+{
+  "source_csv": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\track_exports\\laguna_seca_profile\\WeatherTech Raceway Laguna Seca_P_2026-09-01T03_33_35Z_track_gps.csv",
+  "algorithm": {
+    "step_m": 2.0,
+    "heading_window_m": 20.0,
+    "smooth_window_m": 14.0,
+    "min_separation_m": 45.0,
+    "threshold_percentile": 0.7,
+    "global_abs_curvature_threshold_rad_per_m": 0.007668066858295804,
+    "requested_turn_count": 11
+  },
+  "track_distance_range_m": [
+    0.0,
+    3582.9405178825796
+  ],
+  "candidate_count": 11,
+  "candidates": [
+    {
+      "candidate_number": 1,
+      "start_distance_m": 422.0,
+      "center_distance_m": 468.0,
+      "end_distance_m": 564.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.029897761308779438,
+      "mean_abs_curvature_rad_per_m": 0.021684192352245293,
+      "estimated_heading_change_deg": 179.03162523606693
+    },
+    {
+      "candidate_number": 2,
+      "start_distance_m": 420.0,
+      "center_distance_m": 540.0,
+      "end_distance_m": 564.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.029897761308779438,
+      "mean_abs_curvature_rad_per_m": 0.02150220945392737,
+      "estimated_heading_change_deg": 180.10933891811564
+    },
+    {
+      "candidate_number": 3,
+      "start_distance_m": 714.0,
+      "center_distance_m": 756.0,
+      "end_distance_m": 848.0,
+      "direction": "right",
+      "peak_abs_curvature_rad_per_m": 0.017516449836147183,
+      "mean_abs_curvature_rad_per_m": 0.01213024231032755,
+      "estimated_heading_change_deg": -94.27137105644073
+    },
+    {
+      "candidate_number": 4,
+      "start_distance_m": 716.0,
+      "center_distance_m": 814.0,
+      "end_distance_m": 848.0,
+      "direction": "right",
+      "peak_abs_curvature_rad_per_m": 0.017516449836147183,
+      "mean_abs_curvature_rad_per_m": 0.012235391424708579,
+      "estimated_heading_change_deg": -93.69941020781332
+    },
+    {
+      "candidate_number": 5,
+      "start_distance_m": 1466.0,
+      "center_distance_m": 1550.0,
+      "end_distance_m": 1644.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.014536066218402569,
+      "mean_abs_curvature_rad_per_m": 0.010969672313565033,
+      "estimated_heading_change_deg": 113.02345914564766
+    },
+    {
+      "candidate_number": 6,
+      "start_distance_m": 1888.0,
+      "center_distance_m": 1944.0,
+      "end_distance_m": 1984.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.011731301443610873,
+      "mean_abs_curvature_rad_per_m": 0.008543232321314027,
+      "estimated_heading_change_deg": 47.095221269572946
+    },
+    {
+      "candidate_number": 7,
+      "start_distance_m": 2424.0,
+      "center_distance_m": 2462.0,
+      "end_distance_m": 2482.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.02781910609498765,
+      "mean_abs_curvature_rad_per_m": 0.01977908540857651,
+      "estimated_heading_change_deg": 68.73546870349877
+    },
+    {
+      "candidate_number": 8,
+      "start_distance_m": 2418.0,
+      "center_distance_m": 2528.0,
+      "end_distance_m": 2584.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.02781910609498765,
+      "mean_abs_curvature_rad_per_m": 0.014471721447890497,
+      "estimated_heading_change_deg": 3.7917262021778475
+    },
+    {
+      "candidate_number": 9,
+      "start_distance_m": 2604.0,
+      "center_distance_m": 2768.0,
+      "end_distance_m": 2824.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.012297775026215084,
+      "mean_abs_curvature_rad_per_m": 0.00924428818047738,
+      "estimated_heading_change_deg": 117.18703099177947
+    },
+    {
+      "candidate_number": 10,
+      "start_distance_m": 2922.0,
+      "center_distance_m": 2990.0,
+      "end_distance_m": 3062.0,
+      "direction": "right",
+      "peak_abs_curvature_rad_per_m": 0.013824881299794237,
+      "mean_abs_curvature_rad_per_m": 0.009569434978727897,
+      "estimated_heading_change_deg": -77.09126831005675
+    },
+    {
+      "candidate_number": 11,
+      "start_distance_m": 3244.0,
+      "center_distance_m": 3288.0,
+      "end_distance_m": 3316.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.03841037381329886,
+      "mean_abs_curvature_rad_per_m": 0.026252154913006087,
+      "estimated_heading_change_deg": 110.81833796506704
+    }
+  ],
+  "warning": "Estos son candidatos geométricos. No son nombres/números oficiales hasta completar la calibración contra una referencia verificada."
+}

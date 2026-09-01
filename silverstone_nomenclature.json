@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "track": "Silverstone Circuit",
+  "layout": "Silverstone Grand Prix Circuit - WEC",
+  "numbering_scheme": "FIA Silverstone Grand Prix 18-turn scheme",
+  "status": "NOMENCLATURE_VERIFIED_DISTANCE_CALIBRATED_SINGLE_SESSION",
+  "sources": [
+    {
+      "authority": "FIA",
+      "url": "https://www.fia.com/sites/default/files/2019_british_gp_preview_1.pdf",
+      "supports": ["5.891 km Grand Prix circuit identity", "Turn 1 through Turn 18 numbering"]
+    },
+    {
+      "authority": "Formula 1",
+      "url": "https://www.formula1.com/en/latest/article/explained-how-every-silverstone-corner-got-its-name.idMlxFC2gfN2ApcPmifxN.idMlxFC2gfN2ApcPmifxN",
+      "supports": ["corner names and their numbered sequence"]
+    }
+  ],
+  "turns": [
+    {"number": 1, "name": "Abbey", "direction": "right"},
+    {"number": 2, "name": "Farm", "direction": "left"},
+    {"number": 3, "name": "Village", "direction": "right"},
+    {"number": 4, "name": "The Loop", "direction": "left"},
+    {"number": 5, "name": "Aintree", "direction": "left"},
+    {"number": 6, "name": "Brooklands", "direction": "left"},
+    {"number": 7, "name": "Luffield", "direction": "right"},
+    {"number": 8, "name": "Woodcote", "direction": "right"},
+    {"number": 9, "name": "Copse", "direction": "right"},
+    {"number": 10, "name": "Maggotts", "direction": "left"},
+    {"number": 11, "name": "Maggotts", "direction": "right"},
+    {"number": 12, "name": "Becketts", "direction": "left"},
+    {"number": 13, "name": "Becketts", "direction": "right"},
+    {"number": 14, "name": "Chapel", "direction": "left"},
+    {"number": 15, "name": "Stowe", "direction": "right"},
+    {"number": 16, "name": "Vale", "direction": "left"},
+    {"number": 17, "name": "Club", "direction": "right"},
+    {"number": 18, "name": "Club", "direction": "right"}
+  ],
+  "integration_policy": {
+    "llm_may_invent_track_location": false,
+    "single_session_profile_is_production_authority": false,
+    "required_for_production": "independent-session validation and promotion"
+  }
+}

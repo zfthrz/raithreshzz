@@ -1,0 +1,170 @@
+{
+  "source_csv": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\track_exports\\bahrain_profile\\Bahrain International Circuit_P_2026-09-01T03_04_11Z_track_gps.csv",
+  "algorithm": {
+    "step_m": 2.0,
+    "heading_window_m": 20.0,
+    "smooth_window_m": 14.0,
+    "min_separation_m": 45.0,
+    "threshold_percentile": 0.7,
+    "global_abs_curvature_threshold_rad_per_m": 0.005521823631016222,
+    "requested_turn_count": 15
+  },
+  "track_distance_range_m": [
+    0.0,
+    5375.11368886832
+  ],
+  "candidate_count": 15,
+  "candidates": [
+    {
+      "candidate_number": 1,
+      "start_distance_m": 704.0,
+      "center_distance_m": 742.0,
+      "end_distance_m": 772.0,
+      "direction": "right",
+      "peak_abs_curvature_rad_per_m": 0.043432949542269374,
+      "mean_abs_curvature_rad_per_m": 0.030762405031955868,
+      "estimated_heading_change_deg": -123.47000089340608
+    },
+    {
+      "candidate_number": 2,
+      "start_distance_m": 692.0,
+      "center_distance_m": 810.0,
+      "end_distance_m": 894.0,
+      "direction": "right",
+      "peak_abs_curvature_rad_per_m": 0.043432949542269374,
+      "mean_abs_curvature_rad_per_m": 0.016977331363987647,
+      "estimated_heading_change_deg": -67.54496762822444
+    },
+    {
+      "candidate_number": 3,
+      "start_distance_m": 692.0,
+      "center_distance_m": 878.0,
+      "end_distance_m": 896.0,
+      "direction": "right",
+      "peak_abs_curvature_rad_per_m": 0.043432949542269374,
+      "mean_abs_curvature_rad_per_m": 0.01684858573770811,
+      "estimated_heading_change_deg": -66.9896091360321
+    },
+    {
+      "candidate_number": 4,
+      "start_distance_m": 1478.0,
+      "center_distance_m": 1500.0,
+      "end_distance_m": 1612.0,
+      "direction": "right",
+      "peak_abs_curvature_rad_per_m": 0.02527254987161835,
+      "mean_abs_curvature_rad_per_m": 0.01559643036776965,
+      "estimated_heading_change_deg": -120.73357512460002
+    },
+    {
+      "candidate_number": 5,
+      "start_distance_m": 1472.0,
+      "center_distance_m": 1584.0,
+      "end_distance_m": 1626.0,
+      "direction": "right",
+      "peak_abs_curvature_rad_per_m": 0.02527254987161835,
+      "mean_abs_curvature_rad_per_m": 0.014377281911446238,
+      "estimated_heading_change_deg": -128.40186754973874
+    },
+    {
+      "candidate_number": 6,
+      "start_distance_m": 1830.0,
+      "center_distance_m": 1874.0,
+      "end_distance_m": 1954.0,
+      "direction": "right",
+      "peak_abs_curvature_rad_per_m": 0.0109436729942355,
+      "mean_abs_curvature_rad_per_m": 0.008780063255160097,
+      "estimated_heading_change_deg": -63.34234381962467
+    },
+    {
+      "candidate_number": 7,
+      "start_distance_m": 1970.0,
+      "center_distance_m": 2030.0,
+      "end_distance_m": 2106.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.010691396020430035,
+      "mean_abs_curvature_rad_per_m": 0.007130746131188046,
+      "estimated_heading_change_deg": 56.0007438379501
+    },
+    {
+      "candidate_number": 8,
+      "start_distance_m": 2222.0,
+      "center_distance_m": 2280.0,
+      "end_distance_m": 2316.0,
+      "direction": "right",
+      "peak_abs_curvature_rad_per_m": 0.03551062981979679,
+      "mean_abs_curvature_rad_per_m": 0.024919621737678147,
+      "estimated_heading_change_deg": -136.6444989284911
+    },
+    {
+      "candidate_number": 9,
+      "start_distance_m": 2568.0,
+      "center_distance_m": 2654.0,
+      "end_distance_m": 2780.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.03782734600746816,
+      "mean_abs_curvature_rad_per_m": 0.014412817454955432,
+      "estimated_heading_change_deg": 176.65045442686272
+    },
+    {
+      "candidate_number": 10,
+      "start_distance_m": 2678.0,
+      "center_distance_m": 2728.0,
+      "end_distance_m": 2766.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.03782734600746816,
+      "mean_abs_curvature_rad_per_m": 0.02444718189563962,
+      "estimated_heading_change_deg": 125.87233243613503
+    },
+    {
+      "candidate_number": 11,
+      "start_distance_m": 3394.0,
+      "center_distance_m": 3450.0,
+      "end_distance_m": 3654.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.017550602706896887,
+      "mean_abs_curvature_rad_per_m": 0.01013490837428291,
+      "estimated_heading_change_deg": 151.57058545419775
+    },
+    {
+      "candidate_number": 12,
+      "start_distance_m": 3388.0,
+      "center_distance_m": 3508.0,
+      "end_distance_m": 3672.0,
+      "direction": "left",
+      "peak_abs_curvature_rad_per_m": 0.017550602706896887,
+      "mean_abs_curvature_rad_per_m": 0.009663534946105399,
+      "estimated_heading_change_deg": 158.24121094362104
+    },
+    {
+      "candidate_number": 13,
+      "start_distance_m": 4034.0,
+      "center_distance_m": 4070.0,
+      "end_distance_m": 4198.0,
+      "direction": "right",
+      "peak_abs_curvature_rad_per_m": 0.016516186592593525,
+      "mean_abs_curvature_rad_per_m": 0.012072216704994797,
+      "estimated_heading_change_deg": -114.69854113408903
+    },
+    {
+      "candidate_number": 14,
+      "start_distance_m": 4038.0,
+      "center_distance_m": 4126.0,
+      "end_distance_m": 4194.0,
+      "direction": "right",
+      "peak_abs_curvature_rad_per_m": 0.016516186592593525,
+      "mean_abs_curvature_rad_per_m": 0.012444830091369288,
+      "estimated_heading_change_deg": -112.6588168836828
+    },
+    {
+      "candidate_number": 15,
+      "start_distance_m": 4870.0,
+      "center_distance_m": 4912.0,
+      "end_distance_m": 4978.0,
+      "direction": "right",
+      "peak_abs_curvature_rad_per_m": 0.023192594396413056,
+      "mean_abs_curvature_rad_per_m": 0.01555739674980456,
+      "estimated_heading_change_deg": -98.078636627324
+    }
+  ],
+  "warning": "Estos son candidatos geométricos. No son nombres/números oficiales hasta completar la calibración contra una referencia verificada."
+}

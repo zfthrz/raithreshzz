@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "track": "Bahrain International Circuit",
+  "layout": "Bahrain International Circuit",
+  "numbering_scheme": "FIA/WEC Bahrain Grand Prix 15-turn scheme",
+  "status": "NOMENCLATURE_VERIFIED_DISTANCE_CALIBRATED_SINGLE_SESSION",
+  "sources": [
+    {
+      "authority": "FIA",
+      "url": "https://www.fia.com/system/files/decision-document/2025_bahrain_grand_prix_-_event_notes_-_circuit_map_v4.pdf",
+      "supports": ["Grand Prix circuit identity", "5.412 km centreline", "Turn 1 through Turn 15 numbering"]
+    },
+    {
+      "authority": "FIA WEC / Michelin",
+      "url": "https://cxf-prod.azureedge.net/news-platform-production/attachments/cmhkfsc170y5v01o0kphp0vlh-08-michelin-raceguide-wec-bahrein2025-en.pdf",
+      "supports": ["WEC clockwise layout", "15-turn sequence"]
+    }
+  ],
+  "turns": [
+    {"number": 1, "name": "Turn 1", "direction": "right"},
+    {"number": 2, "name": "Turn 2", "direction": "left"},
+    {"number": 3, "name": "Turn 3", "direction": "right"},
+    {"number": 4, "name": "Turn 4", "direction": "right"},
+    {"number": 5, "name": "Turn 5", "direction": "left"},
+    {"number": 6, "name": "Turn 6", "direction": "right"},
+    {"number": 7, "name": "Turn 7", "direction": "left"},
+    {"number": 8, "name": "Turn 8", "direction": "right"},
+    {"number": 9, "name": "Turn 9", "direction": "left"},
+    {"number": 10, "name": "Turn 10", "direction": "left"},
+    {"number": 11, "name": "Turn 11", "direction": "left"},
+    {"number": 12, "name": "Turn 12", "direction": "right"},
+    {"number": 13, "name": "Turn 13", "direction": "right"},
+    {"number": 14, "name": "Turn 14", "direction": "right"},
+    {"number": 15, "name": "Turn 15", "direction": "right"}
+  ],
+  "integration_policy": {
+    "llm_may_invent_track_location": false,
+    "single_session_profile_is_production_authority": false,
+    "required_for_production": "independent-session validation and promotion"
+  }
+}

@@ -1,0 +1,142 @@
+{
+  "source_file": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Le Mans Ultimate\\UserData\\Telemetry\\Silverstone Circuit_P_2026-09-01T03_49_06Z.duckdb",
+  "track_name": "Silverstone Circuit",
+  "track_layout": "Silverstone Grand Prix Circuit - WEC",
+  "selected_lap": 3,
+  "time_source": "GPS Time.value",
+  "lap_boundary_source": "Lap.ts",
+  "lap_distance_boundary_repairs": {
+    "1": {
+      "sample_index": 1413,
+      "original_lap_dist_m": 5864.255859375,
+      "repaired_lap_dist_m": 0.0,
+      "next_sample_lap_dist_m": 6.229122492895294,
+      "reason": "boundary_linear_interpolation_across_lap_dist_reset"
+    },
+    "2": {
+      "sample_index": 2566,
+      "original_lap_dist_m": 5866.1572265625,
+      "repaired_lap_dist_m": 0.0,
+      "next_sample_lap_dist_m": 6.861769996486753,
+      "reason": "boundary_linear_interpolation_across_lap_dist_reset"
+    },
+    "3": {
+      "sample_index": 3717,
+      "original_lap_dist_m": 5861.814453125,
+      "repaired_lap_dist_m": 0.0,
+      "next_sample_lap_dist_m": 1.7400790811949531,
+      "reason": "boundary_linear_interpolation_across_lap_dist_reset"
+    },
+    "4": {
+      "sample_index": 4850,
+      "original_lap_dist_m": 5865.1953125,
+      "repaired_lap_dist_m": 0.0,
+      "next_sample_lap_dist_m": 3.230317837837402,
+      "reason": "boundary_linear_interpolation_across_lap_dist_reset"
+    }
+  },
+  "target_hz": 10.0,
+  "channel_modes": {
+    "GPS Time": {
+      "mode": "rowid",
+      "row_count": 50640,
+      "columns": [
+        "value"
+      ]
+    },
+    "GPS Latitude": {
+      "mode": "rowid",
+      "row_count": 5064,
+      "columns": [
+        "value"
+      ]
+    },
+    "GPS Longitude": {
+      "mode": "rowid",
+      "row_count": 5064,
+      "columns": [
+        "value"
+      ]
+    },
+    "Lap Dist": {
+      "mode": "rowid",
+      "row_count": 5064,
+      "columns": [
+        "value"
+      ]
+    }
+  },
+  "selected_lap_metrics": {
+    "sample_count": 1133,
+    "duration_s": 113.19999999999999,
+    "gps_coverage": 1.0,
+    "gps_path_m": 5798.851670819721,
+    "lap_dist_min_m": 0.0,
+    "lap_dist_max_m": 5859.7227594911255,
+    "lap_dist_span_m": 5859.7227594911255
+  },
+  "exported_point_count": 1133,
+  "bounds": {
+    "latitude_min": 59.99242401123047,
+    "latitude_max": 60.007869720458984,
+    "longitude_min": -0.008400783877257808,
+    "longitude_max": 0.009839558722553033,
+    "x_east_min_m": -126.98126587961454,
+    "x_east_max_m": 887.1754358755915,
+    "y_north_min_m": -621.8721753148077,
+    "y_north_max_m": 1095.6147016128746,
+    "lap_distance_min_m": 0.0,
+    "lap_distance_max_m": 5859.7227594911255
+  },
+  "laps": {
+    "0": {
+      "sample_count": 1413,
+      "duration_s": 141.20000000000002,
+      "gps_coverage": 1.0,
+      "gps_path_m": 5808.896338121531,
+      "lap_dist_min_m": 1.457374819909072e-05,
+      "lap_dist_max_m": 5862.659588660051,
+      "lap_dist_span_m": 5862.659574086302
+    },
+    "1": {
+      "sample_count": 1153,
+      "duration_s": 115.19999999999996,
+      "gps_coverage": 1.0,
+      "gps_path_m": 5808.114414501697,
+      "lap_dist_min_m": 0.0,
+      "lap_dist_max_m": 5863.243462031794,
+      "lap_dist_span_m": 5863.243462031794
+    },
+    "2": {
+      "sample_count": 1151,
+      "duration_s": 115.0,
+      "gps_coverage": 1.0,
+      "gps_path_m": 5793.19352311209,
+      "lap_dist_min_m": 0.0,
+      "lap_dist_max_m": 5857.70831191436,
+      "lap_dist_span_m": 5857.70831191436
+    },
+    "3": {
+      "sample_count": 1133,
+      "duration_s": 113.19999999999999,
+      "gps_coverage": 1.0,
+      "gps_path_m": 5798.851670819721,
+      "lap_dist_min_m": 0.0,
+      "lap_dist_max_m": 5859.7227594911255,
+      "lap_dist_span_m": 5859.7227594911255
+    },
+    "4": {
+      "sample_count": 214,
+      "duration_s": 21.30000000000001,
+      "gps_coverage": 1.0,
+      "gps_path_m": 1011.3165505961681,
+      "lap_dist_min_m": 0.0,
+      "lap_dist_max_m": 1023.5979078960237,
+      "lap_dist_span_m": 1023.5979078960237
+    }
+  },
+  "outputs": {
+    "csv": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\track_exports\\silverstone_profile\\Silverstone Circuit_P_2026-09-01T03_49_06Z_track_gps.csv",
+    "geojson": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\track_exports\\silverstone_profile\\Silverstone Circuit_P_2026-09-01T03_49_06Z_track_gps.geojson"
+  }
+}

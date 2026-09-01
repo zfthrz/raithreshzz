@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "profile_id": "portimao-lmu-wec15-v0.1",
+  "status": "VALIDATED_SINGLE_SESSION",
+  "track": "Algarve International Circuit",
+  "layout": "Algarve International Circuit",
+  "distance_coordinate": "LMU Lap Dist",
+  "lap_length_m": 4633.0,
+  "calibration": {
+    "source_session": "Algarve International Circuit_P_2026-09-01T02_52_16Z",
+    "source_lap_internal_index": 3,
+    "source_lap_time_s_approx": 111.3,
+    "source_lap_dist_max_m": 4632.9,
+    "source_gps_path_m_approx": 4592.1,
+    "gps_coverage": 1.0,
+    "geometry_method": "GPS trajectory + signed curvature + FIA/WEC 15-turn direction-sequence constrained calibration",
+    "numbering_scheme": "FIA/WEC Portimao 15-turn scheme",
+    "requires_cross_session_validation": true,
+    "validation_status": "PASS_SINGLE_SESSION",
+    "same_session_validation_laps": [
+      {"lap_internal_index": 1, "lap_time_s_approx": 111.4, "lap_dist_max_m": 4632.4, "gps_path_m_approx": 4575.1, "gps_coverage": 1.0},
+      {"lap_internal_index": 4, "lap_time_s_approx": 111.5, "lap_dist_max_m": 4628.7, "gps_path_m_approx": 4573.3, "gps_coverage": 1.0}
+    ],
+    "excluded_laps": [
+      {"lap_internal_index": 2, "lap_time_s_approx": 127.4, "reason": "driver-reported spin; excluded from profile calibration"}
+    ],
+    "interpretation": "All 15 FIA/WEC turns are represented in the clean source lap. Repeated local maxima inside T7-T8, T10-T11, T14 and T15 were reconciled by official sequence and direction rather than treated as additional turns. Independent-session validation is still required."
+  },
+  "manual_low_curvature_turns": [
+    {"turn": 6, "reason": "gentle uphill left below the strongest automatic curvature candidates"},
+    {"turn": 9, "reason": "flowing left whose geometric peak is weaker than adjacent right-hand complexes"},
+    {"turn": 12, "reason": "flat-out left represented by a broad low-curvature region"},
+    {"turn": 15, "reason": "long accelerating right with multiple nearby local maxima; representative apex retained from the continuous region"}
+  ],
+  "turns": [
+    {"turn": 1, "name": "Primeira", "group": "Primeira", "direction": "right", "start_m": 352.0, "apex_m": 430.0, "end_m": 470.0},
+    {"turn": 2, "name": "Turn 2", "group": "Turn 2", "direction": "right", "start_m": 516.0, "apex_m": 554.0, "end_m": 640.0},
+    {"turn": 3, "name": "Lagos", "group": "Lagos", "direction": "right", "start_m": 706.0, "apex_m": 734.0, "end_m": 766.0},
+    {"turn": 4, "name": "Turn 4", "group": "Turn 4", "direction": "left", "start_m": 786.0, "apex_m": 842.0, "end_m": 932.0},
+    {"turn": 5, "name": "Torre VIP", "group": "Torre VIP", "direction": "left", "start_m": 1414.0, "apex_m": 1448.0, "end_m": 1496.0},
+    {"turn": 6, "name": "Turn 6", "group": "Turn 6", "direction": "left", "start_m": 1650.0, "apex_m": 1670.0, "end_m": 1734.0},
+    {"turn": 7, "name": "Turn 7", "group": "Turns 7–8", "direction": "right", "start_m": 1870.0, "apex_m": 1922.0, "end_m": 2000.0},
+    {"turn": 8, "name": "Samsung", "group": "Turns 7–8", "direction": "right", "start_m": 2000.0, "apex_m": 2080.0, "end_m": 2138.0},
+    {"turn": 9, "name": "Craig Jones", "group": "Craig Jones", "direction": "left", "start_m": 2382.0, "apex_m": 2454.0, "end_m": 2522.0},
+    {"turn": 10, "name": "Turn 10", "group": "Portimao", "direction": "right", "start_m": 2638.0, "apex_m": 2676.0, "end_m": 2720.0},
+    {"turn": 11, "name": "Portimao", "aliases": ["Portimão"], "group": "Portimao", "direction": "right", "start_m": 2720.0, "apex_m": 2770.0, "end_m": 2814.0},
+    {"turn": 12, "name": "Turn 12", "group": "Turn 12", "direction": "left", "start_m": 2894.0, "apex_m": 2936.0, "end_m": 3054.0},
+    {"turn": 13, "name": "Turn 13", "group": "Turns 13–14", "direction": "left", "start_m": 3140.0, "apex_m": 3196.0, "end_m": 3254.0},
+    {"turn": 14, "name": "Sagres", "group": "Turns 13–14", "direction": "right", "start_m": 3348.0, "apex_m": 3420.0, "end_m": 3572.0},
+    {"turn": 15, "name": "Galp", "group": "Galp", "direction": "right", "start_m": 3822.0, "apex_m": 3970.0, "end_m": 4060.0}
+  ],
+  "display_policy": {
+    "prefer_corner_name": true,
+    "turn_number_is_secondary": false,
+    "turn_number_suffix": "FIA/WEC",
+    "always_preserve_lmu_distance_m": true
+  },
+  "provenance": {
+    "gps_exports": [
+      "track_exports/portimao_profile/Algarve International Circuit_P_2026-09-01T02_52_16Z_track_gps.csv",
+      "track_exports/portimao_profile/Algarve International Circuit_P_2026-09-01T02_52_16Z_track_gps_summary.json",
+      "track_exports/portimao_profile/Algarve International Circuit_P_2026-09-01T02_52_16Z_turn_candidates.json"
+    ],
+    "reference_urls": [
+      "https://www.fiawec.com/en/news/two-weeks-until-portimao-the-track-explained/7613",
+      "https://autodromodoalgarve.com/pt/the-park/racing-track/"
+    ]
+  }
+}

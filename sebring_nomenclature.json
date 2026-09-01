@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "track": "Sebring International Raceway",
+  "layout": "Sebring International Raceway",
+  "numbering_scheme": "FIA WEC / Sebring 17-turn scheme",
+  "status": "NOMENCLATURE_VERIFIED_DISTANCE_CALIBRATED_SINGLE_SESSION",
+  "sources": [
+    {
+      "authority": "FIA WEC",
+      "url": "https://dgaddcosprod.blob.core.windows.net/b2c-experience-production/attachments/cl1ftc9pz0cl901k4k380o0wl-racecard-2022-wec-r01.pdf",
+      "supports": ["6.019 km circuit identity", "17-turn sequence", "official named corner regions"]
+    },
+    {
+      "authority": "Sebring International Raceway",
+      "url": "https://www.sebringraceway.com/where-to-watch/",
+      "supports": ["Turn 3", "Turn 7 Hairpin", "Turn 17"]
+    }
+  ],
+  "turns": [
+    {"number": 1, "name": "Turn 1", "direction": "left"},
+    {"number": 2, "name": "Turn 2", "direction": "right"},
+    {"number": 3, "name": "Turn 3", "direction": "left"},
+    {"number": 4, "name": "Turn 4", "direction": "right"},
+    {"number": 5, "name": "Turn 5", "direction": "left"},
+    {"number": 6, "name": "Gurney Bend", "direction": "right"},
+    {"number": 7, "name": "Hairpin", "direction": "right"},
+    {"number": 8, "name": "Kristensen Corner", "direction": "right"},
+    {"number": 9, "name": "Turn 9", "direction": "left"},
+    {"number": 10, "name": "Cunningham Corner", "direction": "right"},
+    {"number": 11, "name": "Collier Curve", "direction": "left"},
+    {"number": 12, "name": "Turn 12", "direction": "right"},
+    {"number": 13, "name": "Tower Turn", "direction": "right"},
+    {"number": 14, "name": "Bishop Bend", "direction": "left"},
+    {"number": 15, "name": "Turn 15", "direction": "right"},
+    {"number": 16, "name": "Le Mans Curve", "direction": "right"},
+    {"number": 17, "name": "Turn 17", "aliases": ["Sunset Bend"], "direction": "right"}
+  ],
+  "integration_policy": {
+    "llm_may_invent_track_location": false,
+    "single_session_profile_is_production_authority": false,
+    "required_for_production": "independent-session validation and promotion"
+  }
+}

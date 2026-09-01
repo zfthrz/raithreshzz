@@ -1,0 +1,158 @@
+{
+  "source_file": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Le Mans Ultimate\\UserData\\Telemetry\\Sebring International Raceway_P_2026-09-01T03_22_24Z.duckdb",
+  "track_name": "Sebring International Raceway",
+  "track_layout": "Sebring International Raceway",
+  "selected_lap": 3,
+  "time_source": "GPS Time.value",
+  "lap_boundary_source": "Lap.ts",
+  "lap_distance_boundary_repairs": {
+    "1": {
+      "sample_index": 396,
+      "original_lap_dist_m": 5812.8251953125,
+      "repaired_lap_dist_m": 0.0,
+      "next_sample_lap_dist_m": 4.026992452646304,
+      "reason": "boundary_linear_interpolation_across_lap_dist_reset"
+    },
+    "2": {
+      "sample_index": 1731,
+      "original_lap_dist_m": 5815.91552734375,
+      "repaired_lap_dist_m": 0.0,
+      "next_sample_lap_dist_m": 6.28045822661766,
+      "reason": "boundary_linear_interpolation_across_lap_dist_reset"
+    },
+    "3": {
+      "sample_index": 3051,
+      "original_lap_dist_m": 5814.81103515625,
+      "repaired_lap_dist_m": 0.0,
+      "next_sample_lap_dist_m": 5.278992576572764,
+      "reason": "boundary_linear_interpolation_across_lap_dist_reset"
+    },
+    "4": {
+      "sample_index": 4379,
+      "original_lap_dist_m": 5815.1748046875,
+      "repaired_lap_dist_m": 0.0,
+      "next_sample_lap_dist_m": 4.984320744627852,
+      "reason": "boundary_linear_interpolation_across_lap_dist_reset"
+    },
+    "5": {
+      "sample_index": 5671,
+      "original_lap_dist_m": 5819.74267578125,
+      "repaired_lap_dist_m": 0.0,
+      "next_sample_lap_dist_m": 7.621539224235577,
+      "reason": "boundary_linear_interpolation_across_lap_dist_reset"
+    }
+  },
+  "target_hz": 10.0,
+  "channel_modes": {
+    "GPS Time": {
+      "mode": "rowid",
+      "row_count": 56914,
+      "columns": [
+        "value"
+      ]
+    },
+    "GPS Latitude": {
+      "mode": "rowid",
+      "row_count": 5692,
+      "columns": [
+        "value"
+      ]
+    },
+    "GPS Longitude": {
+      "mode": "rowid",
+      "row_count": 5692,
+      "columns": [
+        "value"
+      ]
+    },
+    "Lap Dist": {
+      "mode": "rowid",
+      "row_count": 5692,
+      "columns": [
+        "value"
+      ]
+    }
+  },
+  "selected_lap_metrics": {
+    "sample_count": 1328,
+    "duration_s": 132.69999999999993,
+    "gps_coverage": 1.0,
+    "gps_path_m": 5815.9289088459,
+    "lap_dist_min_m": 0.0,
+    "lap_dist_max_m": 5813.859239204742,
+    "lap_dist_span_m": 5813.859239204742
+  },
+  "exported_point_count": 1328,
+  "bounds": {
+    "latitude_min": 59.998085021972656,
+    "latitude_max": 60.00699996948242,
+    "longitude_min": -0.010113531573544547,
+    "longitude_max": 0.011639390640822034,
+    "x_east_min_m": -456.54071146152967,
+    "x_east_max_m": 752.8468107389673,
+    "y_north_min_m": -217.60206665027192,
+    "y_north_max_m": 773.6962369770156,
+    "lap_distance_min_m": 0.0,
+    "lap_distance_max_m": 5813.859239204742
+  },
+  "laps": {
+    "0": {
+      "sample_count": 396,
+      "duration_s": 39.5,
+      "gps_coverage": 1.0,
+      "gps_path_m": 1181.1396066389168,
+      "lap_dist_min_m": 0.0013876737793907523,
+      "lap_dist_max_m": 5812.7065914339655,
+      "lap_dist_span_m": 5812.705203760186
+    },
+    "1": {
+      "sample_count": 1335,
+      "duration_s": 133.4,
+      "gps_coverage": 1.0,
+      "gps_path_m": 5810.051299385986,
+      "lap_dist_min_m": 0.0,
+      "lap_dist_max_m": 5815.408584540836,
+      "lap_dist_span_m": 5815.408584540836
+    },
+    "2": {
+      "sample_count": 1320,
+      "duration_s": 131.89999999999992,
+      "gps_coverage": 1.0,
+      "gps_path_m": 5799.3344491499665,
+      "lap_dist_min_m": 0.0,
+      "lap_dist_max_m": 5813.872232026218,
+      "lap_dist_span_m": 5813.872232026218
+    },
+    "3": {
+      "sample_count": 1328,
+      "duration_s": 132.69999999999993,
+      "gps_coverage": 1.0,
+      "gps_path_m": 5815.9289088459,
+      "lap_dist_min_m": 0.0,
+      "lap_dist_max_m": 5813.859239204742,
+      "lap_dist_span_m": 5813.859239204742
+    },
+    "4": {
+      "sample_count": 1292,
+      "duration_s": 129.0999999999999,
+      "gps_coverage": 1.0,
+      "gps_path_m": 5789.293091420007,
+      "lap_dist_min_m": 0.0,
+      "lap_dist_max_m": 5817.44666234503,
+      "lap_dist_span_m": 5817.44666234503
+    },
+    "5": {
+      "sample_count": 21,
+      "duration_s": 2.0,
+      "gps_coverage": 1.0,
+      "gps_path_m": 121.40133614771818,
+      "lap_dist_min_m": 0.0,
+      "lap_dist_max_m": 123.10452769991922,
+      "lap_dist_span_m": 123.10452769991922
+    }
+  },
+  "outputs": {
+    "csv": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\track_exports\\sebring_profile\\Sebring International Raceway_P_2026-09-01T03_22_24Z_track_gps.csv",
+    "geojson": "C:\\Users\\thres\\Documents\\GitHub\\raithreshzz\\track_exports\\sebring_profile\\Sebring International Raceway_P_2026-09-01T03_22_24Z_track_gps.geojson"
+  }
+}

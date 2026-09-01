@@ -22,6 +22,15 @@ def test_gui_distinguishes_hierarchical_track_readiness_states():
     ].casefold()
 
 
+def test_gui_distinguishes_provisional_profile_from_missing_profile():
+    assert READINESS_STATUS_COLORS["NEEDS_INDEPENDENT_PROFILE_SESSION"] != (
+        READINESS_STATUS_COLORS["NEEDS_PROFILE"]
+    )
+    assert "provisional" in READINESS_STATUS_LABELS[
+        "NEEDS_INDEPENDENT_PROFILE_SESSION"
+    ].casefold()
+
+
 def test_promoted_match_tooltip_does_not_claim_full_calibration():
     text = track_readiness_status_tooltip({
         "overall_status": "COVERED_BY_TRACK_MATCH_BASELINE",

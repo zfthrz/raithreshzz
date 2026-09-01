@@ -14,7 +14,7 @@ from track_baseline_shadow import resolve_track_baseline
 from track_match_baseline_promotion import discover_promotion_for_context
 
 
-TRACK_READINESS_VERSION = "0.8"
+TRACK_READINESS_VERSION = "0.9"
 READY_STAGE_STATUSES = {"RUN", "REUSED"}
 PROFILE_VERSION_RE = re.compile(r"v(\d+)[._](\d+)", re.IGNORECASE)
 
@@ -117,6 +117,8 @@ def _profile_state(record: ProfileRecord | None) -> str:
         return "MISSING"
     if record.status in VALID_PROFILE_STATUSES and record.valid_turns:
         return "VALIDATED"
+    if record.status == "VALIDATED_SINGLE_SESSION" and record.valid_turns:
+        return "PROVISIONAL_SINGLE_SESSION"
     if not record.valid_turns:
         return "INVALID"
     return "PRESENT_UNVALIDATED"
@@ -297,6 +299,14 @@ def _derive_status(
     baseline: dict[str, Any],
     promotion: dict[str, Any],
 ) -> tuple[str, dict[str, Any]]:
+    if profile_status == "PROVISIONAL_SINGLE_SESSION":
+        return "NEEDS_INDEPENDENT_PROFILE_SESSION", {
+            "code": "RECORD_INDEPENDENT_PROFILE_SESSION",
+            "description": (
+                "Record an independent session to validate and promote the "
+                "existing single-session track profile"
+            ),
+        }
     if profile_status != "VALIDATED":
         return "NEEDS_PROFILE", {
             "code": "CREATE_OR_VALIDATE_TRACK_PROFILE",
@@ -476,6 +486,8 @@ def _build_track_summary(
 
         if "VALIDATED" in profile_states:
             track_profile_status = "VALIDATED"
+        elif "PROVISIONAL_SINGLE_SESSION" in profile_states:
+            track_profile_status = "PROVISIONAL_SINGLE_SESSION"
         elif "PRESENT_UNVALIDATED" in profile_states:
             track_profile_status = "PRESENT_UNVALIDATED"
         elif "INVALID" in profile_states:

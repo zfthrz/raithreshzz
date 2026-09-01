@@ -149,6 +149,7 @@ READINESS_STATUS_COLORS = {
     "NEEDS_LABELS": "#f0c674",
     "NEEDS_CALIBRATION_QUEUE": "#7fb3e3",
     "NEEDS_SESSIONS": "#7fb3e3",
+    "NEEDS_INDEPENDENT_PROFILE_SESSION": "#f0c674",
     "NEEDS_PROFILE": "#ff7b72",
     "MATCH_BASELINE_CONFLICT": "#ff7b72",
     "UNKNOWN": "#9aa5ad",
@@ -160,6 +161,7 @@ READINESS_STATUS_LABELS = {
     "TRACK_MATCH_BASELINE_SHADOW": "Baseline MATCH en shadow",
     "WAITING_FOR_TRACK_BASELINE": "Esperando baseline de circuito",
     "NEEDS_PROFILE": "Necesita track profile",
+    "NEEDS_INDEPENDENT_PROFILE_SESSION": "Perfil provisional: falta otra sesión",
     "NEEDS_SESSIONS": "Necesita sesiones",
     "NEEDS_CALIBRATION_QUEUE": "Necesita calibration queue",
     "NEEDS_LABELS": "Necesita labels",
@@ -171,6 +173,7 @@ READINESS_STATUS_LABELS = {
 
 READINESS_ACTION_LABELS = {
     "CREATE_OR_VALIDATE_TRACK_PROFILE": "Crear / validar track profile",
+    "RECORD_INDEPENDENT_PROFILE_SESSION": "Registrar otra sesión independiente",
     "RECORD_MORE_SESSIONS": "Registrar más sesiones",
     "GENERATE_CALIBRATION_QUEUE": "Generar calibration queue",
     "LABEL_CALIBRATION_QUEUE": "Etiquetar calibration queue",
@@ -2346,6 +2349,10 @@ class RaceEngineerApp:
             foreground=READINESS_STATUS_COLORS["NEEDS_EVALUATION"],
         )
         self.track_readiness_tree.tag_configure(
+            "track_profile_provisional",
+            foreground=READINESS_STATUS_COLORS["NEEDS_INDEPENDENT_PROFILE_SESSION"],
+        )
+        self.track_readiness_tree.tag_configure(
             "track_profile_missing",
             foreground=READINESS_STATUS_COLORS["NEEDS_PROFILE"],
         )
@@ -2881,7 +2888,9 @@ class RaceEngineerApp:
 
         selected_iid = None
         for index, track in enumerate(self.track_readiness_tracks):
-            if track.get("profile_status") != "VALIDATED":
+            if track.get("profile_status") == "PROVISIONAL_SINGLE_SESSION":
+                tag = "track_profile_provisional"
+            elif track.get("profile_status") != "VALIDATED":
                 tag = "track_profile_missing"
             elif int(track.get("pending_contexts") or 0) > 0:
                 tag = "track_pending"

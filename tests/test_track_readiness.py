@@ -111,6 +111,26 @@ def test_profile_without_context_is_visible_track_level(tmp_path, monkeypatch):
     assert track["context_count"] == 0
 
 
+def test_single_session_profile_is_reported_as_provisional(tmp_path, monkeypatch):
+    profiles, runs, batches = _roots(tmp_path, monkeypatch, [])
+    _profile(
+        profiles / "spa_v0_1.json",
+        status="VALIDATED_SINGLE_SESSION",
+        profile_id="spa-v0.1",
+    )
+    _runtime_session(runs)
+
+    payload = tr.build_track_readiness(
+        profile_dir=profiles, runs_root=runs, batches_root=batches
+    )
+
+    row = payload["rows"][0]
+    assert row["profile_status"] == "PROVISIONAL_SINGLE_SESSION"
+    assert row["overall_status"] == "NEEDS_INDEPENDENT_PROFILE_SESSION"
+    assert row["next_action"]["code"] == "RECORD_INDEPENDENT_PROFILE_SESSION"
+    assert payload["tracks"][0]["profile_status"] == "PROVISIONAL_SINGLE_SESSION"
+
+
 def test_sessions_without_queue_need_calibration_queue(tmp_path, monkeypatch):
     profiles, runs, batches = _roots(tmp_path, monkeypatch, [])
     _profile(profiles / "spa_v0_3.json")

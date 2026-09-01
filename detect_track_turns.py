@@ -400,7 +400,7 @@ def main():
 
     print(
         f"{'#':>3} {'start':>9} {'center':>9} {'end':>9} "
-        f"{'dir':>7} {'headingΔ':>10} {'peakκ':>11}"
+        f"{'dir':>7} {'heading_d':>10} {'peak_kappa':>11}"
     )
     for c in candidates:
         print(
@@ -409,7 +409,7 @@ def main():
             f"{c['center_distance_m']:>9.1f} "
             f"{c['end_distance_m']:>9.1f} "
             f"{c['direction']:>7} "
-            f"{c['estimated_heading_change_deg']:>9.1f}° "
+            f"{c['estimated_heading_change_deg']:>9.1f}deg "
             f"{c['peak_abs_curvature_rad_per_m']:>11.6f}"
         )
 

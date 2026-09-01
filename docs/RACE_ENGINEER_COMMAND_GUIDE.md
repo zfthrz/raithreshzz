@@ -374,6 +374,23 @@ La GUI v1.6 muestra este mismo estado junto al contador de sesiones. Verde indic
 inválido o fallido. Al pulsar el indicador, el detalle o path de labels aparece en
 el pie de la ventana. Es una proyección de solo lectura.
 
+### Validar una segunda sesión contra un track profile provisional
+
+Después de exportar una vuelta limpia de una sesión independiente:
+
+```powershell
+python validate_track_profile_session.py `
+  "track_profiles\silverstone_wec_profile_v0_1.json" `
+  "track_exports\silverstone_validation_2\Silverstone Circuit_P_FECHA_track_gps.csv" `
+  --output "track_exports\silverstone_validation_2\profile_validation_report.json"
+```
+
+El auditor exige coincidencia exacta de circuito/layout, rechaza la misma sesión usada
+para construir el perfil y compara cada curva con el extremo local de igual dirección
+dentro de su intervalo calibrado. El resultado puede quedar
+`READY_FOR_EXPLICIT_PROMOTION`, pero nunca modifica ni promueve el perfil: conserva
+`mode=AUDIT_READ_ONLY`, `profile_mutated=false` y `automatic_promotion=false`.
+
 GUI v1.7 permite ampliar directamente el mapa GPS con la rueda cuando el cursor está
 sobre el circuito. Conserva el punto bajo el cursor, mantiene alineadas todas las
 capas y llega hasta `8x`. `Restablecer mapa` vuelve a la vista completa. Esta

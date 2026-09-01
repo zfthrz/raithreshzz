@@ -10,6 +10,7 @@ import queue
 import sys
 import threading
 import time
+from datetime import datetime
 from pathlib import Path
 
 from race_engineer_history_gui import open_history_browser
@@ -100,7 +101,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.49"
+GUI_VERSION = "1.50"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 STATE_REFRESH_INTERVAL_MS = 5_000
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -196,6 +197,51 @@ SESSION_CHANGE_STATUS_LABELS = {
     "NEW": "Nuevo",
     "RESOLVED": "Ya no aparece",
 }
+
+SESSION_SORT_LABELS = {
+    "date": "Fecha",
+    "track": "Circuito",
+    "status": "Estado",
+}
+
+
+def _session_date_sort_value(session: SessionRecord) -> float:
+    value = str(session.timestamp_utc or "").strip()
+    if value:
+        try:
+            return datetime.fromisoformat(
+                value.replace("Z", "+00:00")
+            ).timestamp()
+        except ValueError:
+            pass
+    return float(session.modified_timestamp)
+
+
+def sort_session_records(sessions, *, column: str, descending: bool):
+    """Sort the filtered in-memory catalogue; unavailable values stay last."""
+
+    key_functions = {
+        "date": _session_date_sort_value,
+        "track": lambda item: str(item.track or "").casefold(),
+        "status": lambda item: (
+            str(item.status_detail or "").casefold(),
+            str(item.status or "").casefold(),
+        ),
+        "vehicle": lambda item: str(item.vehicle or "").casefold(),
+        "laps": lambda item: int(item.valid_lap_count),
+        "best": lambda item: item.reference_time_s,
+    }
+    if column not in key_functions:
+        raise ValueError(f"Columna de orden desconocida: {column}")
+    key_function = key_functions[column]
+    available = []
+    unavailable = []
+    for session in sessions:
+        value = key_function(session)
+        (unavailable if value is None or value == "" else available).append(session)
+    available.sort(key=key_function, reverse=descending)
+    unavailable.sort(key=lambda item: item.session_key.casefold())
+    return [*available, *unavailable]
 
 
 def historical_steering_zone_text(zone: TrackMapZone) -> str:
@@ -1527,6 +1573,8 @@ class RaceEngineerApp:
         self.session_query_var.trace_add("write", lambda *_: self._apply_session_filters())
 
         columns = ("date", "track", "vehicle", "laps", "best", "status")
+        self.session_sort_column = "date"
+        self.session_sort_descending = True
         self.tree = ttk.Treeview(
             browser,
             columns=columns,
@@ -1539,7 +1587,11 @@ class RaceEngineerApp:
             ("track", "Circuito", 104, True),
             ("status", "Estado", 48, False),
         ):
-            self.tree.heading(name, text=text)
+            self.tree.heading(
+                name,
+                text=text,
+                command=lambda value=name: self._sort_sessions_by(value),
+            )
             self.tree.column(name, width=width, minwidth=40, stretch=stretch)
         for name in ("vehicle", "laps", "best"):
             self.tree.column(name, width=0, minwidth=0, stretch=False)
@@ -1551,6 +1603,7 @@ class RaceEngineerApp:
         self.tree.bind("<Double-1>", self._on_session_double_click)
         self.tree.bind("<Motion>", self._on_tree_motion)
         self.tree.bind("<Leave>", self._hide_row_tooltip)
+        self._update_session_sort_headings()
 
         sidebar_bottom = ttk.Frame(sidebar, style="Sidebar.TFrame", padding=(12, 9, 10, 12))
         sidebar_bottom.pack(fill="x")
@@ -5014,6 +5067,26 @@ class RaceEngineerApp:
             previous_key=previous.session_key if previous else None,
         )
 
+    def _update_session_sort_headings(self):
+        for name, label in SESSION_SORT_LABELS.items():
+            suffix = ""
+            if name == self.session_sort_column:
+                suffix = " ▼" if self.session_sort_descending else " ▲"
+            self.tree.heading(name, text=label + suffix)
+
+    def _sort_sessions_by(self, column: str):
+        previous = self.selected_record()
+        if column == self.session_sort_column:
+            self.session_sort_descending = not self.session_sort_descending
+        else:
+            self.session_sort_column = column
+            self.session_sort_descending = column == "date"
+        self._update_session_sort_headings()
+        self._populate_session_tree(
+            errors=self.session_read_errors,
+            previous_key=previous.session_key if previous else None,
+        )
+
     def _populate_session_tree(
         self,
         *,
@@ -5026,6 +5099,11 @@ class RaceEngineerApp:
             self.all_sessions,
             query=self.session_query_var.get(),
             status_filter=status_filter,
+        )
+        self.sessions = sort_session_records(
+            self.sessions,
+            column=self.session_sort_column,
+            descending=self.session_sort_descending,
         )
         for item in self.tree.get_children():
             self.tree.delete(item)

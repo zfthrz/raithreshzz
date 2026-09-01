@@ -19,6 +19,7 @@ from race_engineer_gui import (
     historical_steering_zone_text,
     session_status_color,
     session_status_tooltip,
+    sort_session_records,
     session_change_rows,
     session_summary_values,
     state_files_fingerprint,
@@ -51,6 +52,40 @@ def test_historical_steering_zone_text_is_observational_and_exact():
     assert historical_steering_zone_text(
         TrackMapZone("zone_002", "T2", "gain", 200.0, 250.0, -0.1)
     ) == ""
+
+
+def test_session_catalog_sorting_supports_visible_columns_and_missing_values():
+    def record(key, timestamp, track, status, best):
+        return SimpleNamespace(
+            session_key=key,
+            timestamp_utc=timestamp,
+            modified_timestamp=1.0,
+            track=track,
+            status_detail=status,
+            status=status,
+            vehicle="Oreca 07",
+            valid_lap_count=2,
+            reference_time_s=best,
+        )
+
+    sessions = [
+        record("b", "2026-08-30T10:00:00Z", "Spa", "Debrief", 130.0),
+        record("a", "2026-08-31T10:00:00Z", "Monza", "Guardada", None),
+        record("c", "2026-08-29T10:00:00Z", "Fuji", "Falló", 90.0),
+    ]
+
+    assert [item.session_key for item in sort_session_records(
+        sessions, column="date", descending=True
+    )] == ["a", "b", "c"]
+    assert [item.session_key for item in sort_session_records(
+        sessions, column="track", descending=False
+    )] == ["c", "a", "b"]
+    assert [item.session_key for item in sort_session_records(
+        sessions, column="status", descending=False
+    )] == ["b", "c", "a"]
+    assert [item.session_key for item in sort_session_records(
+        sessions, column="best", descending=False
+    )] == ["c", "b", "a"]
 
 
 def test_telemetry_pointer_selects_nearest_map_point_on_visible_axis():

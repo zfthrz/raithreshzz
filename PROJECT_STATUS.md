@@ -7,7 +7,7 @@ llama.cpp recovery and H5.3 review work described below.
 
 Validated baseline:
 
-- GUI v1.49 adds lazy read-only general/monthly History statistics. Valid laps and
+- GUI v1.50 adds lazy read-only general/monthly History statistics. Valid laps and
   kilometers come directly from schema-4 `laps`; favorite track/category/car are
   descriptive usage summaries. LMP2 categories remain exact while the displayed
   car is explicitly unified as Oreca 07. The real 120-session smoke produced 452
@@ -15,6 +15,8 @@ Validated baseline:
 - Telemetry zone selection now presents validated H5.3d v0.2 steering morphology
   for exact matching corners: variation per 100 m and current/reference sign-change
   counts. The enrichment is read-only and fails closed without removing H5.2 zones.
+- The session catalogue can now be sorted by its visible Date, Track and Status
+  headers with an explicit direction indicator and no extra filesystem reads.
 - Hierarchical H2/H3 History integration (2026-08-28): `run_h3_pipeline.py`
   now offers an explicit `--history-db` stage after its authorized H2 gate. Official
   provenance is validated, equivalent rematerializations are idempotent and conflicts

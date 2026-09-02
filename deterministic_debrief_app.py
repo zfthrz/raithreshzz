@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 from typing import Callable
 
 from coaching_precision import render_track_reference_section
@@ -20,6 +19,7 @@ from deterministic_comparison_stage import prepare_runtime_comparison
 from deterministic_comparison_summary import build_deterministic_comparison_summary
 from deterministic_comparison_validation import validate_comparison_response
 from deterministic_debrief_dataset import build_debrief_dataset
+from deterministic_debrief_compatibility import LegacyArtifactMetadata
 from deterministic_debrief_finalize import finalize_validated_global_debrief
 from deterministic_debrief_input import prepare_debrief_input
 from deterministic_debrief_output import save_compatible_debrief
@@ -43,16 +43,6 @@ from product_priority_ranker import build_product_priority_ranker_response
 from session_coaching import build_session_coaching_facts
 from session_coaching_quality import build_session_comparison_quality_gate
 from session_coaching_recurrence import _comparison_quality_map
-
-
-@dataclass(frozen=True)
-class LegacyArtifactMetadata:
-    """Schema-compatible metadata retained without selecting a backend."""
-
-    model_name: str
-    context_size: int
-    temperature: float
-    anomaly_gate_config: dict
 
 
 STAGE_PROVIDER_CLASSIFICATION = {
@@ -193,11 +183,7 @@ def build_debrief_runtime(
             global_structured,
             global_analysis,
             global_validation_audit,
-            model_name=artifact_metadata.model_name,
-            usage_summary=usage_record(),
-            context_size=artifact_metadata.context_size,
-            temperature=artifact_metadata.temperature,
-            anomaly_gate_config=artifact_metadata.anomaly_gate_config,
+            **artifact_metadata.persistence_kwargs(usage_record()),
         )
 
     providers = build_stage_providers(base_dir=base_dir, save_result=save_result)

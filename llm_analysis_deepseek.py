@@ -190,10 +190,8 @@ from deterministic_debrief_runtime import (
 )
 from deterministic_debrief_presentation import build_console_presentation
 from deterministic_debrief_wiring import StageProviders, bind_stages
-from deterministic_debrief_app import (
-    LegacyArtifactMetadata,
-    build_debrief_runtime as build_neutral_debrief_runtime,
-)
+from deterministic_debrief_app import build_debrief_runtime as build_neutral_debrief_runtime
+from deterministic_debrief_compatibility import LegacyArtifactMetadata
 from deterministic_debrief_dataset import build_debrief_dataset
 from deterministic_track_context import (
     load_track_location_context as load_deterministic_track_location_context,

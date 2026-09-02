@@ -751,6 +751,11 @@ binding wrapper and the schema-compatibility persistence wrapper explicitly. The
 historical runtime builder now delegates to this assembler and injects only legacy
 artifact metadata plus usage presentation callbacks; historical `_stage_*`
 wrappers are no longer reachable from normal assembly.
+`deterministic_debrief_compatibility.py` names the five historical persistence
+fields explicitly and maps them unchanged into the established filename/JSON
+schema. The model, `deepseek_usage`, context, temperature and anomaly config fields
+are compatibility data only: they select no provider and carry no coaching
+authority. A future rename requires a separately versioned schema migration.
 Runtime binding now injects `session_coaching.build_session_coaching_facts` and the
 neutral output provider directly. Their historical wrapper functions remain only as
 compatibility surfaces and are unreachable from the normal coordinator.

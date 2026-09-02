@@ -55,6 +55,73 @@ def test_document_builder_preserves_schema_and_first_detector():
     assert document["global_validation_audit"] == {}
 
 
+def test_document_builder_matches_established_artifact_contract_exactly():
+    comparisons = [{"analysis": "Comparación determinista"}]
+    facts = {
+        "track_location_profile": {"profile_id": "spa-v1"},
+        "comparison_quality_gate": {"status": "PASS"},
+    }
+    audit = {"status": "VALID", "attempts": 0}
+    structured = {"conclusion": "Conclusión determinista"}
+    document = build_debrief_document(
+        input_path="input.json",
+        metadata={
+            "analysis_version": "3.8",
+            "track": "Spa",
+            "session_type": "Practice",
+            "timestamp_utc": "2026-09-01T00:00:00Z",
+            "reference_lap": 4,
+        },
+        comparison_results=comparisons,
+        session_coaching_facts=facts,
+        global_structured=structured,
+        global_analysis="Render final",
+        global_validation_audit=audit,
+        analysis_timestamp="2026-09-01T01:00:00+00:00",
+        model_name="deepseek-v4-pro",
+        usage_summary={"http_request_count": 0},
+        context_size=32768,
+        temperature=0.0,
+        anomaly_gate_config={"local_loss_s": 1.0},
+    )
+
+    assert document == {
+        "metadata": {
+            "llm_analysis_version": "3.10.8.5.4",
+            "report_presentation_version": "2.4",
+            "source_json": "input.json",
+            "source_analysis_version": "3.8",
+            "track": "Spa",
+            "session_type": "Practice",
+            "timestamp_utc": "2026-09-01T00:00:00Z",
+            "reference_lap": 4,
+            "model": "deepseek-v4-pro",
+            "deepseek_usage": {"http_request_count": 0},
+            "context": 32768,
+            "temperature": 0.0,
+            "track_location_profile": {"profile_id": "spa-v1"},
+            "braking_point_detection": {},
+            "throttle_point_detection": {},
+            "session_comparison_quality_gate": {"status": "PASS"},
+            "anomaly_gate": {
+                "version": "1.0",
+                "status": "ACTIVE",
+                "classification": "NON_REPRESENTATIVE_TIME_LOSS",
+                "config": {"local_loss_s": 1.0},
+                "cause_inference": False,
+            },
+            "structured_validation": "PASS",
+            "factual_grounding_validation": "PASS",
+            "analysis_timestamp": "2026-09-01T01:00:00+00:00",
+        },
+        "comparisons": comparisons,
+        "session_coaching_facts": facts,
+        "global_validation_audit": audit,
+        "global_structured": structured,
+        "global_analysis": "Render final",
+    }
+
+
 def test_document_writer_uses_utf8_and_established_indentation(tmp_path):
     destination = tmp_path / "nested" / "debrief.json"
     document = {"text": "frená", "items": [1, 2]}

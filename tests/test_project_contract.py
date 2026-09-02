@@ -81,10 +81,6 @@ def test_llm_scripts_use_centralized_runtime_paths_and_current_version():
             'llm_debug_dir(input_path, backend="ollama")',
             '_llm_analysis_v3_10_8_5_4_{MODEL_NAME}.json',
         ),
-        "llm_analysis_deepseek.py": (
-            'llm_debug_dir(input_path, backend="deepseek")',
-            '_llm_analysis_v3_10_8_5_4_deepseek_v2_{MODEL_NAME}.json',
-        ),
         "llm_analysis_ingenierov3.py": (
             'llm_debug_dir(input_path, backend="ollama")',
             '_llm_analysis_v3_10_8_5_4_{MODEL_NAME}.json',
@@ -102,6 +98,19 @@ def test_llm_scripts_use_centralized_runtime_paths_and_current_version():
         assert debug_contract in source
         assert filename_contract in source
         assert "_llm_analysis_v3_10_8_5_3" not in source
+
+    deepseek_source = (ROOT / "llm_analysis_deepseek.py").read_text(
+        encoding="utf-8"
+    )
+    document_source = (ROOT / "deterministic_debrief_document.py").read_text(
+        encoding="utf-8"
+    )
+    assert 'llm_debug_dir(input_path, backend="deepseek")' in deepseek_source
+    assert "compatible_debrief_output_path(" in deepseek_source
+    assert "from runtime_paths import llm_result_dir" in document_source
+    assert "_llm_analysis_v{DEBRIEF_ARTIFACT_VERSION}" in document_source
+    assert "_deepseek_v2_{model_name}.json" in document_source
+    assert "_llm_analysis_v3_10_8_5_3" not in document_source
 
 
 def test_llm_session_braking_constants_execute_both_fact_paths():

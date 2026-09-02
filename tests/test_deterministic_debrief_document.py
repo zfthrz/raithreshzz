@@ -5,6 +5,7 @@ import json
 from deterministic_debrief_document import (
     build_comparison_result,
     build_debrief_document,
+    compatible_debrief_output_path,
     write_debrief_document,
 )
 
@@ -162,3 +163,16 @@ def test_comparison_result_preserves_ground_truth_and_counts():
     assert result["excluded_anomaly_count"] == 1
     assert result["braking_point_detection"] == {"version": "2.1"}
     assert result["analysis"] == "rendered"
+
+
+def test_compatible_output_path_preserves_legacy_filename(monkeypatch, tmp_path):
+    monkeypatch.setenv("RACE_ENGINEER_GENERATED_DIR", str(tmp_path / "generated"))
+    output_path, output_dir = compatible_debrief_output_path(
+        tmp_path / "Spa Practice.json",
+        model_name="deepseek-v4-pro",
+    )
+    assert output_dir == tmp_path / "generated" / "llm_results" / "Spa Practice"
+    assert output_path == output_dir / (
+        "Spa Practice_llm_analysis_v3_10_8_5_4_"
+        "deepseek_v2_deepseek-v4-pro.json"
+    )

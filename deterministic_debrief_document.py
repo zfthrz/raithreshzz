@@ -6,6 +6,11 @@ import json
 from pathlib import Path
 from typing import Any
 
+from runtime_paths import llm_result_dir
+
+
+DEBRIEF_ARTIFACT_VERSION = "3_10_8_5_4"
+
 
 def _first_detection(comparisons, field):
     return next(
@@ -91,6 +96,21 @@ def write_debrief_document(path: str | Path, document: dict[str, Any]) -> Path:
         encoding="utf-8",
     )
     return destination
+
+
+def compatible_debrief_output_path(
+    input_path: str | Path,
+    *,
+    model_name: str,
+) -> tuple[Path, Path]:
+    """Return the established path while legacy artifact readers still need it."""
+    source = Path(input_path)
+    output_dir = llm_result_dir(source)
+    output_path = output_dir / (
+        f"{source.stem}_llm_analysis_v{DEBRIEF_ARTIFACT_VERSION}"
+        f"_deepseek_v2_{model_name}.json"
+    )
+    return output_path, output_dir
 
 
 def build_comparison_result(

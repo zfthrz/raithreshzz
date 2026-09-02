@@ -149,8 +149,10 @@ from deterministic_comparison_render import (
 from deterministic_debrief_document import (
     build_comparison_result,
     build_debrief_document,
+    compatible_debrief_output_path,
     write_debrief_document,
 )
+from deterministic_debrief_finalize import finalize_validated_global_debrief
 from deterministic_comparison_decision import resolve_comparison_response
 import hashlib
 import json
@@ -165,7 +167,7 @@ import urllib.error
 import urllib.request
 from datetime import datetime, timezone
 
-from runtime_paths import llm_debug_dir, llm_result_dir
+from runtime_paths import llm_debug_dir
 from product_priority_ranker import build_product_priority_ranker_response
 from coaching_precision import (
     enrich_patterns_with_precision,
@@ -10840,23 +10842,12 @@ def save_result(
     global_analysis,
     global_validation_audit=None,
 ):
-    stem = os.path.splitext(
-        os.path.basename(
-            input_path
-        )
-    )[0]
-
-    output_dir = str(llm_result_dir(input_path))
-
-    os.makedirs(
-        output_dir,
-        exist_ok=True,
+    output_path_value, output_dir_value = compatible_debrief_output_path(
+        input_path,
+        model_name=MODEL_NAME,
     )
-
-    output_path = os.path.join(
-        output_dir,
-        stem + f"_llm_analysis_v3_10_8_5_4_deepseek_v2_{MODEL_NAME}.json",
-    )
+    output_path = str(output_path_value)
+    output_dir = str(output_dir_value)
 
     result = build_debrief_document(
         input_path=input_path,
@@ -11273,44 +11264,19 @@ def main():
             "La síntesis global no se guardó como válida."
         )
 
-    global_structured = (
-        global_validated[
-            "response"
-        ]
+    (
+        global_structured,
+        global_validation_audit,
+        global_analysis,
+    ) = finalize_validated_global_debrief(
+        global_validated=global_validated,
+        metadata=metadata,
+        comparison_results=comparison_results,
+        session_coaching_facts=session_coaching_facts,
+        track_location_context=track_location_context,
+        render_global=render_global_analysis,
+        render_track_reference=render_track_reference_section,
     )
-
-    global_validation_audit = {
-        key: global_validated.get(key)
-        for key in (
-            "status",
-            "attempts",
-            "fallback",
-            "deterministic_repairs",
-            "pruned_global_items",
-            "llm_validation_errors",
-        )
-        if global_validated.get(key) not in (None, {}, [])
-    }
-
-    global_analysis = (
-        render_global_analysis(
-            metadata,
-            comparison_results,
-            session_coaching_facts,
-            global_structured,
-        )
-    )
-
-    track_reference_section = render_track_reference_section(
-        track_location_context.get("profile"),
-        session_coaching_facts.get("next_stint_plan"),
-    )
-    if track_reference_section:
-        global_analysis = (
-            global_analysis.rstrip()
-            + "\n\n"
-            + track_reference_section
-        )
 
     output_path, _ = save_result(
         input_path,

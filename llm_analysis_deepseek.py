@@ -150,6 +150,7 @@ from deterministic_debrief_document import (
     build_debrief_document,
     write_debrief_document,
 )
+from deterministic_comparison_decision import resolve_comparison_response
 import hashlib
 import json
 import math
@@ -11156,46 +11157,9 @@ def main():
                 "Comparación excluida por el gate global de calidad; se conserva el ground truth "
                 "pero no se llama al LLM ni al ranker."
             )
-            validated = {
-                "status": "VALID",
-                "attempts": 0,
-                "response": {
-                    "episode_assessments": [],
-                    "comparison_observations": [],
-                    "limitations": [
-                        "Comparación globalmente no representativa; no se usa para coaching de sesión"
-                    ],
-                    "conclusion": "Comparación preservada para auditoría; excluida del coaching de sesión",
-                },
-                "validation_errors": [],
-                "audit": {
-                    "episodes": [],
-                    "priority_ranking": {
-                        "attempts": 0,
-                        "ordered_episode_ids": [],
-                        "priority_cut_rank": None,
-                        "no_actionable_start_rank": None,
-                        "classifications": [],
-                    },
-                    "summary": {
-                        "attempts": 0,
-                        "fallback": "COMPARISON_QUALITY_GATE_EXCLUDED_BEFORE_LLM",
-                        "pruned_summary_items": {},
-                    },
-                },
-            }
         elif episode_catalog:
             print(
                 "Solicitando interpretación aislada + ranking comparativo v3.10.8.5.4..."
-            )
-
-            validated = (
-                get_validated_comparison_response(
-                    metadata,
-                    comparison,
-                    episode_catalog,
-                    output_dir,
-                )
             )
         else:
             print(
@@ -11203,39 +11167,16 @@ def main():
                 "no se llama al LLM ni al ranker para esta comparación."
             )
 
-            validated = {
-                "status": "VALID",
-                "attempts": 0,
-                "response": {
-                    "episode_assessments": [],
-                    "comparison_observations": [],
-                    "limitations": [
-                        (
-                            "No se generó coaching técnico porque los episodios "
-                            "detectados fueron excluidos como pérdidas anómalas"
-                        )
-                    ],
-                    "conclusion": (
-                        "No se genera coaching técnico para esta comparación"
-                    ),
-                },
-                "validation_errors": [],
-                "audit": {
-                    "episodes": [],
-                    "priority_ranking": {
-                        "attempts": 0,
-                        "ordered_episode_ids": [],
-                        "priority_cut_rank": None,
-                        "no_actionable_start_rank": None,
-                        "classifications": [],
-                    },
-                    "summary": {
-                        "attempts": 0,
-                        "fallback": "ALL_EPISODES_EXCLUDED_BY_ANOMALY_GATE",
-                        "pruned_summary_items": {},
-                    },
-                },
-            }
+        validated, _comparison_route = resolve_comparison_response(
+            session_plan_eligible=session_plan_eligible,
+            episode_catalog=episode_catalog,
+            eligible_response=lambda: get_validated_comparison_response(
+                metadata,
+                comparison,
+                episode_catalog,
+                output_dir,
+            ),
+        )
 
         if validated[
             "status"

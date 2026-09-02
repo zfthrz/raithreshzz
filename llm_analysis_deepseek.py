@@ -190,6 +190,10 @@ from deterministic_debrief_runtime import (
 )
 from deterministic_debrief_presentation import build_console_presentation
 from deterministic_debrief_wiring import StageProviders, bind_stages
+from deterministic_debrief_app import (
+    LegacyArtifactMetadata,
+    build_debrief_runtime as build_neutral_debrief_runtime,
+)
 from deterministic_debrief_dataset import build_debrief_dataset
 from deterministic_track_context import (
     load_track_location_context as load_deterministic_track_location_context,
@@ -11301,50 +11305,19 @@ def _stage_finalize_global(global_validated, metadata, comparison_results, sessi
 
 
 def _build_debrief_runtime(output_dir):
-    def save_deterministic_result(
-        input_path,
-        metadata,
-        comparison_results,
-        session_coaching_facts,
-        global_structured,
-        global_analysis,
-        global_validation_audit=None,
-    ):
-        return save_compatible_debrief(
-            input_path,
-            metadata,
-            comparison_results,
-            session_coaching_facts,
-            global_structured,
-            global_analysis,
-            global_validation_audit,
+    return build_neutral_debrief_runtime(
+        output_dir=output_dir,
+        base_dir=BASE_DIR,
+        artifact_metadata=LegacyArtifactMetadata(
             model_name=MODEL_NAME,
-            usage_summary=deepseek_usage_summary(),
             context_size=CONTEXT_SIZE,
             temperature=TEMPERATURE,
             anomaly_gate_config=ANOMALY_GATE_CONFIG,
-        )
-
-    providers = StageProviders(
-        prepare_input=_stage_prepare_input,
-        build_quality_gate=build_session_comparison_quality_gate,
-        quality_by_key=_comparison_quality_map,
-        prepare_comparison=_stage_prepare_comparison,
-        require_detected=require_detected_episodes,
-        execute_comparison=_stage_execute_comparison,
-        build_session_facts=build_session_coaching_facts,
-        get_global_response=_stage_get_global_response,
-        finalize_global=_stage_finalize_global,
-        save_result=save_deterministic_result,
+        ),
+        usage_record=deepseek_usage_summary,
+        usage_presentation=print_deepseek_usage_summary,
+        save_output=save_compatible_debrief,
     )
-    stages = bind_stages(providers, output_dir=output_dir)
-    presentation = build_console_presentation(
-        model_name=MODEL_NAME,
-        context_size=CONTEXT_SIZE,
-        temperature=TEMPERATURE,
-        usage_summary=print_deepseek_usage_summary,
-    )
-    return stages, presentation
 
 
 # ============================================================

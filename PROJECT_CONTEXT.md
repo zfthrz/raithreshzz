@@ -745,6 +745,12 @@ compatibility and rollback.
 diagnostics consumed by normal comparison assembly. These audits remain
 observational and do not alter production ordering, cuts or classifications; the
 historical implementations remain compatibility surfaces only.
+`deterministic_debrief_app.py` is the audited neutral composition root for all ten
+`StageProviders` callables. It classifies direct neutral providers, the input
+binding wrapper and the schema-compatibility persistence wrapper explicitly. The
+historical runtime builder now delegates to this assembler and injects only legacy
+artifact metadata plus usage presentation callbacks; historical `_stage_*`
+wrappers are no longer reachable from normal assembly.
 Runtime binding now injects `session_coaching.build_session_coaching_facts` and the
 neutral output provider directly. Their historical wrapper functions remain only as
 compatibility surfaces and are unreachable from the normal coordinator.

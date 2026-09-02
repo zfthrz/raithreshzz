@@ -123,3 +123,35 @@ def test_fallback_remains_validator_compatible():
         )
         == []
     )
+
+
+def test_validated_default_response_is_backend_free_and_exact():
+    result = fallback_module.build_validated_deterministic_global_response(
+        FACTS,
+        VALID_COMPARISON_RESULTS,
+        validate_response=lambda response, comparisons, facts: [],
+        build_priorities=lambda facts: ["Zona A: reducí el freno"],
+    )
+    assert result["status"] == "VALID"
+    assert result["attempts"] == 0
+    assert result["deterministic_first"] is True
+    assert result["response"]["next_session_priorities"] == [
+        "Zona A: reducí el freno"
+    ]
+
+
+def test_validated_default_response_fails_closed_before_priorities():
+    priority_calls = []
+    result = fallback_module.build_validated_deterministic_global_response(
+        FACTS,
+        VALID_COMPARISON_RESULTS,
+        validate_response=lambda response, comparisons, facts: ["invalid"],
+        build_priorities=lambda facts: priority_calls.append(True),
+    )
+    assert result == {
+        "status": "REJECTED",
+        "attempts": 0,
+        "response": None,
+        "validation_errors": ["invalid"],
+    }
+    assert priority_calls == []

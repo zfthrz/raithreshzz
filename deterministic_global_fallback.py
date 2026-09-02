@@ -3,6 +3,8 @@
 Backend-independent deterministic closure for the global response.
 """
 
+from collections.abc import Callable
+
 from deterministic_coaching import (
     _direct_coaching_target_text,
     build_deterministic_repeated_observations,
@@ -101,4 +103,38 @@ def build_deterministic_global_fallback(
         "hypotheses": [],
         "limitations": [],
         "conclusion": conclusion,
+    }
+
+
+def build_validated_deterministic_global_response(
+    session_coaching_facts,
+    valid_comparison_results,
+    *,
+    validate_response: Callable,
+    build_priorities: Callable,
+):
+    """Build the default global response without any backend transport."""
+    response = build_deterministic_global_fallback(session_coaching_facts)
+    errors = validate_response(
+        response,
+        valid_comparison_results,
+        session_coaching_facts,
+    )
+    if errors:
+        return {
+            "status": "REJECTED",
+            "attempts": 0,
+            "response": None,
+            "validation_errors": errors,
+        }
+    response["next_session_priorities"] = build_priorities(
+        session_coaching_facts
+    )
+    return {
+        "status": "VALID",
+        "attempts": 0,
+        "response": response,
+        "validation_errors": [],
+        "deterministic": True,
+        "deterministic_first": True,
     }

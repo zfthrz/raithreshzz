@@ -125,6 +125,7 @@ from deterministic_coaching import (
 
 from deterministic_global_fallback import (
     build_deterministic_global_fallback,
+    build_validated_deterministic_global_response,
 )
 from deterministic_text_validation import (
     text_contains_forbidden_numeric_content,
@@ -9933,38 +9934,17 @@ def get_validated_global_response(
         "RACE_ENGINEER_GLOBAL_DETERMINISTIC"
     )
     if deterministic_first:
-        fallback_response = build_deterministic_global_fallback(
-            session_coaching_facts
-        )
-        fallback_errors = validate_global_llm_response(
-            fallback_response,
-            valid_comparison_results,
+        validated_response = build_validated_deterministic_global_response(
             session_coaching_facts,
-        )
-        if fallback_errors:
-            return {
-                "status": "REJECTED",
-                "attempts": 0,
-                "response": None,
-                "validation_errors": fallback_errors,
-            }
-        fallback_response["next_session_priorities"] = (
-            build_deterministic_next_session_priorities(
-                session_coaching_facts
-            )
+            valid_comparison_results,
+            validate_response=validate_global_llm_response,
+            build_priorities=build_deterministic_next_session_priorities,
         )
         print(
             "Síntesis global: modo deterministic-first (default); "
             "sin llamada LLM."
         )
-        return {
-            "status": "VALID",
-            "attempts": 0,
-            "response": fallback_response,
-            "validation_errors": [],
-            "deterministic": True,
-            "deterministic_first": True,
-        }
+        return validated_response
 
     for attempt in range(
         1,

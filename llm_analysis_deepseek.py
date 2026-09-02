@@ -147,14 +147,16 @@ from deterministic_comparison_render import (
     signed_seconds,
 )
 from deterministic_debrief_document import (
-    build_comparison_result,
     build_debrief_document,
     compatible_debrief_output_path,
     write_debrief_document,
 )
 from deterministic_debrief_finalize import finalize_validated_global_debrief
 from deterministic_debrief_input import prepare_debrief_input
-from deterministic_comparison_decision import resolve_comparison_response
+from deterministic_comparison_execution import (
+    ComparisonResponseRejected,
+    execute_prepared_comparison,
+)
 from deterministic_comparison_preparation import (
     prepare_comparison,
     require_detected_episodes,
@@ -11100,20 +11102,19 @@ def main():
                 "no se llama al LLM ni al ranker para esta comparación."
             )
 
-        validated, _comparison_route = resolve_comparison_response(
-            session_plan_eligible=session_plan_eligible,
-            episode_catalog=episode_catalog,
-            eligible_response=lambda: get_validated_comparison_response(
-                metadata,
+        try:
+            execution = execute_prepared_comparison(
                 comparison,
-                episode_catalog,
-                output_dir,
-            ),
-        )
-
-        if validated[
-            "status"
-        ] != "VALID":
+                prepared_comparison,
+                eligible_response=lambda: get_validated_comparison_response(
+                    metadata,
+                    comparison,
+                    episode_catalog,
+                    output_dir,
+                ),
+                render_comparison=render_comparison_analysis,
+            )
+        except ComparisonResponseRejected as exc:
             print_header(
                 "LLM RESPONSE REJECTED"
             )
@@ -11124,54 +11125,19 @@ def main():
                 f"{comparison_lap}"
             )
 
-            for error in validated[
-                "validation_errors"
-            ]:
+            for error in exc.validation_errors:
                 print(
                     f"  - {error}"
                 )
-
-            raise RuntimeError(
-                "LLM_STRUCTURED_VALIDATION_FAILED. "
-                "La respuesta no se guardó como análisis válido."
-            )
-
-        structured = validated[
-            "response"
-        ]
-
-        if session_plan_eligible:
-            rendered = (
-                render_comparison_analysis(
-                    comparison,
-                    episode_catalog,
-                    structured,
-                )
-            )
-        else:
-            rendered = (
-                "Comparación preservada para auditoría. "
-                "Fue excluida del coaching de sesión por el gate global de calidad y no se envió al LLM."
-            )
+            raise
 
         print(
             f"Respuesta validada en "
-            f"{validated['attempts']} intento(s)."
-        )
-
-        comparison_result = build_comparison_result(
-            comparison=comparison,
-            comparison_quality=comparison_quality,
-            session_plan_eligible=session_plan_eligible,
-            detected_episode_catalog=detected_episode_catalog,
-            episode_catalog=episode_catalog,
-            excluded_anomalies=excluded_anomalies,
-            validated=validated,
-            rendered=rendered,
+            f"{execution.validated['attempts']} intento(s)."
         )
 
         comparison_results.append(
-            comparison_result
+            execution.result
         )
 
     print_header(

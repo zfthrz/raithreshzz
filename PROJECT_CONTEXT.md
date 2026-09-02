@@ -679,6 +679,8 @@ filename compatible while moving product-owned behavior into neutral modules.
 `deterministic_comparison_decision.py` owns fail-closed quality/anomaly routes;
 `deterministic_comparison_preparation.py` owns catalog construction order,
 track localization, anomaly splitting and the mandatory-episode fail-closed check;
+`deterministic_comparison_execution.py` owns route resolution, structured-response
+validation, comparison rendering dispatch and final comparison-record construction;
 `deterministic_debrief_input.py` owns the ordered load/validation/dataset/context
 preparation contract;
 `deterministic_global_fallback.py` owns the validated default global closure;

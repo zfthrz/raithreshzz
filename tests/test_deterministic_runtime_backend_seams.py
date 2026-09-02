@@ -305,3 +305,29 @@ def test_input_runtime_stage_bypasses_legacy_track_context_loader(
     )
     prepared = backend._stage_prepare_input(str(path))
     assert prepared.track_location_context["status"] == "NO_TRACK_METADATA"
+
+
+def test_runtime_binding_bypasses_legacy_session_and_save_wrappers(monkeypatch):
+    monkeypatch.setattr(
+        backend,
+        "_stage_build_session_facts",
+        lambda *args, **kwargs: (_ for _ in ()).throw(
+            AssertionError("legacy session facts wrapper reached")
+        ),
+    )
+    monkeypatch.setattr(
+        backend,
+        "save_result",
+        lambda *args, **kwargs: (_ for _ in ()).throw(
+            AssertionError("legacy save wrapper reached")
+        ),
+    )
+    saved = ("result.json", "result-dir")
+    monkeypatch.setattr(
+        backend,
+        "save_compatible_debrief",
+        lambda *args, **kwargs: saved,
+    )
+    stages, _presentation = backend._build_debrief_runtime("debug-dir")
+    assert stages.build_session_facts is backend.build_session_coaching_facts
+    assert stages.save_result("source", {}, [], {}, {}, "", {}) == saved

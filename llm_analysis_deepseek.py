@@ -11276,6 +11276,30 @@ def _stage_finalize_global(global_validated, metadata, comparison_results, sessi
 
 
 def _build_debrief_runtime(output_dir):
+    def save_deterministic_result(
+        input_path,
+        metadata,
+        comparison_results,
+        session_coaching_facts,
+        global_structured,
+        global_analysis,
+        global_validation_audit=None,
+    ):
+        return save_compatible_debrief(
+            input_path,
+            metadata,
+            comparison_results,
+            session_coaching_facts,
+            global_structured,
+            global_analysis,
+            global_validation_audit,
+            model_name=MODEL_NAME,
+            usage_summary=deepseek_usage_summary(),
+            context_size=CONTEXT_SIZE,
+            temperature=TEMPERATURE,
+            anomaly_gate_config=ANOMALY_GATE_CONFIG,
+        )
+
     providers = StageProviders(
         prepare_input=_stage_prepare_input,
         build_quality_gate=build_session_comparison_quality_gate,
@@ -11283,10 +11307,10 @@ def _build_debrief_runtime(output_dir):
         prepare_comparison=_stage_prepare_comparison,
         require_detected=require_detected_episodes,
         execute_comparison=_stage_execute_comparison,
-        build_session_facts=_stage_build_session_facts,
+        build_session_facts=build_session_coaching_facts,
         get_global_response=_stage_get_global_response,
         finalize_global=_stage_finalize_global,
-        save_result=save_result,
+        save_result=save_deterministic_result,
     )
     stages = bind_stages(providers, output_dir=output_dir)
     presentation = build_console_presentation(

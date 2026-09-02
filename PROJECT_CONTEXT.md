@@ -722,6 +722,9 @@ Neither filesystem output nor comparison presentation requires a backend provide
 `deterministic_episode_response.py` owns the factual channel-direction contract and
 grounded episode fallback used by normal execution. The historical fallback remains
 only for legacy retry/repair compatibility and is not reached by the product stage.
+Runtime binding now injects `session_coaching.build_session_coaching_facts` and the
+neutral output provider directly. Their historical wrapper functions remain only as
+compatibility surfaces and are unreachable from the normal coordinator.
 
 ```text
 RACE_ENGINEER_DETERMINISTIC_FIRST   default "1"

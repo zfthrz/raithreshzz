@@ -160,6 +160,9 @@ from deterministic_comparison_execution import (
 from deterministic_summary_validation import (
     validate_comparison_summary_response as validate_neutral_comparison_summary_response,
 )
+from deterministic_episode_validation import (
+    validate_single_episode_response as validate_neutral_single_episode_response,
+)
 from deterministic_debrief_output import save_compatible_debrief
 from deterministic_comparison_responses import (
     build_episode_response as build_deterministic_episode_response,
@@ -11217,7 +11220,7 @@ def _stage_execute_comparison(comparison, prepared_comparison, metadata, output_
             get_episode_response=lambda metadata, comparison, episode, output_dir: build_deterministic_episode_response(
                 episode,
                 build_fallback=build_grounded_episode_response,
-                validate_response=validate_single_episode_llm_response,
+                validate_response=validate_neutral_single_episode_response,
             ),
             get_ranker_response=lambda episode_catalog, episode_assessments, comparison, output_dir: build_deterministic_ranker_response(
                 episode_catalog,

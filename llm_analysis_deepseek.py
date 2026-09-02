@@ -157,6 +157,11 @@ from deterministic_comparison_execution import (
     ComparisonResponseRejected,
     execute_prepared_comparison,
 )
+from deterministic_comparison_responses import (
+    build_episode_response as build_deterministic_episode_response,
+    build_ranker_response as build_deterministic_ranker_response,
+    build_summary_response as build_deterministic_summary_response,
+)
 from deterministic_comparison_preparation import (
     prepare_comparison,
     require_detected_episodes,
@@ -11197,11 +11202,30 @@ def _stage_execute_comparison(comparison, prepared_comparison, metadata, output_
     return execute_prepared_comparison(
         comparison,
         prepared_comparison,
-        eligible_response=lambda: get_validated_comparison_response(
+        eligible_response=lambda: build_validated_comparison_response(
             metadata,
             comparison,
             prepared_comparison.episode_catalog,
             output_dir,
+            get_episode_response=lambda metadata, comparison, episode, output_dir: build_deterministic_episode_response(
+                episode,
+                build_fallback=build_deterministic_grounded_episode_fallback,
+                validate_response=validate_single_episode_llm_response,
+            ),
+            get_ranker_response=lambda episode_catalog, episode_assessments, comparison, output_dir: build_deterministic_ranker_response(
+                episode_catalog,
+                build_ranker=build_product_priority_ranker_response,
+                validate_response=validate_comparison_ranker_response,
+            ),
+            build_ranker_shadow=build_deterministic_ranker_shadow_audit,
+            apply_classifications=apply_priority_classifications,
+            get_summary_response=lambda episode_assessments, episode_catalog, comparison, output_dir: build_deterministic_summary_response(
+                episode_assessments,
+                episode_catalog,
+                build_summary=build_deterministic_comparison_summary,
+            ),
+            validate_response=validate_comparison_llm_response,
+            derive_classifications=derive_priority_classifications,
         ),
         render_comparison=render_comparison_analysis,
     )
@@ -11218,11 +11242,14 @@ def _stage_build_session_facts(comparison_results, track_location_context, sourc
 
 
 def _stage_get_global_response(metadata, comparison_results, session_coaching_facts, output_dir):
-    return get_validated_global_response(
-        metadata,
-        comparison_results,
+    # Product runtime takes the deterministic path directly.  The historical
+    # provider function remains available only for explicit legacy rollback;
+    # keeping it out of this stage makes transport unreachable from normal flow.
+    return build_validated_deterministic_global_response(
         session_coaching_facts,
-        output_dir,
+        comparison_results,
+        validate_response=validate_global_llm_response,
+        build_priorities=build_deterministic_next_session_priorities,
     )
 
 

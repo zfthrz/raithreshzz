@@ -690,6 +690,12 @@ serialization and the centralized compatible output path. These extractions do
 not change coaching, gates, ranking, validators or artifact contents. The product
 entrypoint still uses the historical provider for remaining unextracted policy;
 it must not be described as backend-independent until that dependency is removed.
+The runtime global-response stage calls the neutral deterministic closure directly;
+the legacy global provider and its transport branch are no longer reachable from
+the normal product stage, but remain temporarily available for explicit rollback.
+The comparison stage likewise assembles the neutral response pipeline with direct
+deterministic episode, D2.9 ranker and summary providers. Its legacy comparison
+provider and transport-capable branches are no longer reachable from normal runtime.
 
 ```text
 RACE_ENGINEER_DETERMINISTIC_FIRST   default "1"

@@ -1,0 +1,106 @@
+from __future__ import annotations
+
+import llm_analysis_deepseek as backend
+from deterministic_comparison_preparation import PreparedComparison
+
+
+def test_global_runtime_stage_bypasses_legacy_provider_and_transport(monkeypatch):
+    monkeypatch.setattr(
+        backend,
+        "get_validated_global_response",
+        lambda *args, **kwargs: (_ for _ in ()).throw(
+            AssertionError("legacy global provider reached")
+        ),
+    )
+    monkeypatch.setattr(
+        backend,
+        "deepseek_chat",
+        lambda *args, **kwargs: (_ for _ in ()).throw(
+            AssertionError("transport reached")
+        ),
+    )
+    monkeypatch.setattr(
+        backend,
+        "validate_global_llm_response",
+        lambda response, comparisons, facts: [],
+    )
+    monkeypatch.setattr(
+        backend,
+        "build_deterministic_next_session_priorities",
+        lambda facts: ["prioridad determinista"],
+    )
+
+    result = backend._stage_get_global_response(
+        {"track": "Spa"},
+        [],
+        {"next_stint_plan": []},
+        "unused-debug-dir",
+    )
+
+    assert result["status"] == "VALID"
+    assert result["attempts"] == 0
+    assert result["deterministic_first"] is True
+    assert result["response"]["next_session_priorities"] == [
+        "prioridad determinista"
+    ]
+
+
+def test_comparison_runtime_stage_bypasses_legacy_provider_and_transport(monkeypatch):
+    monkeypatch.setattr(
+        backend,
+        "get_validated_comparison_response",
+        lambda *args, **kwargs: (_ for _ in ()).throw(
+            AssertionError("legacy comparison provider reached")
+        ),
+    )
+    monkeypatch.setattr(
+        backend,
+        "deepseek_chat",
+        lambda *args, **kwargs: (_ for _ in ()).throw(
+            AssertionError("transport reached")
+        ),
+    )
+    pipeline_calls = []
+
+    def fake_pipeline(*args, **kwargs):
+        pipeline_calls.append(kwargs)
+        return {
+            "status": "VALID",
+            "attempts": 0,
+            "response": {"episode_assessments": []},
+        }
+
+    monkeypatch.setattr(backend, "build_validated_comparison_response", fake_pipeline)
+    monkeypatch.setattr(
+        backend,
+        "render_comparison_analysis",
+        lambda comparison, episodes, response: "rendered",
+    )
+    comparison = {
+        "reference_lap": 1,
+        "comparison_lap": 2,
+        "reference_time_s": 90.0,
+        "comparison_time_s": 90.5,
+        "comparison_minus_reference_s": 0.5,
+    }
+    prepared = PreparedComparison(
+        comparison_quality={},
+        session_plan_eligible=True,
+        detected_episode_catalog=[{"episode_id": 1}],
+        episode_catalog=[{"episode_id": 1}],
+        excluded_anomalies=[],
+    )
+
+    execution = backend._stage_execute_comparison(
+        comparison,
+        prepared,
+        {"track": "Spa"},
+        "unused-debug-dir",
+    )
+
+    assert execution.route == "ELIGIBLE"
+    assert execution.result["analysis"] == "rendered"
+    assert len(pipeline_calls) == 1
+    assert callable(pipeline_calls[0]["get_episode_response"])
+    assert callable(pipeline_calls[0]["get_ranker_response"])
+    assert callable(pipeline_calls[0]["get_summary_response"])

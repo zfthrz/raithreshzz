@@ -1,14 +1,12 @@
 """Fail-closed entrypoint for the product debrief.
 
-The deterministic renderer still lives in the historical DeepSeek module while
-it is extracted incrementally. This adapter makes that implementation detail
-explicit and prevents the product path from reaching its transport function.
+Uses the neutral deterministic main module. No LLM backend is imported
+transitively from this file.
 """
 
 from __future__ import annotations
 
 import os
-from types import ModuleType
 
 
 DETERMINISTIC_ENVIRONMENT = {
@@ -25,19 +23,15 @@ def configure_deterministic_environment() -> None:
     os.environ.pop("DEEPSEEK_API_KEY", None)
 
 
-def blocked_llm_transport(*args, **kwargs):
-    raise RuntimeError("LLM transport is disabled in deterministic debrief mode")
+def run() -> int:
+    """Run the neutral product debrief with fail-closed gates.
 
-
-def run(renderer: ModuleType | None = None) -> int:
+    No llm_analysis* module is imported transitively.
+    """
     configure_deterministic_environment()
-    if renderer is None:
-        import llm_analysis_deepseek as renderer
+    from deterministic_debrief_main import main as _neutral_main
 
-    # Defence in depth: even a future regression in an environment gate cannot
-    # turn the product debrief into a network call.
-    renderer.deepseek_chat = blocked_llm_transport
-    renderer.main()
+    _neutral_main()
     return 0
 
 

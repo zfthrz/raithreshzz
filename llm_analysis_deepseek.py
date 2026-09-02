@@ -11319,33 +11319,17 @@ def _build_debrief_runtime(output_dir):
 
 
 # ============================================================
-# MAIN
+# MAIN — delegate to neutral entry point
 # ============================================================
+# The neutral module contains the full pipeline and avoids any
+# historical backend transport.  This wrapper keeps the same
+# entry point for scripts that import llm_analysis_deepseek.main().
+
+from deterministic_debrief_main import main as _neutral_main
+
 
 def main():
-    try:
-        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
-    except Exception:
-        pass
-
-    reset_deepseek_usage()
-
-    input_path = find_json_file()
-
-    output_dir = str(llm_debug_dir(input_path, backend="deepseek"))
-
-    os.makedirs(
-        output_dir,
-        exist_ok=True,
-    )
-
-    stages, presentation = _build_debrief_runtime(output_dir)
-    run_deterministic_debrief(
-        stages=stages,
-        presentation=presentation,
-        input_path=input_path,
-    )
+    _neutral_main()
 
 
 # ============================================================

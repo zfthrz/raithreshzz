@@ -108,7 +108,13 @@ def test_llm_scripts_use_centralized_runtime_paths_and_current_version():
     output_source = (ROOT / "deterministic_debrief_output.py").read_text(
         encoding="utf-8"
     )
-    assert 'llm_debug_dir(input_path, backend="deepseek")' in deepseek_source
+    # The llm_debug_dir resolution was extracted to the neutral main module;
+    # the legacy backend still carries save_compatible_debrief for its own
+    # _build_debrief_runtime path (historical roll-forward).
+    neutral_source = (ROOT / "deterministic_debrief_main.py").read_text(
+        encoding="utf-8"
+    )
+    assert 'llm_debug_dir(input_path, backend="deepseek")' in neutral_source
     assert "save_compatible_debrief(" in deepseek_source
     assert "compatible_debrief_output_path(" in output_source
     assert "from runtime_paths import llm_result_dir" in document_source

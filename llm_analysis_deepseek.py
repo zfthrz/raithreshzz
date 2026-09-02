@@ -172,6 +172,9 @@ from deterministic_debrief_runtime import (
 from deterministic_debrief_presentation import build_console_presentation
 from deterministic_debrief_wiring import StageProviders, bind_stages
 from deterministic_debrief_dataset import build_debrief_dataset
+from deterministic_track_context import (
+    load_track_location_context as load_deterministic_track_location_context,
+)
 from deterministic_input_contract import (
     load_json as load_deterministic_json,
     validate_data_model as validate_deterministic_data_model,
@@ -11188,7 +11191,9 @@ def _stage_prepare_input(input_path):
         validate_data_model=validate_deterministic_data_model,
         validate_lap_times=validate_deterministic_lap_times,
         build_dataset=build_debrief_dataset,
-        load_track_location_context=load_track_location_context,
+        load_track_location_context=lambda metadata: (
+            load_deterministic_track_location_context(metadata, base_dir=BASE_DIR)
+        ),
     )
 
 

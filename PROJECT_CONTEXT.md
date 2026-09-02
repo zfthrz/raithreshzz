@@ -704,9 +704,9 @@ being unreachable.
 `deterministic_input_contract.py` owns JSON loading, model validation, legacy lap
 identity compatibility and temporal lap-time verification.
 `deterministic_debrief_dataset.py` owns the bounded, schema-compatible cleanup of
-comparison and episode evidence before debrief execution. The normal input stage no
-longer calls either historical implementation; track context resolution is the only
-remaining input callback still awaiting extraction.
+comparison and episode evidence before debrief execution. `deterministic_track_context.py`
+owns fail-closed validated-profile discovery and resolver loading. The normal input
+stage no longer depends on historical-module callbacks.
 
 ```text
 RACE_ENGINEER_DETERMINISTIC_FIRST   default "1"

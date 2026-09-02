@@ -184,3 +184,35 @@ def test_input_runtime_stage_bypasses_legacy_dataset_builder(monkeypatch, tmp_pa
     )
     prepared = backend._stage_prepare_input(str(path))
     assert prepared.comparisons[0]["comparison_lap"] == 2
+
+
+def test_input_runtime_stage_bypasses_legacy_track_context_loader(
+    monkeypatch, tmp_path
+):
+    import json
+
+    source = {
+        "metadata": {
+            "same_vehicle": True,
+            "reference_lap": 1,
+            "lap_times_s": {"1": 90.0, "2": 90.5},
+        },
+        "comparisons": [
+            {
+                "reference_lap": 1,
+                "comparison_lap": 2,
+                "comparison_minus_reference_s": 0.5,
+            }
+        ],
+    }
+    path = tmp_path / "analysis.json"
+    path.write_text(json.dumps(source), encoding="utf-8")
+    monkeypatch.setattr(
+        backend,
+        "load_track_location_context",
+        lambda *args, **kwargs: (_ for _ in ()).throw(
+            AssertionError("legacy track context loader reached")
+        ),
+    )
+    prepared = backend._stage_prepare_input(str(path))
+    assert prepared.track_location_context["status"] == "NO_TRACK_METADATA"

@@ -702,9 +702,11 @@ console surface. The historical module still supplies several deterministic poli
 callbacks, so the final entrypoint cutover remains pending despite transport already
 being unreachable.
 `deterministic_input_contract.py` owns JSON loading, model validation, legacy lap
-identity compatibility and temporal lap-time verification. The normal input stage
-no longer calls those historical-module implementations; dataset cleaning and track
-context resolution are the remaining input callbacks still awaiting extraction.
+identity compatibility and temporal lap-time verification.
+`deterministic_debrief_dataset.py` owns the bounded, schema-compatible cleanup of
+comparison and episode evidence before debrief execution. The normal input stage no
+longer calls either historical implementation; track context resolution is the only
+remaining input callback still awaiting extraction.
 
 ```text
 RACE_ENGINEER_DETERMINISTIC_FIRST   default "1"

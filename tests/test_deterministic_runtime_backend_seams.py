@@ -146,4 +146,41 @@ def test_input_runtime_stage_bypasses_legacy_load_and_validation(monkeypatch, tm
         lambda metadata: {"status": "NO_TRACK_PROFILE"},
     )
     prepared = backend._stage_prepare_input(str(path))
-    assert prepared.comparisons == source["comparisons"]
+    assert prepared.comparisons[0]["reference_lap"] == 1
+    assert prepared.comparisons[0]["comparison_lap"] == 2
+    assert prepared.comparisons[0]["comparison_minus_reference_s"] == 0.5
+
+
+def test_input_runtime_stage_bypasses_legacy_dataset_builder(monkeypatch, tmp_path):
+    import json
+
+    source = {
+        "metadata": {
+            "same_vehicle": True,
+            "reference_lap": 1,
+            "lap_times_s": {"1": 90.0, "2": 90.5},
+        },
+        "comparisons": [
+            {
+                "reference_lap": 1,
+                "comparison_lap": 2,
+                "comparison_minus_reference_s": 0.5,
+            }
+        ],
+    }
+    path = tmp_path / "analysis.json"
+    path.write_text(json.dumps(source), encoding="utf-8")
+    monkeypatch.setattr(
+        backend,
+        "build_llm_dataset",
+        lambda *args, **kwargs: (_ for _ in ()).throw(
+            AssertionError("legacy dataset builder reached")
+        ),
+    )
+    monkeypatch.setattr(
+        backend,
+        "load_track_location_context",
+        lambda metadata: {"status": "NO_TRACK_PROFILE"},
+    )
+    prepared = backend._stage_prepare_input(str(path))
+    assert prepared.comparisons[0]["comparison_lap"] == 2

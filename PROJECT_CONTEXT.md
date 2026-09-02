@@ -713,6 +713,9 @@ the historical module no longer wires those deterministic preparation callbacks.
 `deterministic_priority_contract.py` owns validation of ranker order/cuts, tier
 derivation and immutable application to episode assessments. Normal comparison
 execution injects this neutral contract rather than the historical implementations.
+`deterministic_comparison_summary.py` owns ordering and selection of validated
+episode text plus the established mixed-steering neutral fallback. It receives the
+unchanged summary validator as an explicit boundary; no transport is reachable.
 
 ```text
 RACE_ENGINEER_DETERMINISTIC_FIRST   default "1"

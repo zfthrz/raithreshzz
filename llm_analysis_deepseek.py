@@ -181,6 +181,9 @@ from deterministic_priority_contract import (
     derive_priority_classifications as derive_deterministic_priority_classifications,
     validate_priority_ranker_response as validate_deterministic_priority_ranker_response,
 )
+from deterministic_comparison_summary import (
+    build_deterministic_comparison_summary as build_neutral_comparison_summary,
+)
 from deterministic_input_contract import (
     load_json as load_deterministic_json,
     validate_data_model as validate_deterministic_data_model,
@@ -11235,7 +11238,13 @@ def _stage_execute_comparison(comparison, prepared_comparison, metadata, output_
             get_summary_response=lambda episode_assessments, episode_catalog, comparison, output_dir: build_deterministic_summary_response(
                 episode_assessments,
                 episode_catalog,
-                build_summary=build_deterministic_comparison_summary,
+                build_summary=lambda assessments, catalog: (
+                    build_neutral_comparison_summary(
+                        assessments,
+                        catalog,
+                        validate_summary=validate_comparison_summary_llm_response,
+                    )
+                ),
             ),
             validate_response=validate_comparison_llm_response,
             derive_classifications=derive_deterministic_priority_classifications,

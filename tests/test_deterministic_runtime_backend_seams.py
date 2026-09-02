@@ -112,6 +112,34 @@ def test_comparison_runtime_stage_bypasses_legacy_provider_and_transport(monkeyp
         pipeline_calls[0]["derive_classifications"]
         is backend.derive_deterministic_priority_classifications
     )
+    monkeypatch.setattr(
+        backend,
+        "build_deterministic_comparison_summary",
+        lambda *args, **kwargs: (_ for _ in ()).throw(
+            AssertionError("legacy summary builder reached")
+        ),
+    )
+    summary = pipeline_calls[0]["get_summary_response"](
+        [
+            {
+                "episode_id": 1,
+                "classification": "PRIORITARIO",
+                "interpretation": "frená más tarde",
+                "recommendation": "frená más tarde",
+            }
+        ],
+        [
+            {
+                "episode_id": 1,
+                "action_channels": ["brake"],
+                "action_evidence_by_channel": {"brake": {}},
+            }
+        ],
+        comparison,
+        "unused-debug-dir",
+    )
+    assert summary["status"] == "VALID"
+    assert summary["response"]["conclusion"] == "frená más tarde"
 
 
 def test_comparison_preparation_stage_bypasses_backend_reexports(monkeypatch):

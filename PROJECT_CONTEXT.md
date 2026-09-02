@@ -710,6 +710,9 @@ stage no longer depends on historical-module callbacks.
 `deterministic_comparison_stage.py` likewise owns the normal quality lookup,
 episode-catalog construction, track localization and coaching-eligibility assembly;
 the historical module no longer wires those deterministic preparation callbacks.
+`deterministic_priority_contract.py` owns validation of ranker order/cuts, tier
+derivation and immutable application to episode assessments. Normal comparison
+execution injects this neutral contract rather than the historical implementations.
 
 ```text
 RACE_ENGINEER_DETERMINISTIC_FIRST   default "1"

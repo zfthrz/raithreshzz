@@ -104,6 +104,14 @@ def test_comparison_runtime_stage_bypasses_legacy_provider_and_transport(monkeyp
     assert callable(pipeline_calls[0]["get_episode_response"])
     assert callable(pipeline_calls[0]["get_ranker_response"])
     assert callable(pipeline_calls[0]["get_summary_response"])
+    assert (
+        pipeline_calls[0]["apply_classifications"]
+        is backend.apply_deterministic_priority_classifications
+    )
+    assert (
+        pipeline_calls[0]["derive_classifications"]
+        is backend.derive_deterministic_priority_classifications
+    )
 
 
 def test_comparison_preparation_stage_bypasses_backend_reexports(monkeypatch):

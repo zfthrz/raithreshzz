@@ -176,6 +176,11 @@ from deterministic_debrief_dataset import build_debrief_dataset
 from deterministic_track_context import (
     load_track_location_context as load_deterministic_track_location_context,
 )
+from deterministic_priority_contract import (
+    apply_priority_classifications as apply_deterministic_priority_classifications,
+    derive_priority_classifications as derive_deterministic_priority_classifications,
+    validate_priority_ranker_response as validate_deterministic_priority_ranker_response,
+)
 from deterministic_input_contract import (
     load_json as load_deterministic_json,
     validate_data_model as validate_deterministic_data_model,
@@ -11223,17 +11228,17 @@ def _stage_execute_comparison(comparison, prepared_comparison, metadata, output_
             get_ranker_response=lambda episode_catalog, episode_assessments, comparison, output_dir: build_deterministic_ranker_response(
                 episode_catalog,
                 build_ranker=build_product_priority_ranker_response,
-                validate_response=validate_comparison_ranker_response,
+                validate_response=validate_deterministic_priority_ranker_response,
             ),
             build_ranker_shadow=build_deterministic_ranker_shadow_audit,
-            apply_classifications=apply_priority_classifications,
+            apply_classifications=apply_deterministic_priority_classifications,
             get_summary_response=lambda episode_assessments, episode_catalog, comparison, output_dir: build_deterministic_summary_response(
                 episode_assessments,
                 episode_catalog,
                 build_summary=build_deterministic_comparison_summary,
             ),
             validate_response=validate_comparison_llm_response,
-            derive_classifications=derive_priority_classifications,
+            derive_classifications=derive_deterministic_priority_classifications,
         ),
         render_comparison=render_comparison_analysis,
     )

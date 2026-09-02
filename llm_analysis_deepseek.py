@@ -161,6 +161,11 @@ from deterministic_comparison_preparation import (
     prepare_comparison,
     require_detected_episodes,
 )
+from deterministic_debrief_runtime import (
+    DebriefPresentation,
+    DebriefStages,
+    run_deterministic_debrief,
+)
 import hashlib
 import json
 import math
@@ -10880,50 +10885,25 @@ def save_result(
 
 
 # ============================================================
-# MAIN
+# DETERMINISTIC RUNTIME ADAPTERS (presentation + stages)
 # ============================================================
+#
+# El core del flujo determinista vive en deterministic_debrief_runtime.py
+# (coordinador neutral, dependencias inyectables). Aquí sólo se inyectan:
+#   * los providers de etapa (llamados por el runtime en orden fijo), y
+#   * los hooks de presentación (consola), fuera del core.
+# main() conserva la entrada de proceso (reconfigure, find_json_file,
+# output_dir) y delega la coordinación completa al runtime.
 
-def main():
-    try:
-        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
-    except Exception:
-        pass
+# ---- presentation hooks (consola, fuera del core) ----
 
-    reset_deepseek_usage()
-
+def _presentation_start():
     print_header(
         "RACE ENGINEER - LLM ANALYSIS v3.10.8.5.4 / DeepSeek provisional v2"
     )
 
-    input_path = find_json_file()
 
-    prepared_input = prepare_debrief_input(
-        input_path,
-        load_json=load_json,
-        validate_data_model=validate_data_model,
-        validate_lap_times=validate_lap_times,
-        build_dataset=build_llm_dataset,
-        load_track_location_context=load_track_location_context,
-    )
-    data = prepared_input.source_data
-    metadata = prepared_input.metadata
-    comparisons = prepared_input.comparisons
-    track_location_context = prepared_input.track_location_context
-
-    stem = os.path.splitext(
-        os.path.basename(
-            input_path
-        )
-    )[0]
-
-    output_dir = str(llm_debug_dir(input_path, backend="deepseek"))
-
-    os.makedirs(
-        output_dir,
-        exist_ok=True,
-    )
-
+def _presentation_model_banner():
     print()
 
     print(
@@ -10940,6 +10920,8 @@ def main():
 
     print()
 
+
+def _presentation_track_status(track_location_context):
     if (
         track_location_context.get(
             "status"
@@ -10961,6 +10943,8 @@ def main():
 
     print()
 
+
+def _presentation_architecture():
     print(
         "Arquitectura v3.10.8.5.4:"
     )
@@ -10975,12 +10959,11 @@ def main():
 
     print()
 
-    pre_session_quality_gate = build_session_comparison_quality_gate(comparisons)
-    pre_session_quality_by_key = _comparison_quality_map(pre_session_quality_gate)
 
-    excluded_count = safe_int(pre_session_quality_gate.get("excluded_count")) or 0
+def _presentation_quality_gate(gate):
+    excluded_count = safe_int(gate.get("excluded_count")) or 0
     retained_outlier_count = (
-        safe_int(pre_session_quality_gate.get("retained_statistical_outlier_count"))
+        safe_int(gate.get("retained_statistical_outlier_count"))
         or 0
     )
     if retained_outlier_count:
@@ -11005,219 +10988,155 @@ def main():
         print(message)
         print()
 
-    comparison_results = []
 
-    for comparison_index, comparison in enumerate(
-        comparisons,
-        start=1,
-    ):
-        print_header(
-            f"COMPARACIÓN {comparison_index}"
-        )
+def _presentation_comparison_header(index):
+    print_header(
+        f"COMPARACIÓN {index}"
+    )
 
-        reference_lap = comparison[
-            "reference_lap"
-        ]
 
-        comparison_lap = comparison[
-            "comparison_lap"
-        ]
+def _presentation_comparison_facts(comparison, prepared_comparison):
+    reference_lap = comparison[
+        "reference_lap"
+    ]
 
-        comparison_key = _session_comparison_key(comparison)
-        prepared_comparison = prepare_comparison(
-            comparison,
-            comparison_quality=pre_session_quality_by_key.get(comparison_key, {}),
-            track_location_context=track_location_context,
-            build_episode_catalog=build_episode_catalog,
-            enrich_track_location=enrich_items_with_track_location,
-            split_for_coaching=split_episode_catalog_for_coaching,
-        )
-        comparison_quality = prepared_comparison.comparison_quality
-        session_plan_eligible = prepared_comparison.session_plan_eligible
-        detected_episode_catalog = prepared_comparison.detected_episode_catalog
-        episode_catalog = prepared_comparison.episode_catalog
-        excluded_anomalies = prepared_comparison.excluded_anomalies
+    comparison_lap = comparison[
+        "comparison_lap"
+    ]
 
+    print(
+        f"Comparación: "
+        f"{reference_lap} -> "
+        f"{comparison_lap}"
+    )
+
+    print(
+        f"Tiempo A: "
+        f"{format_lap_time(comparison['reference_time_s'])}"
+    )
+
+    print(
+        f"Tiempo B: "
+        f"{format_lap_time(comparison['comparison_time_s'])}"
+    )
+
+    print(
+        f"Delta real: "
+        f"{signed_seconds(comparison['comparison_minus_reference_s'])}"
+    )
+
+    print(
+        f"Episodios detectados: "
+        f"{len(prepared_comparison.detected_episode_catalog)}"
+    )
+
+    print(
+        f"Episodios elegibles para coaching: "
+        f"{len(prepared_comparison.episode_catalog)}"
+    )
+
+    print(
+        f"Pérdidas anómalas excluidas: "
+        f"{len(prepared_comparison.excluded_anomalies)}"
+    )
+
+    for anomaly in prepared_comparison.excluded_anomalies:
         print(
-            f"Comparación: "
-            f"{reference_lap} -> "
-            f"{comparison_lap}"
+            "  - episodio "
+            f"#{anomaly.get('episode_id')} · "
+            f"{meters(anomaly.get('start_distance_m'))}–"
+            f"{meters(anomaly.get('end_distance_m'))} · "
+            f"{signed_seconds(anomaly.get('local_loss_s'))}"
         )
 
+
+def _presentation_comparison_route(prepared_comparison):
+    print()
+
+    if not prepared_comparison.session_plan_eligible:
         print(
-            f"Tiempo A: "
-            f"{format_lap_time(comparison['reference_time_s'])}"
+            "Comparación excluida por el gate global de calidad; se conserva el ground truth "
+            "pero no se llama al LLM ni al ranker."
         )
-
+    elif prepared_comparison.episode_catalog:
         print(
-            f"Tiempo B: "
-            f"{format_lap_time(comparison['comparison_time_s'])}"
+            "Solicitando interpretación aislada + ranking comparativo v3.10.8.5.4..."
         )
-
+    else:
         print(
-            f"Delta real: "
-            f"{signed_seconds(comparison['comparison_minus_reference_s'])}"
+            "Todos los episodios fueron excluidos por el gate de anomalías; "
+            "no se llama al LLM ni al ranker para esta comparación."
         )
 
+
+def _presentation_comparison_rejected(comparison, validation_errors):
+    print_header(
+        "LLM RESPONSE REJECTED"
+    )
+
+    reference_lap = comparison[
+        "reference_lap"
+    ]
+
+    comparison_lap = comparison[
+        "comparison_lap"
+    ]
+
+    print(
+        f"Comparación "
+        f"{reference_lap} -> "
+        f"{comparison_lap}"
+    )
+
+    for error in validation_errors:
         print(
-            f"Episodios detectados: "
-            f"{len(detected_episode_catalog)}"
+            f"  - {error}"
         )
 
-        print(
-            f"Episodios elegibles para coaching: "
-            f"{len(episode_catalog)}"
-        )
 
-        print(
-            f"Pérdidas anómalas excluidas: "
-            f"{len(excluded_anomalies)}"
-        )
+def _presentation_comparison_validated(execution):
+    print(
+        f"Respuesta validada en "
+        f"{execution.validated['attempts']} intento(s)."
+    )
 
-        for anomaly in excluded_anomalies:
-            print(
-                "  - episodio "
-                f"#{anomaly.get('episode_id')} · "
-                f"{meters(anomaly.get('start_distance_m'))}–"
-                f"{meters(anomaly.get('end_distance_m'))} · "
-                f"{signed_seconds(anomaly.get('local_loss_s'))}"
-            )
 
-        require_detected_episodes(comparison, detected_episode_catalog)
-
-        print()
-
-        if not session_plan_eligible:
-            print(
-                "Comparación excluida por el gate global de calidad; se conserva el ground truth "
-                "pero no se llama al LLM ni al ranker."
-            )
-        elif episode_catalog:
-            print(
-                "Solicitando interpretación aislada + ranking comparativo v3.10.8.5.4..."
-            )
-        else:
-            print(
-                "Todos los episodios fueron excluidos por el gate de anomalías; "
-                "no se llama al LLM ni al ranker para esta comparación."
-            )
-
-        try:
-            execution = execute_prepared_comparison(
-                comparison,
-                prepared_comparison,
-                eligible_response=lambda: get_validated_comparison_response(
-                    metadata,
-                    comparison,
-                    episode_catalog,
-                    output_dir,
-                ),
-                render_comparison=render_comparison_analysis,
-            )
-        except ComparisonResponseRejected as exc:
-            print_header(
-                "LLM RESPONSE REJECTED"
-            )
-
-            print(
-                f"Comparación "
-                f"{reference_lap} -> "
-                f"{comparison_lap}"
-            )
-
-            for error in exc.validation_errors:
-                print(
-                    f"  - {error}"
-                )
-            raise
-
-        print(
-            f"Respuesta validada en "
-            f"{execution.validated['attempts']} intento(s)."
-        )
-
-        comparison_results.append(
-            execution.result
-        )
-
+def _presentation_synthesis_header():
     print_header(
         "SÍNTESIS GLOBAL"
     )
 
-    session_coaching_facts = (
-        build_session_coaching_facts(
-            comparison_results,
-            track_location_context=(
-                track_location_context
-            ),
-            source_data=data,
-        )
-    )
 
+def _presentation_session_facts(session_coaching_facts):
     print(
         "Agregación determinista de coaching: "
         f"{session_coaching_facts['priority_finding_count']} "
         "hallazgo(s) prioritario(s)."
     )
 
+
+def _presentation_synthesis_request():
     print(
         "Solicitando síntesis de coaching estructurada..."
     )
 
-    global_validated = (
-        get_validated_global_response(
-            metadata,
-            comparison_results,
-            session_coaching_facts,
-            output_dir,
-        )
+
+def _presentation_synthesis_rejected(validation_errors):
+    print_header(
+        "GLOBAL RESPONSE REJECTED"
     )
 
-    if global_validated[
-        "status"
-    ] != "VALID":
-        print_header(
-            "GLOBAL RESPONSE REJECTED"
+    for error in validation_errors:
+        print(
+            f"  - {error}"
         )
 
-        for error in global_validated[
-            "validation_errors"
-        ]:
-            print(
-                f"  - {error}"
-            )
 
-        raise RuntimeError(
-            "GLOBAL_LLM_STRUCTURED_VALIDATION_FAILED. "
-            "La síntesis global no se guardó como válida."
-        )
-
-    (
-        global_structured,
-        global_validation_audit,
-        global_analysis,
-    ) = finalize_validated_global_debrief(
-        global_validated=global_validated,
-        metadata=metadata,
-        comparison_results=comparison_results,
-        session_coaching_facts=session_coaching_facts,
-        track_location_context=track_location_context,
-        render_global=render_global_analysis,
-        render_track_reference=render_track_reference_section,
-    )
-
-    output_path, _ = save_result(
-        input_path,
-        metadata,
-        comparison_results,
-        session_coaching_facts,
-        global_structured,
-        global_analysis,
-        global_validation_audit=global_validation_audit,
-    )
-
+def _presentation_usage_summary():
     print_deepseek_usage_summary()
 
+
+def _presentation_final_analysis(global_analysis):
     print()
 
     print_header(
@@ -11228,6 +11147,8 @@ def main():
         global_analysis
     )
 
+
+def _presentation_saved_result(output_path):
     print()
 
     print_header(
@@ -11238,10 +11159,158 @@ def main():
         output_path
     )
 
+
+def _presentation_complete():
     print()
 
     print_header(
         "ANALYSIS COMPLETE"
+    )
+
+
+# ---- stage providers (pasos deterministas, reutilizan módulos existentes) ----
+
+def _stage_prepare_input(input_path):
+    return prepare_debrief_input(
+        input_path,
+        load_json=load_json,
+        validate_data_model=validate_data_model,
+        validate_lap_times=validate_lap_times,
+        build_dataset=build_llm_dataset,
+        load_track_location_context=load_track_location_context,
+    )
+
+
+def _stage_prepare_comparison(comparison, quality_by_key, track_location_context):
+    comparison_key = _session_comparison_key(comparison)
+    return prepare_comparison(
+        comparison,
+        comparison_quality=quality_by_key.get(comparison_key, {}),
+        track_location_context=track_location_context,
+        build_episode_catalog=build_episode_catalog,
+        enrich_track_location=enrich_items_with_track_location,
+        split_for_coaching=split_episode_catalog_for_coaching,
+    )
+
+
+def _stage_execute_comparison(comparison, prepared_comparison, metadata, output_dir):
+    return execute_prepared_comparison(
+        comparison,
+        prepared_comparison,
+        eligible_response=lambda: get_validated_comparison_response(
+            metadata,
+            comparison,
+            prepared_comparison.episode_catalog,
+            output_dir,
+        ),
+        render_comparison=render_comparison_analysis,
+    )
+
+
+def _stage_build_session_facts(comparison_results, track_location_context, source_data):
+    return build_session_coaching_facts(
+        comparison_results,
+        track_location_context=(
+            track_location_context
+        ),
+        source_data=source_data,
+    )
+
+
+def _stage_get_global_response(metadata, comparison_results, session_coaching_facts, output_dir):
+    return get_validated_global_response(
+        metadata,
+        comparison_results,
+        session_coaching_facts,
+        output_dir,
+    )
+
+
+def _stage_finalize_global(global_validated, metadata, comparison_results, session_coaching_facts, track_location_context):
+    return finalize_validated_global_debrief(
+        global_validated=global_validated,
+        metadata=metadata,
+        comparison_results=comparison_results,
+        session_coaching_facts=session_coaching_facts,
+        track_location_context=track_location_context,
+        render_global=render_global_analysis,
+        render_track_reference=render_track_reference_section,
+    )
+
+
+def _build_debrief_runtime(output_dir):
+    stages = DebriefStages(
+        prepare_input=_stage_prepare_input,
+        build_quality_gate=build_session_comparison_quality_gate,
+        quality_by_key=_comparison_quality_map,
+        prepare_comparison=_stage_prepare_comparison,
+        require_detected=require_detected_episodes,
+        execute_comparison=lambda comparison, prepared, metadata: _stage_execute_comparison(
+            comparison,
+            prepared,
+            metadata,
+            output_dir,
+        ),
+        build_session_facts=_stage_build_session_facts,
+        get_global_response=lambda metadata, comparison_results, session_coaching_facts: _stage_get_global_response(
+            metadata,
+            comparison_results,
+            session_coaching_facts,
+            output_dir,
+        ),
+        finalize_global=_stage_finalize_global,
+        save_result=save_result,
+    )
+    presentation = DebriefPresentation(
+        start=_presentation_start,
+        model_banner=_presentation_model_banner,
+        track_status=_presentation_track_status,
+        architecture=_presentation_architecture,
+        quality_gate=_presentation_quality_gate,
+        comparison_header=_presentation_comparison_header,
+        comparison_facts=_presentation_comparison_facts,
+        comparison_route=_presentation_comparison_route,
+        comparison_rejected=_presentation_comparison_rejected,
+        comparison_validated=_presentation_comparison_validated,
+        synthesis_header=_presentation_synthesis_header,
+        session_facts=_presentation_session_facts,
+        synthesis_request=_presentation_synthesis_request,
+        synthesis_rejected=_presentation_synthesis_rejected,
+        usage_summary=_presentation_usage_summary,
+        final_analysis=_presentation_final_analysis,
+        saved_result=_presentation_saved_result,
+        complete=_presentation_complete,
+    )
+    return stages, presentation
+
+
+# ============================================================
+# MAIN
+# ============================================================
+
+def main():
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
+    reset_deepseek_usage()
+
+    input_path = find_json_file()
+
+    output_dir = str(llm_debug_dir(input_path, backend="deepseek"))
+
+    os.makedirs(
+        output_dir,
+        exist_ok=True,
+    )
+
+    stages, presentation = _build_debrief_runtime(output_dir)
+    run_deterministic_debrief(
+        stages=stages,
+        presentation=presentation,
+        input_path=input_path,
     )
 
 

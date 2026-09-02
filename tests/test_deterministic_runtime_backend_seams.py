@@ -4,6 +4,36 @@ import llm_analysis_deepseek as backend
 from deterministic_comparison_preparation import PreparedComparison
 
 
+def test_global_finalize_stage_bypasses_legacy_renderer(monkeypatch):
+    monkeypatch.setattr(
+        backend,
+        "render_global_analysis",
+        lambda *args, **kwargs: (_ for _ in ()).throw(
+            AssertionError("legacy global renderer reached")
+        ),
+    )
+    monkeypatch.setattr(backend, "render_track_reference_section", lambda *args: "")
+
+    structured, audit, rendered = backend._stage_finalize_global(
+        {"status": "VALID", "attempts": 0, "response": {
+            "opportunities": [],
+            "repeated_observations": [],
+            "hypotheses": [],
+            "limitations": [],
+            "conclusion": "",
+            "next_session_priorities": [],
+        }},
+        {},
+        [],
+        {"next_stint_plan": []},
+        {},
+    )
+
+    assert structured["next_session_priorities"] == []
+    assert audit == {"status": "VALID", "attempts": 0}
+    assert rendered.startswith("# Debrief de ingeniería — Sesión")
+
+
 def test_global_runtime_stage_bypasses_legacy_provider_and_transport(monkeypatch):
     monkeypatch.setattr(
         backend,

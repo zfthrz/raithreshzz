@@ -737,6 +737,10 @@ The normal global contract consumes the complete neutral validator, including it
 fail-closed temporal-action, zone-anchored steering, per-zone list consistency and
 global direction-consistency guards. The historical backend name remains a
 compatibility alias only.
+`deterministic_global_render.py` owns the byte-compatible global debrief renderer
+and its three strictly required presentation helpers. Normal finalization injects
+this neutral renderer directly; the historical renderer remains available only for
+compatibility and rollback.
 Runtime binding now injects `session_coaching.build_session_coaching_facts` and the
 neutral output provider directly. Their historical wrapper functions remain only as
 compatibility surfaces and are unreachable from the normal coordinator.

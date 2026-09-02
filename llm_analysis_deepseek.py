@@ -171,6 +171,9 @@ from deterministic_global_validation import (
     validate_global_secondary_steering_text as validate_neutral_global_steering,
     validate_temporal_observation_not_action_target as validate_neutral_temporal_observation,
 )
+from deterministic_global_render import (
+    render_global_analysis as render_neutral_global_analysis,
+)
 from deterministic_debrief_output import save_compatible_debrief
 from deterministic_comparison_responses import (
     build_episode_response as build_deterministic_episode_response,
@@ -11289,7 +11292,7 @@ def _stage_finalize_global(global_validated, metadata, comparison_results, sessi
         comparison_results=comparison_results,
         session_coaching_facts=session_coaching_facts,
         track_location_context=track_location_context,
-        render_global=render_global_analysis,
+        render_global=render_neutral_global_analysis,
         render_track_reference=render_track_reference_section,
     )
 

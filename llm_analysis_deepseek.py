@@ -155,6 +155,10 @@ from deterministic_debrief_document import (
 from deterministic_debrief_finalize import finalize_validated_global_debrief
 from deterministic_debrief_input import prepare_debrief_input
 from deterministic_comparison_decision import resolve_comparison_response
+from deterministic_comparison_preparation import (
+    prepare_comparison,
+    require_detected_episodes,
+)
 import hashlib
 import json
 import math
@@ -11018,29 +11022,19 @@ def main():
         ]
 
         comparison_key = _session_comparison_key(comparison)
-        comparison_quality = pre_session_quality_by_key.get(comparison_key, {})
-        session_plan_eligible = bool(
-            comparison_quality.get("session_plan_eligible", True)
-        )
-
-        detected_episode_catalog = (
-            build_episode_catalog(
-                comparison
-            )
-        )
-
-        enrich_items_with_track_location(
-            detected_episode_catalog,
-            track_location_context,
-        )
-
-        (
-            episode_catalog,
-            excluded_anomalies,
-        ) = split_episode_catalog_for_coaching(
+        prepared_comparison = prepare_comparison(
             comparison,
-            detected_episode_catalog,
+            comparison_quality=pre_session_quality_by_key.get(comparison_key, {}),
+            track_location_context=track_location_context,
+            build_episode_catalog=build_episode_catalog,
+            enrich_track_location=enrich_items_with_track_location,
+            split_for_coaching=split_episode_catalog_for_coaching,
         )
+        comparison_quality = prepared_comparison.comparison_quality
+        session_plan_eligible = prepared_comparison.session_plan_eligible
+        detected_episode_catalog = prepared_comparison.detected_episode_catalog
+        episode_catalog = prepared_comparison.episode_catalog
+        excluded_anomalies = prepared_comparison.excluded_anomalies
 
         print(
             f"Comparación: "
@@ -11087,13 +11081,7 @@ def main():
                 f"{signed_seconds(anomaly.get('local_loss_s'))}"
             )
 
-        if not detected_episode_catalog:
-            raise RuntimeError(
-                "No hay driver_action_episode disponibles "
-                f"para {reference_lap} -> {comparison_lap}. "
-                "La v3.10.8.5.4 requiere analyze_telemetry v3.8 "
-                "con episodios primarios."
-            )
+        require_detected_episodes(comparison, detected_episode_catalog)
 
         print()
 

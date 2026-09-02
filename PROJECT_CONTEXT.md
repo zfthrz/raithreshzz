@@ -677,6 +677,8 @@ The LLM stage is **deterministic-first by default**:
 The ongoing backend-relegation refactor keeps the historical artifact schema and
 filename compatible while moving product-owned behavior into neutral modules.
 `deterministic_comparison_decision.py` owns fail-closed quality/anomaly routes;
+`deterministic_comparison_preparation.py` owns catalog construction order,
+track localization, anomaly splitting and the mandatory-episode fail-closed check;
 `deterministic_debrief_input.py` owns the ordered load/validation/dataset/context
 preparation contract;
 `deterministic_global_fallback.py` owns the validated default global closure;

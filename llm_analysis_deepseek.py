@@ -166,6 +166,9 @@ from deterministic_episode_validation import (
 from deterministic_comparison_validation import (
     validate_comparison_response as validate_neutral_comparison_response,
 )
+from deterministic_global_validation import (
+    validate_temporal_observation_not_action_target as validate_neutral_temporal_observation,
+)
 from deterministic_debrief_output import save_compatible_debrief
 from deterministic_comparison_responses import (
     build_episode_response as build_deterministic_episode_response,
@@ -9674,7 +9677,7 @@ def validate_global_llm_response(
                         f"{field}[{index}]",
                         errors,
                     )
-                    validate_temporal_observation_not_action_target(
+                    validate_neutral_temporal_observation(
                         item,
                         f"{field}[{index}]",
                         plan,
@@ -9724,7 +9727,7 @@ def validate_global_llm_response(
             "conclusion global",
             errors,
         )
-        validate_temporal_observation_not_action_target(
+        validate_neutral_temporal_observation(
             conclusion,
             "conclusion global",
             plan,

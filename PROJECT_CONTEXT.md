@@ -714,8 +714,11 @@ the historical module no longer wires those deterministic preparation callbacks.
 derivation and immutable application to episode assessments. Normal comparison
 execution injects this neutral contract rather than the historical implementations.
 `deterministic_comparison_summary.py` owns ordering and selection of validated
-episode text plus the established mixed-steering neutral fallback. It receives the
-unchanged summary validator as an explicit boundary; no transport is reachable.
+episode text plus the established mixed-steering neutral fallback.
+`deterministic_summary_validation.py` owns the corresponding backend-independent
+grounding, numeric-content, steering-direction and reference-target contract. Normal
+comparison execution now injects that neutral validator directly; the historical
+validator remains only as a compatibility surface and no transport is reachable.
 `deterministic_debrief_output.py` owns compatible artifact construction, timestamping
 and persistence, while comparison execution calls the neutral renderer directly.
 Neither filesystem output nor comparison presentation requires a backend provider.

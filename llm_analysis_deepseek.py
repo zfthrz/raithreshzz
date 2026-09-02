@@ -157,6 +157,9 @@ from deterministic_comparison_execution import (
     ComparisonResponseRejected,
     execute_prepared_comparison,
 )
+from deterministic_summary_validation import (
+    validate_comparison_summary_response as validate_neutral_comparison_summary_response,
+)
 from deterministic_debrief_output import save_compatible_debrief
 from deterministic_comparison_responses import (
     build_episode_response as build_deterministic_episode_response,
@@ -11230,7 +11233,7 @@ def _stage_execute_comparison(comparison, prepared_comparison, metadata, output_
                     build_neutral_comparison_summary(
                         assessments,
                         catalog,
-                        validate_summary=validate_comparison_summary_llm_response,
+                        validate_summary=validate_neutral_comparison_summary_response,
                     )
                 ),
             ),

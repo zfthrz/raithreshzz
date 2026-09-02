@@ -167,6 +167,7 @@ from deterministic_comparison_validation import (
     validate_comparison_response as validate_neutral_comparison_response,
 )
 from deterministic_global_validation import (
+    validate_global_response as validate_neutral_global_response,
     validate_global_secondary_steering_text as validate_neutral_global_steering,
     validate_temporal_observation_not_action_target as validate_neutral_temporal_observation,
 )
@@ -9755,6 +9756,11 @@ def validate_global_llm_response(
     )
 
     return errors
+
+
+
+# Compatibility name retained for callers; the production contract is neutral.
+validate_global_llm_response = validate_neutral_global_response
 
 
 

@@ -131,6 +131,20 @@ from deterministic_text_validation import (
     text_contains_number_word,
 )
 from comparison_response_pipeline import build_validated_comparison_response
+from deterministic_comparison_render import (
+    comparison_actionable_focus as _comparison_actionable_focus,
+    compose_episode_driver_cue_text as _compose_episode_driver_cue_text,
+    assessment_map,
+    episode_authorized_driver_cues as _episode_authorized_driver_cues,
+    episode_spatial_facts,
+    episode_validated_steering_cue as _episode_validated_steering_cue,
+    format_channel_names,
+    format_lap_time,
+    meters,
+    render_comparison_analysis as _render_comparison_analysis,
+    render_hypotheses,
+    signed_seconds,
+)
 import hashlib
 import json
 import math
@@ -7365,274 +7379,9 @@ def get_validated_comparison_response(
 # FORMATEO DETERMINISTA
 # ============================================================
 
-def signed_seconds(value):
-    value = safe_float(
-        value
-    )
-
-    if value is None:
-        return "N/D"
-
-    return f"{value:+.4f} s"
-
-
-def format_lap_time(value):
-    """
-    Formato visible de tiempo absoluto de vuelta: m:ss.mmm.
-
-    Los valores objetivos permanecen almacenados internamente en segundos;
-    esta función sólo afecta presentación. Los deltas siguen usando
-    signed_seconds().
-    """
-    value = safe_float(
-        value
-    )
-
-    if value is None:
-        return "N/D"
-
-    if value < 0:
-        sign = "-"
-        value = abs(value)
-    else:
-        sign = ""
-
-    minutes = int(value // 60)
-    seconds = value - (minutes * 60)
-
-    return f"{sign}{minutes}:{seconds:06.3f}"
-
-
-def meters(value):
-    value = safe_float(
-        value
-    )
-
-    if value is None:
-        return "N/D"
-
-    return f"{value:.0f} m"
-
-
-def format_channel_names(
-    channels,
-):
-    if not channels:
-        return "sin canales de acción"
-
-    names = {
-        "throttle":
-            "acelerador",
-
-        "brake":
-            "freno",
-
-        "steering_magnitude":
-            "magnitud de dirección",
-    }
-
-    return ", ".join(
-        names.get(
-            channel,
-            channel,
-        )
-        for channel in channels
-    )
-
-
-def render_hypotheses(
-    hypotheses,
-):
-    if not hypotheses:
-        return "- Sin hipótesis adicional."
-
-    return "\n".join(
-        f"- {item}"
-        for item in hypotheses
-    )
-
-
-def assessment_map(
-    structured_response,
-):
-    return {
-        safe_int(
-            item[
-                "episode_id"
-            ]
-        ):
-            item
-        for item in structured_response[
-            "episode_assessments"
-        ]
-    }
-
-
 # ============================================================
 # RENDER DE COMPARACIÓN
 # ============================================================
-
-def _episode_authorized_driver_cues(episode, max_cues=2):
-    """
-    Cues del debrief individual basados sólo en puntos físicos autorizados.
-    Steering y diferencias genéricas de nivel quedan como observación.
-    """
-    if not isinstance(episode, dict):
-        return []
-
-    def point(value, later_text, earlier_text):
-        if not isinstance(value, dict):
-            return None
-        if value.get("status") != "VALID" or not value.get("authorized_numeric_coaching"):
-            return None
-        magnitude = safe_int(value.get("coaching_magnitude_m"))
-        direction = value.get("coaching_direction")
-        if magnitude is None:
-            return None
-        if direction == "later":
-            return later_text.format(magnitude=magnitude)
-        if direction == "earlier":
-            return earlier_text.format(magnitude=magnitude)
-        return None
-
-    cues = []
-    brake_onset = point(
-        episode.get("braking_point_comparison"),
-        "frená aproximadamente {magnitude} m más tarde",
-        "frená aproximadamente {magnitude} m más temprano",
-    )
-    brake_release = point(
-        episode.get("brake_release_point_comparison"),
-        "soltá el freno aproximadamente {magnitude} m más tarde",
-        "soltá el freno aproximadamente {magnitude} m más temprano",
-    )
-    if brake_onset or brake_release:
-        cues.append({
-            "channel": "brake",
-            "text": " y ".join(v for v in (brake_onset, brake_release) if v),
-            "source": "authorized_brake_onset_release",
-        })
-
-    throttle_onset = point(
-        episode.get("throttle_onset_point_comparison"),
-        "reaplicá el acelerador aproximadamente {magnitude} m más tarde",
-        "reaplicá el acelerador aproximadamente {magnitude} m más temprano",
-    )
-    throttle_release = point(
-        episode.get("throttle_release_point_comparison"),
-        "soltá el acelerador aproximadamente {magnitude} m más tarde",
-        "soltá el acelerador aproximadamente {magnitude} m más temprano",
-    )
-    if throttle_onset or throttle_release:
-        cues.append({
-            "channel": "throttle",
-            "text": " y ".join(v for v in (throttle_onset, throttle_release) if v),
-            "source": "authorized_throttle_onset_release",
-        })
-
-    return cues[:max_cues]
-
-
-def _episode_validated_steering_cue(episode, assessment):
-    """
-    Convierte una recomendación de steering YA validada por Python en wording
-    driver-facing determinista. El LLM decide si steering merece coaching;
-    Python conserva la dirección objetiva.
-    """
-    if not isinstance(episode, dict) or not isinstance(assessment, dict):
-        return None
-    if "steering_magnitude" not in set(episode.get("action_channels", []) or []):
-        return None
-    recommendation = str(assessment.get("recommendation") or "").strip()
-    if not recommendation or not _steering_direct_action_present(recommendation):
-        return None
-
-    observed = _single_objective_channel_direction(
-        episode,
-        "steering_magnitude",
-    )
-    if observed == "higher_in_comparison_lap":
-        text = "reducí la magnitud del volante hacia la referencia"
-    elif observed == "lower_in_comparison_lap":
-        text = "aumentá la magnitud del volante hacia la referencia"
-    else:
-        text = "replicá la secuencia de dirección de la referencia"
-
-    return {
-        "channel": "steering_magnitude",
-        "kind": "validated_llm_steering",
-        "text": text,
-        "source": "validated_llm_recommendation+python_direction",
-    }
-
-
-def _compose_episode_driver_cue_text(physical_cues, steering_cue):
-    physical_texts = [
-        str(cue.get("text") or "").strip()
-        for cue in (physical_cues or [])[:2]
-        if isinstance(cue, dict) and str(cue.get("text") or "").strip()
-    ]
-    if physical_texts:
-        text = "; ".join(physical_texts)
-        if steering_cue and str(steering_cue.get("text") or "").strip():
-            text += "; como ajuste de volante, " + str(steering_cue["text"]).strip()
-        return text
-    if steering_cue:
-        return str(steering_cue.get("text") or "").strip()
-    return ""
-
-
-def _comparison_actionable_focus(episode_catalog, structured_response):
-    """Cierre driver-facing con cues físicos + steering validado sin saturarlo."""
-    amap = assessment_map(structured_response)
-    ranked = []
-    for episode in episode_catalog:
-        assessment = amap.get(episode.get("episode_id"), {})
-        classification = assessment.get("classification")
-        class_rank = {"PRIORITARIO": 0, "SECUNDARIO": 1}.get(classification, 2)
-        physical_cues = _episode_authorized_driver_cues(episode)
-        steering_cue = _episode_validated_steering_cue(episode, assessment)
-
-        steering_only = bool(steering_cue and not physical_cues)
-        if steering_only and classification != "PRIORITARIO":
-            continue
-        if not physical_cues and not steering_cue:
-            continue
-
-        ranked.append((
-            1 if steering_only else 0,
-            class_rank,
-            safe_int(episode.get("global_rank")) or safe_int(episode.get("rank")) or 999999,
-            -abs(safe_float(episode.get("action_time_loss_s")) or 0.0),
-            episode,
-            physical_cues,
-            steering_cue,
-        ))
-
-    if not ranked:
-        return None
-
-    ranked.sort(key=lambda row: row[:4])
-    parts = []
-    steering_only_used = False
-    for steering_only_rank, _, _, _, episode, physical_cues, steering_cue in ranked:
-        steering_only = bool(steering_only_rank)
-        if steering_only and steering_only_used:
-            continue
-        text = _compose_episode_driver_cue_text(physical_cues, steering_cue)
-        if not text:
-            continue
-        location = track_location_label(episode)
-        prefix = f"{location}: " if location else ""
-        parts.append(prefix + text)
-        steering_only_used = steering_only_used or steering_only
-        if len(parts) >= 2:
-            break
-
-    if not parts:
-        return None
-    return "Para la próxima vuelta, priorizá " + "; ".join(parts) + "."
-
 
 def render_comparison_analysis(
     comparison,
@@ -7645,6 +7394,14 @@ def render_comparison_analysis(
     El JSON conserva toda la evidencia granular. Este render prioriza una
     lectura de debrief: resultado -> lectura -> acciones -> respaldo técnico.
     """
+    return _render_comparison_analysis(
+        comparison,
+        episode_catalog,
+        structured_response,
+    )
+
+    # Historical implementation retained temporarily for source-level
+    # compatibility while callers migrate to deterministic_comparison_render.
     amap = assessment_map(structured_response)
     lines = []
 
@@ -7728,136 +7485,7 @@ def render_comparison_analysis(
             break
 
     def spatial_facts(episode):
-        facts = []
-
-        bp = episode.get("braking_point_comparison")
-        if isinstance(bp, dict) and bp.get("status") == "VALID":
-            delta = safe_float(bp.get("comparison_minus_reference_m"))
-            direction = bp.get("relative_direction")
-            magnitude = safe_float(bp.get("coaching_magnitude_m"))
-            coach = bp.get("coaching_direction")
-            if direction == "similar_to_reference":
-                facts.append("inicio de frenada dentro de la zona muerta")
-            elif delta is not None:
-                where = "antes" if delta < 0 else "después"
-                item = f"inicio de frenada {abs(delta):.0f} m {where} de la referencia"
-                if bp.get("authorized_numeric_coaching") and magnitude is not None:
-                    move = "más tarde" if coach == "later" else "más temprano"
-                    item += f"; objetivo {magnitude:.0f} m {move}"
-                facts.append(item)
-
-        br = episode.get("brake_release_point_comparison")
-        if isinstance(br, dict) and br.get("status") == "VALID":
-            delta = safe_float(br.get("comparison_minus_reference_m"))
-            direction = br.get("relative_direction")
-            magnitude = safe_float(br.get("coaching_magnitude_m"))
-            coach = br.get("coaching_direction")
-            if direction == "similar_to_reference":
-                facts.append("liberación de freno dentro de la zona muerta")
-            elif delta is not None:
-                where = "antes" if delta < 0 else "después"
-                item = f"liberación de freno {abs(delta):.0f} m {where} de la referencia"
-                if br.get("authorized_numeric_coaching") and magnitude is not None:
-                    move = "más tarde" if coach == "later" else "más temprano"
-                    item += f"; objetivo {magnitude:.0f} m {move}"
-                facts.append(item)
-
-        to = episode.get("throttle_onset_point_comparison")
-        if isinstance(to, dict) and to.get("status") == "VALID":
-            delta = safe_float(to.get("comparison_minus_reference_m"))
-            direction = to.get("relative_direction")
-            magnitude = safe_float(to.get("coaching_magnitude_m"))
-            coach = to.get("coaching_direction")
-            if direction == "similar_to_reference":
-                facts.append("reaplicación de acelerador dentro de la zona muerta")
-            elif delta is not None:
-                where = "antes" if delta < 0 else "después"
-                item = f"reaplicación de acelerador {abs(delta):.0f} m {where} de la referencia"
-                if to.get("authorized_numeric_coaching") and magnitude is not None:
-                    move = "más tarde" if coach == "later" else "más temprano"
-                    item += f"; objetivo {magnitude:.0f} m {move}"
-                facts.append(item)
-
-        tr = episode.get("throttle_release_point_comparison")
-        if isinstance(tr, dict) and tr.get("status") == "VALID":
-            delta = safe_float(tr.get("comparison_minus_reference_m"))
-            direction = tr.get("relative_direction")
-            magnitude = safe_float(tr.get("coaching_magnitude_m"))
-            coach = tr.get("coaching_direction")
-            if direction == "similar_to_reference":
-                facts.append("liberación de acelerador dentro de la zona muerta")
-            elif delta is not None:
-                where = "antes" if delta < 0 else "después"
-                item = f"liberación de acelerador {abs(delta):.0f} m {where} de la referencia"
-                if tr.get("authorized_numeric_coaching") and magnitude is not None:
-                    move = "más tarde" if coach == "later" else "más temprano"
-                    item += f"; objetivo {magnitude:.0f} m {move}"
-                facts.append(item)
-
-        ft = episode.get(
-            "throttle_full_throttle_attainment_comparison"
-        )
-        if isinstance(ft, dict) and ft.get("status") == "VALID":
-            relation = ft.get("relative_direction")
-            delta = safe_float(
-                ft.get("comparison_minus_reference_m")
-            )
-
-            if (
-                relation
-                in {
-                    "earlier_in_comparison_lap",
-                    "later_in_comparison_lap",
-                }
-                and delta is not None
-            ):
-                where = (
-                    "antes"
-                    if delta < 0
-                    else "después"
-                )
-                facts.append(
-                    "acelerador casi pleno confirmado "
-                    f"{abs(delta):.0f} m {where} de la referencia "
-                    "(observacional)"
-                )
-            elif relation == "similar_to_reference":
-                facts.append(
-                    "acelerador casi pleno confirmado en un punto "
-                    "similar a la referencia (observacional)"
-                )
-            elif relation == "reference_attained_comparison_not_confirmed":
-                facts.append(
-                    "la referencia alcanzó acelerador casi pleno confirmado; "
-                    "la vuelta comparada no lo confirmó en el mismo evento "
-                    "(observacional)"
-                )
-            elif relation == "comparison_attained_reference_not_confirmed":
-                facts.append(
-                    "la vuelta comparada alcanzó acelerador casi pleno "
-                    "confirmado; la referencia no lo confirmó en el mismo "
-                    "evento (observacional)"
-                )
-
-        pl = episode.get(
-            "throttle_partial_lift_comparison"
-        )
-        if isinstance(pl, dict) and pl.get("status") == "VALID":
-            ref_count = safe_int(
-                pl.get("reference_partial_lift_count")
-            )
-            cmp_count = safe_int(
-                pl.get("comparison_partial_lift_count")
-            )
-
-            if ref_count is not None and cmp_count is not None:
-                facts.append(
-                    "lifts parciales recuperados: "
-                    f"referencia {ref_count}, comparación {cmp_count} "
-                    "(observacional)"
-                )
-
-        return facts
+        return episode_spatial_facts(episode)
 
     def render_episode(episode, ordinal=None):
         episode_id = episode["episode_id"]

@@ -701,6 +701,10 @@ importing a backend, and `deterministic_debrief_presentation.py` owns the normal
 console surface. The historical module still supplies several deterministic policy
 callbacks, so the final entrypoint cutover remains pending despite transport already
 being unreachable.
+`deterministic_input_contract.py` owns JSON loading, model validation, legacy lap
+identity compatibility and temporal lap-time verification. The normal input stage
+no longer calls those historical-module implementations; dataset cleaning and track
+context resolution are the remaining input callbacks still awaiting extraction.
 
 ```text
 RACE_ENGINEER_DETERMINISTIC_FIRST   default "1"

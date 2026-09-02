@@ -171,6 +171,11 @@ from deterministic_debrief_runtime import (
 )
 from deterministic_debrief_presentation import build_console_presentation
 from deterministic_debrief_wiring import StageProviders, bind_stages
+from deterministic_input_contract import (
+    load_json as load_deterministic_json,
+    validate_data_model as validate_deterministic_data_model,
+    validate_lap_times as validate_deterministic_lap_times,
+)
 import hashlib
 import json
 import math
@@ -11178,9 +11183,9 @@ def _presentation_complete():
 def _stage_prepare_input(input_path):
     return prepare_debrief_input(
         input_path,
-        load_json=load_json,
-        validate_data_model=validate_data_model,
-        validate_lap_times=validate_lap_times,
+        load_json=load_deterministic_json,
+        validate_data_model=validate_deterministic_data_model,
+        validate_lap_times=validate_deterministic_lap_times,
         build_dataset=build_llm_dataset,
         load_track_location_context=load_track_location_context,
     )

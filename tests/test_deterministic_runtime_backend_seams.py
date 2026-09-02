@@ -104,3 +104,46 @@ def test_comparison_runtime_stage_bypasses_legacy_provider_and_transport(monkeyp
     assert callable(pipeline_calls[0]["get_episode_response"])
     assert callable(pipeline_calls[0]["get_ranker_response"])
     assert callable(pipeline_calls[0]["get_summary_response"])
+
+
+def test_input_runtime_stage_bypasses_legacy_load_and_validation(monkeypatch, tmp_path):
+    source = {
+        "metadata": {
+            "same_vehicle": True,
+            "reference_lap": 1,
+            "lap_times_s": {"1": 90.0, "2": 90.5},
+        },
+        "comparisons": [
+            {
+                "reference_lap": 1,
+                "comparison_lap": 2,
+                "comparison_minus_reference_s": 0.5,
+            }
+        ],
+    }
+    path = tmp_path / "analysis.json"
+    import json
+    path.write_text(json.dumps(source), encoding="utf-8")
+    for name in ("load_json", "validate_data_model", "validate_lap_times"):
+        monkeypatch.setattr(
+            backend,
+            name,
+            lambda *args, _name=name, **kwargs: (_ for _ in ()).throw(
+                AssertionError(f"legacy {_name} reached")
+            ),
+        )
+    monkeypatch.setattr(
+        backend,
+        "build_llm_dataset",
+        lambda data, laps: {
+            "metadata": data["metadata"],
+            "comparisons": data["comparisons"],
+        },
+    )
+    monkeypatch.setattr(
+        backend,
+        "load_track_location_context",
+        lambda metadata: {"status": "NO_TRACK_PROFILE"},
+    )
+    prepared = backend._stage_prepare_input(str(path))
+    assert prepared.comparisons == source["comparisons"]

@@ -45,13 +45,10 @@ The intended normal command is:
 python race_engineer.py analyze "telemetria\ARCHIVO.duckdb"
 ```
 
-Default LLM backend: DeepSeek.
-
-Local/Ollama backend:
-
-```powershell
-python race_engineer.py analyze "telemetria\ARCHIVO.duckdb" --backend ollama
-```
+The default path is backend-free: `deterministic_debrief.py` produces the
+full debrief without calling any LLM transport. Opt-in LLM backends are
+available only for reproduction, benchmarks, or legacy workflows; they are
+never invoked automatically by the product runtime.
 
 `telemetria/` is the standard local location for LMU DuckDB recordings and is ignored by Git.
 
@@ -376,7 +373,7 @@ analyze_telemetry.py --validate
    ↓
 deterministic analysis JSON
    ↓
-LLM backend (DeepSeek default / Ollama optional)
+deterministic_debrief.py (default — 0 LLM calls)
    ↓
 validate_llm_analysis_output.py
    ↓
@@ -390,8 +387,8 @@ H5.1 dual-reference context
    ↓
 H5.2 raw cross-session comparison when both DuckDBs resolve; otherwise SKIPPED_NOT_APPLICABLE
    ↓
-H5.2 LLM observational narrative when LLM is enabled; historical actions remain disabled
-   
+H5.2 LLM observational narrative when LLM is explicitly enabled; historical actions remain disabled
+   ↓
 H5.3 deterministic historical section (observational) when H4/H5.1/H5.2 are valid
 ```
 
@@ -688,8 +685,8 @@ preparation contract;
 `deterministic_debrief_document.py` owns comparison/document construction,
 serialization and the centralized compatible output path. These extractions do
 not change coaching, gates, ranking, validators or artifact contents. The product
-entrypoint still uses the historical provider for remaining unextracted policy;
-it must not be described as backend-independent until that dependency is removed.
+entrypoint is now fully backend-independent: normal execution calls the neutral
+deterministic closure directly with zero LLM transport calls.
 The runtime global-response stage calls the neutral deterministic closure directly;
 the legacy global provider and its transport branch are no longer reachable from
 the normal product stage, but remain temporarily available for explicit rollback.
@@ -699,8 +696,8 @@ provider and transport-capable branches are no longer reachable from normal runt
 `deterministic_debrief_wiring.py` now binds stage providers without selecting or
 importing a backend, and `deterministic_debrief_presentation.py` owns the normal
 console surface. The historical module still supplies several deterministic policy
-callbacks, so the final entrypoint cutover remains pending despite transport already
-being unreachable.
+callbacks, so the wiring layer uses the historical module as a compatibility surface
+without introducing an LLM dependency.
 `deterministic_input_contract.py` owns JSON loading, model validation, legacy lap
 identity compatibility and temporal lap-time verification.
 `deterministic_debrief_dataset.py` owns the bounded, schema-compatible cleanup of
@@ -1531,8 +1528,9 @@ Completed after the integration checkpoint:
    those sessions.
 7. D3.x is closed: the LLM stage is deterministic-first by default
    (`RACE_ENGINEER_DETERMINISTIC_FIRST`, default "1"), the H5.2 narrative is
-   non-blocking, and **the priority ranker is the only remaining LLM dependency
-   in the default runtime path**.
+   non-blocking, and **the default runtime path has no LLM dependency**;
+   the LLM ranker is available only as explicit rollback
+   (`RACE_ENGINEER_LLM_RANKER=1`).
 
 Current priority order:
 

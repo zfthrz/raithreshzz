@@ -16,13 +16,19 @@ If `PROJECT_CONTEXT.md` is missing, report that before making a broad project-le
 
 Race Engineer is an LMU telemetry coaching pipeline. Python owns deterministic telemetry facts and validation. The LLM interprets, prioritizes and writes coaching from authorized evidence; it must not invent telemetry facts or silently recalculate deterministic truth.
 
-Normal entry point:
+Normal entry point (backend-free):
 
 ```powershell
 python race_engineer.py analyze "telemetria\ARCHIVO.duckdb"
 ```
 
-DeepSeek is the default backend. Ollama/local:
+Opt-in LLM backend (DeepSeek):
+
+```powershell
+python race_engineer.py analyze "telemetria\ARCHIVO.duckdb" --backend deepseek
+```
+
+Opt-in local backend (Ollama / llama.cpp):
 
 ```powershell
 python race_engineer.py analyze "telemetria\ARCHIVO.duckdb" --backend ollama

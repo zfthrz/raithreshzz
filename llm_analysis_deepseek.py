@@ -163,6 +163,9 @@ from deterministic_summary_validation import (
 from deterministic_episode_validation import (
     validate_single_episode_response as validate_neutral_single_episode_response,
 )
+from deterministic_comparison_validation import (
+    validate_comparison_response as validate_neutral_comparison_response,
+)
 from deterministic_debrief_output import save_compatible_debrief
 from deterministic_comparison_responses import (
     build_episode_response as build_deterministic_episode_response,
@@ -11240,7 +11243,7 @@ def _stage_execute_comparison(comparison, prepared_comparison, metadata, output_
                     )
                 ),
             ),
-            validate_response=validate_comparison_llm_response,
+            validate_response=validate_neutral_comparison_response,
             derive_classifications=derive_deterministic_priority_classifications,
         ),
         render_comparison=_render_comparison_analysis,

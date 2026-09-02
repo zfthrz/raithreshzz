@@ -84,20 +84,22 @@ def validate_episode_interpretation_direction(interpretation, episode, errors):
         )
 
 
-def validate_episode_steering_contract(recommendation, episode, errors):
+def validate_episode_steering_contract(
+    recommendation, episode, errors, field_name="recommendation"
+):
     if not _steering_direct_action_present(recommendation):
         return
     channels = set(episode.get("action_channels", []) or [])
     if "steering_magnitude" not in channels:
         errors.append(
-            "recommendation: introduce steering_magnitude como acción, pero ese canal no está observado en el episodio."
+            f"{field_name}: introduce steering_magnitude como acción, pero ese canal no está observado en el episodio."
         )
         return
     observed = _single_objective_channel_direction(episode, "steering_magnitude")
     for clause in _explicit_directional_clauses(recommendation):
         if "steering_magnitude" in clause.get("channels", set()) and observed is None:
             errors.append(
-                "recommendation: steering_magnitude es mixed/ambiguo; debe formularse como replicar/acompañar la referencia, no como aumentar o reducir."
+                f"{field_name}: steering_magnitude es mixed/ambiguo; debe formularse como replicar/acompañar la referencia, no como aumentar o reducir."
             )
             return
 

@@ -728,6 +728,10 @@ only for legacy retry/repair compatibility and is not reached by the product sta
 `deterministic_episode_validation.py` owns the matching per-episode grounding,
 direction, steering and reference-target validation contract. Normal execution
 injects it directly and no longer calls the historical episode validator.
+`deterministic_comparison_validation.py` owns final validation of the assembled
+comparison document, including episode identity, classification, grounding and
+aggregate text. The normal comparison pipeline no longer calls its historical
+backend counterpart.
 Runtime binding now injects `session_coaching.build_session_coaching_facts` and the
 neutral output provider directly. Their historical wrapper functions remain only as
 compatibility surfaces and are unreachable from the normal coordinator.

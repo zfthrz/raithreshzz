@@ -167,10 +167,10 @@ from deterministic_comparison_preparation import (
     require_detected_episodes,
 )
 from deterministic_debrief_runtime import (
-    DebriefPresentation,
-    DebriefStages,
     run_deterministic_debrief,
 )
+from deterministic_debrief_presentation import build_console_presentation
+from deterministic_debrief_wiring import StageProviders, bind_stages
 import hashlib
 import json
 import math
@@ -11266,47 +11266,24 @@ def _stage_finalize_global(global_validated, metadata, comparison_results, sessi
 
 
 def _build_debrief_runtime(output_dir):
-    stages = DebriefStages(
+    providers = StageProviders(
         prepare_input=_stage_prepare_input,
         build_quality_gate=build_session_comparison_quality_gate,
         quality_by_key=_comparison_quality_map,
         prepare_comparison=_stage_prepare_comparison,
         require_detected=require_detected_episodes,
-        execute_comparison=lambda comparison, prepared, metadata: _stage_execute_comparison(
-            comparison,
-            prepared,
-            metadata,
-            output_dir,
-        ),
+        execute_comparison=_stage_execute_comparison,
         build_session_facts=_stage_build_session_facts,
-        get_global_response=lambda metadata, comparison_results, session_coaching_facts: _stage_get_global_response(
-            metadata,
-            comparison_results,
-            session_coaching_facts,
-            output_dir,
-        ),
+        get_global_response=_stage_get_global_response,
         finalize_global=_stage_finalize_global,
         save_result=save_result,
     )
-    presentation = DebriefPresentation(
-        start=_presentation_start,
-        model_banner=_presentation_model_banner,
-        track_status=_presentation_track_status,
-        architecture=_presentation_architecture,
-        quality_gate=_presentation_quality_gate,
-        comparison_header=_presentation_comparison_header,
-        comparison_facts=_presentation_comparison_facts,
-        comparison_route=_presentation_comparison_route,
-        comparison_rejected=_presentation_comparison_rejected,
-        comparison_validated=_presentation_comparison_validated,
-        synthesis_header=_presentation_synthesis_header,
-        session_facts=_presentation_session_facts,
-        synthesis_request=_presentation_synthesis_request,
-        synthesis_rejected=_presentation_synthesis_rejected,
-        usage_summary=_presentation_usage_summary,
-        final_analysis=_presentation_final_analysis,
-        saved_result=_presentation_saved_result,
-        complete=_presentation_complete,
+    stages = bind_stages(providers, output_dir=output_dir)
+    presentation = build_console_presentation(
+        model_name=MODEL_NAME,
+        context_size=CONTEXT_SIZE,
+        temperature=TEMPERATURE,
+        usage_summary=print_deepseek_usage_summary,
     )
     return stages, presentation
 

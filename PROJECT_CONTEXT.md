@@ -696,6 +696,11 @@ the normal product stage, but remain temporarily available for explicit rollback
 The comparison stage likewise assembles the neutral response pipeline with direct
 deterministic episode, D2.9 ranker and summary providers. Its legacy comparison
 provider and transport-capable branches are no longer reachable from normal runtime.
+`deterministic_debrief_wiring.py` now binds stage providers without selecting or
+importing a backend, and `deterministic_debrief_presentation.py` owns the normal
+console surface. The historical module still supplies several deterministic policy
+callbacks, so the final entrypoint cutover remains pending despite transport already
+being unreachable.
 
 ```text
 RACE_ENGINEER_DETERMINISTIC_FIRST   default "1"

@@ -166,6 +166,7 @@ from deterministic_comparison_preparation import (
     prepare_comparison,
     require_detected_episodes,
 )
+from deterministic_comparison_stage import prepare_runtime_comparison
 from deterministic_debrief_runtime import (
     run_deterministic_debrief,
 )
@@ -11198,14 +11199,10 @@ def _stage_prepare_input(input_path):
 
 
 def _stage_prepare_comparison(comparison, quality_by_key, track_location_context):
-    comparison_key = _session_comparison_key(comparison)
-    return prepare_comparison(
+    return prepare_runtime_comparison(
         comparison,
-        comparison_quality=quality_by_key.get(comparison_key, {}),
-        track_location_context=track_location_context,
-        build_episode_catalog=build_episode_catalog,
-        enrich_track_location=enrich_items_with_track_location,
-        split_for_coaching=split_episode_catalog_for_coaching,
+        quality_by_key,
+        track_location_context,
     )
 
 

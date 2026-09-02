@@ -106,6 +106,30 @@ def test_comparison_runtime_stage_bypasses_legacy_provider_and_transport(monkeyp
     assert callable(pipeline_calls[0]["get_summary_response"])
 
 
+def test_comparison_preparation_stage_bypasses_backend_reexports(monkeypatch):
+    sentinel = object()
+    monkeypatch.setattr(
+        backend,
+        "_session_comparison_key",
+        lambda *args, **kwargs: (_ for _ in ()).throw(
+            AssertionError("backend comparison key reached")
+        ),
+    )
+    monkeypatch.setattr(
+        backend,
+        "build_episode_catalog",
+        lambda *args, **kwargs: (_ for _ in ()).throw(
+            AssertionError("backend catalog reached")
+        ),
+    )
+    monkeypatch.setattr(
+        backend,
+        "prepare_runtime_comparison",
+        lambda comparison, quality, context: sentinel,
+    )
+    assert backend._stage_prepare_comparison({}, {}, {}) is sentinel
+
+
 def test_input_runtime_stage_bypasses_legacy_load_and_validation(monkeypatch, tmp_path):
     source = {
         "metadata": {

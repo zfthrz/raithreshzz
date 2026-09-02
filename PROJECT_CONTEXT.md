@@ -707,6 +707,9 @@ identity compatibility and temporal lap-time verification.
 comparison and episode evidence before debrief execution. `deterministic_track_context.py`
 owns fail-closed validated-profile discovery and resolver loading. The normal input
 stage no longer depends on historical-module callbacks.
+`deterministic_comparison_stage.py` likewise owns the normal quality lookup,
+episode-catalog construction, track localization and coaching-eligibility assembly;
+the historical module no longer wires those deterministic preparation callbacks.
 
 ```text
 RACE_ENGINEER_DETERMINISTIC_FIRST   default "1"

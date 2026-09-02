@@ -719,6 +719,9 @@ unchanged summary validator as an explicit boundary; no transport is reachable.
 `deterministic_debrief_output.py` owns compatible artifact construction, timestamping
 and persistence, while comparison execution calls the neutral renderer directly.
 Neither filesystem output nor comparison presentation requires a backend provider.
+`deterministic_episode_response.py` owns the factual channel-direction contract and
+grounded episode fallback used by normal execution. The historical fallback remains
+only for legacy retry/repair compatibility and is not reached by the product stage.
 
 ```text
 RACE_ENGINEER_DETERMINISTIC_FIRST   default "1"

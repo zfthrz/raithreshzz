@@ -60,6 +60,13 @@ def test_comparison_runtime_stage_bypasses_legacy_provider_and_transport(monkeyp
             AssertionError("transport reached")
         ),
     )
+    monkeypatch.setattr(
+        backend,
+        "build_deterministic_grounded_episode_fallback",
+        lambda *args, **kwargs: (_ for _ in ()).throw(
+            AssertionError("legacy episode fallback reached")
+        ),
+    )
     pipeline_calls = []
 
     def fake_pipeline(*args, **kwargs):
@@ -111,6 +118,21 @@ def test_comparison_runtime_stage_bypasses_legacy_provider_and_transport(monkeyp
     assert callable(pipeline_calls[0]["get_episode_response"])
     assert callable(pipeline_calls[0]["get_ranker_response"])
     assert callable(pipeline_calls[0]["get_summary_response"])
+    episode_response = pipeline_calls[0]["get_episode_response"](
+        {},
+        {},
+        {
+            "episode_id": 1,
+            "action_channels": ["brake"],
+            "action_evidence_by_channel": {
+                "brake": {
+                    "events": [{"direction": "higher_in_comparison_lap"}]
+                }
+            },
+        },
+        "unused-debug-dir",
+    )
+    assert episode_response["status"] == "VALID"
     assert (
         pipeline_calls[0]["apply_classifications"]
         is backend.apply_deterministic_priority_classifications

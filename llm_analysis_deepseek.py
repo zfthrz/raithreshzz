@@ -145,6 +145,11 @@ from deterministic_comparison_render import (
     render_hypotheses,
     signed_seconds,
 )
+from deterministic_debrief_document import (
+    build_comparison_result,
+    build_debrief_document,
+    write_debrief_document,
+)
 import hashlib
 import json
 import math
@@ -10872,149 +10877,22 @@ def save_result(
         stem + f"_llm_analysis_v3_10_8_5_4_deepseek_v2_{MODEL_NAME}.json",
     )
 
-    braking_point_detection = next(
-        (
-            item.get("braking_point_detection")
-            for item in comparison_results
-            if (
-                isinstance(item, dict)
-                and isinstance(
-                    item.get("braking_point_detection"),
-                    dict,
-                )
-                and item.get("braking_point_detection")
-            )
-        ),
-        {},
+    result = build_debrief_document(
+        input_path=input_path,
+        metadata=metadata,
+        comparison_results=comparison_results,
+        session_coaching_facts=session_coaching_facts,
+        global_structured=global_structured,
+        global_analysis=global_analysis,
+        global_validation_audit=global_validation_audit,
+        analysis_timestamp=datetime.now(timezone.utc).isoformat(),
+        model_name=MODEL_NAME,
+        usage_summary=deepseek_usage_summary(),
+        context_size=CONTEXT_SIZE,
+        temperature=TEMPERATURE,
+        anomaly_gate_config=ANOMALY_GATE_CONFIG,
     )
-
-    throttle_point_detection = next(
-        (
-            item.get("throttle_point_detection")
-            for item in comparison_results
-            if (
-                isinstance(item, dict)
-                and isinstance(
-                    item.get("throttle_point_detection"),
-                    dict,
-                )
-                and item.get("throttle_point_detection")
-            )
-        ),
-        {},
-    )
-
-    result = {
-        "metadata": {
-            "llm_analysis_version":
-                "3.10.8.5.4",
-
-            "report_presentation_version": "2.4",
-
-            "source_json":
-                input_path,
-
-            "source_analysis_version":
-                metadata.get(
-                    "analysis_version"
-                ),
-
-            "track":
-                metadata.get(
-                    "track"
-                ),
-
-            "session_type":
-                metadata.get(
-                    "session_type"
-                ),
-
-            "timestamp_utc":
-                metadata.get(
-                    "timestamp_utc"
-                ),
-
-            "reference_lap":
-                metadata.get(
-                    "reference_lap"
-                ),
-
-            "model":
-                MODEL_NAME,
-
-            "deepseek_usage":
-                deepseek_usage_summary(),
-
-            "context":
-                CONTEXT_SIZE,
-
-            "temperature":
-                TEMPERATURE,
-
-            "track_location_profile":
-                session_coaching_facts.get(
-                    "track_location_profile"
-                ),
-
-            "braking_point_detection":
-                braking_point_detection,
-
-            "throttle_point_detection":
-                throttle_point_detection,
-
-            "session_comparison_quality_gate":
-                session_coaching_facts.get("comparison_quality_gate", {}),
-
-            "anomaly_gate": {
-                "version": "1.0",
-                "status": "ACTIVE",
-                "classification":
-                    "NON_REPRESENTATIVE_TIME_LOSS",
-                "config":
-                    dict(ANOMALY_GATE_CONFIG),
-                "cause_inference":
-                    False,
-            },
-
-            "structured_validation":
-                "PASS",
-
-            "factual_grounding_validation":
-                "PASS",
-
-            "analysis_timestamp":
-                datetime.now(
-                    timezone.utc
-                ).isoformat(),
-        },
-
-        "comparisons":
-            comparison_results,
-
-        "session_coaching_facts":
-            session_coaching_facts,
-
-        "global_validation_audit":
-            global_validation_audit or {},
-
-        "global_structured":
-            global_structured,
-
-        "global_analysis":
-            global_analysis,
-    }
-
-    with open(
-        output_path,
-        "w",
-        encoding="utf-8",
-    ) as file:
-        json.dump(
-            result,
-            file,
-            indent=2,
-            ensure_ascii=False,
-        )
+    write_debrief_document(output_path, result)
 
     return (
         output_path,
@@ -11407,137 +11285,16 @@ def main():
             f"{validated['attempts']} intento(s)."
         )
 
-        comparison_result = {
-            "status":
-                "VALID",
-
-            "validation_attempts":
-                validated[
-                    "attempts"
-                ],
-
-            "llm_validation_audit":
-                validated.get(
-                    "audit",
-                    {},
-                ),
-
-            "ground_truth": {
-                "reference_lap":
-                    reference_lap,
-
-                "comparison_lap":
-                    comparison_lap,
-
-                "reference_time_s":
-                    comparison[
-                        "reference_time_s"
-                    ],
-
-                "comparison_time_s":
-                    comparison[
-                        "comparison_time_s"
-                    ],
-
-                "comparison_minus_reference_s":
-                    comparison[
-                        "comparison_minus_reference_s"
-                    ],
-            },
-
-            "reference_lap":
-                reference_lap,
-
-            "comparison_lap":
-                comparison_lap,
-
-            "reference_time_s":
-                comparison[
-                    "reference_time_s"
-                ],
-
-            "comparison_time_s":
-                comparison[
-                    "comparison_time_s"
-                ],
-
-            "comparison_minus_reference_s":
-                comparison[
-                    "comparison_minus_reference_s"
-                ],
-
-            "driver_analysis_priority":
-                comparison.get(
-                    "driver_analysis_priority"
-                ),
-
-            "driver_analysis_priority_rank":
-                comparison.get(
-                    "driver_analysis_priority_rank"
-                ),
-
-            "session_plan_eligible":
-                session_plan_eligible,
-
-            "session_comparison_quality":
-                comparison_quality,
-
-            "detected_driver_action_episode_count":
-                len(
-                    detected_episode_catalog
-                ),
-
-            "driver_action_episode_count":
-                len(
-                    episode_catalog
-                ),
-
-            "coaching_eligible_episode_count":
-                len(
-                    episode_catalog
-                ),
-
-            "excluded_anomaly_count":
-                len(
-                    excluded_anomalies
-                ),
-
-            "excluded_anomalies":
-                excluded_anomalies,
-
-            "braking_point_detection":
-                (
-                    comparison.get(
-                        "objective_analysis",
-                        {},
-                    )
-                    or {}
-                ).get(
-                    "braking_point_detection",
-                    {},
-                ),
-
-            "throttle_point_detection":
-                (
-                    comparison.get(
-                        "objective_analysis",
-                        {},
-                    )
-                    or {}
-                ).get(
-                    "throttle_point_detection",
-                    {},
-                ),
-
-            "episode_ground_truth":
-                episode_catalog,
-
-            "llm_structured":
-                structured,
-
-            "analysis":
-                rendered,
-        }
+        comparison_result = build_comparison_result(
+            comparison=comparison,
+            comparison_quality=comparison_quality,
+            session_plan_eligible=session_plan_eligible,
+            detected_episode_catalog=detected_episode_catalog,
+            episode_catalog=episode_catalog,
+            excluded_anomalies=excluded_anomalies,
+            validated=validated,
+            rendered=rendered,
+        )
 
         comparison_results.append(
             comparison_result

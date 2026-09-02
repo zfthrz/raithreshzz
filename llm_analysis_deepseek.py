@@ -153,6 +153,7 @@ from deterministic_debrief_document import (
     write_debrief_document,
 )
 from deterministic_debrief_finalize import finalize_validated_global_debrief
+from deterministic_debrief_input import prepare_debrief_input
 from deterministic_comparison_decision import resolve_comparison_response
 import hashlib
 import json
@@ -10891,45 +10892,18 @@ def main():
 
     input_path = find_json_file()
 
-    data = load_json(
-        input_path
+    prepared_input = prepare_debrief_input(
+        input_path,
+        load_json=load_json,
+        validate_data_model=validate_data_model,
+        validate_lap_times=validate_lap_times,
+        build_dataset=build_llm_dataset,
+        load_track_location_context=load_track_location_context,
     )
-
-    metadata, raw_comparisons = (
-        validate_data_model(
-            data
-        )
-    )
-
-    lap_times = validate_lap_times(
-        data,
-        metadata,
-        raw_comparisons,
-    )
-
-    dataset = build_llm_dataset(
-        data,
-        lap_times,
-    )
-
-    metadata = dataset[
-        "metadata"
-    ]
-
-    comparisons = dataset[
-        "comparisons"
-    ]
-
-    track_location_context = (
-        load_track_location_context(
-            metadata
-        )
-    )
-
-    if not comparisons:
-        raise RuntimeError(
-            "El JSON no contiene comparaciones."
-        )
+    data = prepared_input.source_data
+    metadata = prepared_input.metadata
+    comparisons = prepared_input.comparisons
+    track_location_context = prepared_input.track_location_context
 
     stem = os.path.splitext(
         os.path.basename(

@@ -741,6 +741,10 @@ compatibility alias only.
 and its three strictly required presentation helpers. Normal finalization injects
 this neutral renderer directly; the historical renderer remains available only for
 compatibility and rollback.
+`deterministic_priority_shadow.py` owns the unchanged D2.2–D2.4 ranker shadow
+diagnostics consumed by normal comparison assembly. These audits remain
+observational and do not alter production ordering, cuts or classifications; the
+historical implementations remain compatibility surfaces only.
 Runtime binding now injects `session_coaching.build_session_coaching_facts` and the
 neutral output provider directly. Their historical wrapper functions remain only as
 compatibility surfaces and are unreachable from the normal coordinator.

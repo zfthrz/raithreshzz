@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import llm_analysis_deepseek as backend
 from deterministic_comparison_preparation import PreparedComparison
+from deterministic_priority_shadow import build_deterministic_ranker_shadow_audit
 
 
 def test_global_finalize_stage_bypasses_legacy_renderer(monkeypatch):
@@ -97,6 +98,13 @@ def test_comparison_runtime_stage_bypasses_legacy_provider_and_transport(monkeyp
             AssertionError("legacy episode fallback reached")
         ),
     )
+    monkeypatch.setattr(
+        backend,
+        "build_deterministic_ranker_shadow_audit",
+        lambda *args, **kwargs: (_ for _ in ()).throw(
+            AssertionError("legacy ranker shadow reached")
+        ),
+    )
     pipeline_calls = []
 
     def fake_pipeline(*args, **kwargs):
@@ -143,6 +151,7 @@ def test_comparison_runtime_stage_bypasses_legacy_provider_and_transport(monkeyp
     )
 
     assert execution.route == "ELIGIBLE"
+    assert pipeline_calls[0]["build_ranker_shadow"] is build_deterministic_ranker_shadow_audit
     assert execution.result["analysis"] == "rendered"
     assert len(pipeline_calls) == 1
     assert callable(pipeline_calls[0]["get_episode_response"])

@@ -199,6 +199,9 @@ from deterministic_priority_contract import (
     derive_priority_classifications as derive_deterministic_priority_classifications,
     validate_priority_ranker_response as validate_deterministic_priority_ranker_response,
 )
+from deterministic_priority_shadow import (
+    build_deterministic_ranker_shadow_audit as build_neutral_ranker_shadow_audit,
+)
 from deterministic_comparison_summary import (
     build_deterministic_comparison_summary as build_neutral_comparison_summary,
 )
@@ -11243,7 +11246,7 @@ def _stage_execute_comparison(comparison, prepared_comparison, metadata, output_
                 build_ranker=build_product_priority_ranker_response,
                 validate_response=validate_deterministic_priority_ranker_response,
             ),
-            build_ranker_shadow=build_deterministic_ranker_shadow_audit,
+            build_ranker_shadow=build_neutral_ranker_shadow_audit,
             apply_classifications=apply_deterministic_priority_classifications,
             get_summary_response=lambda episode_assessments, episode_catalog, comparison, output_dir: build_deterministic_summary_response(
                 episode_assessments,

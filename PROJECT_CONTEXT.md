@@ -716,6 +716,9 @@ execution injects this neutral contract rather than the historical implementatio
 `deterministic_comparison_summary.py` owns ordering and selection of validated
 episode text plus the established mixed-steering neutral fallback. It receives the
 unchanged summary validator as an explicit boundary; no transport is reachable.
+`deterministic_debrief_output.py` owns compatible artifact construction, timestamping
+and persistence, while comparison execution calls the neutral renderer directly.
+Neither filesystem output nor comparison presentation requires a backend provider.
 
 ```text
 RACE_ENGINEER_DETERMINISTIC_FIRST   default "1"

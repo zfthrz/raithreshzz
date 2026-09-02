@@ -157,6 +157,7 @@ from deterministic_comparison_execution import (
     ComparisonResponseRejected,
     execute_prepared_comparison,
 )
+from deterministic_debrief_output import save_compatible_debrief
 from deterministic_comparison_responses import (
     build_episode_response as build_deterministic_episode_response,
     build_ranker_response as build_deterministic_ranker_response,
@@ -10877,33 +10878,19 @@ def save_result(
     global_analysis,
     global_validation_audit=None,
 ):
-    output_path_value, output_dir_value = compatible_debrief_output_path(
+    return save_compatible_debrief(
         input_path,
-        model_name=MODEL_NAME,
-    )
-    output_path = str(output_path_value)
-    output_dir = str(output_dir_value)
-
-    result = build_debrief_document(
-        input_path=input_path,
-        metadata=metadata,
-        comparison_results=comparison_results,
-        session_coaching_facts=session_coaching_facts,
-        global_structured=global_structured,
-        global_analysis=global_analysis,
-        global_validation_audit=global_validation_audit,
-        analysis_timestamp=datetime.now(timezone.utc).isoformat(),
+        metadata,
+        comparison_results,
+        session_coaching_facts,
+        global_structured,
+        global_analysis,
+        global_validation_audit,
         model_name=MODEL_NAME,
         usage_summary=deepseek_usage_summary(),
         context_size=CONTEXT_SIZE,
         temperature=TEMPERATURE,
         anomaly_gate_config=ANOMALY_GATE_CONFIG,
-    )
-    write_debrief_document(output_path, result)
-
-    return (
-        output_path,
-        output_dir,
     )
 
 
@@ -11249,7 +11236,7 @@ def _stage_execute_comparison(comparison, prepared_comparison, metadata, output_
             validate_response=validate_comparison_llm_response,
             derive_classifications=derive_deterministic_priority_classifications,
         ),
-        render_comparison=render_comparison_analysis,
+        render_comparison=_render_comparison_analysis,
     )
 
 

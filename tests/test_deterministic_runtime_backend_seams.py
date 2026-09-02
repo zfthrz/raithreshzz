@@ -74,6 +74,13 @@ def test_comparison_runtime_stage_bypasses_legacy_provider_and_transport(monkeyp
     monkeypatch.setattr(
         backend,
         "render_comparison_analysis",
+        lambda *args, **kwargs: (_ for _ in ()).throw(
+            AssertionError("legacy comparison renderer reached")
+        ),
+    )
+    monkeypatch.setattr(
+        backend,
+        "_render_comparison_analysis",
         lambda comparison, episodes, response: "rendered",
     )
     comparison = {

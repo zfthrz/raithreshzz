@@ -105,8 +105,12 @@ def test_llm_scripts_use_centralized_runtime_paths_and_current_version():
     document_source = (ROOT / "deterministic_debrief_document.py").read_text(
         encoding="utf-8"
     )
+    output_source = (ROOT / "deterministic_debrief_output.py").read_text(
+        encoding="utf-8"
+    )
     assert 'llm_debug_dir(input_path, backend="deepseek")' in deepseek_source
-    assert "compatible_debrief_output_path(" in deepseek_source
+    assert "save_compatible_debrief(" in deepseek_source
+    assert "compatible_debrief_output_path(" in output_source
     assert "from runtime_paths import llm_result_dir" in document_source
     assert "_llm_analysis_v{DEBRIEF_ARTIFACT_VERSION}" in document_source
     assert "_deepseek_v2_{model_name}.json" in document_source

@@ -4,7 +4,12 @@ from __future__ import annotations
 
 import re
 
-from deterministic_coaching import normalize_grounding_text
+from deterministic_coaching import (
+    _channels_mentioned_in_text,
+    _explicit_command_direction_map,
+    _steering_direct_action_present,
+    normalize_grounding_text,
+)
 CROSS_CHANNEL_TEMPORAL_PATTERNS = (
     r"\bsecuencia\s+(?:de|entre)\s+(?:el\s+)?freno\s*(?:y|con|->|→)\s*(?:el\s+)?acelerador\b",
     r"\bsecuencia\s+(?:de|entre)\s+(?:el\s+)?acelerador\s*(?:y|con|->|→)\s*(?:el\s+)?freno\b",
@@ -35,6 +40,40 @@ def zone_labels_in_text(value):
             normalize_grounding_text(value),
         )
     }
+
+
+def validate_global_secondary_steering_text(value, field_name, plan, errors):
+    if not _steering_direct_action_present(value):
+        return
+    labels = zone_labels_in_text(value)
+    if len(labels) != 1:
+        errors.append(
+            f"{field_name}: steering_magnitude directo debe quedar anclado a una única zona A/B/C."
+        )
+        return
+    label = next(iter(labels))
+    item = next((item for item in (plan or [])[:3] if isinstance(item, dict) and str(item.get("plan_label") or "").strip().upper() == label), None)
+    observed = set()
+    for text in (item or {}).get("observed_differences", []) or []:
+        observed.update(_channels_mentioned_in_text(text))
+    cue_channels = {cue.get("channel") for cue in (item or {}).get("driver_cues", []) or [] if isinstance(cue, dict)}
+    allowed = "steering_magnitude" in observed and "steering_magnitude" in cue_channels
+    explicit = _explicit_command_direction_map(value).get("steering_magnitude")
+    expected = None
+    directions = set()
+    for text in (item or {}).get("observed_differences", []) or []:
+        normalized = normalize_grounding_text(text)
+        if "direccion" in normalized or "volante" in normalized or "steering" in normalized:
+            if "menor" in normalized or "menos" in normalized:
+                directions.add("increase")
+            if "mayor" in normalized or "mas" in normalized:
+                directions.add("decrease")
+    if len(directions) == 1:
+        expected = next(iter(directions))
+    if not allowed or (explicit is not None and explicit != expected):
+        errors.append(
+            f"{field_name}: steering_magnitude sólo puede convertirse en acción de zona {label} si Python lo incluyó explícitamente en driver_cues y la dirección respeta la evidencia observada."
+        )
 
 
 def validate_temporal_observation_not_action_target(value, field_name, plan, errors):

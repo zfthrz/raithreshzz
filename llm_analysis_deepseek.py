@@ -167,6 +167,7 @@ from deterministic_comparison_validation import (
     validate_comparison_response as validate_neutral_comparison_response,
 )
 from deterministic_global_validation import (
+    validate_global_secondary_steering_text as validate_neutral_global_steering,
     validate_temporal_observation_not_action_target as validate_neutral_temporal_observation,
 )
 from deterministic_debrief_output import save_compatible_debrief
@@ -9666,7 +9667,7 @@ def validate_global_llm_response(
                         f"{field}[{index}]",
                         errors,
                     )
-                    validate_global_secondary_steering_text(
+                    validate_neutral_global_steering(
                         item,
                         f"{field}[{index}]",
                         plan,
@@ -9716,7 +9717,7 @@ def validate_global_llm_response(
             "conclusion global",
             errors,
         )
-        validate_global_secondary_steering_text(
+        validate_neutral_global_steering(
             conclusion,
             "conclusion global",
             plan,

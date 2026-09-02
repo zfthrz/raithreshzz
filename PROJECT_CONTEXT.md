@@ -733,7 +733,8 @@ comparison document, including episode identity, classification, grounding and
 aggregate text. The normal comparison pipeline no longer calls its historical
 backend counterpart.
 Global validation extraction has begun in `deterministic_global_validation.py`;
-the normal global contract already consumes its fail-closed temporal-action guard.
+the normal global contract already consumes its fail-closed temporal-action and
+zone-anchored steering guards.
 Runtime binding now injects `session_coaching.build_session_coaching_facts` and the
 neutral output provider directly. Their historical wrapper functions remain only as
 compatibility surfaces and are unreachable from the normal coordinator.

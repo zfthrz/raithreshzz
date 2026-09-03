@@ -18,10 +18,13 @@ from race_engineer_gui import (
     file_fingerprint,
     format_comparison_columns,
     historical_steering_zone_text,
+    adjacent_secondary_view,
+    load_secondary_view_preferences,
     load_session_sort_preference,
     load_primary_section_preference,
     navigation_button_label,
     save_primary_section_preference,
+    save_secondary_view_preference,
     save_session_sort_preference,
     session_status_color,
     session_status_tooltip,
@@ -129,6 +132,35 @@ def test_workspace_preference_preserves_catalog_sort_and_fails_closed(tmp_path):
     assert load_primary_section_preference(path) == "Resumen"
     with pytest.raises(ValueError):
         save_primary_section_preference(path, "unknown")
+
+
+def test_secondary_view_preferences_are_validated_and_preserve_other_settings(tmp_path):
+    path = tmp_path / "gui_preferences.json"
+    save_session_sort_preference(path, "track", False)
+    save_secondary_view_preference(path, "Historial", "Comparación")
+    save_secondary_view_preference(path, "Diagnóstico", "Ejecución")
+
+    assert load_secondary_view_preferences(path) == {
+        "Historial": "Comparación",
+        "Diagnóstico": "Ejecución",
+    }
+    assert load_session_sort_preference(path) == ("track", False)
+
+    path.write_text(
+        '{"secondary_views":{"Historial":"unknown","unknown":"General"}}',
+        encoding="utf-8",
+    )
+    assert load_secondary_view_preferences(path) == {}
+    with pytest.raises(ValueError):
+        save_secondary_view_preference(path, "Historial", "unknown")
+
+
+def test_secondary_view_cycle_wraps_within_current_workspace():
+    assert adjacent_secondary_view("Historial", "Referencia", 1) == "Comparación"
+    assert adjacent_secondary_view("Historial", "Comparación", 1) == "Referencia"
+    assert adjacent_secondary_view("Diagnóstico", "Pipeline", -1) == "Ejecución"
+    assert adjacent_secondary_view("Resumen", "Debrief", 1) == "Próxima tanda"
+    assert adjacent_secondary_view("unknown", "view", 1) == "view"
 
 
 def test_telemetry_pointer_selects_nearest_map_point_on_visible_axis():
@@ -344,6 +376,8 @@ def test_global_shortcuts_cover_navigation_search_refresh_and_escape():
     assert "<Control-r>" in app.root.bindings
     assert "<Escape>" in app.root.bindings
     assert "<F1>" in app.root.bindings
+    assert "<Control-Prior>" in app.root.bindings
+    assert "<Control-Next>" in app.root.bindings
 
 
 def test_shortcut_help_documents_every_global_action():
@@ -353,6 +387,7 @@ def test_shortcut_help_documents_every_global_action():
         ("Ctrl+R", "Actualizar la vista actual"),
         ("Esc", "Cerrar ayuda, inspector o tooltip"),
         ("F1", "Mostrar esta ayuda"),
+        ("Ctrl+PageUp / PageDown", "Cambiar de subvista"),
     )
     build_source = inspect.getsource(RaceEngineerApp._build_layout)
     help_source = inspect.getsource(RaceEngineerApp._show_shortcut_help)

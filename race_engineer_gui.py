@@ -105,7 +105,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.55"
+GUI_VERSION = "1.56"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 STATE_REFRESH_INTERVAL_MS = 5_000
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -130,6 +130,7 @@ GLOBAL_SHORTCUTS = (
     ("Ctrl+R", "Actualizar la vista actual"),
     ("Esc", "Cerrar ayuda, inspector o tooltip"),
     ("F1", "Mostrar esta ayuda"),
+    ("Ctrl+PageUp / PageDown", "Cambiar de subvista"),
 )
 SECTION_VIEWS = {
     "Resumen": ("Debrief", "Próxima tanda", "Vueltas"),
@@ -286,9 +287,43 @@ def save_primary_section_preference(path: Path, section: str) -> None:
     _update_gui_preferences(path, {"primary_section": section})
 
 
+def load_secondary_view_preferences(path: Path) -> dict[str, str]:
+    """Load valid per-workspace subviews without trusting local state."""
+
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+        return {}
+    if not isinstance(payload, dict):
+        return {}
+    stored = payload.get("secondary_views")
+    if not isinstance(stored, dict):
+        return {}
+    return {
+        section: view
+        for section, view in stored.items()
+        if section in SECTION_VIEWS and view in SECTION_VIEWS[section]
+    }
+
+
+def save_secondary_view_preference(path: Path, section: str, view: str) -> None:
+    if section not in SECTION_VIEWS or view not in SECTION_VIEWS[section]:
+        raise ValueError(f"Subvista desconocida: {section} / {view}")
+    preferences = load_secondary_view_preferences(path)
+    preferences[section] = view
+    _update_gui_preferences(path, {"secondary_views": preferences})
+
+
 def navigation_button_label(section: str) -> str:
     index = PRIMARY_SECTIONS.index(section) + 1
     return f"{section}    Ctrl+{index}"
+
+
+def adjacent_secondary_view(section: str, current: str, step: int) -> str:
+    views = SECTION_VIEWS.get(section, ())
+    if not views or current not in views:
+        return current
+    return views[(views.index(current) + step) % len(views)]
 
 
 def _session_date_sort_value(session: SessionRecord) -> float:
@@ -1038,6 +1073,7 @@ class RaceEngineerApp:
         self.session_read_errors: list[str] = []
         self._row_tooltip = None
         self.shortcut_help_window = None
+        self.secondary_notebooks = {}
         self.track_playback_active = False
         self.track_playback_after_id = None
         self.track_playback_started_at: float | None = None
@@ -1105,6 +1141,9 @@ class RaceEngineerApp:
         )
         self.gui_preferences_path = (
             PROJECT_ROOT / "data" / "local" / "gui_preferences.json"
+        )
+        self.secondary_view_preferences = load_secondary_view_preferences(
+            self.gui_preferences_path
         )
         self.scheduler_runtime_path = (
             PROJECT_ROOT / "data" / "local" / "telemetry_scheduler_runtime.json"
@@ -2030,10 +2069,11 @@ class RaceEngineerApp:
         self.track_map_canvas = self._track_map_tab(telemetry_frame, label=None)
 
         history_frame = self.primary_section_frames["Historial"]
-        history_notebook = ttk.Notebook(history_frame)
-        history_notebook.pack(fill="both", expand=True)
-        self.historical_reference_text = self._text_tab(history_notebook, "Referencia")
-        self._comparison_tab(history_notebook)
+        self.history_notebook = ttk.Notebook(history_frame)
+        self.history_notebook.pack(fill="both", expand=True)
+        self.historical_reference_text = self._text_tab(self.history_notebook, "Referencia")
+        self._comparison_tab(self.history_notebook)
+        self._register_secondary_notebook("Historial", self.history_notebook)
 
         statistics_frame = self.primary_section_frames["Estadísticas"]
         self._statistics_panel(statistics_frame)
@@ -2046,6 +2086,7 @@ class RaceEngineerApp:
         self.diagnostics_notebook.pack(fill="both", expand=True)
         self.pipeline_text = self._text_tab(self.diagnostics_notebook, "Pipeline")
         self.execution_text = self._text_tab(self.diagnostics_notebook, "Ejecución")
+        self._register_secondary_notebook("Diagnóstico", self.diagnostics_notebook)
 
         calibration_frame = self.primary_section_frames["Calibración"]
         self._calibration_panel(calibration_frame)
@@ -2628,6 +2669,50 @@ class RaceEngineerApp:
         self.root.bind_all("<Control-r>", self._refresh_from_shortcut)
         self.root.bind_all("<Escape>", self._dismiss_transient_ui)
         self.root.bind_all("<F1>", self._show_shortcut_help)
+        self.root.bind_all("<Control-Prior>", lambda event: self._cycle_secondary_view(-1, event))
+        self.root.bind_all("<Control-Next>", lambda event: self._cycle_secondary_view(1, event))
+
+    def _register_secondary_notebook(self, section, notebook):
+        self.secondary_notebooks[section] = notebook
+        preferred = self.secondary_view_preferences.get(section)
+        for tab_id in notebook.tabs():
+            if notebook.tab(tab_id, "text") == preferred:
+                notebook.select(tab_id)
+                break
+        notebook.bind(
+            "<<NotebookTabChanged>>",
+            lambda _event, name=section: self._remember_secondary_view(name),
+        )
+
+    def _remember_secondary_view(self, section):
+        notebook = self.secondary_notebooks.get(section)
+        if notebook is None:
+            return
+        selected = notebook.select()
+        if not selected:
+            return
+        view = notebook.tab(selected, "text")
+        if view not in SECTION_VIEWS.get(section, ()):
+            return
+        self.secondary_view_preferences[section] = view
+        try:
+            save_secondary_view_preference(self.gui_preferences_path, section, view)
+        except OSError as exc:
+            self.settings_warning = f"No se pudo guardar la subvista: {exc}"
+
+    def _cycle_secondary_view(self, step, _event=None):
+        section = self.primary_section_var.get()
+        notebook = self.secondary_notebooks.get(section)
+        if notebook is None:
+            return "break"
+        selected = notebook.select()
+        current = notebook.tab(selected, "text") if selected else ""
+        target = adjacent_secondary_view(section, current, step)
+        for tab_id in notebook.tabs():
+            if notebook.tab(tab_id, "text") == target:
+                notebook.select(tab_id)
+                break
+        return "break"
 
     def _show_shortcut_help(self, _event=None):
         if self.shortcut_help_window is not None:
@@ -2726,7 +2811,15 @@ class RaceEngineerApp:
             style="WorkspaceSubtitle.TLabel",
         ).pack(anchor="w", pady=(0, 12))
 
-        cards = ttk.Frame(shell, style="Workspace.TFrame")
+        self.statistics_notebook = ttk.Notebook(shell)
+        self.statistics_notebook.pack(fill="both", expand=True)
+        general = ttk.Frame(self.statistics_notebook, style="Workspace.TFrame", padding=(0, 10, 0, 0))
+        monthly = ttk.Frame(self.statistics_notebook, style="Workspace.TFrame", padding=(0, 10, 0, 0))
+        self.statistics_notebook.add(general, text="General")
+        self.statistics_notebook.add(monthly, text="Mensual")
+        self._register_secondary_notebook("Estadísticas", self.statistics_notebook)
+
+        cards = ttk.Frame(general, style="Workspace.TFrame")
         cards.pack(fill="x", pady=(0, 16))
         self.statistics_value_vars = {}
         card_specs = (
@@ -2757,7 +2850,7 @@ class RaceEngineerApp:
                 justify="left",
             ).pack(anchor="w", pady=(7, 0))
 
-        charts = ttk.Frame(shell, style="Workspace.TFrame", height=220)
+        charts = ttk.Frame(general, style="Workspace.TFrame", height=220)
         charts.pack(fill="x", pady=(0, 14))
         charts.pack_propagate(False)
         self.statistics_chart_canvases = {}
@@ -2792,11 +2885,11 @@ class RaceEngineerApp:
             self.statistics_distributions[key] = (title, ())
 
         ttk.Label(
-            shell,
+            monthly,
             text="HISTORIAL MENSUAL · DOBLE CLIC PARA VER SESIONES",
             style="WorkspaceSubtitle.TLabel",
         ).pack(anchor="w", pady=(0, 8))
-        table = ttk.Frame(shell, style="Workspace.TFrame")
+        table = ttk.Frame(monthly, style="Workspace.TFrame")
         table.pack(fill="both", expand=True)
         columns = ("month", "sessions", "laps", "km", "track", "category", "car")
         self.statistics_tree = ttk.Treeview(

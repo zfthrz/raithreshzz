@@ -59,7 +59,7 @@ from race_engineer_ui_analysis import (
     validate_analysis_candidate,
 )
 from track_readiness import build_track_readiness
-from gui_theme import COLORS, FONTS, FONT_FAMILY, FONT_FAMILY_BOLD
+from gui_theme import COLORS, FONTS, FONT_FAMILY, FONT_FAMILY_BOLD, TAG_FONTS, text_defaults, text_accent_defaults, readonly_defaults, comparison_defaults
 from race_engineer_track_map import (
     TrackMapData,
     TrackMapLapOption,
@@ -4762,8 +4762,10 @@ class RaceEngineerApp:
             if accent
             else text_defaults(compact=compact)
         )
+        # Strip internal implementation keys (e.g. _h2_size) before Text creation.
+        defaults.pop("_h2_size", None)
 
-        text = self.tk.Text(body, wrap="word", height=height, **defaults)
+        text = self.tk.Text(body, height=height, **defaults)
 
         text.tag_configure(
             "h1",
@@ -4807,7 +4809,7 @@ class RaceEngineerApp:
     def _text_tab(self, notebook, label):
         frame = self.ttk.Frame(notebook, style="Panel.TFrame", padding=5)
         notebook.add(frame, text=label)
-        text = self.tk.Text(frame, wrap="word", **readonly_defaults())
+        text = self.tk.Text(frame, **readonly_defaults())
         text.tag_configure("h1", font=TAG_FONTS["h1"], foreground=COLORS["text_primary"], spacing3=12)
         text.tag_configure("h2", font=TAG_FONTS["h2"], foreground=COLORS["text_success"], spacing1=12, spacing3=7)
         text.tag_configure("h3", font=TAG_FONTS["h3"], foreground=COLORS["text_primary"], spacing1=8)

@@ -114,3 +114,57 @@ def test_gui_imports_colors() -> None:
         "race_engineer_gui does not import COLORS from gui_theme"
     assert isinstance(gui_module.COLORS, dict), \
         "COLORS in race_engineer_gui is not a dict"
+
+
+# ── Regression: gui_theme helpers must be importable by race_engineer_gui ──
+
+REQUIRED_GUI_THEME_NAMES = [
+    "COLORS",
+    "FONTS",
+    "FONT_FAMILY",
+    "FONT_FAMILY_BOLD",
+    "TAG_FONTS",
+    "text_defaults",
+    "text_accent_defaults",
+    "readonly_defaults",
+    "comparison_defaults",
+]
+
+
+def test_gui_theme_names_available_in_gui_module() -> None:
+    """Every gui_theme export used by race_engineer_gui must be importable.
+
+    This test catches the exact crash that v1.60 introduced:
+    ``NameError: name 'text_defaults' is not defined`` inside
+    ``_summary_text_panel()`` when ``RaceEngineerApp.__init__`` calls
+    ``self._summary_text_panel(...)``.
+
+    It also prevents future regressions when a new helper or token is
+    added to gui_theme.py and forgotten in the race_engineer_gui import.
+    """
+    import race_engineer_gui as gui_module
+
+    missing: list[str] = []
+    for name in REQUIRED_GUI_THEME_NAMES:
+        if not hasattr(gui_module, name):
+            missing.append(name)
+
+    assert not missing, \
+        f"race_engineer_gui missing gui_theme imports: {', '.join(missing)}"
+
+
+def test_gui_theme_names_match_gui_theme_exports() -> None:
+    """The gui_module namespace must actually contain the helpers, not just
+    the name (catches ``from gui_theme import X`` when X is not callable)."""
+    import race_engineer_gui as gui_module
+
+    for name in ("text_defaults", "text_accent_defaults", "readonly_defaults",
+                 "comparison_defaults"):
+        fn = getattr(gui_module, name, None)
+        assert callable(fn), \
+            f"{name} in race_engineer_gui is not callable (expected gui_theme helper)"
+
+    for name in ("COLORS", "FONTS", "TAG_FONTS"):
+        val = getattr(gui_module, name, None)
+        assert isinstance(val, dict), \
+            f"{name} in race_engineer_gui is not a dict"

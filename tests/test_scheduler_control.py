@@ -20,5 +20,7 @@ def test_double_click_launcher_uses_the_sibling_controller():
     source = (ROOT / "Race Engineer Scheduler.cmd").read_text(encoding="utf-8")
 
     assert "powershell.exe" in source
-    assert "-WindowStyle Hidden" in source
+    assert "-WindowStyle Hidden" not in source
     assert '"%~dp0scheduler_control.ps1"' in source
+    assert "if errorlevel 1" in source
+    assert "pause >nul" in source

@@ -35,6 +35,7 @@ from race_engineer_gui import (
     status_wraplength,
     telemetry_canvas_ready,
     ui_state_message,
+    summary_layout_spec,
 )
 from race_engineer_track_map import TrackMapPoint, TrackMapZone
 
@@ -174,6 +175,21 @@ def test_global_empty_and_error_states_include_a_next_action():
     failed = ui_state_message("LOAD_FAILED", detail="DuckDB ocupado", compact=True)
     assert "DuckDB ocupado" in failed
     assert "Ctrl+R" in failed
+
+
+def test_summary_layout_adapts_from_four_columns_to_one():
+    assert summary_layout_spec(1200) == (
+        "wide",
+        ((0, 0), (0, 1), (0, 2), (0, 3)),
+    )
+    assert summary_layout_spec(900) == (
+        "compact",
+        ((0, 0), (0, 1), (1, 0), (1, 1)),
+    )
+    assert summary_layout_spec(640) == (
+        "narrow",
+        ((0, 0), (1, 0), (2, 0), (3, 0)),
+    )
 
 
 def test_clear_detail_populates_actionable_workspace_states():
@@ -400,6 +416,7 @@ def test_global_shortcuts_cover_navigation_search_refresh_and_escape():
     assert "<F1>" in app.root.bindings
     assert "<Control-Prior>" in app.root.bindings
     assert "<Control-Next>" in app.root.bindings
+    assert "<Control-b>" in app.root.bindings
 
 
 def test_shortcut_help_documents_every_global_action():
@@ -410,6 +427,7 @@ def test_shortcut_help_documents_every_global_action():
         ("Esc", "Cerrar ayuda, inspector o tooltip"),
         ("F1", "Mostrar esta ayuda"),
         ("Ctrl+PageUp / PageDown", "Cambiar de subvista"),
+        ("Ctrl+B", "Mostrar u ocultar el catálogo lateral"),
     )
     build_source = inspect.getsource(RaceEngineerApp._build_layout)
     help_source = inspect.getsource(RaceEngineerApp._show_shortcut_help)
@@ -450,9 +468,23 @@ def test_layout_uses_fixed_sidebar_and_workspace_header():
     assert "Threshzz's Telemetry" in build_source
     assert "Analysis Tool" in build_source
     assert 'self.workspace_title_var = tk.StringVar(value="Resumen")' in build_source
+    assert "self.sidebar_toggle_button = ttk.Button" in build_source
     assert 'self._calibration_panel(calibration_frame)' in build_source
     assert '"SidebarNavActive.TButton"' in show_source
     assert 'self.workspace_title_var.set(section)' in show_source
+
+
+def test_summary_resize_reflows_cards_and_visual_previews():
+    resize_source = inspect.getsource(RaceEngineerApp._on_summary_canvas_configure)
+    layout_source = inspect.getsource(RaceEngineerApp._layout_summary_cards)
+    toggle_source = inspect.getsource(RaceEngineerApp._toggle_sidebar)
+
+    assert "self._layout_summary_cards(int(event.width))" in resize_source
+    assert "summary_layout_spec(width)" in layout_source
+    assert "card.grid_configure(" in layout_source
+    assert 'mode == "narrow"' in layout_source
+    assert "self.sidebar.pack_forget()" in toggle_source
+    assert "self.sidebar.pack(before=self.main_frame" in toggle_source
 
 
 def test_summary_uses_one_vertical_scroll_container_for_all_blocks():

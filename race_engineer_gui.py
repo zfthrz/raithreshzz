@@ -105,7 +105,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.57"
+GUI_VERSION = "1.58"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 STATE_REFRESH_INTERVAL_MS = 5_000
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -131,6 +131,7 @@ GLOBAL_SHORTCUTS = (
     ("Esc", "Cerrar ayuda, inspector o tooltip"),
     ("F1", "Mostrar esta ayuda"),
     ("Ctrl+PageUp / PageDown", "Cambiar de subvista"),
+    ("Ctrl+B", "Mostrar u ocultar el catálogo lateral"),
 )
 SECTION_VIEWS = {
     "Resumen": ("Debrief", "Próxima tanda", "Vueltas"),
@@ -254,6 +255,16 @@ def ui_state_message(code: str, *, detail: str | None = None, compact: bool = Fa
         title = f"{title} {detail}"
     separator = " · " if compact else "\n\n"
     return f"{title}{separator}{action}"
+
+
+def summary_layout_spec(width: int) -> tuple[str, tuple[tuple[int, int], ...]]:
+    """Return presentation-only card positions for the available workspace width."""
+
+    if width >= 1050:
+        return "wide", ((0, 0), (0, 1), (0, 2), (0, 3))
+    if width >= 700:
+        return "compact", ((0, 0), (0, 1), (1, 0), (1, 1))
+    return "narrow", ((0, 0), (1, 0), (2, 0), (3, 0))
 
 SESSION_SORT_LABELS = {
     "date": "Fecha",
@@ -1740,9 +1751,12 @@ class RaceEngineerApp:
         sidebar = ttk.Frame(shell, style="Sidebar.TFrame", width=258)
         sidebar.pack(side="left", fill="y")
         sidebar.pack_propagate(False)
+        self.sidebar = sidebar
+        self.sidebar_visible = True
 
         main = ttk.Frame(shell, style="App.TFrame", padding=(22, 16, 20, 10))
         main.pack(side="left", fill="both", expand=True)
+        self.main_frame = main
 
         brand = ttk.Frame(sidebar, style="Sidebar.TFrame", padding=(16, 16, 14, 10))
         brand.pack(fill="x")
@@ -1882,6 +1896,13 @@ class RaceEngineerApp:
 
         header = ttk.Frame(main, style="WorkspaceHeader.TFrame")
         header.pack(fill="x", pady=(0, 14))
+        self.sidebar_toggle_button = ttk.Button(
+            header,
+            text="◀",
+            width=3,
+            command=self._toggle_sidebar,
+        )
+        self.sidebar_toggle_button.pack(side="left", padx=(0, 10))
         header_labels = ttk.Frame(header, style="WorkspaceHeader.TFrame")
         header_labels.pack(side="left", fill="x", expand=True)
         self.workspace_title_var = tk.StringVar(value="Resumen")
@@ -2018,6 +2039,12 @@ class RaceEngineerApp:
 
         changes_column = ttk.Frame(summary_dashboard, style="Workspace.TFrame")
         changes_column.grid(row=0, column=3, sticky="nsew", padx=(5, 0))
+        self.summary_dashboard_columns = (
+            debrief_column,
+            plan_column,
+            laps_column,
+            changes_column,
+        )
 
         self.debrief_text = self._summary_text_panel(
             debrief_column,
@@ -2101,6 +2128,7 @@ class RaceEngineerApp:
             column=1,
             padx=(5, 0),
         )
+        self.summary_visual_cards = (map_preview, telemetry_preview)
         self.summary_telemetry_canvas = self._summary_preview_canvas(telemetry_preview)
         self.summary_telemetry_canvas.bind(
             "<Button-1>",
@@ -2198,7 +2226,12 @@ class RaceEngineerApp:
         # Si la ventana baja de tamaño, conserva un mínimo y el Canvas hace
         # scroll. La fila visual usa pack(expand=True), por lo que absorbe de
         # forma nativa todo el espacio restante sin dejar una franja vacía.
-        minimum_content_height = 650
+        mode = self._layout_summary_cards(int(event.width))
+        minimum_content_height = {
+            "wide": 650,
+            "compact": 900,
+            "narrow": 1450,
+        }[mode]
         content_height = max(int(event.height), minimum_content_height)
 
         self.summary_canvas.itemconfigure(
@@ -2211,8 +2244,12 @@ class RaceEngineerApp:
         if dashboard is not None:
             # Coaching: proporcional en ventanas medianas, con límites para no
             # robar espacio al mapa/telemetría.
-            dashboard_height = round(content_height * 0.43)
-            dashboard_height = max(270, min(dashboard_height, 360))
+            if mode == "wide":
+                dashboard_height = max(270, min(round(content_height * 0.43), 360))
+            elif mode == "compact":
+                dashboard_height = 560
+            else:
+                dashboard_height = 1080
             dashboard.configure(height=dashboard_height)
 
         # No fijamos la altura de summary_visual_row: expand=True la hace
@@ -2220,6 +2257,45 @@ class RaceEngineerApp:
         self.summary_canvas.configure(
             scrollregion=self.summary_canvas.bbox("all"),
         )
+
+    def _layout_summary_cards(self, width: int) -> str:
+        mode, positions = summary_layout_spec(width)
+        dashboard = getattr(self, "summary_dashboard", None)
+        columns = getattr(self, "summary_dashboard_columns", ())
+        if dashboard is None or not columns:
+            return mode
+
+        column_count = 4 if mode == "wide" else 2 if mode == "compact" else 1
+        row_count = 1 if mode == "wide" else 2 if mode == "compact" else 4
+        for index in range(4):
+            dashboard.columnconfigure(index, weight=1 if index < column_count else 0)
+            dashboard.rowconfigure(index, weight=1 if index < row_count else 0)
+        for card, (row, column) in zip(columns, positions):
+            card.grid_configure(
+                row=row,
+                column=column,
+                sticky="nsew",
+                padx=5,
+                pady=5,
+            )
+
+        visual_row = getattr(self, "summary_visual_row", None)
+        visual_cards = getattr(self, "summary_visual_cards", ())
+        if visual_row is not None and visual_cards:
+            stacked = mode == "narrow"
+            visual_row.columnconfigure(0, weight=1)
+            visual_row.columnconfigure(1, weight=0 if stacked else 1)
+            visual_row.rowconfigure(0, weight=1)
+            visual_row.rowconfigure(1, weight=1 if stacked else 0)
+            for index, card in enumerate(visual_cards):
+                card.grid_configure(
+                    row=index if stacked else 0,
+                    column=0 if stacked else index,
+                    sticky="nsew",
+                    padx=5,
+                    pady=5,
+                )
+        return mode
 
     def _on_summary_mousewheel(self, event):
         if event.delta == 0:
@@ -2713,6 +2789,18 @@ class RaceEngineerApp:
         self.root.bind_all("<F1>", self._show_shortcut_help)
         self.root.bind_all("<Control-Prior>", lambda event: self._cycle_secondary_view(-1, event))
         self.root.bind_all("<Control-Next>", lambda event: self._cycle_secondary_view(1, event))
+        self.root.bind_all("<Control-b>", self._toggle_sidebar)
+
+    def _toggle_sidebar(self, _event=None):
+        if self.sidebar_visible:
+            self.sidebar.pack_forget()
+            self.sidebar_visible = False
+            self.sidebar_toggle_button.configure(text="☰")
+        else:
+            self.sidebar.pack(before=self.main_frame, side="left", fill="y")
+            self.sidebar_visible = True
+            self.sidebar_toggle_button.configure(text="◀")
+        return "break"
 
     def _register_secondary_notebook(self, section, notebook):
         self.secondary_notebooks[section] = notebook

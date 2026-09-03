@@ -20,7 +20,7 @@ ENTRYPOINT = ROOT / "deterministic_debrief.py"
 
 
 def _get_imports(source_path: Path) -> set[str]:
-    """Return all top-level import names from a Python file."""
+    """Return static and literal dynamic imports from a Python file."""
     source = source_path.read_text(encoding="utf-8")
     tree = ast.parse(source)
     imports: set[str] = set()
@@ -31,18 +31,35 @@ def _get_imports(source_path: Path) -> set[str]:
         elif isinstance(node, ast.ImportFrom):
             if node.module:
                 imports.add(node.module)
+        elif (
+            isinstance(node, ast.Call)
+            and node.args
+            and isinstance(node.args[0], ast.Constant)
+            and isinstance(node.args[0].value, str)
+        ):
+            function = node.func
+            if (
+                isinstance(function, ast.Attribute)
+                and isinstance(function.value, ast.Name)
+                and function.value.id == "importlib"
+                and function.attr == "import_module"
+            ) or (
+                isinstance(function, ast.Name)
+                and function.id == "__import__"
+            ):
+                imports.add(node.args[0].value)
     return imports
 
 
 def _resolve_module(name: str, root: Path) -> Path | None:
     """Try to locate the file behind an import name."""
-    candidate = root / f"{name}.py"
+    relative = Path(*name.split("."))
+    candidate = root / relative.with_suffix(".py")
     if candidate.is_file():
         return candidate
-    # Package import: name/submodule.py
-    pkg = root / name
-    if pkg.is_dir():
-        return pkg
+    package_init = root / relative / "__init__.py"
+    if package_init.is_file():
+        return package_init
     return None
 
 

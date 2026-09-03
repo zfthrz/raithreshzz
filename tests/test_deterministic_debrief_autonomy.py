@@ -112,6 +112,46 @@ def test_transitive_closure_zero_backend_hits():
     assert backend_hits == [], f"Backend imports in transitive closure: {backend_hits}"
 
 
+def test_transitive_audit_follows_packages_and_dotted_modules(tmp_path):
+    """The audit must not stop at package directories."""
+    entry = tmp_path / "entry.py"
+    package = tmp_path / "product"
+    package.mkdir()
+    entry.write_text("import product\n", encoding="utf-8")
+    (package / "__init__.py").write_text(
+        "from product.runtime import run\n", encoding="utf-8"
+    )
+    (package / "runtime.py").write_text(
+        "import llm_analysis_deepseek\n", encoding="utf-8"
+    )
+
+    from scripts.audit_imports import _audit_transitive
+
+    visited, all_imports = _audit_transitive(entry, tmp_path)
+
+    assert package / "__init__.py" in visited
+    assert package / "runtime.py" in visited
+    assert "llm_analysis_deepseek" in all_imports
+
+
+@pytest.mark.parametrize(
+    "source",
+    [
+        'import importlib\nimportlib.import_module("llm_analysis_deepseek")\n',
+        '__import__("llm_analysis_llamacpp")\n',
+    ],
+)
+def test_transitive_audit_detects_literal_dynamic_backend_imports(tmp_path, source):
+    entry = tmp_path / "entry.py"
+    entry.write_text(source, encoding="utf-8")
+
+    from scripts.audit_imports import _audit_transitive
+
+    _visited, all_imports = _audit_transitive(entry, tmp_path)
+
+    assert any(name.startswith("llm_analysis") for name in all_imports)
+
+
 def test_entrypoint_preserves_deterministic_environment():
     """run() configures deterministic env and removes DEEPSEEK_API_KEY.
 

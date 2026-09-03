@@ -353,6 +353,7 @@ def test_gui_applies_sidebar_dashboard_chrome_without_opening_window():
     assert style.configurations["Vertical.TScrollbar"]["width"] == 10
     assert style.configurations["Horizontal.TScrollbar"]["width"] == 10
     assert style.configurations["Treeview"]["rowheight"] == 30
+    assert style.configurations["Treeview"]["focuscolor"] == "#00FFA6"
     assert style.configurations["Treeview.Heading"]["relief"] == "flat"
     assert style.configurations["Treeview.Heading"]["foreground"] == "#9fb3c8"
     assert style.configurations["Horizontal.TProgressbar"]["thickness"] == 5
@@ -360,6 +361,8 @@ def test_gui_applies_sidebar_dashboard_chrome_without_opening_window():
     assert style.configurations["H53Pending.TLabel"]["foreground"] == "#f0c674"
     assert style.configurations["H53Error.TLabel"]["foreground"] == "#ff7b72"
     assert ("selected", "#315b60") in style.maps["Treeview"]["background"]
+    assert ("focus", "#00FFA6") in style.maps["Treeview"]["bordercolor"]
+    assert style.configurations["TNotebook.Tab"]["focuscolor"] == "#00FFA6"
     assert ("selected", "#00FFA6") in style.maps["TNotebook.Tab"]["foreground"]
     assert ("selected", "#22282e") in style.maps["TNotebook.Tab"]["background"]
     assert app.root.options["*TCombobox*Listbox.background"] == "#15181c"
@@ -417,6 +420,8 @@ def test_global_shortcuts_cover_navigation_search_refresh_and_escape():
     assert "<Control-Prior>" in app.root.bindings
     assert "<Control-Next>" in app.root.bindings
     assert "<Control-b>" in app.root.bindings
+    navigation_source = inspect.getsource(RaceEngineerApp._navigate_primary_section)
+    assert "button.focus_set()" in navigation_source
 
 
 def test_shortcut_help_documents_every_global_action():
@@ -485,6 +490,22 @@ def test_summary_resize_reflows_cards_and_visual_previews():
     assert 'mode == "narrow"' in layout_source
     assert "self.sidebar.pack_forget()" in toggle_source
     assert "self.sidebar.pack(before=self.main_frame" in toggle_source
+
+
+def test_interactive_views_have_keyboard_activation_and_focus_return():
+    build_source = inspect.getsource(RaceEngineerApp._build_layout)
+    statistics_source = inspect.getsource(RaceEngineerApp._statistics_panel)
+    calibration_source = inspect.getsource(RaceEngineerApp._calibration_panel)
+    cards_source = inspect.getsource(RaceEngineerApp._render_next_stint_cards)
+    canvas_source = inspect.getsource(RaceEngineerApp._bind_canvas_activation)
+    help_close_source = inspect.getsource(RaceEngineerApp._hide_shortcut_help)
+
+    assert "self._bind_canvas_activation(" in build_source
+    assert 'self.statistics_tree.bind("<Return>"' in statistics_source
+    assert 'tree.bind("<Return>"' in calibration_source
+    assert "self._bind_keyboard_activation(card, open_inspector)" in cards_source
+    assert 'canvas.bind(\n            "<FocusIn>"' in canvas_source
+    assert "previous_focus.focus_set()" in help_close_source
 
 
 def test_summary_uses_one_vertical_scroll_container_for_all_blocks():

@@ -151,7 +151,7 @@ D3.x deterministic-first default and D2.9 production ranker (2026-08-25).
 | Component | Current operational baseline |
 |---|---|
 | `race_engineer.py` | orchestrator v0.4 — estados nuevos usan `debrief`/`debrief_validator`; lectura legacy compatible |
-| `race_engineer_gui.py` | v1.58 / responsive summary and collapsible catalogue |
+| `race_engineer_gui.py` | v1.59 / visible focus and keyboard activation |
 | `analyze_telemetry.py` | v3.8 + Objective Python v6 |
 | Brake point | 2.1 / schema 2.1 |
 | Throttle point | 1.2.1 / schema 1.2 |
@@ -1784,6 +1784,12 @@ boundaries: four columns, a two-by-two grid, then one stacked column. Visual pre
 also stack at the narrow boundary. The session catalogue can be collapsed from the
 workspace header or with `Ctrl+B`; the existing inspector remains independently
 closable. These changes affect widget geometry only.
+
+GUI v1.59 makes keyboard focus visible on tables, notebook tabs and interactive
+preview canvases. Summary previews and priority cards activate with Enter/Space;
+monthly statistics and calibration rows activate with Enter. Global section
+shortcuts move focus to the selected navigation control, and shortcut help restores
+the previous focus when closed. Existing handlers remain the only action authority.
 
 GUI v1.18 integra el scheduler con el catálogo abierto mediante un fingerprint
 read-only de los `state.json`. Cada cinco segundos comprueba ruta, `mtime_ns` y

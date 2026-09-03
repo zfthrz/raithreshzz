@@ -105,7 +105,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.58"
+GUI_VERSION = "1.59"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 STATE_REFRESH_INTERVAL_MS = 5_000
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -1126,6 +1126,7 @@ class RaceEngineerApp:
         self.session_read_errors: list[str] = []
         self._row_tooltip = None
         self.shortcut_help_window = None
+        self.shortcut_help_previous_focus = None
         self.secondary_notebooks = {}
         self.track_playback_active = False
         self.track_playback_after_id = None
@@ -1426,7 +1427,12 @@ class RaceEngineerApp:
             fieldbackground="#171717",
             foreground="#dce7ef",
             rowheight=30,
-            borderwidth=0,
+            borderwidth=1,
+            bordercolor="#27323a",
+            lightcolor="#27323a",
+            darkcolor="#27323a",
+            focusthickness=1,
+            focuscolor="#00FFA6",
             relief="flat",
             font=("Segoe UI", 9),
         )
@@ -1443,6 +1449,9 @@ class RaceEngineerApp:
             "Treeview",
             background=[("selected", "#315b60")],
             foreground=[("selected", "#f4fbff")],
+            bordercolor=[("focus", "#00FFA6")],
+            lightcolor=[("focus", "#00FFA6")],
+            darkcolor=[("focus", "#00FFA6")],
         )
         style.map(
             "Treeview.Heading",
@@ -1705,7 +1714,8 @@ class RaceEngineerApp:
             padding=(14, 9),
             font=("Segoe UI Semibold", 9),
             borderwidth=0,
-            focuscolor="#1c1c1c",
+            focusthickness=1,
+            focuscolor="#00FFA6",
         )
         style.map(
             "TNotebook.Tab",
@@ -2120,6 +2130,10 @@ class RaceEngineerApp:
             "<Button-1>",
             lambda _event: self._show_primary_section("Telemetría"),
         )
+        self._bind_canvas_activation(
+            self.summary_map_canvas,
+            lambda: self._show_primary_section("Telemetría"),
+        )
 
         telemetry_preview = self._build_summary_visual_card(
             visual_row,
@@ -2133,6 +2147,10 @@ class RaceEngineerApp:
         self.summary_telemetry_canvas.bind(
             "<Button-1>",
             lambda _event: self._show_primary_section("Telemetría"),
+        )
+        self._bind_canvas_activation(
+            self.summary_telemetry_canvas,
+            lambda: self._show_primary_section("Telemetría"),
         )
 
         telemetry_frame = self.primary_section_frames["Telemetría"]
@@ -2781,7 +2799,7 @@ class RaceEngineerApp:
         for index, section in enumerate(PRIMARY_SECTIONS, start=1):
             self.root.bind_all(
                 f"<Control-Key-{index}>",
-                lambda _event, name=section: self._show_primary_section(name),
+                lambda _event, name=section: self._navigate_primary_section(name),
             )
         self.root.bind_all("<Control-f>", self._focus_session_search)
         self.root.bind_all("<Control-r>", self._refresh_from_shortcut)
@@ -2790,6 +2808,13 @@ class RaceEngineerApp:
         self.root.bind_all("<Control-Prior>", lambda event: self._cycle_secondary_view(-1, event))
         self.root.bind_all("<Control-Next>", lambda event: self._cycle_secondary_view(1, event))
         self.root.bind_all("<Control-b>", self._toggle_sidebar)
+
+    def _navigate_primary_section(self, section):
+        self._show_primary_section(section)
+        button = self.primary_section_buttons.get(section)
+        if button is not None and self.sidebar_visible:
+            button.focus_set()
+        return "break"
 
     def _toggle_sidebar(self, _event=None):
         if self.sidebar_visible:
@@ -2801,6 +2826,22 @@ class RaceEngineerApp:
             self.sidebar_visible = True
             self.sidebar_toggle_button.configure(text="◀")
         return "break"
+
+    def _bind_keyboard_activation(self, widget, callback):
+        widget.configure(takefocus=True)
+        widget.bind("<Return>", lambda _event: (callback(), "break")[1])
+        widget.bind("<space>", lambda _event: (callback(), "break")[1])
+
+    def _bind_canvas_activation(self, canvas, callback):
+        self._bind_keyboard_activation(canvas, callback)
+        canvas.bind(
+            "<FocusIn>",
+            lambda _event: canvas.configure(highlightbackground="#00FFA6"),
+        )
+        canvas.bind(
+            "<FocusOut>",
+            lambda _event: canvas.configure(highlightbackground="#2b3943"),
+        )
 
     def _register_secondary_notebook(self, section, notebook):
         self.secondary_notebooks[section] = notebook
@@ -2853,6 +2894,7 @@ class RaceEngineerApp:
             except self.tk.TclError:
                 self.shortcut_help_window = None
 
+        self.shortcut_help_previous_focus = self.root.focus_get()
         window = self.tk.Toplevel(self.root)
         self.shortcut_help_window = window
         window.title("Atajos de teclado")
@@ -2895,6 +2937,13 @@ class RaceEngineerApp:
             except self.tk.TclError:
                 pass
             self.shortcut_help_window = None
+        previous_focus = self.shortcut_help_previous_focus
+        self.shortcut_help_previous_focus = None
+        if previous_focus is not None:
+            try:
+                previous_focus.focus_set()
+            except self.tk.TclError:
+                pass
         return "break"
 
     def _focus_session_search(self, _event=None):
@@ -3044,6 +3093,7 @@ class RaceEngineerApp:
         scrollbar.pack(side="right", fill="y")
         self.statistics_tree.pack(side="left", fill="both", expand=True)
         self.statistics_tree.bind("<Double-1>", self._open_statistics_month)
+        self.statistics_tree.bind("<Return>", self._open_statistics_month)
         self.statistics_sessions_by_month = {}
 
     def _refresh_statistics(self, *, force: bool = False):
@@ -3809,6 +3859,7 @@ class RaceEngineerApp:
         tree.bind("<Motion>", self._on_calibration_tree_motion)
         tree.bind("<Leave>", self._hide_row_tooltip)
         tree.bind("<Double-1>", self._on_calibration_tree_double_click)
+        tree.bind("<Return>", lambda _event: self._on_calibration_tree_double_click())
 
         tree.tag_configure("row_even", background="#171717")
         tree.tag_configure("row_odd", background="#1b1f23")
@@ -3874,10 +3925,14 @@ class RaceEngineerApp:
             self.calibration_batches_root
         )
 
-    def _on_calibration_tree_double_click(self, event):
+    def _on_calibration_tree_double_click(self, event=None):
         from tkinter import messagebox
 
-        iid = self.calibration_tree.identify_row(event.y)
+        if event is None:
+            selection = self.calibration_tree.selection()
+            iid = selection[0] if selection else ""
+        else:
+            iid = self.calibration_tree.identify_row(event.y)
         if not iid:
             return
 
@@ -4563,6 +4618,7 @@ class RaceEngineerApp:
 
             card.bind("<Button-1>", open_inspector)
             card.configure(cursor="hand2")
+            self._bind_keyboard_activation(card, open_inspector)
 
             top = self.ttk.Frame(card, style="PriorityCard.TFrame")
             top.bind("<Button-1>", open_inspector)

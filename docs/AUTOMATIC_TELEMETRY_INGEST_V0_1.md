@@ -206,6 +206,12 @@ Reactivar después de una prueba manual:
 Enable-ScheduledTask -TaskName "RaceEngineer-History-Ingest"
 ```
 
+También puede abrirse con doble clic `Race Engineer Scheduler.cmd`. El controlador
+muestra el estado y las últimas/próximas ejecuciones. **Pausar** detiene primero una
+instancia activa y después deshabilita sólo `RaceEngineer-History-Ingest`; **Reanudar**
+vuelve a habilitar esa misma tarea. No elimina la tarea, no borra la cola y no modifica
+History ni los snapshots locales.
+
 Verificar estado, acción y próxima ejecución:
 
 ```powershell

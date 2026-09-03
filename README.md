@@ -44,6 +44,7 @@ Componentes principales:
 | `auto_ingest_telemetry.py` | v0.1 — ingest directo desde LMU, History prioritario y backfill gradual |
 | `analyze_telemetry_file.py` | v0.2 — launcher seguro con override explícito sólo para la espera de estabilidad |
 | `hidden_history_ingest.py` | runner sin consola con log local rotativo para la tarea programada |
+| `Race Engineer Scheduler.cmd` | controlador de doble clic para pausar, reanudar y consultar el scheduler |
 | H5.3a-f + runtime 0.2 | shadow: candidatos, auditoría, selección unificada y render validado |
 | `race_engineer_gui.py` | v1.59 — foco visible y activación por teclado |
 | `maintain_calibration_queues.py` | Prepara una cola H2 modificada por ciclo, sin LLM ni labels automáticos |

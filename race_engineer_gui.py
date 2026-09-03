@@ -105,7 +105,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.54"
+GUI_VERSION = "1.55"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 STATE_REFRESH_INTERVAL_MS = 5_000
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -123,6 +123,13 @@ PRIMARY_SECTIONS = (
     "Circuitos",
     "Diagnóstico",
     "Calibración",
+)
+GLOBAL_SHORTCUTS = (
+    ("Ctrl+1 … Ctrl+7", "Cambiar de sección"),
+    ("Ctrl+F", "Buscar una sesión"),
+    ("Ctrl+R", "Actualizar la vista actual"),
+    ("Esc", "Cerrar ayuda, inspector o tooltip"),
+    ("F1", "Mostrar esta ayuda"),
 )
 SECTION_VIEWS = {
     "Resumen": ("Debrief", "Próxima tanda", "Vueltas"),
@@ -1030,6 +1037,7 @@ class RaceEngineerApp:
         self.all_sessions: list[SessionRecord] = []
         self.session_read_errors: list[str] = []
         self._row_tooltip = None
+        self.shortcut_help_window = None
         self.track_playback_active = False
         self.track_playback_after_id = None
         self.track_playback_started_at: float | None = None
@@ -1784,6 +1792,12 @@ class RaceEngineerApp:
         self.refresh_button.pack(side="left", fill="x", expand=True)
         self.history_button = ttk.Button(side_actions, text="History", command=self._open_history)
         self.history_button.pack(side="left", fill="x", expand=True, padx=(6, 0))
+        self.shortcut_help_button = ttk.Button(
+            sidebar_bottom,
+            text="Atajos de teclado · F1",
+            command=self._show_shortcut_help,
+        )
+        self.shortcut_help_button.pack(fill="x", pady=(7, 0))
 
         header = ttk.Frame(main, style="WorkspaceHeader.TFrame")
         header.pack(fill="x", pady=(0, 14))
@@ -2613,6 +2627,60 @@ class RaceEngineerApp:
         self.root.bind_all("<Control-f>", self._focus_session_search)
         self.root.bind_all("<Control-r>", self._refresh_from_shortcut)
         self.root.bind_all("<Escape>", self._dismiss_transient_ui)
+        self.root.bind_all("<F1>", self._show_shortcut_help)
+
+    def _show_shortcut_help(self, _event=None):
+        if self.shortcut_help_window is not None:
+            try:
+                self.shortcut_help_window.lift()
+                self.shortcut_help_window.focus_set()
+                return "break"
+            except self.tk.TclError:
+                self.shortcut_help_window = None
+
+        window = self.tk.Toplevel(self.root)
+        self.shortcut_help_window = window
+        window.title("Atajos de teclado")
+        window.configure(background="#0b1116")
+        window.resizable(False, False)
+        window.transient(self.root)
+        window.protocol("WM_DELETE_WINDOW", self._hide_shortcut_help)
+
+        panel = self.ttk.Frame(window, style="Inspector.TFrame", padding=(22, 18))
+        panel.pack(fill="both", expand=True)
+        self.ttk.Label(
+            panel,
+            text="Atajos de teclado",
+            style="InspectorTitle.TLabel",
+        ).grid(row=0, column=0, columnspan=2, sticky="w", pady=(0, 14))
+        for row, (shortcut, description) in enumerate(GLOBAL_SHORTCUTS, start=1):
+            self.ttk.Label(
+                panel,
+                text=shortcut,
+                style="InspectorTitle.TLabel",
+            ).grid(row=row, column=0, sticky="w", padx=(0, 24), pady=4)
+            self.ttk.Label(
+                panel,
+                text=description,
+                style="InspectorMeta.TLabel",
+            ).grid(row=row, column=1, sticky="w", pady=4)
+        self.ttk.Button(
+            panel,
+            text="Cerrar",
+            command=self._hide_shortcut_help,
+        ).grid(row=len(GLOBAL_SHORTCUTS) + 1, column=0, columnspan=2, sticky="e", pady=(16, 0))
+        window.bind("<Escape>", self._hide_shortcut_help)
+        window.focus_set()
+        return "break"
+
+    def _hide_shortcut_help(self, _event=None):
+        if self.shortcut_help_window is not None:
+            try:
+                self.shortcut_help_window.destroy()
+            except self.tk.TclError:
+                pass
+            self.shortcut_help_window = None
+        return "break"
 
     def _focus_session_search(self, _event=None):
         self.session_query_entry.focus_set()
@@ -2630,6 +2698,7 @@ class RaceEngineerApp:
         return "break"
 
     def _dismiss_transient_ui(self, _event=None):
+        self._hide_shortcut_help()
         self._hide_plan_inspector()
         self._hide_row_tooltip()
         return "break"

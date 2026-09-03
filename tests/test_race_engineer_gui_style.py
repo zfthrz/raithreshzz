@@ -7,6 +7,7 @@ import pytest
 import race_engineer_gui as gui
 from race_engineer_gui import (
     GUI_VERSION,
+    GLOBAL_SHORTCUTS,
     PRIMARY_SECTIONS,
     SECTION_VIEWS,
     RaceEngineerApp,
@@ -342,6 +343,24 @@ def test_global_shortcuts_cover_navigation_search_refresh_and_escape():
     assert "<Control-f>" in app.root.bindings
     assert "<Control-r>" in app.root.bindings
     assert "<Escape>" in app.root.bindings
+    assert "<F1>" in app.root.bindings
+
+
+def test_shortcut_help_documents_every_global_action():
+    assert GLOBAL_SHORTCUTS == (
+        ("Ctrl+1 … Ctrl+7", "Cambiar de sección"),
+        ("Ctrl+F", "Buscar una sesión"),
+        ("Ctrl+R", "Actualizar la vista actual"),
+        ("Esc", "Cerrar ayuda, inspector o tooltip"),
+        ("F1", "Mostrar esta ayuda"),
+    )
+    build_source = inspect.getsource(RaceEngineerApp._build_layout)
+    help_source = inspect.getsource(RaceEngineerApp._show_shortcut_help)
+    dismiss_source = inspect.getsource(RaceEngineerApp._dismiss_transient_ui)
+
+    assert 'text="Atajos de teclado · F1"' in build_source
+    assert "for row, (shortcut, description) in enumerate(GLOBAL_SHORTCUTS" in help_source
+    assert "self._hide_shortcut_help()" in dismiss_source
 
 
 def test_contextual_refresh_shortcut_uses_current_workspace():

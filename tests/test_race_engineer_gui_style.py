@@ -305,6 +305,46 @@ def test_primary_navigation_groups_technical_views_by_user_task():
     assert SECTION_VIEWS["Calibración"] == ("Calibración",)
 
 
+def test_global_shortcuts_cover_navigation_search_refresh_and_escape():
+    class BindingRoot:
+        def __init__(self):
+            self.bindings = {}
+
+        def bind_all(self, sequence, callback):
+            self.bindings[sequence] = callback
+
+    app = RaceEngineerApp.__new__(RaceEngineerApp)
+    app.root = BindingRoot()
+
+    app._bind_global_shortcuts()
+
+    for index in range(1, len(PRIMARY_SECTIONS) + 1):
+        assert f"<Control-Key-{index}>" in app.root.bindings
+    assert "<Control-f>" in app.root.bindings
+    assert "<Control-r>" in app.root.bindings
+    assert "<Escape>" in app.root.bindings
+
+
+def test_contextual_refresh_shortcut_uses_current_workspace():
+    app = RaceEngineerApp.__new__(RaceEngineerApp)
+    calls = []
+    app.primary_section_var = SimpleNamespace(get=lambda: "Circuitos")
+    app._refresh_track_readiness = lambda: calls.append("circuits")
+    app._refresh_statistics = lambda: calls.append("statistics")
+    app.refresh = lambda: calls.append("catalog")
+
+    assert app._refresh_from_shortcut() == "break"
+    assert calls == ["circuits"]
+
+    app.primary_section_var = SimpleNamespace(get=lambda: "Estadísticas")
+    app._refresh_from_shortcut()
+    assert calls[-1] == "statistics"
+
+    app.primary_section_var = SimpleNamespace(get=lambda: "Resumen")
+    app._refresh_from_shortcut()
+    assert calls[-1] == "catalog"
+
+
 def test_layout_uses_fixed_sidebar_and_workspace_header():
     build_source = inspect.getsource(RaceEngineerApp._build_layout)
     show_source = inspect.getsource(RaceEngineerApp._show_primary_section)

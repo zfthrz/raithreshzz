@@ -105,7 +105,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.52"
+GUI_VERSION = "1.53"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 STATE_REFRESH_INTERVAL_MS = 5_000
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -1099,6 +1099,7 @@ class RaceEngineerApp:
 
         self._configure_style()
         self._build_layout()
+        self._bind_global_shortcuts()
         self.count_var.set("Cargando catálogo de sesiones…")
         self.footer_var.set(str(self.runs_root))
         self._initial_catalog_after_id = self.root.after(
@@ -2553,6 +2554,7 @@ class RaceEngineerApp:
                 100,
                 self._poll_track_readiness,
             )
+
             return
         self.track_readiness_loading = False
         if kind == "error":
@@ -2561,6 +2563,36 @@ class RaceEngineerApp:
             )
             return
         self._apply_track_readiness_payload(payload)
+
+    def _bind_global_shortcuts(self):
+        for index, section in enumerate(PRIMARY_SECTIONS, start=1):
+            self.root.bind_all(
+                f"<Control-Key-{index}>",
+                lambda _event, name=section: self._show_primary_section(name),
+            )
+        self.root.bind_all("<Control-f>", self._focus_session_search)
+        self.root.bind_all("<Control-r>", self._refresh_from_shortcut)
+        self.root.bind_all("<Escape>", self._dismiss_transient_ui)
+
+    def _focus_session_search(self, _event=None):
+        self.session_query_entry.focus_set()
+        self.session_query_entry.selection_range(0, "end")
+        return "break"
+
+    def _refresh_from_shortcut(self, _event=None):
+        section = self.primary_section_var.get()
+        if section == "Circuitos":
+            self._refresh_track_readiness()
+        elif section == "Estadísticas":
+            self._refresh_statistics()
+        else:
+            self.refresh()
+        return "break"
+
+    def _dismiss_transient_ui(self, _event=None):
+        self._hide_plan_inspector()
+        self._hide_row_tooltip()
+        return "break"
 
     @staticmethod
     def _statistics_value(value: str | None) -> str:

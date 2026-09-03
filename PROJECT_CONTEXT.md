@@ -151,7 +151,7 @@ D3.x deterministic-first default and D2.9 production ranker (2026-08-25).
 | Component | Current operational baseline |
 |---|---|
 | `race_engineer.py` | orchestrator v0.4 — estados nuevos usan `debrief`/`debrief_validator`; lectura legacy compatible |
-| `race_engineer_gui.py` | v1.52 / unified H3 workflow status and fail-closed action gates |
+| `race_engineer_gui.py` | v1.53 / global keyboard navigation and contextual refresh |
 | `analyze_telemetry.py` | v3.8 + Objective Python v6 |
 | Brake point | 2.1 / schema 2.1 |
 | Throttle point | 1.2.1 / schema 1.2 |
@@ -1753,6 +1753,11 @@ and enables Materializar/Importar only when both the unified next action and the
 operation-specific snapshot agree on the exact context. Successful explicit actions
 rebuild the unified projection immediately; failed actions mark it stale. This is an
 additional presentation/safety gate and never schedules `--apply` automatically.
+
+GUI v1.53 adds application-wide keyboard navigation: `Ctrl+1..7` selects the
+primary workspaces, `Ctrl+F` focuses and selects the session search, `Ctrl+R`
+refreshes the current workspace with its appropriate loader, and `Esc` dismisses
+the plan inspector and row tooltip. These shortcuts change presentation/focus only.
 
 GUI v1.18 integra el scheduler con el catálogo abierto mediante un fingerprint
 read-only de los `state.json`. Cada cinco segundos comprueba ruta, `mtime_ns` y

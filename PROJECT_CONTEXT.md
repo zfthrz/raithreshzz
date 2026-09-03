@@ -436,6 +436,14 @@ read-only form and publishes `data/local/h3_import_maintenance.json`; it never
 passes `--apply`. A cheap History/official-bundle fingerprint reuses the existing
 snapshot when inputs are unchanged.
 
+After both H3 audits, the hidden scheduler atomically publishes the unified
+read-only projection `data/local/h3_automation_status.json`. It records each
+audit execution result, freshness, source fingerprints and the next safe operator
+action per exact context (`MATERIALIZE_EXPLICIT`, `IMPORT_EXPLICIT`, `NONE` or
+`REFRESH_AUDITS`). A failed or game-deferred audit marks the projection stale and
+withholds every mutation action. This status never runs `--apply`, mutates History
+or authorizes coaching.
+
 Before creating missing official bundles, the in-memory gate can be audited with:
 
 ```powershell

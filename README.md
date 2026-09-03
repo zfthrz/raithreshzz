@@ -1319,6 +1319,13 @@ Si History y los artefactos oficiales H3 no cambiaron, reutiliza el snapshot por
 fingerprint barato. Un fallo de esta etapa se registra como warning, no bloquea
 History y jamás activa `--apply`.
 
+El mismo ciclo combina ambos audits en
+`data/local/h3_automation_status.json`. Este estado read-only indica si la
+información está vigente y expone por contexto únicamente la próxima acción segura:
+materializar explícitamente, importar explícitamente, ninguna acción o refrescar los
+audits. Si uno falla o se difiere porque LMU está abierto, todas las acciones quedan
+retenidas hasta obtener snapshots actuales. El scheduler nunca ejecuta `--apply`.
+
 Para saber cuáles contextos sin bundle podrían materializar H3 con la autoridad
 actual, sin escribir ningún resultado:
 

@@ -199,6 +199,44 @@ def test_h3_materialization_is_deferred_while_game_is_running(tmp_path: Path):
     ).read_text(encoding="utf-8")
 
 
+def test_hidden_maintenance_publishes_unified_h3_status(tmp_path: Path):
+    import_state = tmp_path / "imports.json"
+    materialization_state = tmp_path / "materialization.json"
+    automation_state = tmp_path / "automation.json"
+    identity = {
+        "track": "Imola",
+        "track_layout": "Imola",
+        "vehicle_variant": "LMP2_ELMS",
+    }
+    import_state.write_text(
+        json.dumps({"contexts": [{**identity, "status": "H3_NOT_APPLICABLE"}]}),
+        encoding="utf-8",
+    )
+    materialization_state.write_text(
+        json.dumps({"contexts": [{**identity, "status": "MATERIALIZATION_READY"}]}),
+        encoding="utf-8",
+    )
+
+    result = hidden.run_hidden_maintenance(
+        log_path=tmp_path / "task.log",
+        command=["python.exe", "history.py"],
+        h3_import_audit_command=["python.exe", "imports.py"],
+        h3_materialization_audit_command=["python.exe", "materialization.py"],
+        h3_import_state_path=import_state,
+        h3_materialization_state_path=materialization_state,
+        h3_automation_status_path=automation_state,
+        game_is_running=lambda: False,
+        runner=lambda command, **kwargs: SimpleNamespace(returncode=0),
+        runtime_path=tmp_path / "runtime.json",
+    )
+
+    status = json.loads(automation_state.read_text(encoding="utf-8"))
+    assert result == 0
+    assert status["freshness"] == "CURRENT"
+    assert status["contexts"][0]["next_action"] == "MATERIALIZE_EXPLICIT"
+    assert status["history_mutated"] is False
+
+
 def test_rotate_log_keeps_one_previous_copy(tmp_path: Path):
     log = tmp_path / "task.log"
     backup = tmp_path / "task.log.1"

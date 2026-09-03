@@ -10,6 +10,10 @@ from pathlib import Path
 from typing import Callable, Sequence
 
 from auto_ingest_telemetry import le_mans_ultimate_is_running
+from h3_automation_status import (
+    build_h3_automation_status,
+    write_h3_automation_status,
+)
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -21,6 +25,9 @@ DEFAULT_RUNTIME_PATH = PROJECT_ROOT / "data" / "local" / "telemetry_scheduler_ru
 DEFAULT_H3_IMPORT_STATE_PATH = PROJECT_ROOT / "data" / "local" / "h3_import_maintenance.json"
 DEFAULT_H3_MATERIALIZATION_STATE_PATH = (
     PROJECT_ROOT / "data" / "local" / "h3_materialization_readiness.json"
+)
+DEFAULT_H3_AUTOMATION_STATUS_PATH = (
+    PROJECT_ROOT / "data" / "local" / "h3_automation_status.json"
 )
 DEFAULT_MAX_LOG_BYTES = 2 * 1024 * 1024
 
@@ -141,6 +148,9 @@ def run_hidden_maintenance(
     mixed_cue_command: Sequence[str] | None = None,
     h3_import_audit_command: Sequence[str] | None = None,
     h3_materialization_audit_command: Sequence[str] | None = None,
+    h3_automation_status_path: Path = DEFAULT_H3_AUTOMATION_STATUS_PATH,
+    h3_import_state_path: Path = DEFAULT_H3_IMPORT_STATE_PATH,
+    h3_materialization_state_path: Path = DEFAULT_H3_MATERIALIZATION_STATE_PATH,
     runner: Callable[..., object] = subprocess.run,
     max_log_bytes: int = DEFAULT_MAX_LOG_BYTES,
     runtime_path: Path = DEFAULT_RUNTIME_PATH,
@@ -175,6 +185,8 @@ def run_hidden_maintenance(
         else (build_h3_materialization_audit_command() if command is None else None)
     )
     creationflags = getattr(subprocess, "CREATE_NO_WINDOW", 0) if os.name == "nt" else 0
+    h3_import_execution = "SKIPPED_HISTORY_FAILED"
+    h3_materialization_execution = "SKIPPED_HISTORY_FAILED"
 
     with log_path.open("a", encoding="utf-8", errors="replace") as log:
         stamp = datetime.now(timezone.utc).isoformat()
@@ -255,6 +267,7 @@ def run_hidden_maintenance(
                         "History remains successful.\n"
                     )
             if return_code == 0 and selected_h3_import_audit_command is not None:
+                h3_import_execution = "FAILED"
                 log.write("H3 import readiness audit (read-only)\n")
                 log.flush()
                 try:
@@ -276,13 +289,17 @@ def run_hidden_maintenance(
                         f"maintenance exit_code={h3_return_code}; "
                         "History remains successful and no import was attempted.\n"
                     )
+                else:
+                    h3_import_execution = "PASS"
             if return_code == 0 and selected_h3_materialization_audit_command is not None:
                 if game_is_running():
+                    h3_materialization_execution = "DEFERRED_GAME_RUNNING"
                     log.write(
                         "H3 materialization readiness audit: "
                         "DEFERRED_GAME_RUNNING\n"
                     )
                 else:
+                    h3_materialization_execution = "FAILED"
                     log.write("H3 materialization readiness audit (read-only)\n")
                     log.flush()
                     try:
@@ -309,10 +326,28 @@ def run_hidden_maintenance(
                             f"maintenance exit_code={materialization_return_code}; "
                             "History remains successful and no bundle was written.\n"
                         )
+                    else:
+                        h3_materialization_execution = "PASS"
         except Exception:
             traceback.print_exc(file=log)
             return_code = 1
         finish = datetime.now(timezone.utc).isoformat()
+        try:
+            write_h3_automation_status(
+                h3_automation_status_path,
+                build_h3_automation_status(
+                    import_state_path=h3_import_state_path,
+                    materialization_state_path=h3_materialization_state_path,
+                    import_execution=h3_import_execution,
+                    materialization_execution=h3_materialization_execution,
+                    generated_at=finish,
+                ),
+            )
+        except Exception as exc:
+            log.write(
+                "H3 AUTOMATION STATUS WARNING: "
+                f"{type(exc).__name__}: {exc}; History remains successful.\n"
+            )
         log.write(f"[{finish}] END exit_code={return_code}\n")
         log.flush()
         finished_state = {

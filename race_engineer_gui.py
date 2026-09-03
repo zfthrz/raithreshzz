@@ -105,7 +105,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.53"
+GUI_VERSION = "1.54"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 STATE_REFRESH_INTERVAL_MS = 5_000
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -229,24 +229,59 @@ def load_session_sort_preference(path: Path) -> tuple[str, bool]:
     return column, descending
 
 
+def load_primary_section_preference(path: Path) -> str:
+    """Load only a known presentation workspace from local preferences."""
+
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+        return "Resumen"
+    if not isinstance(payload, dict):
+        return "Resumen"
+    section = payload.get("primary_section")
+    return section if section in PRIMARY_SECTIONS else "Resumen"
+
+
+def _update_gui_preferences(path: Path, updates: dict) -> None:
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+        payload = {}
+    if not isinstance(payload, dict):
+        payload = {}
+    payload.update(updates)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    temporary.replace(path)
+
+
 def save_session_sort_preference(path: Path, column: str, descending: bool) -> None:
     """Persist only the read-only catalogue presentation preference."""
 
     if column not in SESSION_SORT_LABELS:
         raise ValueError(f"Columna de orden desconocida: {column}")
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(
-        json.dumps(
-            {
-                "session_sort_column": column,
-                "session_sort_descending": bool(descending),
-            },
-            ensure_ascii=False,
-            indent=2,
-        )
-        + "\n",
-        encoding="utf-8",
+    _update_gui_preferences(
+        path,
+        {
+            "session_sort_column": column,
+            "session_sort_descending": bool(descending),
+        },
     )
+
+
+def save_primary_section_preference(path: Path, section: str) -> None:
+    if section not in PRIMARY_SECTIONS:
+        raise ValueError(f"Sección desconocida: {section}")
+    _update_gui_preferences(path, {"primary_section": section})
+
+
+def navigation_button_label(section: str) -> str:
+    index = PRIMARY_SECTIONS.index(section) + 1
+    return f"{section}    Ctrl+{index}"
 
 
 def _session_date_sort_value(session: SessionRecord) -> float:
@@ -1634,7 +1669,8 @@ class RaceEngineerApp:
 
         ttk.Separator(sidebar, orient="horizontal").pack(fill="x", padx=16, pady=(2, 8))
 
-        self.primary_section_var = tk.StringVar(value="Resumen")
+        initial_section = load_primary_section_preference(self.gui_preferences_path)
+        self.primary_section_var = tk.StringVar(value=initial_section)
         self.primary_section_frames = {}
         self.primary_section_buttons = {}
         nav = ttk.Frame(sidebar, style="Sidebar.TFrame", padding=(8, 0, 8, 6))
@@ -1642,7 +1678,7 @@ class RaceEngineerApp:
         for section in PRIMARY_SECTIONS:
             button = ttk.Button(
                 nav,
-                text=section,
+                text=navigation_button_label(section),
                 style="SidebarNav.TButton",
                 command=lambda name=section: self._show_primary_section(name),
             )
@@ -2000,7 +2036,7 @@ class RaceEngineerApp:
         calibration_frame = self.primary_section_frames["Calibración"]
         self._calibration_panel(calibration_frame)
 
-        self._show_primary_section("Resumen")
+        self._show_primary_section(initial_section)
 
         execution_bar = ttk.Frame(main, style="App.TFrame")
         execution_bar.pack(fill="x", pady=(8, 0))
@@ -2037,6 +2073,10 @@ class RaceEngineerApp:
         self.primary_section_var.set(section)
         self.workspace_title_var.set(section)
         self.workspace_subtitle_var.set(SECTION_DESCRIPTIONS.get(section, ""))
+        try:
+            save_primary_section_preference(self.gui_preferences_path, section)
+        except OSError as exc:
+            self.settings_warning = f"No se pudo guardar la sección: {exc}"
         if section == "Circuitos":
             self._refresh_track_readiness()
         elif section == "Estadísticas":

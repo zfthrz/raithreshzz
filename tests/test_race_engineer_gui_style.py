@@ -18,6 +18,9 @@ from race_engineer_gui import (
     format_comparison_columns,
     historical_steering_zone_text,
     load_session_sort_preference,
+    load_primary_section_preference,
+    navigation_button_label,
+    save_primary_section_preference,
     save_session_sort_preference,
     session_status_color,
     session_status_tooltip,
@@ -109,6 +112,22 @@ def test_session_catalog_sort_preference_round_trip_and_fails_closed(tmp_path):
 
     with pytest.raises(ValueError):
         save_session_sort_preference(path, "unknown", False)
+
+
+def test_workspace_preference_preserves_catalog_sort_and_fails_closed(tmp_path):
+    path = tmp_path / "gui_preferences.json"
+    save_session_sort_preference(path, "track", False)
+    save_primary_section_preference(path, "Telemetría")
+
+    assert load_primary_section_preference(path) == "Telemetría"
+    assert load_session_sort_preference(path) == ("track", False)
+    assert "Ctrl+1" in navigation_button_label("Resumen")
+    assert "Ctrl+7" in navigation_button_label("Calibración")
+
+    path.write_text('{"primary_section":"unknown"}', encoding="utf-8")
+    assert load_primary_section_preference(path) == "Resumen"
+    with pytest.raises(ValueError):
+        save_primary_section_preference(path, "unknown")
 
 
 def test_telemetry_pointer_selects_nearest_map_point_on_visible_axis():

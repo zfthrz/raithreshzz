@@ -1,9 +1,13 @@
+import json
+
 from race_engineer_gui import (
     READINESS_STATUS_COLORS,
     READINESS_STATUS_LABELS,
     track_readiness_status_tooltip,
     h3_maintenance_summary,
     h3_materialization_summary,
+    h3_automation_next_action,
+    h3_automation_summary,
 )
 
 
@@ -114,3 +118,35 @@ def test_h3_materialization_summary_reports_ready_without_authorizing_apply(tmp_
     assert "2 listos para ejecución explícita" in text
     assert "5 ya materializados" in text
     assert "4 sin MATCH autorizado" in text
+
+
+def test_h3_unified_summary_and_action_require_current_read_only_contract(tmp_path):
+    state = tmp_path / "h3_automation_status.json"
+    row = {
+        "track": "Imola",
+        "track_layout": "Imola",
+        "vehicle_variant": "LMP2_ELMS",
+    }
+    state.write_text(
+        json.dumps(
+            {
+                "mode": "STATUS_READ_ONLY",
+                "freshness": "CURRENT",
+                "history_mutated": False,
+                "historical_actions_authorized": False,
+                "files_written": 0,
+                "contexts": [{**row, "next_action": "MATERIALIZE_EXPLICIT"}],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    assert "vigente" in h3_automation_summary(state)
+    assert "1 para materializar" in h3_automation_summary(state)
+    assert h3_automation_next_action(state, row) == "MATERIALIZE_EXPLICIT"
+
+    payload = json.loads(state.read_text(encoding="utf-8"))
+    payload["freshness"] = "STALE"
+    state.write_text(json.dumps(payload), encoding="utf-8")
+    assert "datos vencidos" in h3_automation_summary(state)
+    assert h3_automation_next_action(state, row) is None

@@ -36,6 +36,10 @@ from race_engineer_h3_import_gui import (
     resolve_import_target,
     stream_commands as stream_h3_import_commands,
 )
+from h3_automation_status import (
+    build_h3_automation_status,
+    write_h3_automation_status,
+)
 
 from race_engineer_ui_model import (
     SessionDetail,
@@ -101,7 +105,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.51"
+GUI_VERSION = "1.52"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 STATE_REFRESH_INTERVAL_MS = 5_000
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -752,6 +756,81 @@ def h3_materialization_summary(path: Path) -> str:
     return " · ".join(parts)
 
 
+def h3_automation_summary(path: Path) -> str:
+    try:
+        payload = json.loads(Path(path).read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        return "H3 flujo · esperando primer ciclo completo"
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+        return "H3 flujo · estado unificado inválido"
+    if not isinstance(payload, dict) or payload.get("mode") != "STATUS_READ_ONLY":
+        return "H3 flujo · contrato read-only inválido"
+    if (
+        payload.get("history_mutated") is not False
+        or payload.get("historical_actions_authorized") is not False
+        or payload.get("files_written") != 0
+    ):
+        return "H3 flujo · contrato read-only inválido"
+    contexts = payload.get("contexts")
+    if not isinstance(contexts, list):
+        return "H3 flujo · estado unificado incompleto"
+    freshness = payload.get("freshness")
+    if freshness != "CURRENT":
+        return "H3 flujo · datos vencidos · actualizar audits"
+    actions = [row.get("next_action") for row in contexts if isinstance(row, dict)]
+    materialize = actions.count("MATERIALIZE_EXPLICIT")
+    import_ready = actions.count("IMPORT_EXPLICIT")
+    parts = ["H3 flujo · vigente"]
+    if materialize:
+        parts.append(f"{materialize} para materializar")
+    if import_ready:
+        parts.append(f"{import_ready} para importar")
+    if not materialize and not import_ready:
+        parts.append("sin acciones pendientes")
+    return " · ".join(parts)
+
+
+def h3_automation_next_action(path: Path, context_row: dict) -> str | None:
+    try:
+        payload = json.loads(Path(path).read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+        return None
+    if not isinstance(payload, dict) or payload.get("mode") != "STATUS_READ_ONLY":
+        return None
+    if payload.get("freshness") != "CURRENT":
+        return None
+    if (
+        payload.get("history_mutated") is not False
+        or payload.get("historical_actions_authorized") is not False
+        or payload.get("files_written") != 0
+    ):
+        return None
+    identity = tuple(
+        context_row.get(name)
+        for name in ("track", "track_layout", "vehicle_variant")
+    )
+    contexts = payload.get("contexts")
+    if not isinstance(contexts, list):
+        return None
+    matches = [
+        row
+        for row in contexts
+        if isinstance(row, dict)
+        and tuple(
+            row.get(name)
+            for name in ("track", "track_layout", "vehicle_variant")
+        ) == identity
+    ]
+    if len(matches) != 1:
+        return None
+    action = matches[0].get("next_action")
+    return (
+        action
+        if action in {"MATERIALIZE_EXPLICIT", "IMPORT_EXPLICIT", "NONE"}
+        else None
+    )
+
+
 def format_comparison_columns(view: dict) -> tuple[str, str, str, str]:
     available = bool(view.get("available"))
     hist = view.get("historical") or {}
@@ -992,6 +1071,9 @@ class RaceEngineerApp:
         )
         self.h3_materialization_readiness_path = (
             PROJECT_ROOT / "data" / "local" / "h3_materialization_readiness.json"
+        )
+        self.h3_automation_status_path = (
+            PROJECT_ROOT / "data" / "local" / "h3_automation_status.json"
         )
         self.h3_materialization_result_path = (
             PROJECT_ROOT / "data" / "local" / "h3_materialization_last_apply.json"
@@ -2270,6 +2352,15 @@ class RaceEngineerApp:
         self.h3_maintenance_summary_var = self.tk.StringVar(
             value="H3 automático · cargando…"
         )
+        self.h3_automation_summary_var = self.tk.StringVar(
+            value="H3 flujo · cargando…"
+        )
+        self.ttk.Label(
+            frame,
+            textvariable=self.h3_automation_summary_var,
+            style="CardValue.TLabel",
+            justify="left",
+        ).pack(fill="x", pady=(0, 8))
         self.ttk.Label(
             frame,
             textvariable=self.h3_maintenance_summary_var,
@@ -3003,6 +3094,11 @@ class RaceEngineerApp:
         row = self._selected_track_readiness_context()
         if not isinstance(row, dict):
             return None
+        if (
+            h3_automation_next_action(self.h3_automation_status_path, row)
+            != "MATERIALIZE_EXPLICIT"
+        ):
+            return None
         return resolve_materialization_target(
             self.h3_materialization_readiness_path,
             row,
@@ -3011,6 +3107,11 @@ class RaceEngineerApp:
     def _selected_h3_import_target(self):
         row = self._selected_track_readiness_context()
         if not isinstance(row, dict):
+            return None
+        if (
+            h3_automation_next_action(self.h3_automation_status_path, row)
+            != "IMPORT_EXPLICIT"
+        ):
             return None
         return resolve_import_target(self.h3_import_maintenance_path, row)
 
@@ -3194,6 +3295,7 @@ class RaceEngineerApp:
         from tkinter import messagebox
 
         self.h3_import_running = False
+        self._rebuild_h3_automation_status(return_code)
         self._refresh_track_readiness()
         self._refresh_calibration_summary()
         self._scheduler_state_fingerprint = self._scheduler_fingerprint()
@@ -3232,6 +3334,7 @@ class RaceEngineerApp:
         from tkinter import messagebox
 
         self.h3_materialization_running = False
+        self._rebuild_h3_automation_status(return_code)
         self._refresh_track_readiness()
         self._refresh_calibration_summary()
         self._scheduler_state_fingerprint = self._scheduler_fingerprint()
@@ -3251,6 +3354,24 @@ class RaceEngineerApp:
                 "Race Engineer",
                 "La materialización H3 no se completó. Revisá Diagnóstico; History no fue importado.",
                 parent=self.root,
+            )
+
+    def _rebuild_h3_automation_status(self, return_code: int):
+        execution = "PASS" if return_code == 0 else "FAILED"
+        try:
+            write_h3_automation_status(
+                self.h3_automation_status_path,
+                build_h3_automation_status(
+                    import_state_path=self.h3_import_maintenance_path,
+                    materialization_state_path=self.h3_materialization_readiness_path,
+                    import_execution=execution,
+                    materialization_execution=execution,
+                ),
+            )
+        except Exception as exc:
+            self._append_execution_line(
+                "H3_AUTOMATION_STATUS_WARNING: "
+                f"{type(exc).__name__}: {exc}"
             )
 
     def _on_track_readiness_context_motion(self, event):
@@ -4923,6 +5044,11 @@ class RaceEngineerApp:
         self._refresh_h3_maintenance_summary()
 
     def _refresh_h3_maintenance_summary(self):
+        automation_variable = getattr(self, "h3_automation_summary_var", None)
+        if automation_variable is not None:
+            automation_variable.set(
+                h3_automation_summary(self.h3_automation_status_path)
+            )
         variable = getattr(self, "h3_maintenance_summary_var", None)
         if variable is not None:
             variable.set(h3_maintenance_summary(self.h3_import_maintenance_path))
@@ -4937,11 +5063,19 @@ class RaceEngineerApp:
             )
 
     def _scheduler_fingerprint(self):
+        h3_automation_path = getattr(
+            self,
+            "h3_automation_status_path",
+            Path(self.h3_materialization_readiness_path).with_name(
+                "h3_automation_status.json"
+            ),
+        )
         return (
             file_fingerprint(self.telemetry_ingest_state_path),
             file_fingerprint(self.scheduler_runtime_path),
             file_fingerprint(self.h3_import_maintenance_path),
             file_fingerprint(self.h3_materialization_readiness_path),
+            file_fingerprint(h3_automation_path),
         )
 
     def _scheduler_diagnostic_text(self) -> str:

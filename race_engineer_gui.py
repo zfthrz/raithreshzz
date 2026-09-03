@@ -105,7 +105,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.56"
+GUI_VERSION = "1.57"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 STATE_REFRESH_INTERVAL_MS = 5_000
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -212,6 +212,48 @@ SESSION_CHANGE_STATUS_LABELS = {
     "NEW": "Nuevo",
     "RESOLVED": "Ya no aparece",
 }
+UI_STATE_MESSAGES = {
+    "SESSION_REQUIRED": (
+        "No hay una sesión seleccionada.",
+        "Elegí una sesión del catálogo o ejecutá un análisis nuevo.",
+    ),
+    "DEBRIEF_UNAVAILABLE": (
+        "No hay un debrief disponible.",
+        "Revisá Diagnóstico → Pipeline o analizá nuevamente la sesión.",
+    ),
+    "LAPS_UNAVAILABLE": (
+        "No hay análisis de vueltas disponible.",
+        "Revisá Diagnóstico → Pipeline para confirmar la etapa de análisis.",
+    ),
+    "HISTORY_UNAVAILABLE": (
+        "No hay una referencia histórica compatible.",
+        "Analizá más sesiones del mismo circuito, layout, vehículo y auto.",
+    ),
+    "COMPARISON_UNAVAILABLE": (
+        "No hay una comparación histórica validada.",
+        "Primero se necesita una referencia compatible seleccionada por H4.",
+    ),
+    "STATISTICS_EMPTY": (
+        "History todavía no contiene estadísticas.",
+        "Analizá una sesión válida para incorporarla al historial.",
+    ),
+    "PIPELINE_UNAVAILABLE": (
+        "No hay diagnóstico de pipeline disponible.",
+        "Seleccioná una sesión para revisar sus etapas y advertencias.",
+    ),
+    "LOAD_FAILED": (
+        "No se pudo cargar la información.",
+        "Reintentá con Ctrl+R y, si persiste, revisá Diagnóstico → Ejecución.",
+    ),
+}
+
+
+def ui_state_message(code: str, *, detail: str | None = None, compact: bool = False) -> str:
+    title, action = UI_STATE_MESSAGES[code]
+    if detail:
+        title = f"{title} {detail}"
+    separator = " · " if compact else "\n\n"
+    return f"{title}{separator}{action}"
 
 SESSION_SORT_LABELS = {
     "date": "Fecha",
@@ -2232,8 +2274,8 @@ class RaceEngineerApp:
         data = self.current_track_map
         if data is None or len(data.points) < 2:
             for canvas, message in (
-                (map_canvas, "Seleccioná una sesión para ver el mapa del circuito."),
-                (telemetry_canvas, "La telemetría aparecerá cuando la sesión esté cargada."),
+                (map_canvas, ui_state_message("SESSION_REQUIRED", compact=True)),
+                (telemetry_canvas, ui_state_message("SESSION_REQUIRED", compact=True)),
             ):
                 width = max(canvas.winfo_width(), 120)
                 height = max(canvas.winfo_height(), 80)
@@ -2654,7 +2696,7 @@ class RaceEngineerApp:
         self.track_readiness_loading = False
         if kind == "error":
             self.track_readiness_summary_var.set(
-                f"No se pudo calcular Track Readiness: {payload}"
+                ui_state_message("LOAD_FAILED", detail=str(payload), compact=True)
             )
             return
         self._apply_track_readiness_payload(payload)
@@ -2803,7 +2845,7 @@ class RaceEngineerApp:
         shell = ttk.Frame(parent, style="Workspace.TFrame")
         shell.pack(fill="both", expand=True)
         self.statistics_status_var = tk.StringVar(
-            value="Abrí Estadísticas para cargar el historial."
+            value=ui_state_message("STATISTICS_EMPTY", compact=True)
         )
         ttk.Label(
             shell,
@@ -2958,7 +3000,9 @@ class RaceEngineerApp:
 
         self.statistics_loading = False
         if kind == "error":
-            self.statistics_status_var.set(f"No se pudieron cargar las estadísticas: {payload}")
+            self.statistics_status_var.set(
+                ui_state_message("LOAD_FAILED", detail=str(payload), compact=True)
+            )
             return
         fingerprint, statistics = payload
         self.statistics_fingerprint = fingerprint
@@ -3039,7 +3083,7 @@ class RaceEngineerApp:
             canvas.create_text(
                 width / 2,
                 height / 2,
-                text="Sin datos",
+                text=ui_state_message("STATISTICS_EMPTY", compact=True),
                 fill="#7f929f",
                 font=("Segoe UI", 10),
             )
@@ -5110,14 +5154,14 @@ class RaceEngineerApp:
     def _show_full_debrief(self):
         self._show_dashboard_text_detail(
             "Debrief completo",
-            self.current_debrief_markdown or "No hay debrief disponible.",
+            self.current_debrief_markdown or ui_state_message("DEBRIEF_UNAVAILABLE"),
             markdown=True,
         )
 
     def _show_full_laps(self):
         self._show_dashboard_text_detail(
             "Análisis de vueltas",
-            self.current_laps_text or "No hay análisis de vueltas disponible.",
+            self.current_laps_text or ui_state_message("LAPS_UNAVAILABLE"),
         )
 
     def _set_text(self, widget, value: str, *, markdown: bool = False):
@@ -5654,7 +5698,7 @@ class RaceEngineerApp:
 
     def _clear_detail(self):
         self.detail_title.set("No hay sesiones disponibles")
-        self.detail_subtitle.set("Ejecutá un análisis o verificá el directorio configurado.")
+        self.detail_subtitle.set(ui_state_message("SESSION_REQUIRED", compact=True))
         self.summary_reference_var.set("—")
         self.summary_laps_var.set("—")
         self.summary_history_var.set("—")
@@ -5663,17 +5707,15 @@ class RaceEngineerApp:
         self.current_laps_text = ""
         self._cancel_session_change_request()
         self._render_session_changes({"status": "UNAVAILABLE"})
-        for widget in (
-            self.debrief_text,
-            self.laps_text,
-            self.historical_reference_text,
-            self.pipeline_text,
-        ):
-            self._set_text(widget, "")
-        self.comparison_summary_var.set("")
-        self._set_text(self.comparison_hist_text, "")
-        self._set_text(self.comparison_current_text, "")
-        self._set_text(self.comparison_detail_text, "")
+        self._set_text(self.debrief_text, ui_state_message("DEBRIEF_UNAVAILABLE"))
+        self._set_text(self.laps_text, ui_state_message("LAPS_UNAVAILABLE"))
+        self._set_text(self.historical_reference_text, ui_state_message("HISTORY_UNAVAILABLE"))
+        self._set_text(self.pipeline_text, ui_state_message("PIPELINE_UNAVAILABLE"))
+        comparison_state = ui_state_message("COMPARISON_UNAVAILABLE")
+        self.comparison_summary_var.set(comparison_state.replace("\n\n", " · "))
+        self._set_text(self.comparison_hist_text, comparison_state)
+        self._set_text(self.comparison_current_text, comparison_state)
+        self._set_text(self.comparison_detail_text, comparison_state)
         self.track_map_token += 1
         self.track_map_loading = False
         self.current_track_map = None
@@ -5701,7 +5743,7 @@ class RaceEngineerApp:
         self.track_map_pan_anchor = None
         self.track_map_canvas.delete("all")
         self.track_telemetry_canvas.delete("all")
-        self.track_map_status.set("Seleccioná una sesión para reconstruir el mapa GPS.")
+        self.track_map_status.set(ui_state_message("SESSION_REQUIRED", compact=True))
         self.track_map_zone_status.set("Sin capas de zonas para esta sesión.")
         self.track_map_telemetry_status.set(
             "Hacé clic en el trazado para inspeccionar velocidad, freno y acelerador."
@@ -6029,7 +6071,7 @@ class RaceEngineerApp:
             if kind == "manual_lap_error":
                 self.manual_track_map_loading = False
                 self.track_map_status.set(
-                    f"No se pudo cargar la vuelta seleccionada: {value}"
+                    ui_state_message("LOAD_FAILED", detail=str(value), compact=True)
                 )
                 continue
             current_completed = True

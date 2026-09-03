@@ -34,6 +34,7 @@ from race_engineer_gui import (
     state_files_fingerprint,
     status_wraplength,
     telemetry_canvas_ready,
+    ui_state_message,
 )
 from race_engineer_track_map import TrackMapPoint, TrackMapZone
 
@@ -161,6 +162,27 @@ def test_secondary_view_cycle_wraps_within_current_workspace():
     assert adjacent_secondary_view("Diagnóstico", "Pipeline", -1) == "Ejecución"
     assert adjacent_secondary_view("Resumen", "Debrief", 1) == "Próxima tanda"
     assert adjacent_secondary_view("unknown", "view", 1) == "view"
+
+
+def test_global_empty_and_error_states_include_a_next_action():
+    assert ui_state_message("SESSION_REQUIRED") == (
+        "No hay una sesión seleccionada.\n\n"
+        "Elegí una sesión del catálogo o ejecutá un análisis nuevo."
+    )
+    assert "Revisá Diagnóstico → Pipeline" in ui_state_message("DEBRIEF_UNAVAILABLE")
+    assert "Analizá más sesiones" in ui_state_message("HISTORY_UNAVAILABLE")
+    failed = ui_state_message("LOAD_FAILED", detail="DuckDB ocupado", compact=True)
+    assert "DuckDB ocupado" in failed
+    assert "Ctrl+R" in failed
+
+
+def test_clear_detail_populates_actionable_workspace_states():
+    clear_source = inspect.getsource(RaceEngineerApp._clear_detail)
+    assert 'ui_state_message("DEBRIEF_UNAVAILABLE")' in clear_source
+    assert 'ui_state_message("LAPS_UNAVAILABLE")' in clear_source
+    assert 'ui_state_message("HISTORY_UNAVAILABLE")' in clear_source
+    assert 'ui_state_message("COMPARISON_UNAVAILABLE")' in clear_source
+    assert 'ui_state_message("PIPELINE_UNAVAILABLE")' in clear_source
 
 
 def test_telemetry_pointer_selects_nearest_map_point_on_visible_axis():

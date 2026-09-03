@@ -151,7 +151,7 @@ D3.x deterministic-first default and D2.9 production ranker (2026-08-25).
 | Component | Current operational baseline |
 |---|---|
 | `race_engineer.py` | orchestrator v0.4 — estados nuevos usan `debrief`/`debrief_validator`; lectura legacy compatible |
-| `race_engineer_gui.py` | v1.56 / persistent secondary workspace navigation |
+| `race_engineer_gui.py` | v1.57 / actionable empty and error states |
 | `analyze_telemetry.py` | v3.8 + Objective Python v6 |
 | Brake point | 2.1 / schema 2.1 |
 | Throttle point | 1.2.1 / schema 1.2 |
@@ -1773,6 +1773,11 @@ GUI v1.56 applies consistent secondary notebooks to History, Statistics and
 Diagnostics. `Ctrl+PageUp` / `Ctrl+PageDown` cycle the active workspace subview,
 and each last valid subview is restored from the ignored local preferences file.
 Unknown local values fail closed and preference writes preserve unrelated keys.
+
+GUI v1.57 centralizes presentation-only empty and load-failure messages. Summary,
+telemetry, History, statistics and diagnostics now explain both what is unavailable
+and the next safe user action. The messages consume existing runtime state only and
+do not infer evidence, run stages or change deterministic authority.
 
 GUI v1.18 integra el scheduler con el catálogo abierto mediante un fingerprint
 read-only de los `state.json`. Cada cinco segundos comprueba ruta, `mtime_ns` y

@@ -45,7 +45,7 @@ Componentes principales:
 | `analyze_telemetry_file.py` | v0.2 — launcher seguro con override explícito sólo para la espera de estabilidad |
 | `hidden_history_ingest.py` | runner sin consola con log local rotativo para la tarea programada |
 | H5.3a-f + runtime 0.2 | shadow: candidatos, auditoría, selección unificada y render validado |
-| `race_engineer_gui.py` | v1.56 — navegación secundaria consistente y persistente |
+| `race_engineer_gui.py` | v1.57 — estados vacíos y errores accionables |
 | `maintain_calibration_queues.py` | Prepara una cola H2 modificada por ciclo, sin LLM ni labels automáticos |
 | `auto_calibrate_matcher.py` | Auditoría shadow de thresholds candidatos; nunca autoriza producción |
 | `audit_calibration_batch_retention.py` | Inventario read-only de evidencia y batches regenerables |

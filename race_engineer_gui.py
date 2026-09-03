@@ -59,6 +59,7 @@ from race_engineer_ui_analysis import (
     validate_analysis_candidate,
 )
 from track_readiness import build_track_readiness
+from gui_theme import COLORS, FONTS, FONT_FAMILY, FONT_FAMILY_BOLD
 from race_engineer_track_map import (
     TrackMapData,
     TrackMapLapOption,
@@ -105,7 +106,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.59"
+GUI_VERSION = "1.60"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 STATE_REFRESH_INTERVAL_MS = 5_000
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -1230,7 +1231,7 @@ class RaceEngineerApp:
         root.title(f"Threshzz's Telemetry Analysis LMU v{GUI_VERSION}")
         root.geometry("1600x1040")
         root.minsize(1240, 760)
-        root.configure(background="#0b1116")
+        root.configure(background=COLORS["app"])
         root.protocol("WM_DELETE_WINDOW", self._on_close)
 
         self._configure_style()
@@ -1247,77 +1248,77 @@ class RaceEngineerApp:
         style = self.ttk.Style(self.root)
         if "clam" in style.theme_names():
             style.theme_use("clam")
-        self.root.option_add("*TCombobox*Listbox.background", "#15181c")
-        self.root.option_add("*TCombobox*Listbox.foreground", "#dce7ef")
-        self.root.option_add("*TCombobox*Listbox.selectBackground", "#315b60")
-        self.root.option_add("*TCombobox*Listbox.selectForeground", "#f4fbff")
-        style.configure("App.TFrame", background="#0b1116")
-        style.configure("Panel.TFrame", background="#111820")
-        style.configure("TPanedwindow", background="#0b1116", sashwidth=6)
+        self.root.option_add("*TCombobox*Listbox.background", COLORS["scrollbar_trough"])
+        self.root.option_add("*TCombobox*Listbox.foreground", COLORS["text_body"])
+        self.root.option_add("*TCombobox*Listbox.selectBackground", COLORS["text_tree_selected_bg"])
+        self.root.option_add("*TCombobox*Listbox.selectForeground", COLORS["text_tree_selected_fg"])
+        style.configure("App.TFrame", background=COLORS["app"])
+        style.configure("Panel.TFrame", background=COLORS["panel"])
+        style.configure("TPanedwindow", background=COLORS["app"], sashwidth=6)
         style.configure(
             "Title.TLabel",
-            background="#0b1116",
-            foreground="#f2f7fb",
-            font=("Segoe UI Semibold", 16),
+            background=COLORS["app"],
+            foreground=COLORS["text_primary"],
+            font=FONTS["title"],
         )
         style.configure(
             "Subtitle.TLabel",
-            background="#0b1116",
-            foreground="#8fa5b8",
-            font=("Segoe UI", 10),
+            background=COLORS["app"],
+            foreground=COLORS["text_secondary"],
+            font=FONTS["body_small"],
         )
         style.configure(
             "Metric.TLabel",
-            background="#111820",
-            foreground="#e8f1f7",
-            font=("Segoe UI Semibold", 11),
+            background=COLORS["panel"],
+            foreground=COLORS["text_primary"],
+            font=FONTS["title_priority"],
         )
         style.configure(
             "Muted.TLabel",
-            background="#111820",
-            foreground="#91a6b8",
-            font=("Segoe UI", 9),
+            background=COLORS["panel"],
+            foreground=COLORS["text_muted"],
+            font=FONTS["body_small"],
         )
         style.configure(
             "H53Ready.TLabel",
-            background="#1c1c1c",
-            foreground="#00FFA6",
-            font=("Segoe UI Semibold", 9),
+            background=COLORS["h53_label"],
+            foreground=COLORS["text_success"],
+            font=FONTS["heading_small"],
         )
         style.configure(
             "H53Pending.TLabel",
-            background="#1c1c1c",
-            foreground="#f0c674",
-            font=("Segoe UI Semibold", 9),
+            background=COLORS["h53_label"],
+            foreground=COLORS["text_warning"],
+            font=FONTS["heading_small"],
         )
         style.configure(
             "H53Error.TLabel",
-            background="#1c1c1c",
-            foreground="#ff7b72",
-            font=("Segoe UI Semibold", 9),
+            background=COLORS["h53_label"],
+            foreground=COLORS["text_error"],
+            font=FONTS["heading_small"],
         )
         style.configure(
             "H53Muted.TLabel",
-            background="#1c1c1c",
-            foreground="#91a6b8",
-            font=("Segoe UI", 9),
+            background=COLORS["h53_label"],
+            foreground=COLORS["text_muted"],
+            font=FONTS["body_small"],
         )
         style.configure(
             "DialogTitle.TLabel",
-            background="#1c1c1c",
-            foreground="#f2f7fb",
-            font=("Segoe UI Semibold", 16),
+            background=COLORS["h53_label"],
+            foreground=COLORS["text_primary"],
+            font=FONTS["title"],
         )
         style.configure(
             "TSeparator",
-            background="#343b42",
-            bordercolor="#343b42",
+            background=COLORS["border"],
+            bordercolor=COLORS["border"],
         )
         style.configure(
             "Accent.TButton",
-            font=("Segoe UI Semibold", 10),
+            font=FONTS["button"],
             foreground="#061014",
-            background="#00FFA6",
+            background=COLORS["text_success"],
             padding=(12, 7),
         )
         style.map(
@@ -1327,7 +1328,7 @@ class RaceEngineerApp:
         )
         style.configure(
             "Analyze.TButton",
-            font=("Segoe UI Semibold", 10),
+            font=FONTS["button"],
             foreground="#fff4f4",
             background="#7d2938",
             padding=(12, 7),
@@ -1341,7 +1342,7 @@ class RaceEngineerApp:
             "TCheckbutton",
             background="#101010",
             foreground="#c9c9c9",
-            font=("Segoe UI", 9),
+            font=FONTS["body_small"],
         )
         style.map(
             "TCheckbutton",
@@ -1351,14 +1352,14 @@ class RaceEngineerApp:
         )
         style.configure(
             "TButton",
-            background="#252a2f",
-            foreground="#dce7ef",
+            background=COLORS["panel"],
+            foreground=COLORS["text_body"],
             borderwidth=0,
             focusthickness=1,
-            focuscolor="#00FFA6",
+            focuscolor=COLORS["text_success"],
             padding=(10, 7),
             relief="flat",
-            font=("Segoe UI", 10),
+            font=FONTS["body"],
         )
         style.map(
             "TButton",
@@ -1367,49 +1368,49 @@ class RaceEngineerApp:
         )
         style.configure(
             "TEntry",
-            fieldbackground="#15181c",
-            foreground="#e4edf3",
-            bordercolor="#343b42",
-            lightcolor="#343b42",
-            darkcolor="#343b42",
+            fieldbackground=COLORS["scrollbar_trough"],
+            foreground=COLORS["text_primary"],
+            bordercolor=COLORS["border"],
+            lightcolor=COLORS["border"],
+            darkcolor=COLORS["border"],
             insertcolor="#00FFA6",
             padding=(8, 7),
             relief="flat",
         )
         style.map(
             "TEntry",
-            bordercolor=[("focus", "#00FFA6"), ("disabled", "#252a2f")],
+            bordercolor=[("focus", COLORS["text_success"]), ("disabled", "#252a2f")],
             fieldbackground=[("disabled", "#202327")],
             foreground=[("disabled", "#69747d")],
         )
         style.configure(
             "TCombobox",
-            fieldbackground="#15181c",
-            background="#252a2f",
-            foreground="#e4edf3",
-            arrowcolor="#9fb2c1",
-            bordercolor="#343b42",
-            lightcolor="#343b42",
-            darkcolor="#343b42",
+            fieldbackground=COLORS["scrollbar_trough"],
+            background=COLORS["panel"],
+            foreground=COLORS["text_primary"],
+            arrowcolor=COLORS["text_muted"],
+            bordercolor=COLORS["border"],
+            lightcolor=COLORS["border"],
+            darkcolor=COLORS["border"],
             borderwidth=0,
             padding=(8, 6),
             relief="flat",
         )
         style.map(
             "TCombobox",
-            fieldbackground=[("readonly", "#15181c"), ("disabled", "#202327")],
+            fieldbackground=[("readonly", COLORS["scrollbar_trough"]), ("disabled", "#202327")],
             background=[("active", "#343b42"), ("readonly", "#252a2f"), ("disabled", "#202327")],
-            foreground=[("readonly", "#e4edf3"), ("disabled", "#69747d")],
-            arrowcolor=[("active", "#00FFA6"), ("disabled", "#69747d")],
-            bordercolor=[("focus", "#00FFA6")],
+            foreground=[("readonly", COLORS["text_primary"]), ("disabled", "#69747d")],
+            arrowcolor=[("active", COLORS["text_success"]), ("disabled", "#69747d")],
+            bordercolor=[("focus", COLORS["text_success"])],
         )
         scrollbar_options = {
-            "background": "#39434b",
-            "troughcolor": "#15181c",
-            "bordercolor": "#15181c",
-            "lightcolor": "#39434b",
-            "darkcolor": "#39434b",
-            "arrowcolor": "#91a6b8",
+            "background": COLORS["scrollbar_thumb"],
+            "troughcolor": COLORS["scrollbar_trough"],
+            "bordercolor": COLORS["scrollbar_trough"],
+            "lightcolor": COLORS["scrollbar_thumb"],
+            "darkcolor": COLORS["scrollbar_thumb"],
+            "arrowcolor": COLORS["text_muted"],
             "borderwidth": 0,
             "width": 10,
             "relief": "flat",
@@ -1418,29 +1419,29 @@ class RaceEngineerApp:
             style.configure(scrollbar_style, **scrollbar_options)
             style.map(
                 scrollbar_style,
-                background=[("pressed", "#00FFA6"), ("active", "#53616b")],
-                arrowcolor=[("active", "#e4edf3")],
+                background=[("pressed", COLORS["text_success"]), ("active", COLORS["scrollbar_hover"])],
+                arrowcolor=[("active", COLORS["text_primary"])],
             )
         style.configure(
             "Treeview",
-            background="#171717",
-            fieldbackground="#171717",
-            foreground="#dce7ef",
+            background=COLORS["tree"],
+            fieldbackground=COLORS["tree"],
+            foreground=COLORS["text_body"],
             rowheight=30,
             borderwidth=1,
-            bordercolor="#27323a",
-            lightcolor="#27323a",
-            darkcolor="#27323a",
+            bordercolor=COLORS["border_light"],
+            lightcolor=COLORS["border_light"],
+            darkcolor=COLORS["border_light"],
             focusthickness=1,
             focuscolor="#00FFA6",
             relief="flat",
-            font=("Segoe UI", 9),
+            font=FONTS["body_small"],
         )
         style.configure(
             "Treeview.Heading",
-            background="#2a2a2a",
-            foreground="#9fb3c8",
-            font=("Segoe UI Semibold", 9),
+            background=COLORS["tree_heading"],
+            foreground=COLORS["text_heading"],
+            font=FONTS["body_small"],
             padding=(5, 8),
             borderwidth=0,
             relief="flat",
@@ -1460,28 +1461,28 @@ class RaceEngineerApp:
         )
         style.configure(
             "Inspector.TFrame",
-            background="#14191c",
+            background=COLORS["inspector"],
         )
         style.configure(
             "InspectorTitle.TLabel",
-            background="#14191c",
-            foreground="#f2f7fb",
-            font=("Segoe UI Semibold", 13),
+            background=COLORS["inspector"],
+            foreground=COLORS["text_primary"],
+            font=FONTS["title_inspector"],
         )
         style.configure(
             "InspectorMeta.TLabel",
-            background="#14191c",
-            foreground="#7f929f",
-            font=("Segoe UI Semibold", 8),
+            background=COLORS["inspector"],
+            foreground=COLORS["text_card_label"],
+            font=FONTS["heading_small"],
         )
         style.configure(
             "InspectorClose.TButton",
-            background="#14191c",
-            foreground="#91a6b8",
+            background=COLORS["inspector"],
+            foreground=COLORS["text_muted"],
             borderwidth=0,
             relief="flat",
             padding=(5, 2),
-            font=("Segoe UI Semibold", 12),
+            font=FONTS["title_inspector"],
         )
         style.map(
             "InspectorClose.TButton",
@@ -1490,80 +1491,80 @@ class RaceEngineerApp:
                 ("pressed", "#303940"),
             ],
             foreground=[
-                ("active", "#f2f7fb"),
+                ("active", COLORS["text_primary"]),
             ],
         )
 
         style.configure(
             "PriorityCard.TFrame",
-            background="#172421",
+            background=COLORS["priority_card"],
             borderwidth=1,
             relief="solid",
-            bordercolor="#28403b",
+            bordercolor=COLORS["border_priority"],
         )
         style.configure(
             "PriorityIndex.TLabel",
-            background="#172421",
-            foreground="#00FFA6",
-            font=("Segoe UI Semibold", 10),
+            background=COLORS["priority_card"],
+            foreground=COLORS["text_success"],
+            font=FONTS["heading_nav"],
         )
         style.configure(
             "PriorityTitle.TLabel",
-            background="#172421",
-            foreground="#f2f7fb",
-            font=("Segoe UI Semibold", 11),
+            background=COLORS["priority_card"],
+            foreground=COLORS["text_primary"],
+            font=FONTS["title_priority"],
         )
         style.configure(
             "PriorityCue.TLabel",
-            background="#172421",
-            foreground="#c5d3da",
-            font=("Segoe UI", 10),
+            background=COLORS["priority_card"],
+            foreground=COLORS["text_carbon"],
+            font=FONTS["body"],
         )
         style.configure(
             "PriorityFocus.TLabel",
             background="#253c39",
-            foreground="#7af1df",
-            font=("Segoe UI Semibold", 8),
+            foreground=COLORS["text_highlight"],
+            font=FONTS["heading_small"],
             padding=(7, 3),
         )
 
         style.configure(
             "SummaryCard.TFrame",
-            background="#141c23",
+            background=COLORS["summary_card"],
             borderwidth=1,
             relief="solid",
-            bordercolor="#26343d",
+            bordercolor=COLORS["border_summary"],
         )
         style.configure(
             "SummaryAccentCard.TFrame",
-            background="#14211f",
+            background=COLORS["summary_accent"],
             borderwidth=1,
             relief="solid",
-            bordercolor="#24413d",
+            bordercolor=COLORS["border_accent"],
         )
         style.configure(
             "SummaryTitle.TLabel",
-            background="#141c23",
-            foreground="#00FFA6",
-            font=("Segoe UI Semibold", 11),
+            background=COLORS["summary_card"],
+            foreground=COLORS["text_success"],
+            font=FONTS["title_summary"],
         )
         style.configure(
             "SummarySubtitle.TLabel",
-            background="#141c23",
-            foreground="#8399a8",
-            font=("Segoe UI", 9),
+            background=COLORS["summary_card"],
+            foreground=COLORS["text_subtle"],
+            font=FONTS["body_small"],
         )
         style.configure(
             "SummaryAccentTitle.TLabel",
-            background="#14211f",
-            foreground="#00FFA6",
-            font=("Segoe UI Semibold", 11),
+            background=COLORS["summary_accent"],
+            foreground=COLORS["text_success"],
+            font=FONTS["title_summary"],
         )
         style.configure(
             "SummaryAccentSubtitle.TLabel",
-            background="#14211f",
-            foreground="#8eaaa5",
-            font=("Segoe UI", 9),
+            background=COLORS["summary_accent"],
+            foreground=COLORS["text_subaccent"],
+            font=FONTS["body_small"],
         )
 
         style.configure(
@@ -1572,150 +1573,150 @@ class RaceEngineerApp:
         )
         style.configure(
             "WorkspaceNav.TFrame",
-            background="#0f161d",
+            background=COLORS["workspace_nav"],
         )
         style.configure(
             "WorkspaceNav.TButton",
-            background="#0f161d",
-            foreground="#91a6b8",
+            background=COLORS["workspace_nav"],
+            foreground=COLORS["text_muted"],
             borderwidth=0,
             relief="flat",
             padding=(14, 8),
             anchor="center",
-            font=("Segoe UI Semibold", 10),
+            font=FONTS["heading_nav"],
         )
         style.map(
             "WorkspaceNav.TButton",
             background=[
-                ("active", "#20262b"),
-                ("pressed", "#252c31"),
+                ("active", COLORS["nav_hover"]),
+                ("pressed", COLORS["nav_pressed"]),
             ],
             foreground=[
-                ("active", "#e4edf3"),
+                ("active", COLORS["text_body"]),
             ],
         )
         style.configure(
             "WorkspaceNavActive.TButton",
             background="#123138",
-            foreground="#00FFA6",
+            foreground=COLORS["text_success"],
             borderwidth=0,
             relief="flat",
             padding=(14, 8),
             anchor="center",
-            font=("Segoe UI Semibold", 10),
+            font=FONTS["heading_nav"],
         )
         style.map(
             "WorkspaceNavActive.TButton",
             background=[
-                ("active", "#2b3a40"),
-                ("pressed", "#2b3a40"),
+                ("active", COLORS["nav_active_hover"]),
+                ("pressed", COLORS["nav_active_hover"]),
             ],
             foreground=[
-                ("active", "#00FFA6"),
+                ("active", COLORS["text_success"]),
             ],
         )
 
         style.configure(
             "Sidebar.TFrame",
-            background="#071018",
+            background=COLORS["sidebar"],
         )
         style.configure(
             "SidebarBrand.TLabel",
-            background="#071018",
-            foreground="#f2f7fb",
-            font=("Segoe UI Semibold", 10),
+            background=COLORS["sidebar"],
+            foreground=COLORS["text_primary"],
+            font=FONTS["heading_nav"],
         )
         style.configure(
             "SidebarMeta.TLabel",
-            background="#071018",
-            foreground="#7f929f",
-            font=("Segoe UI", 8),
+            background=COLORS["sidebar"],
+            foreground=COLORS["text_card_label"],
+            font=FONTS["heading_small"],
         )
         style.configure(
             "SidebarStatus.TLabel",
-            background="#071018",
-            foreground="#00FFA6",
-            font=("Segoe UI Semibold", 8),
+            background=COLORS["sidebar"],
+            foreground=COLORS["text_success"],
+            font=FONTS["heading_small"],
         )
         style.configure(
             "SidebarSession.TLabel",
-            background="#071018",
-            foreground="#dce7ef",
-            font=("Segoe UI Semibold", 10),
+            background=COLORS["sidebar"],
+            foreground=COLORS["text_body"],
+            font=FONTS["heading_nav"],
         )
         style.configure(
             "SidebarNav.TButton",
-            background="#071018",
+            background=COLORS["sidebar"],
             foreground="#c6d3dc",
             borderwidth=0,
             relief="flat",
             padding=(12, 10),
             anchor="w",
-            font=("Segoe UI Semibold", 10),
+            font=FONTS["heading_nav"],
         )
         style.map(
             "SidebarNav.TButton",
-            background=[("active", "#101c24"), ("pressed", "#14242c")],
-            foreground=[("active", "#f2f7fb")],
+            background=[("active", COLORS["sidebar_hover"]), ("pressed", COLORS["sidebar_pressed"])],
+            foreground=[("active", COLORS["text_primary"])],
         )
         style.configure(
             "SidebarNavActive.TButton",
-            background="#0a3338",
-            foreground="#00FFA6",
+            background=COLORS["sidebar_active_bg"],
+            foreground=COLORS["text_success"],
             borderwidth=0,
             relief="flat",
             padding=(12, 10),
             anchor="w",
-            font=("Segoe UI Semibold", 10),
+            font=FONTS["heading_nav"],
         )
         style.map(
             "SidebarNavActive.TButton",
-            background=[("active", "#104148"), ("pressed", "#104148")],
-            foreground=[("active", "#7af1df")],
+            background=[("active", COLORS["sidebar_active_hover"]), ("pressed", COLORS["sidebar_active_hover"])],
+            foreground=[("active", COLORS["text_highlight"])],
         )
         style.configure(
             "WorkspaceHeader.TFrame",
-            background="#0b1116",
+            background=COLORS["workspace"],
         )
         style.configure(
             "WorkspaceTitle.TLabel",
-            background="#0b1116",
-            foreground="#f2f7fb",
-            font=("Segoe UI Semibold", 17),
+            background=COLORS["workspace"],
+            foreground=COLORS["text_primary"],
+            font=FONTS["title_workspace"],
         )
         style.configure(
             "WorkspaceSubtitle.TLabel",
-            background="#0b1116",
-            foreground="#91a6b8",
-            font=("Segoe UI", 9),
+            background=COLORS["workspace"],
+            foreground=COLORS["text_muted"],
+            font=FONTS["body_small"],
         )
 
         style.configure(
             "Link.TButton",
-            background="#151d24",
-            foreground="#00FFA6",
+            background=COLORS["summary_change"],
+            foreground=COLORS["text_success"],
             borderwidth=0,
             relief="flat",
             padding=(4, 3),
             anchor="e",
-            font=("Segoe UI Semibold", 9),
+            font=FONTS["body"],
         )
         style.map(
             "Link.TButton",
-            background=[("active", "#151d24"), ("pressed", "#151d24")],
+            background=[("active", COLORS["summary_change"]), ("pressed", COLORS["summary_change"])],
             foreground=[("active", "#8cf5e7")],
         )
 
-        style.configure("TNotebook", background="#1c1c1c", borderwidth=0)
+        style.configure("TNotebook", background=COLORS["h53_label"], borderwidth=0)
         style.configure(
             "TNotebook.Tab",
-            background="#2a2a2a",
-            foreground="#b8c7d3",
+            background=COLORS["tree_heading"],
+            foreground=COLORS["text_heading"],
             padding=(14, 9),
-            font=("Segoe UI Semibold", 9),
+            font=FONTS["body_small"],
             borderwidth=0,
             focusthickness=1,
-            focuscolor="#00FFA6",
+            focuscolor=COLORS["text_success"],
         )
         style.map(
             "TNotebook.Tab",
@@ -1724,31 +1725,31 @@ class RaceEngineerApp:
         )
         style.configure(
             "Horizontal.TProgressbar",
-            background="#00FFA6",
-            troughcolor="#252a2f",
-            bordercolor="#252a2f",
-            lightcolor="#00FFA6",
-            darkcolor="#00FFA6",
+            background=COLORS["text_success"],
+            troughcolor=COLORS["button_disabled"],
+            bordercolor=COLORS["button_disabled"],
+            lightcolor=COLORS["text_success"],
+            darkcolor=COLORS["text_success"],
             borderwidth=0,
             thickness=5,
         )
         style.configure(
             "MetricCard.TFrame",
-            background="#171a1d",
+            background=COLORS["metric_card"],
             borderwidth=1,
             relief="solid",
         )
         style.configure(
             "CardLabel.TLabel",
-            background="#171a1d",
-            foreground="#7f929f",
-            font=("Segoe UI Semibold", 8),
+            background=COLORS["metric_card"],
+            foreground=COLORS["text_card_label"],
+            font=FONTS["heading_small"],
         )
         style.configure(
             "CardValue.TLabel",
             background="#171a1d",
             foreground="#edf6fa",
-            font=("Segoe UI Semibold", 11),
+            font=FONTS["title_priority"],
         )
 
     def _build_layout(self):
@@ -1974,26 +1975,26 @@ class RaceEngineerApp:
         self.inspector_text = tk.Text(
             self.inspector_frame,
             wrap="word",
-            background="#11171a",
-            foreground="#cbd8df",
-            insertbackground="#00FFA6",
+            background=COLORS["statistics_canvas"],
+            foreground=COLORS["text_body"],
+            insertbackground=COLORS["text_success"],
             relief="flat",
             borderwidth=0,
             highlightthickness=0,
             padx=12,
             pady=10,
-            font=("Segoe UI", 9),
+            font=(FONT_FAMILY, 9),
             spacing1=2,
             spacing3=5,
         )
         self.inspector_text.tag_configure(
             "section",
-            font=("Segoe UI Semibold", 9),
-            foreground="#00FFA6",
+            font=FONTS["heading"],
+            foreground=COLORS["text_success"],
             spacing1=10,
             spacing3=4,
         )
-        self.inspector_text.tag_configure("value", font=("Segoe UI", 9), foreground="#dce7ef")
+        self.inspector_text.tag_configure("value", font=(FONT_FAMILY, 9), foreground=COLORS["text_body"])
         self.inspector_text.pack(fill="both", expand=True)
         self.inspector_text.configure(state="disabled")
 
@@ -2003,7 +2004,7 @@ class RaceEngineerApp:
         summary_frame = self.primary_section_frames["Resumen"]
         self.summary_canvas = tk.Canvas(
             summary_frame,
-            background="#0f161d",
+            background=COLORS["workspace_nav"],
             highlightthickness=0,
             borderwidth=0,
         )
@@ -2346,7 +2347,7 @@ class RaceEngineerApp:
     def _summary_preview_canvas(self, parent):
         canvas = self.tk.Canvas(
             parent,
-            background="#0d141a",
+            background=COLORS["comparison_pane"],
             highlightthickness=1,
             highlightbackground="#2b3943",
             borderwidth=0,
@@ -2377,10 +2378,10 @@ class RaceEngineerApp:
                     width / 2,
                     height / 2,
                     text=message,
-                    fill="#7f929f",
+                    fill=COLORS["text_card_label"],
                     width=max(width - 48, 80),
                     justify="center",
-                    font=("Segoe UI", 9),
+                    font=(FONT_FAMILY, 9),
                 )
             return
 
@@ -2455,16 +2456,16 @@ class RaceEngineerApp:
                     x + radius,
                     y + radius,
                     fill="#f0c674" if not getattr(priority, "is_focus", False) else "#ff7b72",
-                    outline="#0d141a",
+                    outline=COLORS["comparison_pane"],
                     width=1,
                 )
         map_canvas.create_text(
             12,
             map_height - 12,
             text="Click para abrir Telemetría",
-            fill="#7f929f",
+            fill=COLORS["text_card_label"],
             anchor="sw",
-            font=("Segoe UI", 8),
+            font=(FONT_FAMILY, 8),
         )
 
         # Preview de canales: reutiliza build_track_telemetry_chart y reduce los
@@ -2481,8 +2482,8 @@ class RaceEngineerApp:
                 tel_width / 2,
                 tel_height / 2,
                 text="Canales de telemetría no disponibles.",
-                fill="#7f929f",
-                font=("Segoe UI", 9),
+                fill=COLORS["text_card_label"],
+                font=(FONT_FAMILY, 9),
             )
             return
 
@@ -2836,7 +2837,7 @@ class RaceEngineerApp:
         self._bind_keyboard_activation(canvas, callback)
         canvas.bind(
             "<FocusIn>",
-            lambda _event: canvas.configure(highlightbackground="#00FFA6"),
+            lambda _event: canvas.configure(highlightbackground=COLORS["text_success"]),
         )
         canvas.bind(
             "<FocusOut>",
@@ -2898,7 +2899,7 @@ class RaceEngineerApp:
         window = self.tk.Toplevel(self.root)
         self.shortcut_help_window = window
         window.title("Atajos de teclado")
-        window.configure(background="#0b1116")
+        window.configure(background=COLORS["app"])
         window.resizable(False, False)
         window.transient(self.root)
         window.protocol("WM_DELETE_WINDOW", self._hide_shortcut_help)
@@ -3044,9 +3045,9 @@ class RaceEngineerApp:
             charts.columnconfigure(index, weight=1, uniform="statistics_charts")
             chart = tk.Canvas(
                 charts,
-                background="#11171a",
+                background=COLORS["statistics_canvas"],
                 highlightthickness=1,
-                highlightbackground="#27323a",
+                highlightbackground=COLORS["border_light"],
                 borderwidth=0,
                 height=210,
             )
@@ -3185,8 +3186,8 @@ class RaceEngineerApp:
                 ),
                 tags=("row_even" if index % 2 == 0 else "row_odd",),
             )
-        self.statistics_tree.tag_configure("row_even", background="#171717")
-        self.statistics_tree.tag_configure("row_odd", background="#1b1f23")
+        self.statistics_tree.tag_configure("row_even", background=COLORS["tree"])
+        self.statistics_tree.tag_configure("row_odd", "#1b1f23")
 
         self.statistics_sessions_by_month = {
             monthly.month: tuple(
@@ -3213,7 +3214,7 @@ class RaceEngineerApp:
             13,
             anchor="nw",
             text=f"{title} · POR VUELTAS VÁLIDAS",
-            fill="#91a6b8",
+            fill=COLORS["text_muted"],
             font=("Segoe UI Semibold", 9),
         )
         items = list(source_items)
@@ -3222,7 +3223,7 @@ class RaceEngineerApp:
                 width / 2,
                 height / 2,
                 text=ui_state_message("STATISTICS_EMPTY", compact=True),
-                fill="#7f929f",
+                fill=COLORS["text_card_label"],
                 font=("Segoe UI", 10),
             )
             return
@@ -3266,14 +3267,14 @@ class RaceEngineerApp:
             top + offset,
             left + offset + hole,
             top + offset + hole,
-            fill="#11171a",
-            outline="#11171a",
+            fill=COLORS["statistics_canvas"],
+            outline=COLORS["statistics_canvas"],
         )
         canvas.create_text(
             left + diameter / 2,
             top + diameter / 2,
             text=str(total),
-            fill="#edf6fa",
+            fill=COLORS["text_primary"],
             font=("Segoe UI Semibold", 12),
         )
 
@@ -3315,7 +3316,7 @@ class RaceEngineerApp:
         window.title(f"Estadísticas {month} · {len(sessions)} sesiones")
         window.geometry("1120x620")
         window.minsize(820, 420)
-        window.configure(background="#0b1116")
+        window.configure(background=COLORS["app"])
         shell = self.ttk.Frame(window, style="Workspace.TFrame", padding=(18, 16))
         shell.pack(fill="both", expand=True)
         self.ttk.Label(
@@ -3357,7 +3358,7 @@ class RaceEngineerApp:
                 ),
                 tags=("row_even" if index % 2 == 0 else "row_odd",),
             )
-        tree.tag_configure("row_even", background="#171717")
+        tree.tag_configure("row_even", background=COLORS["tree"])
         tree.tag_configure("row_odd", background="#1b1f23")
 
     def _apply_track_readiness_payload(self, payload):
@@ -3861,7 +3862,7 @@ class RaceEngineerApp:
         tree.bind("<Double-1>", self._on_calibration_tree_double_click)
         tree.bind("<Return>", lambda _event: self._on_calibration_tree_double_click())
 
-        tree.tag_configure("row_even", background="#171717")
+        tree.tag_configure("row_even", background=COLORS["tree"])
         tree.tag_configure("row_odd", background="#1b1f23")
         for tag, color in CALIBRATION_STATUS_COLORS.items():
             tree.tag_configure(tag, foreground=color)
@@ -4375,7 +4376,7 @@ class RaceEngineerApp:
 
             canvas = self.tk.Canvas(
                 body,
-                background="#151d24",
+                background=COLORS["summary_change"],
                 highlightthickness=0,
                 borderwidth=0,
             )
@@ -4756,42 +4757,31 @@ class RaceEngineerApp:
         )
         body.pack(fill="both", expand=True)
 
-        text = self.tk.Text(
-            body,
-            wrap="word",
-            height=height,
-            background="#141c23" if not accent else "#14211f",
-            foreground="#dce7ef",
-            insertbackground="#00FFA6",
-            selectbackground="#315b60",
-            selectforeground="#f4fbff",
-            relief="flat",
-            borderwidth=0,
-            highlightthickness=0,
-            padx=10 if compact else 14,
-            pady=8 if compact else 12,
-            font=("Segoe UI", 9 if compact else 10),
-            spacing1=1 if compact else 2,
-            spacing3=3 if compact else 4,
+        defaults = (
+            text_accent_defaults(compact=compact)
+            if accent
+            else text_defaults(compact=compact)
         )
+
+        text = self.tk.Text(body, wrap="word", height=height, **defaults)
 
         text.tag_configure(
             "h1",
-            font=("Segoe UI Semibold", 18),
-            foreground="#f2f7fb",
+            font=TAG_FONTS["h1"],
+            foreground=COLORS["text_primary"],
             spacing3=12,
         )
         text.tag_configure(
             "h2",
-            font=("Segoe UI Semibold", 12 if compact else 14),
-            foreground="#00FFA6",
+            font=(FONT_FAMILY_BOLD, 12 if compact else 14),
+            foreground=COLORS["text_success"],
             spacing1=9 if compact else 12,
             spacing3=5 if compact else 7,
         )
         text.tag_configure(
             "h3",
-            font=("Segoe UI Semibold", 11),
-            foreground="#f2f7fb",
+            font=(FONT_FAMILY_BOLD, 11),
+            foreground=COLORS["text_primary"],
             spacing1=8,
         )
         text.tag_configure(
@@ -4817,26 +4807,10 @@ class RaceEngineerApp:
     def _text_tab(self, notebook, label):
         frame = self.ttk.Frame(notebook, style="Panel.TFrame", padding=5)
         notebook.add(frame, text=label)
-        text = self.tk.Text(
-            frame,
-            wrap="word",
-            background="#15181c",
-            foreground="#dce7ef",
-            insertbackground="#00FFA6",
-            selectbackground="#315b60",
-            selectforeground="#f4fbff",
-            relief="flat",
-            borderwidth=0,
-            highlightthickness=0,
-            padx=18,
-            pady=16,
-            font=("Segoe UI", 10),
-            spacing1=2,
-            spacing3=4,
-        )
-        text.tag_configure("h1", font=("Segoe UI Semibold", 18), foreground="#f2f7fb", spacing3=12)
-        text.tag_configure("h2", font=("Segoe UI Semibold", 14), foreground="#00FFA6", spacing1=12, spacing3=7)
-        text.tag_configure("h3", font=("Segoe UI Semibold", 11), foreground="#f2f7fb", spacing1=8)
+        text = self.tk.Text(frame, wrap="word", **readonly_defaults())
+        text.tag_configure("h1", font=TAG_FONTS["h1"], foreground=COLORS["text_primary"], spacing3=12)
+        text.tag_configure("h2", font=TAG_FONTS["h2"], foreground=COLORS["text_success"], spacing1=12, spacing3=7)
+        text.tag_configure("h3", font=TAG_FONTS["h3"], foreground=COLORS["text_primary"], spacing1=8)
         text.tag_configure("bullet", lmargin1=18, lmargin2=32)
         scrollbar = self.ttk.Scrollbar(frame, orient="vertical", command=text.yview)
         text.configure(yscrollcommand=scrollbar.set)
@@ -4869,9 +4843,9 @@ class RaceEngineerApp:
 
         canvas = self.tk.Canvas(
             map_panel,
-            background="#0b0e10",
+            background=COLORS["track_map"],
             highlightthickness=1,
-            highlightbackground="#2d343a",
+            highlightbackground=COLORS["border_map"],
         )
         canvas.pack(fill="both", expand=True)
         canvas.bind("<Configure>", lambda _event: self._render_track_map())
@@ -5070,9 +5044,9 @@ class RaceEngineerApp:
         telemetry_canvas = self.tk.Canvas(
             channels_panel,
             height=210,
-            background="#111418",
+            background=COLORS["panel"],
             highlightthickness=1,
-            highlightbackground="#2d343a",
+            highlightbackground=COLORS["border_map"],
         )
         telemetry_canvas.pack(fill="both", expand=True, padx=0, pady=(4, 0))
         telemetry_canvas.configure(cursor="crosshair")
@@ -5265,28 +5239,30 @@ class RaceEngineerApp:
         window.title(title)
         window.geometry("820x700")
         window.minsize(620, 440)
-        window.configure(background="#0b1116")
+        window.configure(background=COLORS["app"])
         frame = self.ttk.Frame(window, style="Panel.TFrame", padding=16)
         frame.pack(fill="both", expand=True)
         self.ttk.Label(frame, text=title, style="Title.TLabel").pack(anchor="w", pady=(0, 10))
         text = self.tk.Text(
             frame,
             wrap="word",
-            background="#141c23",
-            foreground="#dce7ef",
-            insertbackground="#00FFA6",
+            background=COLORS["summary_card"],
+            foreground=COLORS["text_body"],
+            insertbackground=COLORS["text_success"],
+            selectbackground=COLORS["text_tree_selected_bg"],
+            selectforeground=COLORS["text_tree_selected_fg"],
             relief="flat",
             borderwidth=0,
             highlightthickness=0,
             padx=16,
             pady=14,
-            font=("Segoe UI", 10),
+            font=(FONT_FAMILY, 10),
             spacing1=2,
             spacing3=4,
         )
-        text.tag_configure("h1", font=("Segoe UI Semibold", 18), foreground="#f2f7fb", spacing3=12)
-        text.tag_configure("h2", font=("Segoe UI Semibold", 14), foreground="#00FFA6", spacing1=12, spacing3=7)
-        text.tag_configure("h3", font=("Segoe UI Semibold", 11), foreground="#f2f7fb", spacing1=8)
+        text.tag_configure("h1", font=TAG_FONTS["h1"], foreground=COLORS["text_primary"], spacing3=12)
+        text.tag_configure("h2", font=FONTS["title"], foreground=COLORS["text_success"], spacing1=12, spacing3=7)
+        text.tag_configure("h3", font=FONTS["heading"], foreground=COLORS["text_primary"], spacing1=8)
         text.tag_configure("bullet", lmargin1=18, lmargin2=32)
         scrollbar = self.ttk.Scrollbar(frame, orient="vertical", command=text.yview)
         text.configure(yscrollcommand=scrollbar.set)
@@ -5550,9 +5526,11 @@ class RaceEngineerApp:
         text_widget = self.tk.Text(
             container,
             wrap="word",
-            background="#171717",
-            foreground="#e6edf3",
-            insertbackground="#e6edf3",
+            background=COLORS["tree"],
+            foreground=COLORS["text_body"],
+            insertbackground=COLORS["text_body"],
+            selectbackground=COLORS["text_tree_selected_bg"],
+            selectforeground=COLORS["text_tree_selected_fg"],
             relief="flat",
             padx=12,
             pady=10,
@@ -5737,7 +5715,7 @@ class RaceEngineerApp:
                 ),
                 tags=("row_even" if index % 2 == 0 else "row_odd", session.status),
             )
-        self.tree.tag_configure("row_even", background="#171717")
+        self.tree.tag_configure("row_even", background=COLORS["tree"])
         self.tree.tag_configure("row_odd", background="#1b1f23")
         for status in SESSION_STATUS_COLORS:
             self.tree.tag_configure(status, foreground=session_status_color(status))
@@ -6933,7 +6911,7 @@ class RaceEngineerApp:
                     fill="#ffffff" if selected else "#b8dfe4",
                     anchor="sw",
                     width=130,
-                    font=("Segoe UI", 8),
+                    font=(FONT_FAMILY, 8),
                 )
         zone_colors = {
             "loss": "#e45a5a",
@@ -6991,17 +6969,17 @@ class RaceEngineerApp:
             start_x + 10,
             start_y - 10,
             text="Inicio",
-            fill="#f2f7fb",
+            fill=COLORS["text_primary"],
             anchor="sw",
-            font=("Segoe UI", 9),
+            font=(FONT_FAMILY, 9),
         )
         canvas.create_text(
             width - 18,
             16,
             text="N ↑",
-            fill="#8fa5b8",
+            fill=COLORS["text_secondary"],
             anchor="ne",
-            font=("Segoe UI Semibold", 10),
+            font=FONTS["button"],
         )
         if self.current_track_zones or self.current_track_priorities:
             legend_rows = []
@@ -7283,7 +7261,7 @@ class RaceEngineerApp:
                     12,
                     end_x,
                     height - 12,
-                    fill="#171717",
+                    fill=COLORS["tree"],
                     outline="",
                     stipple="gray50",
                 )

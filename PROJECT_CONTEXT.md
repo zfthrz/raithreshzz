@@ -151,7 +151,7 @@ D3.x deterministic-first default and D2.9 production ranker (2026-08-25).
 | Component | Current operational baseline |
 |---|---|
 | `race_engineer.py` | orchestrator v0.4 — estados nuevos usan `debrief`/`debrief_validator`; lectura legacy compatible |
-| `race_engineer_gui.py` | v1.59 / visible focus and keyboard activation |
+| `race_engineer_gui.py` | v1.60 — centralized theme constants (`gui_theme.py`), widget colors use `COLORS`, fonts use `FONTS`/`TAG_FONTS` |
 | `analyze_telemetry.py` | v3.8 + Objective Python v6 |
 | Brake point | 2.1 / schema 2.1 |
 | Throttle point | 1.2.1 / schema 1.2 |

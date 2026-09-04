@@ -472,7 +472,7 @@ def test_standard_summary_splits_cards_and_visuals_evenly():
     assert summary_dashboard_height(900, "compact") == 560
     assert summary_dashboard_height(1450, "narrow") == 1080
 
-    source = inspect.getsource(RaceEngineerApp._on_summary_canvas_configure)
+    source = inspect.getsource(RaceEngineerApp._configure_summary_viewport)
     assert "summary_dashboard_height(content_height, mode)" in source
 
 
@@ -876,15 +876,36 @@ def test_layout_uses_fixed_sidebar_and_workspace_header():
 
 def test_summary_resize_reflows_cards_and_visual_previews():
     resize_source = inspect.getsource(RaceEngineerApp._on_summary_canvas_configure)
+    viewport_source = inspect.getsource(RaceEngineerApp._configure_summary_viewport)
     layout_source = inspect.getsource(RaceEngineerApp._layout_summary_cards)
     toggle_source = inspect.getsource(RaceEngineerApp._toggle_sidebar)
 
-    assert "self._layout_summary_cards(int(event.width))" in resize_source
+    assert "self._configure_summary_viewport(int(event.width), int(event.height))" in resize_source
+    assert "self._layout_summary_cards(int(width))" in viewport_source
     assert "summary_layout_spec(width)" in layout_source
     assert "card.grid_configure(" in layout_source
     assert 'mode == "narrow"' in layout_source
     assert "self.sidebar.pack_forget()" in toggle_source
     assert "self.sidebar.pack(before=self.main_frame" in toggle_source
+
+
+def test_sidebar_and_plan_inspector_preserve_a_flexible_workspace():
+    build_source = inspect.getsource(RaceEngineerApp._build_layout)
+    show_source = inspect.getsource(RaceEngineerApp._show_plan_inspector)
+    hide_source = inspect.getsource(RaceEngineerApp._hide_plan_inspector)
+    refresh_source = inspect.getsource(
+        RaceEngineerApp._refresh_summary_after_inspector_change
+    )
+
+    assert "workspace_body.columnconfigure(0, weight=1, minsize=480)" in build_source
+    assert 'workspace.grid(row=0, column=0, sticky="nsew")' in build_source
+    assert "self.inspector_frame.grid_propagate(False)" in build_source
+    assert "inspector_header.columnconfigure(0, weight=1)" in build_source
+    assert "wraplength=220" in build_source
+    assert 'self.inspector_frame.grid(' in show_source
+    assert "self.inspector_frame.grid_remove()" in hide_source
+    assert "self._configure_summary_viewport(width, height)" in refresh_source
+    assert "self.summary_canvas.yview_moveto(0.0)" in refresh_source
 
 
 def test_interactive_views_have_keyboard_activation_and_focus_return():
@@ -906,12 +927,14 @@ def test_interactive_views_have_keyboard_activation_and_focus_return():
 def test_summary_uses_one_vertical_scroll_container_for_all_blocks():
     build_source = inspect.getsource(RaceEngineerApp._build_layout)
     resize_source = inspect.getsource(RaceEngineerApp._on_summary_canvas_configure)
+    viewport_source = inspect.getsource(RaceEngineerApp._configure_summary_viewport)
     content_source = inspect.getsource(RaceEngineerApp._on_summary_content_configure)
 
     assert "self.summary_canvas = tk.Canvas" in build_source
     assert "command=self.summary_canvas.yview" in build_source
     assert "window=summary_content" in build_source
-    assert "width=event.width" in resize_source
+    assert "int(event.width)" in resize_source
+    assert "width=width" in viewport_source
     assert 'scrollregion=self.summary_canvas.bbox("all")' in content_source
 
 

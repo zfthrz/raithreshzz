@@ -2204,8 +2204,12 @@ class RaceEngineerApp:
 
         workspace_body = ttk.Frame(main, style="Workspace.TFrame")
         workspace_body.pack(fill="both", expand=True)
+        workspace_body.columnconfigure(0, weight=1, minsize=480)
+        workspace_body.columnconfigure(1, weight=0)
+        workspace_body.rowconfigure(0, weight=1)
+        self.workspace_body = workspace_body
         workspace = ttk.Frame(workspace_body, style="Workspace.TFrame")
-        workspace.pack(side="left", fill="both", expand=True)
+        workspace.grid(row=0, column=0, sticky="nsew")
 
         self.inspector_frame = ttk.Frame(
             workspace_body,
@@ -2214,19 +2218,27 @@ class RaceEngineerApp:
             width=290,
         )
         self.inspector_frame.pack_propagate(False)
+        self.inspector_frame.grid_propagate(False)
         self.inspector_visible = False
         inspector_header = ttk.Frame(self.inspector_frame, style="Inspector.TFrame")
         inspector_header.pack(fill="x", pady=(0, 14))
+        inspector_header.columnconfigure(0, weight=1)
         self.inspector_title_var = tk.StringVar(value="Detalle")
         self.inspector_meta_var = tk.StringVar(value="")
-        ttk.Label(inspector_header, textvariable=self.inspector_title_var, style="InspectorTitle.TLabel").pack(side="left")
+        ttk.Label(
+            inspector_header,
+            textvariable=self.inspector_title_var,
+            style="InspectorTitle.TLabel",
+            wraplength=220,
+            justify="left",
+        ).grid(row=0, column=0, sticky="ew")
         ttk.Button(
             inspector_header,
             text="×",
             style="InspectorClose.TButton",
             width=3,
             command=self._hide_plan_inspector,
-        ).pack(side="right")
+        ).grid(row=0, column=1, sticky="ne")
         ttk.Label(
             self.inspector_frame,
             textvariable=self.inspector_meta_var,
@@ -2510,21 +2522,24 @@ class RaceEngineerApp:
         )
 
     def _on_summary_canvas_configure(self, event):
+        self._configure_summary_viewport(int(event.width), int(event.height))
+
+    def _configure_summary_viewport(self, width: int, height: int):
         # El frame interno ocupa siempre como mínimo todo el viewport visible.
         # Si la ventana baja de tamaño, conserva un mínimo y el Canvas hace
         # scroll. La fila visual usa pack(expand=True), por lo que absorbe de
         # forma nativa todo el espacio restante sin dejar una franja vacía.
-        mode = self._layout_summary_cards(int(event.width))
+        mode = self._layout_summary_cards(int(width))
         minimum_content_height = {
             "wide": 650,
             "compact": 900,
             "narrow": 1450,
         }[mode]
-        content_height = max(int(event.height), minimum_content_height)
+        content_height = max(int(height), minimum_content_height)
 
         self.summary_canvas.itemconfigure(
             self.summary_canvas_window,
-            width=event.width,
+            width=width,
             height=content_height,
         )
 
@@ -4363,8 +4378,22 @@ class RaceEngineerApp:
     def _hide_plan_inspector(self):
         if not getattr(self, "inspector_visible", False):
             return
-        self.inspector_frame.pack_forget()
+        self.inspector_frame.grid_remove()
         self.inspector_visible = False
+        self._refresh_summary_after_inspector_change(reset_scroll=False)
+
+    def _refresh_summary_after_inspector_change(self, *, reset_scroll: bool):
+        if self.primary_section_var.get() != "Resumen":
+            return
+
+        def refresh():
+            width = max(int(self.summary_canvas.winfo_width()), 1)
+            height = max(int(self.summary_canvas.winfo_height()), 1)
+            self._configure_summary_viewport(width, height)
+            if reset_scroll:
+                self.summary_canvas.yview_moveto(0.0)
+
+        self.root.after_idle(refresh)
 
     def _show_plan_inspector(self, item, index, focused=False):
         if not isinstance(item, dict):
@@ -4595,12 +4624,14 @@ class RaceEngineerApp:
         self.inspector_text.yview_moveto(0)
 
         if not self.inspector_visible:
-            self.inspector_frame.pack(
-                side="right",
-                fill="y",
+            self.inspector_frame.grid(
+                row=0,
+                column=1,
+                sticky="ns",
                 padx=(10, 0),
             )
             self.inspector_visible = True
+            self._refresh_summary_after_inspector_change(reset_scroll=True)
 
     def _build_next_stint_panel(self, parent, *, compact=False):
         container = self.ttk.Frame(

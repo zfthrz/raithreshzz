@@ -42,6 +42,7 @@ from race_engineer_gui import (
     state_files_fingerprint,
     status_wraplength,
     telemetry_canvas_ready,
+    telemetry_comparison_sample_text,
     telemetry_priority_bands,
     track_priority_selector_value,
     ui_state_message,
@@ -527,6 +528,48 @@ def test_telemetry_keyboard_one_second_jump_uses_native_timestamps():
     app._move_telemetry_selection("previous_second")
 
     assert selected == [2, 0]
+
+
+def test_point_comparison_formats_only_aligned_deterministic_values():
+    sample = SimpleNamespace(
+        current_speed_kmh=151.2,
+        reference_speed_kmh=148.4,
+        speed_delta_kmh=2.8,
+        current_brake_percent=42.0,
+        reference_brake_percent=51.0,
+        brake_delta_percent=-9.0,
+        current_throttle_percent=18.0,
+        reference_throttle_percent=12.0,
+        throttle_delta_percent=6.0,
+        current_gear=4,
+        reference_gear=3,
+        current_steering_percent=-21.0,
+        reference_steering_percent=-18.0,
+        steering_delta_percent=-3.0,
+        accumulated_delta_s=0.0842,
+    )
+
+    assert telemetry_comparison_sample_text(sample, "History H4") == (
+        "Comparación puntual · actual/History H4 · "
+        "velocidad 151.2/148.4 km/h (+2.8 km/h) · "
+        "freno 42.0/51.0% (-9.0%) · acelerador 18.0/12.0% (+6.0%) · "
+        "marcha 4/3 · volante -21.0/-18.0% (-3.0%) · delta acumulado +0.084 s"
+    )
+
+
+def test_selected_point_comparison_uses_active_reference_and_common_coverage():
+    source = inspect.getsource(RaceEngineerApp._point_comparison_text)
+    active_source = inspect.getsource(RaceEngineerApp._active_telemetry_comparison)
+    interval_source = inspect.getsource(RaceEngineerApp._set_interval_telemetry)
+    selection_source = inspect.getsource(RaceEngineerApp._apply_track_point_selection)
+
+    assert "select_active_telemetry_reference(" in active_source
+    assert "build_historical_telemetry_comparison(" in active_source
+    assert "_telemetry_comparison_cache" in active_source
+    assert "historical_telemetry_sample_at_distance(" in source
+    assert "fuera de la cobertura común" in source
+    assert "self._point_comparison_text(data, selected_point)" in interval_source
+    assert "self._point_comparison_text(data, point)" in selection_source
 
 
 def test_telemetry_canvas_exposes_scoped_keyboard_navigation():

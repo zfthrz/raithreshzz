@@ -761,6 +761,69 @@ def telemetry_priority_bands(priorities, *, axis_start_m, axis_end_m):
     return tuple(bands)
 
 
+def telemetry_comparison_sample_text(sample, reference_label: str) -> str:
+    """Render one already-aligned deterministic sample for GUI inspection."""
+
+    def pair(current, reference, delta, suffix, *, precision=1):
+        if current is None or reference is None:
+            return "—"
+        current_text = f"{current:.{precision}f}"
+        reference_text = f"{reference:.{precision}f}"
+        delta_text = "—" if delta is None else f"{delta:+.{precision}f}{suffix}"
+        return f"{current_text}/{reference_text}{suffix} ({delta_text})"
+
+    gear = (
+        "—"
+        if sample.current_gear is None or sample.reference_gear is None
+        else f"{sample.current_gear}/{sample.reference_gear}"
+    )
+    accumulated_delta = (
+        "—"
+        if sample.accumulated_delta_s is None
+        else f"{sample.accumulated_delta_s:+.3f} s"
+    )
+    parts = [
+        f"Comparación puntual · actual/{reference_label}",
+        "velocidad "
+        + pair(
+            sample.current_speed_kmh,
+            sample.reference_speed_kmh,
+            sample.speed_delta_kmh,
+            " km/h",
+        ),
+        "freno "
+        + pair(
+            sample.current_brake_percent,
+            sample.reference_brake_percent,
+            sample.brake_delta_percent,
+            "%",
+        ),
+        "acelerador "
+        + pair(
+            sample.current_throttle_percent,
+            sample.reference_throttle_percent,
+            sample.throttle_delta_percent,
+            "%",
+        ),
+        f"marcha {gear}",
+    ]
+    if (
+        sample.current_steering_percent is not None
+        or sample.reference_steering_percent is not None
+    ):
+        parts.append(
+            "volante "
+            + pair(
+                sample.current_steering_percent,
+                sample.reference_steering_percent,
+                sample.steering_delta_percent,
+                "%",
+            )
+        )
+    parts.append(f"delta acumulado {accumulated_delta}")
+    return " · ".join(parts)
+
+
 def compact_laps_text(value: str, *, max_rows: int = 4) -> str:
     """Keep the dashboard lap card scannable while preserving the full source elsewhere."""
     lines = [line.strip() for line in value.splitlines() if line.strip()]
@@ -1342,6 +1405,7 @@ class RaceEngineerApp:
         self.track_map_dragging = False
         self.telemetry_chart_dragging = False
         self.telemetry_zoom_range: tuple[float, float] | None = None
+        self._telemetry_comparison_cache = None
         self.track_map_zoom_scale = 1.0
         self.track_map_zoom_offset = (0.0, 0.0)
         self.track_map_pan_anchor: tuple[float, float] | None = None
@@ -7072,7 +7136,10 @@ class RaceEngineerApp:
                 f"{location_text}punto {distance_text} · fuera de las zonas "
                 "comparativas H5.2."
             )
-            self.track_map_telemetry_status.set(self._point_telemetry_text(point))
+            self.track_map_telemetry_status.set(
+                self._point_telemetry_text(point)
+                + self._point_comparison_text(data, point)
+            )
         else:
             self.selected_track_overlay = ("h5_2", zone.zone_id)
             delta_text = (
@@ -7118,6 +7185,7 @@ class RaceEngineerApp:
         if summary is None:
             self.track_map_telemetry_status.set(
                 self._point_telemetry_text(selected_point)
+                + self._point_comparison_text(data, selected_point)
             )
             return
         delta_text = self._interval_delta_text(
@@ -7130,19 +7198,35 @@ class RaceEngineerApp:
             + delta_text
             + " · punto seleccionado: "
             + self._point_telemetry_text(selected_point, prefix=False)
+            + self._point_comparison_text(data, selected_point)
         )
 
-    def _interval_delta_text(
+    def _point_comparison_text(
         self,
         data: TrackMapData,
-        start_distance_m: float,
-        end_distance_m: float,
+        point: TrackMapPoint,
     ) -> str:
-        comparison_mode = (
-            self.track_comparison_var.get()
-            if hasattr(self, "track_comparison_var")
-            else "Referencia sesión"
+        if point.lap_distance_m is None:
+            return ""
+        active = self._active_telemetry_comparison(data)
+        if active is None:
+            return ""
+        comparison_mode, comparison = active
+        sample = historical_telemetry_sample_at_distance(
+            comparison,
+            float(point.lap_distance_m),
         )
+        if sample is None:
+            return "\nComparación puntual · fuera de la cobertura común."
+        reference_label = (
+            "referencia de sesión"
+            if comparison_mode == "Referencia sesión"
+            else "History H4"
+        )
+        return "\n" + telemetry_comparison_sample_text(sample, reference_label)
+
+    def _active_telemetry_comparison(self, data: TrackMapData):
+        comparison_mode = self.track_comparison_var.get()
         reference = select_active_telemetry_reference(
             comparison_mode,
             data,
@@ -7150,11 +7234,28 @@ class RaceEngineerApp:
             self.current_historical_track_map,
         )
         if reference is None:
-            return ""
+            return None
+        cache_key = (id(data), id(reference), comparison_mode)
+        cached = getattr(self, "_telemetry_comparison_cache", None)
+        if cached is not None and cached[0] == cache_key:
+            return comparison_mode, cached[1]
         comparison = build_historical_telemetry_comparison(
             data.points,
             tuple(reference.points),
         )
+        self._telemetry_comparison_cache = (cache_key, comparison)
+        return comparison_mode, comparison
+
+    def _interval_delta_text(
+        self,
+        data: TrackMapData,
+        start_distance_m: float,
+        end_distance_m: float,
+    ) -> str:
+        active = self._active_telemetry_comparison(data)
+        if active is None:
+            return ""
+        comparison_mode, comparison = active
         interval = summarize_telemetry_interval_delta(
             comparison,
             start_distance_m,

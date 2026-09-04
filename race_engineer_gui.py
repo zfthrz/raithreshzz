@@ -624,6 +624,50 @@ def plan_priority_selector_value(priorities, plan_label) -> str | None:
     return None
 
 
+def plan_item_traceability_lines(item) -> tuple[str, ...]:
+    """Render exact provenance already attached to one validated plan item."""
+    if not isinstance(item, dict):
+        return ()
+    lines = []
+    comparison_values = item.get("comparisons")
+    comparison_values = comparison_values if isinstance(comparison_values, list) else []
+    comparisons = tuple(
+        str(value).strip()
+        for value in comparison_values
+        if str(value or "").strip()
+    )
+    if comparisons:
+        lines.append("Comparaciones: " + ", ".join(comparisons))
+
+    cues = item.get("driver_cues")
+    cues = cues if isinstance(cues, list) else []
+    for cue in cues[:2]:
+        if not isinstance(cue, dict):
+            continue
+        evidence = cue.get("precision_evidence")
+        evidence = evidence if isinstance(evidence, list) else []
+        for record in evidence[:1]:
+            if not isinstance(record, dict):
+                continue
+            reference_lap = record.get("reference_lap")
+            supporting_laps = record.get("supporting_laps")
+            supporting_laps = (
+                supporting_laps if isinstance(supporting_laps, list) else []
+            )
+            lap_parts = []
+            if reference_lap is not None:
+                lap_parts.append(f"referencia vuelta {reference_lap}")
+            if supporting_laps:
+                lap_parts.append(
+                    "apoyo " + ", ".join(f"vuelta {lap}" for lap in supporting_laps)
+                )
+            if lap_parts:
+                value = "Evidencia del cue: " + "; ".join(lap_parts)
+                if value not in lines:
+                    lines.append(value)
+    return tuple(lines)
+
+
 def compact_laps_text(value: str, *, max_rows: int = 4) -> str:
     """Keep the dashboard lap card scannable while preserving the full source elsewhere."""
     lines = [line.strip() for line in value.splitlines() if line.strip()]
@@ -4254,6 +4298,12 @@ class RaceEngineerApp:
             lines.append(("section", "CUES"))
             for cue in cue_texts:
                 lines.append(("value", f"• {cue}"))
+
+        traceability = plan_item_traceability_lines(item)
+        if traceability:
+            lines.append(("section", "TRAZABILIDAD"))
+            for value in traceability:
+                lines.append(("value", f"• {value}"))
 
         targets = item.get("targets")
         if not isinstance(targets, list):

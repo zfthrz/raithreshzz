@@ -27,6 +27,7 @@ from race_engineer_gui import (
     load_primary_section_preference,
     navigation_button_label,
     plan_priority_selector_value,
+    plan_item_traceability_lines,
     save_primary_section_preference,
     save_secondary_view_preference,
     save_session_sort_preference,
@@ -246,6 +247,26 @@ def test_next_stint_cards_expose_an_explicit_inspector_action():
     assert 'text="Detalle  →"' in source
     assert "command=open_inspector" in source
     assert 'detail_button.pack(side="right")' in source
+
+
+def test_plan_item_traceability_uses_only_attached_comparisons_and_laps():
+    item = {
+        "comparisons": ["4->3", "4->2"],
+        "driver_cues": [{
+            "text": "Frená más tarde",
+            "precision_evidence": [{
+                "reference_lap": 4,
+                "supporting_laps": [3, 2],
+                "representative_delta_m": 18,
+            }],
+        }],
+    }
+
+    assert plan_item_traceability_lines(item) == (
+        "Comparaciones: 4->3, 4->2",
+        "Evidencia del cue: referencia vuelta 4; apoyo vuelta 3, vuelta 2",
+    )
+    assert plan_item_traceability_lines({"driver_cues": ["texto legacy"]}) == ()
 
 
 def test_summary_layout_adapts_from_four_columns_to_one():

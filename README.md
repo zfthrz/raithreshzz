@@ -1533,7 +1533,9 @@ Las preferencias visuales de Telemetría —resolución, fuente de comparación,
 inferior y visibilidad de recomendaciones— se conservan en el estado local ignorado
 `data/local/gui_preferences.json`. Cada campo se valida al cargar y vuelve a su valor
 seguro por defecto si fue alterado o quedó obsoleto; esto no persiste telemetría ni
-modifica resultados de análisis.
+modifica resultados de análisis. `Restablecer vista` recupera 20 Hz, referencia de
+sesión, marcha, recomendaciones visibles y el gráfico de vuelta completo en una sola
+acción.
 
 El contrato LLM histórico v0.1 puede seleccionar hasta tres zonas H5.2 y únicamente códigos observacionales autorizados por Python para cada una. El LLM no escribe texto libre: Python arma todo el render final con hechos y cifras exactos. Un validator separado rechaza zonas inventadas, claves adicionales, códigos no autorizados o evidencia alterada.
 

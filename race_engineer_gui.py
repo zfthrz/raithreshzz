@@ -5305,6 +5305,12 @@ class RaceEngineerApp:
             state="disabled",
         )
         self.telemetry_zoom_reset_button.pack(side="right")
+        self.telemetry_view_reset_button = self.ttk.Button(
+            zoom_controls,
+            text="Restablecer vista",
+            command=self._reset_telemetry_view,
+        )
+        self.telemetry_view_reset_button.pack(side="right", padx=(0, 8))
         return canvas
 
     def _set_track_lap_options(
@@ -7951,6 +7957,27 @@ class RaceEngineerApp:
         self.telemetry_zoom_range = None
         self._set_telemetry_zoom_status()
         self._render_track_telemetry_chart()
+
+    def _reset_telemetry_view(self):
+        """Restore presentation defaults without changing session evidence."""
+
+        self._stop_track_playback()
+        resolution_changed = self.track_resolution_hz != 20.0
+        self.track_resolution_hz = 20.0
+        self.track_resolution_var.set(TELEMETRY_PREFERENCE_DEFAULTS["resolution"])
+        self.track_comparison_var.set(TELEMETRY_PREFERENCE_DEFAULTS["comparison"])
+        self.track_aux_channel_var.set(TELEMETRY_PREFERENCE_DEFAULTS["aux_channel"])
+        self.show_telemetry_priorities_var.set(
+            TELEMETRY_PREFERENCE_DEFAULTS["show_recommendations"]
+        )
+        self.telemetry_zoom_range = None
+        self._set_telemetry_zoom_status()
+        self._save_telemetry_preferences()
+        record = self.selected_record()
+        if resolution_changed and record is not None:
+            self._request_track_map(record, preserve_visual=True)
+        else:
+            self._render_track_telemetry_chart()
 
     def _set_telemetry_zoom_status(self):
         if self.telemetry_zoom_range is None:

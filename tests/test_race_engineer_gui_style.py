@@ -380,6 +380,21 @@ def test_recommendation_overlay_is_user_controllable_and_enabled_by_default(tmp_
     assert 'state="normal" if values else "disabled"' in controls_source
 
 
+def test_telemetry_view_has_safe_persistent_reset():
+    layout_source = inspect.getsource(RaceEngineerApp._track_map_tab)
+    reset_source = inspect.getsource(RaceEngineerApp._reset_telemetry_view)
+
+    assert 'text="Restablecer vista"' in layout_source
+    assert "self._stop_track_playback()" in reset_source
+    assert 'TELEMETRY_PREFERENCE_DEFAULTS["resolution"]' in reset_source
+    assert 'TELEMETRY_PREFERENCE_DEFAULTS["comparison"]' in reset_source
+    assert 'TELEMETRY_PREFERENCE_DEFAULTS["aux_channel"]' in reset_source
+    assert 'TELEMETRY_PREFERENCE_DEFAULTS["show_recommendations"]' in reset_source
+    assert "self.telemetry_zoom_range = None" in reset_source
+    assert "self._save_telemetry_preferences()" in reset_source
+    assert "self._request_track_map(record, preserve_visual=True)" in reset_source
+
+
 def test_recommendation_bands_label_visible_plan_identity():
     source = inspect.getsource(RaceEngineerApp._render_track_telemetry_chart)
 

@@ -504,6 +504,31 @@ def test_telemetry_keyboard_moves_only_across_authoritative_samples():
     assert times == pytest.approx([0.0, 0.05, 0.1, 0.1, 0.05, 0.0])
 
 
+def test_telemetry_keyboard_one_second_jump_uses_native_timestamps():
+    app = RaceEngineerApp.__new__(RaceEngineerApp)
+    app.current_track_map = SimpleNamespace(
+        points=(
+            TrackMapPoint(0.0, 0.0, 0.0, elapsed_s=0.0),
+            TrackMapPoint(1.0, 0.0, 1.0, elapsed_s=0.4),
+            TrackMapPoint(2.0, 0.0, 2.0, elapsed_s=1.1),
+            TrackMapPoint(3.0, 0.0, 3.0, elapsed_s=2.7),
+        )
+    )
+    app.selected_track_point_index = 1
+    selected = []
+    app._stop_track_playback = lambda: None
+    app._apply_track_point_selection = lambda index: (
+        selected.append(index),
+        setattr(app, "selected_track_point_index", index),
+    )
+    app._set_playback_time_status = lambda _elapsed: None
+
+    app._move_telemetry_selection("next_second")
+    app._move_telemetry_selection("previous_second")
+
+    assert selected == [2, 0]
+
+
 def test_telemetry_canvas_exposes_scoped_keyboard_navigation():
     source = inspect.getsource(RaceEngineerApp._track_map_tab)
     press_source = inspect.getsource(RaceEngineerApp._on_telemetry_press)
@@ -511,6 +536,8 @@ def test_telemetry_canvas_exposes_scoped_keyboard_navigation():
     assert 'telemetry_canvas.configure(cursor="crosshair", takefocus=True)' in source
     assert 'telemetry_canvas.bind(\n            "<Left>"' in source
     assert 'telemetry_canvas.bind(\n            "<Right>"' in source
+    assert 'telemetry_canvas.bind(\n            "<Shift-Left>"' in source
+    assert 'telemetry_canvas.bind(\n            "<Shift-Right>"' in source
     assert 'telemetry_canvas.bind(\n            "<Home>"' in source
     assert 'telemetry_canvas.bind(\n            "<End>"' in source
     assert "self.track_telemetry_canvas.focus_set()" in press_source

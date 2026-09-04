@@ -5322,6 +5322,14 @@ class RaceEngineerApp:
             "<Right>", lambda _event: self._move_telemetry_selection("next")
         )
         telemetry_canvas.bind(
+            "<Shift-Left>",
+            lambda _event: self._move_telemetry_selection("previous_second"),
+        )
+        telemetry_canvas.bind(
+            "<Shift-Right>",
+            lambda _event: self._move_telemetry_selection("next_second"),
+        )
+        telemetry_canvas.bind(
             "<Home>", lambda _event: self._move_telemetry_selection("start")
         )
         telemetry_canvas.bind(
@@ -8009,6 +8017,21 @@ class RaceEngineerApp:
             target = last_index if current is None else max(0, current - 1)
         elif direction == "next":
             target = 0 if current is None else min(last_index, current + 1)
+        elif direction in {"previous_second", "next_second"}:
+            if current is None:
+                target = last_index if direction == "previous_second" else 0
+            else:
+                elapsed = data.points[current].elapsed_s
+                if elapsed is None:
+                    target = current
+                else:
+                    offset = -1.0 if direction == "previous_second" else 1.0
+                    target = point_index_for_elapsed_time(
+                        data.points,
+                        max(0.0, float(elapsed) + offset),
+                    )
+                    if target is None:
+                        target = current
         else:
             return "break"
         self._apply_track_point_selection(target)
@@ -8045,13 +8068,13 @@ class RaceEngineerApp:
 
     def _set_telemetry_zoom_status(self):
         if self.telemetry_zoom_range is None:
-            text = "Gráfico completo · ←/→: muestra · rueda: zoom · Shift+rueda: desplazar"
+            text = "Gráfico completo · ←/→: muestra · Shift+←/→: 1 s · rueda: zoom"
             state = "disabled"
         else:
             start, end = self.telemetry_zoom_range
             text = (
                 f"Zoom del gráfico {start:.0f}-{end:.0f} m ({end - start:.0f} m) · "
-                "←/→: muestra · rueda: zoom · Shift+rueda: desplazar"
+                "←/→: muestra · Shift+←/→: 1 s · rueda: zoom"
             )
             state = "normal"
         if hasattr(self, "telemetry_zoom_status"):

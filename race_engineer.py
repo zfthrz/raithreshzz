@@ -34,12 +34,14 @@ from pipeline_stage_contract import (
     DEBRIEF_VALIDATOR_STAGE,
     stage_payload,
 )
+from deterministic_debrief_document import compatible_debrief_output_path
 
 import historical_candidates_pipeline as _h5_3_shadow_pipeline
 
 
 ORCHESTRATOR_VERSION = "0.4"
 LLM_ANALYSIS_VERSION_FILE = "3_10_8_5_4"
+DETERMINISTIC_DEBRIEF_MODEL = "deterministic_debrief"
 
 STATUS_RUN = "RUN"
 STATUS_REUSED = "REUSED"
@@ -223,6 +225,15 @@ def llm_output_path(analysis_json: Path, backend: str) -> Path:
             f"{stem}_llm_analysis_v{LLM_ANALYSIS_VERSION_FILE}_{model}.json"
         )
     return llm_result_dir(analysis_json) / filename
+
+
+def deterministic_debrief_output_path(analysis_json: Path) -> Path:
+    """Return the exact compatibility path written by the product renderer."""
+    output_path, _ = compatible_debrief_output_path(
+        analysis_json,
+        model_name=DETERMINISTIC_DEBRIEF_MODEL,
+    )
+    return output_path
 
 
 def llm_artifact_matches_run(
@@ -440,12 +451,22 @@ def deterministic_debrief_artifact_matches_run(
     analysis_json: Path,
 ) -> bool:
     """Accept only legacy-path artifacts proven to contain zero model calls."""
-    if not llm_artifact_matches_run(artifact_path, analysis_json, "deepseek"):
+    if not artifact_path.is_file():
         return False
     try:
         document = json.loads(artifact_path.read_text(encoding="utf-8"))
-        usage = (document.get("metadata") or {}).get("deepseek_usage") or {}
-        return int(usage.get("http_request_count", -1)) == 0
+        metadata = document.get("metadata") or {}
+        source_json = Path(str(metadata.get("source_json"))).resolve()
+        usage = metadata.get("deepseek_usage") or {}
+        return (
+            source_json == analysis_json.resolve()
+            and metadata.get("llm_analysis_version")
+            == LLM_ANALYSIS_VERSION_FILE.replace("_", ".")
+            and metadata.get("model") == DETERMINISTIC_DEBRIEF_MODEL
+            and metadata.get("structured_validation") == "PASS"
+            and metadata.get("factual_grounding_validation") == "PASS"
+            and int(usage.get("http_request_count", -1)) == 0
+        )
     except (OSError, ValueError, TypeError, json.JSONDecodeError):
         return False
 
@@ -589,11 +610,20 @@ def analyze_command(args: argparse.Namespace) -> int:
                 if deterministic_debrief
                 else llm_script(selected_backend)
             )
-            llm_json = llm_output_path(analysis_json, selected_backend)
+            llm_json = (
+                deterministic_debrief_output_path(analysis_json)
+                if deterministic_debrief
+                else llm_output_path(analysis_json, selected_backend)
+            )
+            debrief_model = (
+                DETERMINISTIC_DEBRIEF_MODEL
+                if deterministic_debrief
+                else llm_model_name(selected_backend)
+            )
             llm_signature = {
                 "analysis_sha256": analysis_sha,
                 "backend": selected_backend,
-                "model": llm_model_name(selected_backend),
+                "model": debrief_model,
                 "debrief_mode": (
                     "deterministic" if deterministic_debrief else "legacy_llm"
                 ),

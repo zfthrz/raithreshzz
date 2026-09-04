@@ -81,7 +81,7 @@ def reset_deepseek_usage():
 
 def build_debrief_runtime(*, output_dir: str, base_dir: str):
     """Build the product runtime while preserving the legacy artifact schema."""
-    from deterministic_debrief_app import build_neutral_debrief_runtime
+    from deterministic_debrief_app import build_debrief_runtime as build_neutral_debrief_runtime
     from deterministic_debrief_compatibility import LegacyArtifactMetadata
     from deterministic_debrief_output import save_compatible_debrief
 

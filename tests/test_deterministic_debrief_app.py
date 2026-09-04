@@ -4,6 +4,7 @@ import ast
 import inspect
 
 import deterministic_debrief_app as app
+import deterministic_debrief_main as product_main
 import llm_analysis_deepseek as legacy
 
 
@@ -61,4 +62,17 @@ def test_historical_runtime_builder_uses_neutral_assembler(monkeypatch):
     assert stages.prepare_comparison is app.prepare_comparison
     assert stages.finalize_global is app.finalize_global
     assert callable(stages.execute_comparison)
+    assert callable(presentation.complete)
+
+
+def test_product_entrypoint_builds_the_real_neutral_runtime(tmp_path):
+    stages, presentation = product_main.build_debrief_runtime(
+        output_dir=str(tmp_path / "debug"),
+        base_dir=str(tmp_path),
+    )
+
+    assert stages.prepare_comparison is app.prepare_comparison
+    assert stages.finalize_global is app.finalize_global
+    assert callable(stages.execute_comparison)
+    assert callable(stages.save_result)
     assert callable(presentation.complete)

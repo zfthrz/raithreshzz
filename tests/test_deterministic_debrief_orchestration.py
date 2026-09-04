@@ -101,6 +101,17 @@ def test_default_analyze_route_has_no_public_backend_requirement():
     assert args.backend is None
 
 
+def test_deterministic_debrief_output_path_matches_product_writer(tmp_path: Path):
+    analysis = tmp_path / "Imola_Q_2026-09-04T03_32_34Z.json"
+
+    result = race_engineer.deterministic_debrief_output_path(analysis)
+
+    assert result.name == (
+        "Imola_Q_2026-09-04T03_32_34Z_llm_analysis_v3_10_8_5_4_"
+        "deepseek_v2_deterministic_debrief.json"
+    )
+
+
 def test_canonical_debrief_stage_reuses_legacy_state(tmp_path: Path):
     artifact = tmp_path / "debrief.json"
     artifact.write_text("{}", encoding="utf-8")
@@ -130,7 +141,7 @@ def test_deterministic_artifact_reuse_requires_zero_model_calls(tmp_path: Path):
     metadata = {
         "source_json": str(analysis),
         "llm_analysis_version": "3.10.8.5.4",
-        "model": race_engineer.llm_model_name("deepseek"),
+        "model": race_engineer.DETERMINISTIC_DEBRIEF_MODEL,
         "structured_validation": "PASS",
         "factual_grounding_validation": "PASS",
         "deepseek_usage": {"http_request_count": 0},

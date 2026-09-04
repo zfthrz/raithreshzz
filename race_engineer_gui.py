@@ -4698,6 +4698,14 @@ class RaceEngineerApp:
             title_label.pack(side="left", padx=(10, 0))
             title_label.bind("<Button-1>", open_inspector)
 
+            detail_button = self.ttk.Button(
+                top,
+                text="Detalle  →",
+                style="Link.TButton",
+                command=open_inspector,
+            )
+            detail_button.pack(side="right")
+
             if label in focus_labels:
                 focus_label = self.ttk.Label(
                     top,

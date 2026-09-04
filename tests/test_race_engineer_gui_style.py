@@ -240,6 +240,14 @@ def test_plan_priority_trace_resolves_exact_validated_telemetry_selector():
     assert plan_priority_selector_value(priorities, "C") is None
 
 
+def test_next_stint_cards_expose_an_explicit_inspector_action():
+    source = inspect.getsource(RaceEngineerApp._render_next_stint_cards)
+
+    assert 'text="Detalle  →"' in source
+    assert "command=open_inspector" in source
+    assert 'detail_button.pack(side="right")' in source
+
+
 def test_summary_layout_adapts_from_four_columns_to_one():
     assert summary_layout_spec(1200) == (
         "wide",

@@ -3,13 +3,14 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+$RuntimePath = Join-Path $PSScriptRoot "data\local\telemetry_scheduler_runtime.json"
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
 $form = New-Object System.Windows.Forms.Form
 $form.Text = "Race Engineer · Scheduler"
-$form.Size = New-Object System.Drawing.Size(520, 300)
-$form.MinimumSize = New-Object System.Drawing.Size(520, 300)
+$form.Size = New-Object System.Drawing.Size(520, 340)
+$form.MinimumSize = New-Object System.Drawing.Size(520, 340)
 $form.StartPosition = "CenterScreen"
 $form.BackColor = [System.Drawing.Color]::FromArgb(11, 17, 22)
 $form.ForeColor = [System.Drawing.Color]::FromArgb(220, 231, 239)
@@ -25,13 +26,13 @@ $form.Controls.Add($title)
 $status = New-Object System.Windows.Forms.Label
 $status.AutoSize = $false
 $status.Location = New-Object System.Drawing.Point(26, 66)
-$status.Size = New-Object System.Drawing.Size(460, 90)
+$status.Size = New-Object System.Drawing.Size(460, 125)
 $form.Controls.Add($status)
 
 $note = New-Object System.Windows.Forms.Label
 $note.Text = "Pausar detiene el ciclo activo y evita nuevas ejecuciones. Reanudar conserva todo el estado y habilita nuevamente la tarea."
 $note.AutoSize = $false
-$note.Location = New-Object System.Drawing.Point(26, 156)
+$note.Location = New-Object System.Drawing.Point(26, 191)
 $note.Size = New-Object System.Drawing.Size(460, 48)
 $note.ForeColor = [System.Drawing.Color]::FromArgb(145, 166, 184)
 $form.Controls.Add($note)
@@ -46,6 +47,28 @@ function Show-TaskError([string]$Message) {
     ) | Out-Null
 }
 
+function Get-RuntimeSummary {
+    if (-not (Test-Path -LiteralPath $RuntimePath)) {
+        return "Último ciclo real: sin estado local"
+    }
+
+    try {
+        $runtime = Get-Content -LiteralPath $RuntimePath -Raw -Encoding UTF8 |
+            ConvertFrom-Json -ErrorAction Stop
+        $cycleStatus = if ($runtime.status) { [string]$runtime.status } else { "DESCONOCIDO" }
+        $finishedAt = if ($runtime.finished_at) {
+            ([DateTimeOffset]::Parse([string]$runtime.finished_at)).ToLocalTime().ToString("g")
+        } elseif ($runtime.started_at) {
+            ([DateTimeOffset]::Parse([string]$runtime.started_at)).ToLocalTime().ToString("g")
+        } else {
+            "sin fecha"
+        }
+        return "Último ciclo real: $cycleStatus · $finishedAt"
+    } catch {
+        return "Último ciclo real: estado local ilegible"
+    }
+}
+
 function Update-SchedulerStatus {
     try {
         $task = Get-ScheduledTask -TaskName $TaskName -ErrorAction Stop
@@ -53,7 +76,8 @@ function Update-SchedulerStatus {
         $status.Text = @"
 Tarea: $TaskName
 Estado: $($task.State)
-Última ejecución: $($info.LastRunTime) · resultado $($info.LastTaskResult)
+$(Get-RuntimeSummary)
+Último disparo programado: $($info.LastRunTime) · resultado $($info.LastTaskResult)
 Próxima ejecución: $($info.NextRunTime)
 "@
         if ($task.State -eq "Disabled") {
@@ -75,7 +99,7 @@ Próxima ejecución: $($info.NextRunTime)
 
 $pauseButton = New-Object System.Windows.Forms.Button
 $pauseButton.Text = "Pausar"
-$pauseButton.Location = New-Object System.Drawing.Point(26, 214)
+$pauseButton.Location = New-Object System.Drawing.Point(26, 254)
 $pauseButton.Size = New-Object System.Drawing.Size(130, 34)
 $pauseButton.Add_Click({
     try {
@@ -93,7 +117,7 @@ $form.Controls.Add($pauseButton)
 
 $resumeButton = New-Object System.Windows.Forms.Button
 $resumeButton.Text = "Reanudar"
-$resumeButton.Location = New-Object System.Drawing.Point(166, 214)
+$resumeButton.Location = New-Object System.Drawing.Point(166, 254)
 $resumeButton.Size = New-Object System.Drawing.Size(130, 34)
 $resumeButton.Add_Click({
     try {
@@ -107,7 +131,7 @@ $form.Controls.Add($resumeButton)
 
 $refreshButton = New-Object System.Windows.Forms.Button
 $refreshButton.Text = "Actualizar estado"
-$refreshButton.Location = New-Object System.Drawing.Point(306, 214)
+$refreshButton.Location = New-Object System.Drawing.Point(306, 254)
 $refreshButton.Size = New-Object System.Drawing.Size(156, 34)
 $refreshButton.Add_Click({ Update-SchedulerStatus })
 $form.Controls.Add($refreshButton)

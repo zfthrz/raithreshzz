@@ -27,3 +27,14 @@ def test_double_click_launcher_uses_the_sibling_controller():
     assert "if errorlevel 1" in source
     assert "pause >nul" in source
     assert source.rstrip().endswith("pause >nul")
+
+
+def test_scheduler_control_distinguishes_runtime_cycle_from_task_trigger():
+    source = (ROOT / "scheduler_control.ps1").read_text(encoding="utf-8")
+
+    assert '"data\\local\\telemetry_scheduler_runtime.json"' in source
+    assert "Get-Content -LiteralPath $RuntimePath -Raw -Encoding UTF8" in source
+    assert "ConvertFrom-Json -ErrorAction Stop" in source
+    assert "Último ciclo real:" in source
+    assert "Último disparo programado:" in source
+    assert "estado local ilegible" in source

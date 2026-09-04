@@ -28,6 +28,7 @@ from race_engineer_gui import (
     navigation_button_label,
     plan_priority_selector_value,
     plan_item_traceability_lines,
+    plan_item_for_label,
     save_primary_section_preference,
     save_secondary_view_preference,
     save_session_sort_preference,
@@ -267,6 +268,23 @@ def test_plan_item_traceability_uses_only_attached_comparisons_and_laps():
         "Evidencia del cue: referencia vuelta 4; apoyo vuelta 3, vuelta 2",
     )
     assert plan_item_traceability_lines({"driver_cues": ["texto legacy"]}) == ()
+
+
+def test_plan_item_lookup_uses_exact_stable_label_and_returns_plan_order():
+    items = (
+        {"plan_label": "A", "description": "Primera"},
+        {"plan_label": "B", "description": "Segunda"},
+    )
+
+    assert plan_item_for_label(items, "B") == (items[1], 2)
+    assert plan_item_for_label(items, "b") is None
+
+
+def test_telemetry_plan_selection_opens_matching_evidence_inspector():
+    source = inspect.getsource(RaceEngineerApp._on_track_plan_selected)
+
+    assert "plan_item_for_label(" in source
+    assert "self._show_plan_inspector(" in source
 
 
 def test_summary_layout_adapts_from_four_columns_to_one():

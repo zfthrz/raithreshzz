@@ -668,6 +668,18 @@ def plan_item_traceability_lines(item) -> tuple[str, ...]:
     return tuple(lines)
 
 
+def plan_item_for_label(items, plan_label):
+    """Find one structured plan item by its stable label without fuzzy matching."""
+    wanted = str(plan_label or "").strip()
+    for index, item in enumerate(items or (), start=1):
+        if not isinstance(item, dict):
+            continue
+        label = str(item.get("plan_label") or index)
+        if label == wanted:
+            return item, index
+    return None
+
+
 def compact_laps_text(value: str, *, max_rows: int = 4) -> str:
     """Keep the dashboard lap card scannable while preserving the full source elsewhere."""
     lines = [line.strip() for line in value.splitlines() if line.strip()]
@@ -4675,6 +4687,8 @@ class RaceEngineerApp:
             child.destroy()
 
         items = tuple(detail.plan_items or ())
+        self.current_plan_items = items
+        self.current_focus_plan_labels = set(detail.focus_plan_labels or ())
 
         if not items:
             self.ttk.Label(
@@ -4686,7 +4700,7 @@ class RaceEngineerApp:
             ).pack(fill="x", pady=(4, 6))
             return
 
-        focus_labels = set(detail.focus_plan_labels or ())
+        focus_labels = self.current_focus_plan_labels
 
         for index, item in enumerate(items[:3], start=1):
             label = str(item.get("plan_label") or index)
@@ -6563,6 +6577,20 @@ class RaceEngineerApp:
         )
         if priority is None:
             return
+        plan_match = plan_item_for_label(
+            getattr(self, "current_plan_items", ()),
+            priority.priority_id,
+        )
+        if plan_match is not None:
+            plan_item, plan_index = plan_match
+            self._show_plan_inspector(
+                plan_item,
+                plan_index,
+                focused=(
+                    priority.priority_id
+                    in getattr(self, "current_focus_plan_labels", set())
+                ),
+            )
         if priority.has_validated_steering:
             self.track_aux_channel_var.set("Volante")
         self.selected_track_overlay = ("priority", priority.priority_id)

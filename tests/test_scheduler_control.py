@@ -24,3 +24,4 @@ def test_double_click_launcher_uses_the_sibling_controller():
     assert '"%~dp0scheduler_control.ps1"' in source
     assert "if errorlevel 1" in source
     assert "pause >nul" in source
+    assert source.rstrip().endswith("pause >nul")

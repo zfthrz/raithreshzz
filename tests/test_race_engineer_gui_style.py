@@ -28,6 +28,7 @@ from race_engineer_gui import (
     load_primary_section_preference,
     navigation_button_label,
     plan_priority_selector_value,
+    plan_card_text_widths,
     plan_item_traceability_lines,
     plan_item_for_label,
     save_primary_section_preference,
@@ -47,6 +48,7 @@ from race_engineer_gui import (
     track_priority_selector_value,
     ui_state_message,
     summary_layout_spec,
+    summary_dashboard_height,
 )
 from race_engineer_track_map import TrackMapPoint, TrackMapZone
 
@@ -293,7 +295,22 @@ def test_next_stint_cards_expose_an_explicit_inspector_action():
 
     assert 'text="Detalle  →"' in source
     assert "command=open_inspector" in source
-    assert 'detail_button.pack(side="right")' in source
+    assert 'detail_button.grid(row=0, column=3, sticky="ne")' in source
+
+
+def test_next_stint_card_text_wraps_inside_available_width():
+    assert plan_card_text_widths(430) == (240, 402)
+    assert plan_card_text_widths(240) == (90, 212)
+    assert plan_card_text_widths(100) == (90, 152)
+
+    source = inspect.getsource(RaceEngineerApp._render_next_stint_cards)
+    resize_source = inspect.getsource(RaceEngineerApp._resize_plan_card_text)
+    assert "top.columnconfigure(1, weight=1)" in source
+    assert 'title_label.grid(row=0, column=1, sticky="new"' in source
+    assert "wraplength=initial_title_width" in source
+    assert 'cue_label.pack(fill="x"' in source
+    assert 'card.bind(\n                "<Configure>"' in source
+    assert "plan_card_text_widths(card_width)" in resize_source
 
 
 def test_plan_item_traceability_uses_only_attached_comparisons_and_laps():
@@ -447,6 +464,16 @@ def test_summary_layout_adapts_from_four_columns_to_one():
         "narrow",
         ((0, 0), (1, 0), (2, 0), (3, 0)),
     )
+
+
+def test_standard_summary_splits_cards_and_visuals_evenly():
+    assert summary_dashboard_height(900, "wide") == 445
+    assert summary_dashboard_height(650, "wide") == 320
+    assert summary_dashboard_height(900, "compact") == 560
+    assert summary_dashboard_height(1450, "narrow") == 1080
+
+    source = inspect.getsource(RaceEngineerApp._on_summary_canvas_configure)
+    assert "summary_dashboard_height(content_height, mode)" in source
 
 
 def test_clear_detail_populates_actionable_workspace_states():

@@ -269,6 +269,23 @@ def summary_layout_spec(width: int) -> tuple[str, tuple[tuple[int, int], ...]]:
         return "compact", ((0, 0), (0, 1), (1, 0), (1, 1))
     return "narrow", ((0, 0), (1, 0), (2, 0), (3, 0))
 
+
+def summary_dashboard_height(content_height: int, mode: str) -> int:
+    """Reserve half the standard wide summary for cards and half for visuals."""
+
+    if mode == "wide":
+        return max(320, round((int(content_height) - 10) * 0.5))
+    if mode == "compact":
+        return 560
+    return 1080
+
+
+def plan_card_text_widths(card_width: int) -> tuple[int, int]:
+    """Return responsive title/cue widths without overlapping card actions."""
+
+    width = max(int(card_width), 180)
+    return max(90, width - 190), max(120, width - 28)
+
 SESSION_SORT_LABELS = {
     "date": "Fecha",
     "track": "Circuito",
@@ -2515,12 +2532,7 @@ class RaceEngineerApp:
         if dashboard is not None:
             # Coaching: proporcional en ventanas medianas, con límites para no
             # robar espacio al mapa/telemetría.
-            if mode == "wide":
-                dashboard_height = max(270, min(round(content_height * 0.43), 360))
-            elif mode == "compact":
-                dashboard_height = 560
-            else:
-                dashboard_height = 1080
+            dashboard_height = summary_dashboard_height(content_height, mode)
             dashboard.configure(height=dashboard_height)
 
         # No fijamos la altura de summary_visual_row: expand=True la hace
@@ -4908,6 +4920,7 @@ class RaceEngineerApp:
             top.bind("<Button-1>", open_inspector)
             top.configure(cursor="hand2")
             top.pack(fill="x")
+            top.columnconfigure(1, weight=1)
 
             index_label = self.ttk.Label(
                 top,
@@ -4915,25 +4928,20 @@ class RaceEngineerApp:
                 style="PriorityIndex.TLabel",
                 cursor="hand2",
             )
-            index_label.pack(side="left")
+            index_label.grid(row=0, column=0, sticky="nw")
             index_label.bind("<Button-1>", open_inspector)
 
+            initial_title_width, initial_cue_width = plan_card_text_widths(360)
             title_label = self.ttk.Label(
                 top,
                 text=title,
                 style="PriorityTitle.TLabel",
                 cursor="hand2",
+                wraplength=initial_title_width,
+                justify="left",
             )
-            title_label.pack(side="left", padx=(10, 0))
+            title_label.grid(row=0, column=1, sticky="new", padx=(10, 8))
             title_label.bind("<Button-1>", open_inspector)
-
-            detail_button = self.ttk.Button(
-                top,
-                text="Detalle  →",
-                style="Link.TButton",
-                command=open_inspector,
-            )
-            detail_button.pack(side="right")
 
             if label in focus_labels:
                 focus_label = self.ttk.Label(
@@ -4942,8 +4950,16 @@ class RaceEngineerApp:
                     style="PriorityFocus.TLabel",
                     cursor="hand2",
                 )
-                focus_label.pack(side="right")
+                focus_label.grid(row=0, column=2, sticky="ne", padx=(0, 6))
                 focus_label.bind("<Button-1>", open_inspector)
+
+            detail_button = self.ttk.Button(
+                top,
+                text="Detalle  →",
+                style="Link.TButton",
+                command=open_inspector,
+            )
+            detail_button.grid(row=0, column=3, sticky="ne")
 
             cues = item.get("driver_cues")
             if not isinstance(cues, list):
@@ -4969,17 +4985,38 @@ class RaceEngineerApp:
             if not cue_texts:
                 cue_texts = ["Sin cue de conducción autorizado."]
 
+            cue_labels = []
             for cue in cue_texts:
                 cue_label = self.ttk.Label(
                     card,
                     text=f"• {cue}",
                     style="PriorityCue.TLabel",
-                    wraplength=760,
+                    wraplength=initial_cue_width,
                     justify="left",
                     cursor="hand2",
                 )
-                cue_label.pack(anchor="w", pady=(5, 0))
+                cue_label.pack(fill="x", anchor="w", pady=(5, 0))
                 cue_label.bind("<Button-1>", open_inspector)
+                cue_labels.append(cue_label)
+
+            card.bind(
+                "<Configure>",
+                lambda event, title_widget=title_label, cue_widgets=tuple(cue_labels): (
+                    self._resize_plan_card_text(
+                        event.width,
+                        title_widget,
+                        cue_widgets,
+                    )
+                ),
+                add="+",
+            )
+
+    @staticmethod
+    def _resize_plan_card_text(card_width, title_label, cue_labels):
+        title_width, cue_width = plan_card_text_widths(card_width)
+        title_label.configure(wraplength=title_width)
+        for cue_label in cue_labels:
+            cue_label.configure(wraplength=cue_width)
 
     def _summary_text_panel(
         self,

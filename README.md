@@ -1546,6 +1546,11 @@ informa la ausencia en vez de interpolar o inventar valores. Este bloque complet
 el roadmap actual de pulido general de la interfaz; futuros cambios visuales pasan a
 una nueva etapa y no quedan mezclados con este hito.
 
+En el Resumen ancho, la fila de cards y la fila visual de mapa/telemetría comparten
+el alto útil en proporción 50/50. Los títulos y cues de `Próxima tanda` usan una
+columna flexible y recalculan su ancho al redimensionar cada card, por lo que envuelven
+el texto sin quedar ocultos detrás de `FOCUS` o `Detalle`.
+
 El contrato LLM histórico v0.1 puede seleccionar hasta tres zonas H5.2 y únicamente códigos observacionales autorizados por Python para cada una. El LLM no escribe texto libre: Python arma todo el render final con hechos y cifras exactos. Un validator separado rechaza zonas inventadas, claves adicionales, códigos no autorizados o evidencia alterada.
 
 La selección puede auditarse sin llamar nuevamente al modelo:

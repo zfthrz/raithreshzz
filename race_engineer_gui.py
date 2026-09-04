@@ -273,6 +273,18 @@ SESSION_SORT_LABELS = {
     "status": "Estado",
 }
 
+TELEMETRY_PREFERENCE_DEFAULTS = {
+    "resolution": "20 Hz",
+    "comparison": "Referencia sesión",
+    "aux_channel": "Marcha",
+    "show_recommendations": True,
+}
+TELEMETRY_PREFERENCE_VALUES = {
+    "resolution": ("20 Hz", "10 Hz", "50 Hz"),
+    "comparison": ("Referencia sesión", "History H4", "Sin comparación"),
+    "aux_channel": ("Marcha", "Volante"),
+}
+
 
 def load_session_sort_preference(path: Path) -> tuple[str, bool]:
     """Load the local catalogue order, falling back safely on invalid data."""
@@ -366,6 +378,56 @@ def save_secondary_view_preference(path: Path, section: str, view: str) -> None:
     preferences = load_secondary_view_preferences(path)
     preferences[section] = view
     _update_gui_preferences(path, {"secondary_views": preferences})
+
+
+def load_telemetry_preferences(path: Path) -> dict[str, object]:
+    """Load presentation-only telemetry choices with field-level validation."""
+
+    preferences = dict(TELEMETRY_PREFERENCE_DEFAULTS)
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+        return preferences
+    if not isinstance(payload, dict):
+        return preferences
+    stored = payload.get("telemetry")
+    if not isinstance(stored, dict):
+        return preferences
+    for key, allowed in TELEMETRY_PREFERENCE_VALUES.items():
+        if stored.get(key) in allowed:
+            preferences[key] = stored[key]
+    if isinstance(stored.get("show_recommendations"), bool):
+        preferences["show_recommendations"] = stored["show_recommendations"]
+    return preferences
+
+
+def save_telemetry_preferences(
+    path: Path,
+    *,
+    resolution: str,
+    comparison: str,
+    aux_channel: str,
+    show_recommendations: bool,
+) -> None:
+    values = {
+        "resolution": resolution,
+        "comparison": comparison,
+        "aux_channel": aux_channel,
+    }
+    for key, value in values.items():
+        if value not in TELEMETRY_PREFERENCE_VALUES[key]:
+            raise ValueError(f"Preferencia de telemetría desconocida: {key}={value}")
+    if not isinstance(show_recommendations, bool):
+        raise ValueError("La visibilidad de recomendaciones debe ser booleana")
+    _update_gui_preferences(
+        path,
+        {
+            "telemetry": {
+                **values,
+                "show_recommendations": show_recommendations,
+            }
+        },
+    )
 
 
 def navigation_button_label(section: str) -> str:
@@ -1307,6 +1369,12 @@ class RaceEngineerApp:
         )
         self.gui_preferences_path = (
             PROJECT_ROOT / "data" / "local" / "gui_preferences.json"
+        )
+        self.telemetry_preferences = load_telemetry_preferences(
+            self.gui_preferences_path
+        )
+        self.track_resolution_hz = float(
+            str(self.telemetry_preferences["resolution"]).removesuffix(" Hz")
         )
         self.secondary_view_preferences = load_secondary_view_preferences(
             self.gui_preferences_path
@@ -5035,12 +5103,14 @@ class RaceEngineerApp:
             state="disabled",
         )
         self.track_profile_layer_check.pack(side="left", padx=(10, 0))
-        self.show_telemetry_priorities_var = self.tk.BooleanVar(value=True)
+        self.show_telemetry_priorities_var = self.tk.BooleanVar(
+            value=bool(self.telemetry_preferences["show_recommendations"])
+        )
         self.telemetry_priority_layer_check = self.ttk.Checkbutton(
             turn_controls,
             text="Recomendaciones",
             variable=self.show_telemetry_priorities_var,
-            command=self._render_track_telemetry_chart,
+            command=self._on_telemetry_preferences_changed,
             state="disabled",
         )
         self.telemetry_priority_layer_check.pack(side="left", padx=(10, 8))
@@ -5097,7 +5167,9 @@ class RaceEngineerApp:
             text="Resolución:",
             style="Muted.TLabel",
         ).pack(side="left", padx=(18, 6))
-        self.track_resolution_var = self.tk.StringVar(value="20 Hz")
+        self.track_resolution_var = self.tk.StringVar(
+            value=str(self.telemetry_preferences["resolution"])
+        )
         self.track_resolution_selector = self.ttk.Combobox(
             playback_controls,
             textvariable=self.track_resolution_var,
@@ -5140,7 +5212,9 @@ class RaceEngineerApp:
             text="Comparar con:",
             style="Muted.TLabel",
         ).pack(side="left", padx=(24, 6))
-        self.track_comparison_var = self.tk.StringVar(value="Referencia sesión")
+        self.track_comparison_var = self.tk.StringVar(
+            value=str(self.telemetry_preferences["comparison"])
+        )
         self.track_comparison_selector = self.ttk.Combobox(
             lap_controls,
             textvariable=self.track_comparison_var,
@@ -5158,7 +5232,9 @@ class RaceEngineerApp:
             text="Canal inferior:",
             style="Muted.TLabel",
         ).pack(side="left", padx=(24, 6))
-        self.track_aux_channel_var = self.tk.StringVar(value="Marcha")
+        self.track_aux_channel_var = self.tk.StringVar(
+            value=str(self.telemetry_preferences["aux_channel"])
+        )
         self.track_aux_channel_selector = self.ttk.Combobox(
             lap_controls,
             textvariable=self.track_aux_channel_var,
@@ -5169,7 +5245,7 @@ class RaceEngineerApp:
         self.track_aux_channel_selector.pack(side="left")
         self.track_aux_channel_selector.bind(
             "<<ComboboxSelected>>",
-            lambda _event: self._render_track_telemetry_chart(),
+            self._on_telemetry_preferences_changed,
         )
 
         self.track_map_zone_status = self.tk.StringVar(
@@ -5283,6 +5359,21 @@ class RaceEngineerApp:
             self.track_reference_lap_var.set("Referencia: —")
 
     def _on_track_comparison_changed(self, _event=None):
+        self._on_telemetry_preferences_changed()
+
+    def _save_telemetry_preferences(self):
+        save_telemetry_preferences(
+            self.gui_preferences_path,
+            resolution=self.track_resolution_var.get(),
+            comparison=self.track_comparison_var.get(),
+            aux_channel=self.track_aux_channel_var.get(),
+            show_recommendations=bool(
+                self.show_telemetry_priorities_var.get()
+            ),
+        )
+
+    def _on_telemetry_preferences_changed(self, _event=None):
+        self._save_telemetry_preferences()
         self._render_track_telemetry_chart()
 
     def _on_track_lap_selected(self, _event=None):
@@ -6796,9 +6887,11 @@ class RaceEngineerApp:
         except ValueError:
             return
         if hz == self.track_resolution_hz:
+            self._save_telemetry_preferences()
             return
         self._stop_track_playback()
         self.track_resolution_hz = hz
+        self._save_telemetry_preferences()
         record = self.selected_record()
         if record is not None:
             self._request_track_map(record, preserve_visual=True)

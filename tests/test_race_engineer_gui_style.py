@@ -23,6 +23,7 @@ from race_engineer_gui import (
     historical_steering_zone_text,
     adjacent_secondary_view,
     load_secondary_view_preferences,
+    load_telemetry_preferences,
     load_session_sort_preference,
     load_primary_section_preference,
     navigation_button_label,
@@ -31,6 +32,7 @@ from race_engineer_gui import (
     plan_item_for_label,
     save_primary_section_preference,
     save_secondary_view_preference,
+    save_telemetry_preferences,
     save_session_sort_preference,
     session_status_color,
     session_status_tooltip,
@@ -163,6 +165,48 @@ def test_secondary_view_preferences_are_validated_and_preserve_other_settings(tm
     assert load_secondary_view_preferences(path) == {}
     with pytest.raises(ValueError):
         save_secondary_view_preference(path, "Historial", "unknown")
+
+
+def test_telemetry_preferences_round_trip_and_validate_each_field(tmp_path):
+    path = tmp_path / "gui_preferences.json"
+
+    save_session_sort_preference(path, "track", False)
+    save_telemetry_preferences(
+        path,
+        resolution="50 Hz",
+        comparison="History H4",
+        aux_channel="Volante",
+        show_recommendations=False,
+    )
+
+    assert load_telemetry_preferences(path) == {
+        "resolution": "50 Hz",
+        "comparison": "History H4",
+        "aux_channel": "Volante",
+        "show_recommendations": False,
+    }
+    assert load_session_sort_preference(path) == ("track", False)
+
+    path.write_text(
+        '{"telemetry":{"resolution":"500 Hz","comparison":"Sin comparación",'
+        '"aux_channel":false,"show_recommendations":"sí"}}',
+        encoding="utf-8",
+    )
+    assert load_telemetry_preferences(path) == {
+        "resolution": "20 Hz",
+        "comparison": "Sin comparación",
+        "aux_channel": "Marcha",
+        "show_recommendations": True,
+    }
+
+    with pytest.raises(ValueError):
+        save_telemetry_preferences(
+            path,
+            resolution="500 Hz",
+            comparison="Sin comparación",
+            aux_channel="Marcha",
+            show_recommendations=True,
+        )
 
 
 def test_secondary_view_cycle_wraps_within_current_workspace():
@@ -324,12 +368,13 @@ def test_telemetry_chart_layers_recommendations_without_replacing_delta_bands():
     assert 'COLORS["telemetry_plan_band"]' in source
 
 
-def test_recommendation_overlay_is_user_controllable_and_enabled_by_default():
+def test_recommendation_overlay_is_user_controllable_and_enabled_by_default(tmp_path):
     layout_source = inspect.getsource(RaceEngineerApp._track_map_tab)
     render_source = inspect.getsource(RaceEngineerApp._render_track_telemetry_chart)
     controls_source = inspect.getsource(RaceEngineerApp._update_track_plan_controls)
 
-    assert 'self.tk.BooleanVar(value=True)' in layout_source
+    assert 'self.telemetry_preferences["show_recommendations"]' in layout_source
+    assert load_telemetry_preferences(tmp_path / "missing.json")["show_recommendations"] is True
     assert 'text="Recomendaciones"' in layout_source
     assert "show_telemetry_priorities_var.get()" in render_source
     assert 'state="normal" if values else "disabled"' in controls_source

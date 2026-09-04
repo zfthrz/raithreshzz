@@ -281,6 +281,10 @@ def test_detail_reads_debrief_and_authorized_plan(tmp_path: Path):
     assert "Texto validado" in detail.debrief_markdown
     assert "Zona A — T1" in detail.plan_text
     assert "Frená 10 m más tarde" in detail.plan_text
+    assert len(detail.plan_items) == 1
+    assert detail.plan_items[0]["plan_label"] == "A"
+    assert detail.plan_items[0]["driver_cues"][0]["text"] == "Frená 10 m más tarde"
+    assert detail.focus_plan_labels == ()
     assert "debrief_validator" in detail.pipeline_text
     assert "llm_validator" not in detail.pipeline_text
 

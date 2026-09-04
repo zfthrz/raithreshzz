@@ -1240,4 +1240,6 @@ def load_session_detail(
         historical_comparison_view=historical_comparison_view,
         session_change_view=session_change_view,
         warnings=tuple(warnings),
+        plan_items=plan_items,
+        focus_plan_labels=focus_plan_labels,
     )

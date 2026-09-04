@@ -40,6 +40,7 @@ from race_engineer_gui import (
     state_files_fingerprint,
     status_wraplength,
     telemetry_canvas_ready,
+    telemetry_priority_bands,
     track_priority_selector_value,
     ui_state_message,
     summary_layout_spec,
@@ -295,6 +296,32 @@ def test_manual_map_and_chart_selection_open_priority_inspector_without_playback
     assert "self._show_selected_priority_inspector()" in map_source
     assert "self._show_selected_priority_inspector()" in chart_source
     assert "_show_selected_priority_inspector" not in playback_source
+
+
+def test_recommendation_bands_are_clipped_and_distinguish_focus_from_plan():
+    priorities = (
+        SimpleNamespace(start_distance_m=80.0, end_distance_m=140.0, is_focus=True),
+        SimpleNamespace(start_distance_m=180.0, end_distance_m=240.0, is_focus=False),
+        SimpleNamespace(start_distance_m=300.0, end_distance_m=340.0, is_focus=False),
+    )
+
+    assert telemetry_priority_bands(
+        priorities,
+        axis_start_m=100.0,
+        axis_end_m=250.0,
+    ) == (
+        (100.0, 140.0, "FOCUS"),
+        (180.0, 240.0, "PLAN"),
+    )
+
+
+def test_telemetry_chart_layers_recommendations_without_replacing_delta_bands():
+    source = inspect.getsource(RaceEngineerApp._render_track_telemetry_chart)
+
+    assert "telemetry_delta_change_spans(" in source
+    assert "telemetry_priority_bands(" in source
+    assert 'COLORS["telemetry_focus_band"]' in source
+    assert 'COLORS["telemetry_plan_band"]' in source
 
 
 def test_summary_layout_adapts_from_four_columns_to_one():

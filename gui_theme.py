@@ -42,6 +42,9 @@ COLORS: dict[str, str] = {
     # Textures
     "tree":              "#171717",
     "tree_odd":          "#1b1f23",
+    "telemetry_plan_band": "#1d4f78",
+    "telemetry_focus_band": "#7a5a16",
+    "telemetry_plan_outline": "#62b6ff",
     "tree_heading":      "#2a2a2a",
     # Borders
     "border":            "#343b42",

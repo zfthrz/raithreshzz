@@ -680,6 +680,18 @@ def plan_item_for_label(items, plan_label):
     return None
 
 
+def telemetry_priority_bands(priorities, *, axis_start_m, axis_end_m):
+    """Clip validated plan intervals to the visible telemetry distance axis."""
+    bands = []
+    for priority in priorities or ():
+        start = max(float(priority.start_distance_m), float(axis_start_m))
+        end = min(float(priority.end_distance_m), float(axis_end_m))
+        if end <= start:
+            continue
+        bands.append((start, end, "FOCUS" if priority.is_focus else "PLAN"))
+    return tuple(bands)
+
+
 def compact_laps_text(value: str, *, max_rows: int = 4) -> str:
     """Keep the dashboard lap card scannable while preserving the full source elsewhere."""
     lines = [line.strip() for line in value.splitlines() if line.strip()]
@@ -7473,6 +7485,37 @@ class RaceEngineerApp:
                     stipple="gray50",
                 )
 
+        priority_bands = telemetry_priority_bands(
+            self.current_track_priorities,
+            axis_start_m=chart.distance_min_m,
+            axis_end_m=chart.distance_max_m,
+        )
+        for band_start, band_end, band_kind in priority_bands:
+            start_x = telemetry_chart_x_for_distance(
+                chart, band_start, width_px=width
+            )
+            end_x = telemetry_chart_x_for_distance(
+                chart, band_end, width_px=width
+            )
+            is_focus = band_kind == "FOCUS"
+            canvas.create_rectangle(
+                start_x,
+                12,
+                end_x,
+                height - 12,
+                fill=(
+                    COLORS["telemetry_focus_band"]
+                    if is_focus
+                    else COLORS["telemetry_plan_band"]
+                ),
+                outline=(
+                    COLORS["text_warning"]
+                    if is_focus
+                    else COLORS["telemetry_plan_outline"]
+                ),
+                width=1,
+                stipple="gray50" if is_focus else "gray25",
+            )
         lane_height = (height - 24) / 4.0
         for lane in (1, 2, 3):
             y = 12 + lane * lane_height
@@ -7525,6 +7568,15 @@ class RaceEngineerApp:
                 height - 7,
                 text="Delta local · verde gana tiempo · rojo pierde tiempo",
                 fill="#b8c7d1",
+                anchor="sw",
+                font=("Segoe UI", 8),
+            )
+        if priority_bands:
+            canvas.create_text(
+                84,
+                height - (19 if telemetry_comparison is not None else 7),
+                text="Recomendaciones · azul: plan · ámbar: foco principal",
+                fill=COLORS["text_body"],
                 anchor="sw",
                 font=("Segoe UI", 8),
             )

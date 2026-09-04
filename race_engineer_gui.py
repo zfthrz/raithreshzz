@@ -5030,6 +5030,15 @@ class RaceEngineerApp:
             state="disabled",
         )
         self.track_profile_layer_check.pack(side="left", padx=(10, 0))
+        self.show_telemetry_priorities_var = self.tk.BooleanVar(value=True)
+        self.telemetry_priority_layer_check = self.ttk.Checkbutton(
+            turn_controls,
+            text="Recomendaciones",
+            variable=self.show_telemetry_priorities_var,
+            command=self._render_track_telemetry_chart,
+            state="disabled",
+        )
+        self.telemetry_priority_layer_check.pack(side="left", padx=(10, 8))
         self.track_turn_selector_var = self.tk.StringVar(value="Elegir curva…")
         self.track_turn_selector = self.ttk.Combobox(
             turn_controls,
@@ -6514,6 +6523,10 @@ class RaceEngineerApp:
             values=values,
             state="readonly" if values else "disabled",
         )
+        if hasattr(self, "telemetry_priority_layer_check"):
+            self.telemetry_priority_layer_check.configure(
+                state="normal" if values else "disabled"
+            )
         self.track_plan_selector_var.set("Elegir zona del plan…")
 
     def _on_track_turn_selected(self, _event=None):
@@ -7485,8 +7498,12 @@ class RaceEngineerApp:
                     stipple="gray50",
                 )
 
+        show_priority_bands = (
+            not hasattr(self, "show_telemetry_priorities_var")
+            or self.show_telemetry_priorities_var.get()
+        )
         priority_bands = telemetry_priority_bands(
-            self.current_track_priorities,
+            self.current_track_priorities if show_priority_bands else (),
             axis_start_m=chart.distance_min_m,
             axis_end_m=chart.distance_max_m,
         )

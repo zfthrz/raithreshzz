@@ -324,6 +324,17 @@ def test_telemetry_chart_layers_recommendations_without_replacing_delta_bands():
     assert 'COLORS["telemetry_plan_band"]' in source
 
 
+def test_recommendation_overlay_is_user_controllable_and_enabled_by_default():
+    layout_source = inspect.getsource(RaceEngineerApp._track_map_tab)
+    render_source = inspect.getsource(RaceEngineerApp._render_track_telemetry_chart)
+    controls_source = inspect.getsource(RaceEngineerApp._update_track_plan_controls)
+
+    assert 'self.tk.BooleanVar(value=True)' in layout_source
+    assert 'text="Recomendaciones"' in layout_source
+    assert "show_telemetry_priorities_var.get()" in render_source
+    assert 'state="normal" if values else "disabled"' in controls_source
+
+
 def test_summary_layout_adapts_from_four_columns_to_one():
     assert summary_layout_spec(1200) == (
         "wide",

@@ -5295,7 +5295,19 @@ class RaceEngineerApp:
             highlightbackground=COLORS["border_map"],
         )
         telemetry_canvas.pack(fill="both", expand=True, padx=0, pady=(4, 0))
-        telemetry_canvas.configure(cursor="crosshair")
+        telemetry_canvas.configure(cursor="crosshair", takefocus=True)
+        telemetry_canvas.bind(
+            "<FocusIn>",
+            lambda _event: telemetry_canvas.configure(
+                highlightbackground=COLORS["text_success"]
+            ),
+        )
+        telemetry_canvas.bind(
+            "<FocusOut>",
+            lambda _event: telemetry_canvas.configure(
+                highlightbackground=COLORS["border_map"]
+            ),
+        )
         telemetry_canvas.bind(
             "<Configure>", lambda _event: self._render_track_telemetry_chart()
         )
@@ -5303,6 +5315,18 @@ class RaceEngineerApp:
         telemetry_canvas.bind("<B1-Motion>", self._on_telemetry_drag)
         telemetry_canvas.bind("<ButtonRelease-1>", self._on_telemetry_release)
         telemetry_canvas.bind("<MouseWheel>", self._on_telemetry_mousewheel)
+        telemetry_canvas.bind(
+            "<Left>", lambda _event: self._move_telemetry_selection("previous")
+        )
+        telemetry_canvas.bind(
+            "<Right>", lambda _event: self._move_telemetry_selection("next")
+        )
+        telemetry_canvas.bind(
+            "<Home>", lambda _event: self._move_telemetry_selection("start")
+        )
+        telemetry_canvas.bind(
+            "<End>", lambda _event: self._move_telemetry_selection("end")
+        )
         self.track_telemetry_canvas = telemetry_canvas
         zoom_controls = self.ttk.Frame(channels_panel, style="Panel.TFrame")
         zoom_controls.pack(fill="x", pady=(4, 0))
@@ -7928,6 +7952,7 @@ class RaceEngineerApp:
 
     def _on_telemetry_press(self, event):
         self._stop_track_playback()
+        self.track_telemetry_canvas.focus_set()
         self.telemetry_chart_dragging = self._select_telemetry_point(event.x)
         if self.telemetry_chart_dragging:
             self._show_selected_priority_inspector()
@@ -7969,6 +7994,29 @@ class RaceEngineerApp:
         self._apply_track_point_selection(index)
         return True
 
+    def _move_telemetry_selection(self, direction: str):
+        data = self.current_track_map
+        if data is None or not data.points:
+            return "break"
+        self._stop_track_playback()
+        last_index = len(data.points) - 1
+        current = self.selected_track_point_index
+        if direction == "start":
+            target = 0
+        elif direction == "end":
+            target = last_index
+        elif direction == "previous":
+            target = last_index if current is None else max(0, current - 1)
+        elif direction == "next":
+            target = 0 if current is None else min(last_index, current + 1)
+        else:
+            return "break"
+        self._apply_track_point_selection(target)
+        elapsed = data.points[target].elapsed_s
+        if elapsed is not None:
+            self._set_playback_time_status(float(elapsed))
+        return "break"
+
     def _reset_telemetry_zoom(self):
         self.telemetry_zoom_range = None
         self._set_telemetry_zoom_status()
@@ -7997,13 +8045,13 @@ class RaceEngineerApp:
 
     def _set_telemetry_zoom_status(self):
         if self.telemetry_zoom_range is None:
-            text = "Gráfico completo · rueda: zoom · Shift+rueda: desplazar"
+            text = "Gráfico completo · ←/→: muestra · rueda: zoom · Shift+rueda: desplazar"
             state = "disabled"
         else:
             start, end = self.telemetry_zoom_range
             text = (
                 f"Zoom del gráfico {start:.0f}-{end:.0f} m ({end - start:.0f} m) · "
-                "rueda: zoom · Shift+rueda: desplazar"
+                "←/→: muestra · rueda: zoom · Shift+rueda: desplazar"
             )
             state = "normal"
         if hasattr(self, "telemetry_zoom_status"):

@@ -1536,7 +1536,9 @@ seguro por defecto si fue alterado o quedó obsoleto; esto no persiste telemetr�
 modifica resultados de análisis. `Restablecer vista` recupera 20 Hz, referencia de
 sesión, marcha, recomendaciones visibles y el gráfico de vuelta completo en una sola
 acción. Dentro de Telemetría, `Ctrl+Espacio` reproduce o pausa y `Ctrl+0` ejecuta ese
-restablecimiento; fuera de esa sección ambos atajos quedan inactivos.
+restablecimiento; fuera de esa sección ambos atajos quedan inactivos. Con el foco en
+la gráfica, `←`/`→` recorre las muestras nativas y `Inicio`/`Fin` salta a los límites
+de la vuelta; hacer clic en la gráfica le entrega el foco automáticamente.
 
 El contrato LLM histórico v0.1 puede seleccionar hasta tres zonas H5.2 y únicamente códigos observacionales autorizados por Python para cada una. El LLM no escribe texto libre: Python arma todo el render final con hechos y cifras exactos. Un validator separado rechaza zonas inventadas, claves adicionales, códigos no autorizados o evidencia alterada.
 

@@ -476,6 +476,46 @@ def test_telemetry_pointer_selects_nearest_map_point_on_visible_axis():
     assert selected == [1]
 
 
+def test_telemetry_keyboard_moves_only_across_authoritative_samples():
+    app = RaceEngineerApp.__new__(RaceEngineerApp)
+    app.current_track_map = SimpleNamespace(
+        points=tuple(
+            TrackMapPoint(float(index), 0.0, float(index), elapsed_s=index / 20)
+            for index in range(3)
+        )
+    )
+    app.selected_track_point_index = None
+    selected = []
+    times = []
+    app._stop_track_playback = lambda: None
+    app._apply_track_point_selection = lambda index: (
+        selected.append(index),
+        setattr(app, "selected_track_point_index", index),
+    )
+    app._set_playback_time_status = times.append
+
+    assert app._move_telemetry_selection("next") == "break"
+    assert app._move_telemetry_selection("next") == "break"
+    assert app._move_telemetry_selection("end") == "break"
+    assert app._move_telemetry_selection("next") == "break"
+    assert app._move_telemetry_selection("previous") == "break"
+    assert app._move_telemetry_selection("start") == "break"
+    assert selected == [0, 1, 2, 2, 1, 0]
+    assert times == pytest.approx([0.0, 0.05, 0.1, 0.1, 0.05, 0.0])
+
+
+def test_telemetry_canvas_exposes_scoped_keyboard_navigation():
+    source = inspect.getsource(RaceEngineerApp._track_map_tab)
+    press_source = inspect.getsource(RaceEngineerApp._on_telemetry_press)
+
+    assert 'telemetry_canvas.configure(cursor="crosshair", takefocus=True)' in source
+    assert 'telemetry_canvas.bind(\n            "<Left>"' in source
+    assert 'telemetry_canvas.bind(\n            "<Right>"' in source
+    assert 'telemetry_canvas.bind(\n            "<Home>"' in source
+    assert 'telemetry_canvas.bind(\n            "<End>"' in source
+    assert "self.track_telemetry_canvas.focus_set()" in press_source
+
+
 def test_playback_tick_uses_wall_clock_independent_from_render_rate(monkeypatch):
     app = RaceEngineerApp.__new__(RaceEngineerApp)
     app.track_playback_active = True

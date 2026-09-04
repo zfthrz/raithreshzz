@@ -688,7 +688,12 @@ def telemetry_priority_bands(priorities, *, axis_start_m, axis_end_m):
         end = min(float(priority.end_distance_m), float(axis_end_m))
         if end <= start:
             continue
-        bands.append((start, end, "FOCUS" if priority.is_focus else "PLAN"))
+        bands.append((
+            start,
+            end,
+            "FOCUS" if priority.is_focus else "PLAN",
+            str(priority.priority_id),
+        ))
     return tuple(bands)
 
 
@@ -7507,7 +7512,7 @@ class RaceEngineerApp:
             axis_start_m=chart.distance_min_m,
             axis_end_m=chart.distance_max_m,
         )
-        for band_start, band_end, band_kind in priority_bands:
+        for band_start, band_end, band_kind, priority_id in priority_bands:
             start_x = telemetry_chart_x_for_distance(
                 chart, band_start, width_px=width
             )
@@ -7533,6 +7538,19 @@ class RaceEngineerApp:
                 width=1,
                 stipple="gray50" if is_focus else "gray25",
             )
+            if end_x - start_x >= 28:
+                canvas.create_text(
+                    (start_x + end_x) / 2.0,
+                    15,
+                    text=f"{'FOCO' if is_focus else 'PLAN'} {priority_id}",
+                    fill=(
+                        COLORS["text_warning"]
+                        if is_focus
+                        else COLORS["telemetry_plan_outline"]
+                    ),
+                    anchor="n",
+                    font=("Segoe UI", 8, "bold"),
+                )
         lane_height = (height - 24) / 4.0
         for lane in (1, 2, 3):
             y = 12 + lane * lane_height

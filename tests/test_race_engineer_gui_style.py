@@ -300,9 +300,9 @@ def test_manual_map_and_chart_selection_open_priority_inspector_without_playback
 
 def test_recommendation_bands_are_clipped_and_distinguish_focus_from_plan():
     priorities = (
-        SimpleNamespace(start_distance_m=80.0, end_distance_m=140.0, is_focus=True),
-        SimpleNamespace(start_distance_m=180.0, end_distance_m=240.0, is_focus=False),
-        SimpleNamespace(start_distance_m=300.0, end_distance_m=340.0, is_focus=False),
+        SimpleNamespace(priority_id="A", start_distance_m=80.0, end_distance_m=140.0, is_focus=True),
+        SimpleNamespace(priority_id="B", start_distance_m=180.0, end_distance_m=240.0, is_focus=False),
+        SimpleNamespace(priority_id="C", start_distance_m=300.0, end_distance_m=340.0, is_focus=False),
     )
 
     assert telemetry_priority_bands(
@@ -310,8 +310,8 @@ def test_recommendation_bands_are_clipped_and_distinguish_focus_from_plan():
         axis_start_m=100.0,
         axis_end_m=250.0,
     ) == (
-        (100.0, 140.0, "FOCUS"),
-        (180.0, 240.0, "PLAN"),
+        (100.0, 140.0, "FOCUS", "A"),
+        (180.0, 240.0, "PLAN", "B"),
     )
 
 
@@ -333,6 +333,13 @@ def test_recommendation_overlay_is_user_controllable_and_enabled_by_default():
     assert 'text="Recomendaciones"' in layout_source
     assert "show_telemetry_priorities_var.get()" in render_source
     assert 'state="normal" if values else "disabled"' in controls_source
+
+
+def test_recommendation_bands_label_visible_plan_identity():
+    source = inspect.getsource(RaceEngineerApp._render_track_telemetry_chart)
+
+    assert "end_x - start_x >= 28" in source
+    assert 'text=f"{\'FOCO\' if is_focus else \'PLAN\'} {priority_id}"' in source
 
 
 def test_summary_layout_adapts_from_four_columns_to_one():

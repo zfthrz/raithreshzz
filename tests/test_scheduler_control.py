@@ -21,7 +21,9 @@ def test_double_click_launcher_uses_the_sibling_controller():
 
     assert "powershell.exe" in source
     assert "-WindowStyle Hidden" not in source
-    assert '"%~dp0scheduler_control.ps1"' in source
+    assert 'set "SCHEDULER_CONTROL=%~dp0scheduler_control.ps1"' in source
+    assert "%USERPROFILE%\\Documents\\GitHub\\raithreshzz\\scheduler_control.ps1" in source
+    assert 'powershell.exe -NoProfile -ExecutionPolicy Bypass -STA -File "%SCHEDULER_CONTROL%"' in source
     assert "if errorlevel 1" in source
     assert "pause >nul" in source
     assert source.rstrip().endswith("pause >nul")

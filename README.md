@@ -308,6 +308,18 @@ el límite de dos cues sigue respetándose y la forma completa permanece visible
 sección descriptiva de referencia. Esto mejora la lectura sin cambiar el ranking ni
 favorecer freno o acelerador por nombre de canal.
 
+La auditoría shadow de legibilidad y accionabilidad puede recorrer debriefs ya
+generados sin cambiar el plan ni sus prioridades:
+
+```powershell
+python audit_session_plan_actionability.py --results-root data/generated/llm_results --allow-stale-render-only --output data/generated/diagnostics/session_plan_actionability_v0_2.json
+```
+
+La versión `0.2` informa longitud de cues, zonas sin nombre, cues secundarios,
+primarios con varios componentes y repeticiones textuales exactas. Son métricas
+observacionales: no autorizan preferencias de canal, scores de complejidad ni cambios
+de coaching.
+
 La prioridad conceptual actual es:
 
 ```text

@@ -151,6 +151,48 @@ def test_builds_shadow_summary_from_multiple_artifacts(tmp_path: Path):
             "physical_point_with_reference_sequence": 1,
             "single_physical_point": 1,
         },
+        "readability": {
+            "zones_without_named_location": 0,
+            "secondary_cue_count": 0,
+            "multi_component_primary_cue_count": 1,
+            "cue_text_count": 0,
+            "cue_word_count_min": 0,
+            "cue_word_count_max": 0,
+            "cue_word_count_mean": 0.0,
+            "exact_repeated_cue_text_count": 0,
+            "global_character_count_total": 0,
+            "global_exact_repeated_content_line_count": 0,
+        },
+    }
+
+
+def test_readability_baseline_counts_text_location_and_exact_repetition(tmp_path: Path):
+    path = tmp_path / "readability.json"
+    item = plan_item("brake")
+    item["track_location"] = {}
+    item["driver_cues"][0]["text"] = "Frená hacia la referencia"
+    document = document_with_plan([item])
+    document["global_analysis"] = "## Foco\nMisma línea\nMisma línea\n"
+    path.write_text(json.dumps(document), encoding="utf-8")
+
+    result = audit_document(path, document)
+    audit = build_audit([result, result])
+
+    assert result["zones"][0]["has_named_location"] is False
+    assert result["zones"][0]["primary_cue"]["text_word_count"] == 4
+    assert result["readability"]["global_section_count"] == 1
+    assert result["readability"]["global_exact_repeated_content_line_count"] == 1
+    assert audit["summary"]["readability"] == {
+        "zones_without_named_location": 2,
+        "secondary_cue_count": 0,
+        "multi_component_primary_cue_count": 0,
+        "cue_text_count": 2,
+        "cue_word_count_min": 4,
+        "cue_word_count_max": 4,
+        "cue_word_count_mean": 4.0,
+        "exact_repeated_cue_text_count": 1,
+        "global_character_count_total": len(document["global_analysis"]) * 2,
+        "global_exact_repeated_content_line_count": 2,
     }
 
 

@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 
-AUDIT_VERSION = "0.1"
+AUDIT_VERSION = "0.2"
 AUDIT_STATUS = "SHADOW_OBSERVATIONAL_ONLY"
 
 STALE_RENDER_ERROR = (
@@ -168,12 +168,18 @@ def audit_document(path: Path, document: dict[str, Any]) -> dict[str, Any]:
         ]
         if len(cue_audits) != len(cues):
             raise ValueError(f"{path}: zona {position} contiene un cue inválido")
+        for cue_audit, cue in zip(cue_audits, cues):
+            cue_text = str(cue.get("text") or "").strip()
+            cue_audit["text"] = cue_text
+            cue_audit["text_word_count"] = len(cue_text.split())
+            cue_audit["text_character_count"] = len(cue_text)
         location = item.get("track_location") or {}
         zones.append(
             {
                 "position": position,
                 "plan_label": item.get("plan_label"),
                 "location": location.get("label"),
+                "has_named_location": bool(str(location.get("label") or "").strip()),
                 "region_comparison_count": item.get("comparison_count"),
                 "primary_cue": cue_audits[0],
                 "secondary_cues": cue_audits[1:],
@@ -182,6 +188,17 @@ def audit_document(path: Path, document: dict[str, Any]) -> dict[str, Any]:
         )
 
     metadata = document.get("metadata") or {}
+    global_analysis = str(document.get("global_analysis") or "")
+    content_lines = [
+        line.strip()
+        for line in global_analysis.splitlines()
+        if line.strip() and not line.lstrip().startswith("#")
+    ]
+    repeated_lines = sum(
+        count - 1
+        for count in Counter(line.casefold() for line in content_lines).values()
+        if count > 1
+    )
     return {
         "source_path": str(path.resolve()),
         "source_sha256": sha256_file(path),
@@ -192,17 +209,72 @@ def audit_document(path: Path, document: dict[str, Any]) -> dict[str, Any]:
         ),
         "zone_count": len(zones),
         "zones": zones,
+        "readability": {
+            "global_character_count": len(global_analysis),
+            "global_line_count": len(global_analysis.splitlines()),
+            "global_section_count": sum(
+                1 for line in global_analysis.splitlines() if line.startswith("## ")
+            ),
+            "global_exact_repeated_content_line_count": repeated_lines,
+        },
     }
 
 
 def build_audit(results: list[dict[str, Any]]) -> dict[str, Any]:
     channel_counts: Counter[str] = Counter()
     directness_counts: Counter[str] = Counter()
+    cue_text_counts: Counter[str] = Counter()
+    cue_word_counts: list[int] = []
+    zones_without_named_location = 0
+    secondary_cue_count = 0
+    multi_component_primary_count = 0
     for result in results:
         for zone in result["zones"]:
             primary = zone["primary_cue"]
             channel_counts[primary["channel"]] += 1
             directness_counts[primary["directness_class"]] += 1
+            zones_without_named_location += int(
+                not zone.get("has_named_location", bool(zone.get("location")))
+            )
+            secondary_cues = zone.get("secondary_cues", [])
+            secondary_cue_count += len(secondary_cues)
+            multi_component_primary_count += int(
+                int(primary.get("instruction_component_count", 1)) >= 3
+            )
+            for cue in (primary, *secondary_cues):
+                text = str(cue.get("text") or "").strip()
+                if text:
+                    cue_text_counts[text.casefold()] += 1
+                    cue_word_counts.append(
+                        int(cue.get("text_word_count", len(text.split())))
+                    )
+
+    readability = {
+        "zones_without_named_location": zones_without_named_location,
+        "secondary_cue_count": secondary_cue_count,
+        "multi_component_primary_cue_count": multi_component_primary_count,
+        "cue_text_count": len(cue_word_counts),
+        "cue_word_count_min": min(cue_word_counts) if cue_word_counts else 0,
+        "cue_word_count_max": max(cue_word_counts) if cue_word_counts else 0,
+        "cue_word_count_mean": (
+            round(sum(cue_word_counts) / len(cue_word_counts), 2)
+            if cue_word_counts
+            else 0.0
+        ),
+        "exact_repeated_cue_text_count": sum(
+            count - 1 for count in cue_text_counts.values() if count > 1
+        ),
+        "global_character_count_total": sum(
+            result.get("readability", {}).get("global_character_count", 0)
+            for result in results
+        ),
+        "global_exact_repeated_content_line_count": sum(
+            result.get("readability", {}).get(
+                "global_exact_repeated_content_line_count", 0
+            )
+            for result in results
+        ),
+    }
 
     return {
         "metadata": {
@@ -221,6 +293,7 @@ def build_audit(results: list[dict[str, Any]]) -> dict[str, Any]:
             "zone_count": sum(result["zone_count"] for result in results),
             "primary_channel_counts": dict(sorted(channel_counts.items())),
             "primary_directness_counts": dict(sorted(directness_counts.items())),
+            "readability": readability,
         },
         "artifacts": results,
     }
@@ -249,7 +322,10 @@ def audit_paths(
 def print_summary(audit: dict[str, Any]) -> None:
     summary = audit["summary"]
     print("=" * 88)
-    print("RACE ENGINEER - SESSION PLAN ACTIONABILITY SHADOW AUDIT v0.1")
+    print(
+        "RACE ENGINEER - SESSION PLAN ACTIONABILITY SHADOW AUDIT "
+        f"v{AUDIT_VERSION}"
+    )
     print("=" * 88)
     print(f"Artifacts: {summary['artifact_count']}")
     print(f"Priority zones: {summary['zone_count']}")
@@ -259,6 +335,24 @@ def print_summary(audit: dict[str, Any]) -> None:
     print("Primary directness classes:")
     for directness, count in summary["primary_directness_counts"].items():
         print(f"  {directness}: {count}")
+    readability = summary["readability"]
+    print("Readability baseline:")
+    print(f"  zones without named location: {readability['zones_without_named_location']}")
+    print(f"  secondary cues: {readability['secondary_cue_count']}")
+    print(
+        "  multi-component primary cues: "
+        f"{readability['multi_component_primary_cue_count']}"
+    )
+    print(
+        "  cue words min/mean/max: "
+        f"{readability['cue_word_count_min']}/"
+        f"{readability['cue_word_count_mean']}/"
+        f"{readability['cue_word_count_max']}"
+    )
+    print(
+        "  exact repeated cue texts: "
+        f"{readability['exact_repeated_cue_text_count']}"
+    )
     print("Authority: SHADOW ONLY — no channel preference or priority changed")
     print("RESULT: PASS")
 
@@ -267,7 +361,12 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description="Audita en shadow la estructura de cues del plan de sesión"
     )
-    parser.add_argument("llm_analysis_json", nargs="+", type=Path)
+    parser.add_argument("llm_analysis_json", nargs="*", type=Path)
+    parser.add_argument(
+        "--results-root",
+        type=Path,
+        help="Descubre debriefs deterministas bajo un directorio de resultados",
+    )
     parser.add_argument("--output", type=Path)
     parser.add_argument(
         "--allow-stale-render-only",
@@ -275,9 +374,15 @@ def main() -> int:
         help="Acepta exclusivamente deriva del render global en artifacts históricos",
     )
     args = parser.parse_args()
+    paths = list(args.llm_analysis_json)
+    if args.results_root:
+        paths.extend(sorted(args.results_root.rglob("*_deterministic_debrief.json")))
+    paths = list(dict.fromkeys(path.resolve() for path in paths))
+    if not paths:
+        parser.error("indicá al menos un JSON o --results-root")
     try:
         audit = audit_paths(
-            args.llm_analysis_json,
+            paths,
             allow_stale_render_only=args.allow_stale_render_only,
         )
     except (OSError, ValueError, json.JSONDecodeError) as exc:

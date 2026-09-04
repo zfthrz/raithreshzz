@@ -133,6 +133,8 @@ GLOBAL_SHORTCUTS = (
     ("F1", "Mostrar esta ayuda"),
     ("Ctrl+PageUp / PageDown", "Cambiar de subvista"),
     ("Ctrl+B", "Mostrar u ocultar el catálogo lateral"),
+    ("Ctrl+Espacio", "Reproducir o pausar Telemetría"),
+    ("Ctrl+0", "Restablecer la vista de Telemetría"),
 )
 SECTION_VIEWS = {
     "Resumen": ("Debrief", "Próxima tanda", "Vueltas"),
@@ -2995,6 +2997,8 @@ class RaceEngineerApp:
         self.root.bind_all("<Control-Prior>", lambda event: self._cycle_secondary_view(-1, event))
         self.root.bind_all("<Control-Next>", lambda event: self._cycle_secondary_view(1, event))
         self.root.bind_all("<Control-b>", self._toggle_sidebar)
+        self.root.bind_all("<Control-space>", self._toggle_telemetry_playback_shortcut)
+        self.root.bind_all("<Control-Key-0>", self._reset_telemetry_view_shortcut)
 
     def _navigate_primary_section(self, section):
         self._show_primary_section(section)
@@ -3012,6 +3016,18 @@ class RaceEngineerApp:
             self.sidebar.pack(before=self.main_frame, side="left", fill="y")
             self.sidebar_visible = True
             self.sidebar_toggle_button.configure(text="◀")
+        return "break"
+
+    def _toggle_telemetry_playback_shortcut(self, _event=None):
+        if self.primary_section_var.get() != "Telemetría":
+            return None
+        self._on_track_play_toggle()
+        return "break"
+
+    def _reset_telemetry_view_shortcut(self, _event=None):
+        if self.primary_section_var.get() != "Telemetría":
+            return None
+        self._reset_telemetry_view()
         return "break"
 
     def _bind_keyboard_activation(self, widget, callback):

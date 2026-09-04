@@ -395,6 +395,37 @@ def test_telemetry_view_has_safe_persistent_reset():
     assert "self._request_track_map(record, preserve_visual=True)" in reset_source
 
 
+def test_telemetry_keyboard_shortcuts_are_scoped_to_telemetry_workspace():
+    bindings = inspect.getsource(RaceEngineerApp._bind_global_shortcuts)
+    playback = inspect.getsource(
+        RaceEngineerApp._toggle_telemetry_playback_shortcut
+    )
+    reset = inspect.getsource(RaceEngineerApp._reset_telemetry_view_shortcut)
+
+    assert ("Ctrl+Espacio", "Reproducir o pausar Telemetría") in GLOBAL_SHORTCUTS
+    assert ("Ctrl+0", "Restablecer la vista de Telemetría") in GLOBAL_SHORTCUTS
+    assert 'bind_all("<Control-space>"' in bindings
+    assert 'bind_all("<Control-Key-0>"' in bindings
+    assert 'self.primary_section_var.get() != "Telemetría"' in playback
+    assert "self._on_track_play_toggle()" in playback
+    assert 'self.primary_section_var.get() != "Telemetría"' in reset
+    assert "self._reset_telemetry_view()" in reset
+
+    app = RaceEngineerApp.__new__(RaceEngineerApp)
+    section = {"value": "Resumen"}
+    calls = []
+    app.primary_section_var = SimpleNamespace(get=lambda: section["value"])
+    app._on_track_play_toggle = lambda: calls.append("playback")
+    app._reset_telemetry_view = lambda: calls.append("reset")
+    assert app._toggle_telemetry_playback_shortcut() is None
+    assert app._reset_telemetry_view_shortcut() is None
+    assert calls == []
+    section["value"] = "Telemetría"
+    assert app._toggle_telemetry_playback_shortcut() == "break"
+    assert app._reset_telemetry_view_shortcut() == "break"
+    assert calls == ["playback", "reset"]
+
+
 def test_recommendation_bands_label_visible_plan_identity():
     source = inspect.getsource(RaceEngineerApp._render_track_telemetry_chart)
 
@@ -658,6 +689,8 @@ def test_shortcut_help_documents_every_global_action():
         ("F1", "Mostrar esta ayuda"),
         ("Ctrl+PageUp / PageDown", "Cambiar de subvista"),
         ("Ctrl+B", "Mostrar u ocultar el catálogo lateral"),
+        ("Ctrl+Espacio", "Reproducir o pausar Telemetría"),
+        ("Ctrl+0", "Restablecer la vista de Telemetría"),
     )
     build_source = inspect.getsource(RaceEngineerApp._build_layout)
     help_source = inspect.getsource(RaceEngineerApp._show_shortcut_help)

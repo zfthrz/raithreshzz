@@ -6789,6 +6789,8 @@ class RaceEngineerApp:
             event.y,
             max_distance_px=18.0,
         )
+        if self.track_map_dragging:
+            self._show_selected_priority_inspector()
 
     def _on_track_map_drag(self, event):
         if self.track_map_dragging:
@@ -6827,6 +6829,26 @@ class RaceEngineerApp:
             return False
         self._apply_track_point_selection(index)
         return True
+
+    def _show_selected_priority_inspector(self):
+        selected = self.selected_track_overlay
+        if selected is None or selected[0] != "priority":
+            return
+        plan_match = plan_item_for_label(
+            getattr(self, "current_plan_items", ()),
+            selected[1],
+        )
+        if plan_match is None:
+            return
+        item, index = plan_match
+        self._show_plan_inspector(
+            item,
+            index,
+            focused=(
+                selected[1]
+                in getattr(self, "current_focus_plan_labels", set())
+            ),
+        )
 
     def _apply_track_point_selection(self, index: int) -> None:
         """Aplica un índice de punto del lap (drag, selector o playback)."""
@@ -7705,6 +7727,8 @@ class RaceEngineerApp:
     def _on_telemetry_press(self, event):
         self._stop_track_playback()
         self.telemetry_chart_dragging = self._select_telemetry_point(event.x)
+        if self.telemetry_chart_dragging:
+            self._show_selected_priority_inspector()
 
     def _on_telemetry_drag(self, event):
         if self.telemetry_chart_dragging:

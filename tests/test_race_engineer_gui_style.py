@@ -287,6 +287,16 @@ def test_telemetry_plan_selection_opens_matching_evidence_inspector():
     assert "self._show_plan_inspector(" in source
 
 
+def test_manual_map_and_chart_selection_open_priority_inspector_without_playback_hook():
+    map_source = inspect.getsource(RaceEngineerApp._on_track_map_press)
+    chart_source = inspect.getsource(RaceEngineerApp._on_telemetry_press)
+    playback_source = inspect.getsource(RaceEngineerApp._tick_track_playback)
+
+    assert "self._show_selected_priority_inspector()" in map_source
+    assert "self._show_selected_priority_inspector()" in chart_source
+    assert "_show_selected_priority_inspector" not in playback_source
+
+
 def test_summary_layout_adapts_from_four_columns_to_one():
     assert summary_layout_spec(1200) == (
         "wide",

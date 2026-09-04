@@ -3,6 +3,8 @@ from __future__ import annotations
 import inspect
 from types import SimpleNamespace
 
+from gui_theme import COLORS
+
 import pytest
 import race_engineer_gui as gui
 from race_engineer_gui import (
@@ -15,6 +17,7 @@ from race_engineer_gui import (
     calibration_status_color,
     calibration_status_tag,
     calibration_status_tooltip,
+    debrief_section_jumps,
     file_fingerprint,
     format_comparison_columns,
     historical_steering_zone_text,
@@ -23,6 +26,7 @@ from race_engineer_gui import (
     load_session_sort_preference,
     load_primary_section_preference,
     navigation_button_label,
+    plan_priority_selector_value,
     save_primary_section_preference,
     save_secondary_view_preference,
     save_session_sort_preference,
@@ -34,6 +38,7 @@ from race_engineer_gui import (
     state_files_fingerprint,
     status_wraplength,
     telemetry_canvas_ready,
+    track_priority_selector_value,
     ui_state_message,
     summary_layout_spec,
 )
@@ -175,6 +180,64 @@ def test_global_empty_and_error_states_include_a_next_action():
     failed = ui_state_message("LOAD_FAILED", detail="DuckDB ocupado", compact=True)
     assert "DuckDB ocupado" in failed
     assert "Ctrl+R" in failed
+
+
+def test_debrief_section_jumps_expose_only_present_reader_landmarks():
+    markdown = """# Debrief de ingeniería — Imola
+
+## Resumen de la sesión
+
+Texto.
+
+## Foco principal
+
+- Cue.
+
+## Plan para la próxima tanda
+
+Plan.
+
+## Respaldo técnico
+
+Detalle.
+"""
+
+    assert debrief_section_jumps(markdown) == (
+        ("Inicio", "# Debrief de ingeniería", "debrief_start"),
+        ("Foco", "## Foco principal", "debrief_focus"),
+        ("Plan", "## Plan para la próxima tanda", "debrief_plan"),
+        ("Respaldo", "## Respaldo técnico", "debrief_evidence"),
+    )
+    assert debrief_section_jumps("## Plan para la próxima tanda") == (
+        ("Plan", "## Plan para la próxima tanda", "debrief_plan"),
+    )
+
+
+def test_plan_priority_trace_resolves_exact_validated_telemetry_selector():
+    priorities = (
+        SimpleNamespace(
+            priority_id="A",
+            label="T17 — Rivazza 1",
+            start_distance_m=4100.2,
+            end_distance_m=4220.7,
+            is_focus=True,
+        ),
+        SimpleNamespace(
+            priority_id="B",
+            label="T2–T3 — Variante Tamburello",
+            start_distance_m=680.0,
+            end_distance_m=820.0,
+            is_focus=False,
+        ),
+    )
+
+    assert track_priority_selector_value(priorities[0]) == (
+        "FOCO A · T17 — Rivazza 1 · 4100-4221 m"
+    )
+    assert plan_priority_selector_value(priorities, "B") == (
+        "B · T2–T3 — Variante Tamburello · 680-820 m"
+    )
+    assert plan_priority_selector_value(priorities, "C") is None
 
 
 def test_summary_layout_adapts_from_four_columns_to_one():
@@ -360,12 +423,12 @@ def test_gui_applies_sidebar_dashboard_chrome_without_opening_window():
     assert style.configurations["H53Ready.TLabel"]["foreground"] == "#00FFA6"
     assert style.configurations["H53Pending.TLabel"]["foreground"] == "#f0c674"
     assert style.configurations["H53Error.TLabel"]["foreground"] == "#ff7b72"
-    assert ("selected", "#315b60") in style.maps["Treeview"]["background"]
-    assert ("focus", "#00FFA6") in style.maps["Treeview"]["bordercolor"]
-    assert style.configurations["TNotebook.Tab"]["focuscolor"] == "#00FFA6"
-    assert ("selected", "#00FFA6") in style.maps["TNotebook.Tab"]["foreground"]
-    assert ("selected", "#22282e") in style.maps["TNotebook.Tab"]["background"]
-    assert app.root.options["*TCombobox*Listbox.background"] == "#15181c"
+    assert ("selected", COLORS["text_tree_selected_bg"]) in style.maps["Treeview"]["background"]
+    assert ("focus", COLORS["text_success"]) in style.maps["Treeview"]["bordercolor"]
+    assert style.configurations["TNotebook.Tab"]["focuscolor"] == COLORS["text_success"]
+    assert ("selected", COLORS["text_success"]) in style.maps["TNotebook.Tab"]["foreground"]
+    assert ("selected", COLORS["panel"]) in style.maps["TNotebook.Tab"]["background"]
+    assert app.root.options["*TCombobox*Listbox.background"] == COLORS["scrollbar_trough"]
 
 
 def test_map_status_wraplength_tracks_panel_width_with_safe_minimum():

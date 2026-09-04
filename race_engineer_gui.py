@@ -586,6 +586,44 @@ def compact_debrief_markdown(value: str) -> str:
     return "\n".join(output).strip()
 
 
+def debrief_section_jumps(value: str) -> tuple[tuple[str, str, str], ...]:
+    """Return stable navigation targets for sections present in a debrief."""
+    candidates = (
+        ("Inicio", "# Debrief de ingeniería", "debrief_start"),
+        ("Foco", "## Foco principal", "debrief_focus"),
+        ("Plan", "## Plan para la próxima tanda", "debrief_plan"),
+        ("Respaldo", "## Respaldo técnico", "debrief_evidence"),
+    )
+    lines = tuple(line.strip() for line in value.splitlines())
+    return tuple(
+        (label, heading, mark)
+        for label, heading, mark in candidates
+        if any(
+            line == heading
+            or (heading == "# Debrief de ingeniería" and line.startswith(heading))
+            for line in lines
+        )
+    )
+
+
+def track_priority_selector_value(priority) -> str:
+    """Render the stable selector value for one validated plan priority."""
+    return (
+        f"{'FOCO ' if priority.is_focus else ''}"
+        f"{priority.priority_id} · {priority.label} · "
+        f"{priority.start_distance_m:.0f}-{priority.end_distance_m:.0f} m"
+    )
+
+
+def plan_priority_selector_value(priorities, plan_label) -> str | None:
+    """Resolve a plan label to its exact validated telemetry selector value."""
+    wanted = str(plan_label or "").strip()
+    for priority in priorities:
+        if str(priority.priority_id) == wanted:
+            return track_priority_selector_value(priority)
+    return None
+
+
 def compact_laps_text(value: str, *, max_rows: int = 4) -> str:
     """Keep the dashboard lap card scannable while preserving the full source elsewhere."""
     lines = [line.strip() for line in value.splitlines() if line.strip()]
@@ -1340,15 +1378,15 @@ class RaceEngineerApp:
         )
         style.configure(
             "TCheckbutton",
-            background="#101010",
-            foreground="#c9c9c9",
+            background=COLORS["app"],
+            foreground=COLORS["text_body"],
             font=FONTS["body_small"],
         )
         style.map(
             "TCheckbutton",
-            background=[("active", "#101010")],
+            background=[("active", COLORS["app"])],
             foreground=[("disabled", "#666f77")],
-            indicatorcolor=[("selected", "#00FFA6"), ("!selected", "#30363c")],
+            indicatorcolor=[("selected", COLORS["text_success"]), ("!selected", "#30363c")],
         )
         style.configure(
             "TButton",
@@ -1433,7 +1471,7 @@ class RaceEngineerApp:
             lightcolor=COLORS["border_light"],
             darkcolor=COLORS["border_light"],
             focusthickness=1,
-            focuscolor="#00FFA6",
+            focuscolor=COLORS["text_success"],
             relief="flat",
             font=FONTS["body_small"],
         )
@@ -1448,16 +1486,16 @@ class RaceEngineerApp:
         )
         style.map(
             "Treeview",
-            background=[("selected", "#315b60")],
+            background=[("selected", COLORS["text_tree_selected_bg"])],
             foreground=[("selected", "#f4fbff")],
-            bordercolor=[("focus", "#00FFA6")],
-            lightcolor=[("focus", "#00FFA6")],
-            darkcolor=[("focus", "#00FFA6")],
+            bordercolor=[("focus", COLORS["text_success"])],
+            lightcolor=[("focus", COLORS["text_success"])],
+            darkcolor=[("focus", COLORS["text_success"])],
         )
         style.map(
             "Treeview.Heading",
-            background=[("active", "#343b42")],
-            foreground=[("active", "#00FFA6")],
+            background=[("active", COLORS["border"])],
+            foreground=[("active", COLORS["text_success"])],
         )
         style.configure(
             "Inspector.TFrame",
@@ -1522,7 +1560,7 @@ class RaceEngineerApp:
         )
         style.configure(
             "PriorityFocus.TLabel",
-            background="#253c39",
+            background=COLORS["summary_accent"],
             foreground=COLORS["text_highlight"],
             font=FONTS["heading_small"],
             padding=(7, 3),
@@ -1569,7 +1607,7 @@ class RaceEngineerApp:
 
         style.configure(
             "Workspace.TFrame",
-            background="#0d151b",
+            background=COLORS["workspace"],
         )
         style.configure(
             "WorkspaceNav.TFrame",
@@ -1597,7 +1635,7 @@ class RaceEngineerApp:
         )
         style.configure(
             "WorkspaceNavActive.TButton",
-            background="#123138",
+            background=COLORS["nav_active_bg"],
             foreground=COLORS["text_success"],
             borderwidth=0,
             relief="flat",
@@ -1647,7 +1685,7 @@ class RaceEngineerApp:
         style.configure(
             "SidebarNav.TButton",
             background=COLORS["sidebar"],
-            foreground="#c6d3dc",
+            foreground=COLORS["text_primary"],
             borderwidth=0,
             relief="flat",
             padding=(12, 10),
@@ -1704,7 +1742,7 @@ class RaceEngineerApp:
         style.map(
             "Link.TButton",
             background=[("active", COLORS["summary_change"]), ("pressed", COLORS["summary_change"])],
-            foreground=[("active", "#8cf5e7")],
+            foreground=[("active", COLORS["text_highlight"])],
         )
 
         style.configure("TNotebook", background=COLORS["h53_label"], borderwidth=0)
@@ -1720,8 +1758,8 @@ class RaceEngineerApp:
         )
         style.map(
             "TNotebook.Tab",
-            background=[("selected", "#22282e"), ("active", "#2c363b"), ("disabled", "#202327")],
-            foreground=[("selected", "#00FFA6"), ("active", "#e4edf3"), ("disabled", "#69747d")],
+            background=[("selected", COLORS["panel"]), ("active", "#2c363b"), ("disabled", "#202327")],
+            foreground=[("selected", COLORS["text_success"]), ("active", "#e4edf3"), ("disabled", "#69747d")],
         )
         style.configure(
             "Horizontal.TProgressbar",
@@ -1747,8 +1785,8 @@ class RaceEngineerApp:
         )
         style.configure(
             "CardValue.TLabel",
-            background="#171a1d",
-            foreground="#edf6fa",
+            background=COLORS["metric_card"],
+            foreground=COLORS["text_primary"],
             font=FONTS["title_priority"],
         )
 
@@ -1972,6 +2010,13 @@ class RaceEngineerApp:
             wraplength=250,
             justify="left",
         ).pack(fill="x", pady=(0, 10))
+        self.inspector_telemetry_button = ttk.Button(
+            self.inspector_frame,
+            text="Ver zona en telemetría  →",
+            style="Link.TButton",
+            state="disabled",
+        )
+        self.inspector_telemetry_button.pack(anchor="w", pady=(0, 10))
         self.inspector_text = tk.Text(
             self.inspector_frame,
             wrap="word",
@@ -3187,7 +3232,7 @@ class RaceEngineerApp:
                 tags=("row_even" if index % 2 == 0 else "row_odd",),
             )
         self.statistics_tree.tag_configure("row_even", background=COLORS["tree"])
-        self.statistics_tree.tag_configure("row_odd", "#1b1f23")
+        self.statistics_tree.tag_configure("row_odd", background=COLORS["tree_odd"])
 
         self.statistics_sessions_by_month = {
             monthly.month: tuple(
@@ -3359,7 +3404,7 @@ class RaceEngineerApp:
                 tags=("row_even" if index % 2 == 0 else "row_odd",),
             )
         tree.tag_configure("row_even", background=COLORS["tree"])
-        tree.tag_configure("row_odd", background="#1b1f23")
+        tree.tag_configure("row_odd", background=COLORS["tree_odd"])
 
     def _apply_track_readiness_payload(self, payload):
         self.track_readiness_payload = payload
@@ -3863,7 +3908,7 @@ class RaceEngineerApp:
         tree.bind("<Return>", lambda _event: self._on_calibration_tree_double_click())
 
         tree.tag_configure("row_even", background=COLORS["tree"])
-        tree.tag_configure("row_odd", background="#1b1f23")
+        tree.tag_configure("row_odd", background=COLORS["tree_odd"])
         for tag, color in CALIBRATION_STATUS_COLORS.items():
             tree.tag_configure(tag, foreground=color)
         self.calibration_tree = tree
@@ -4016,9 +4061,9 @@ class RaceEngineerApp:
         text = self.tk.Text(
             pane,
             wrap="word",
-            background="#111418",
-            foreground="#d8e3ea",
-            insertbackground="#d8e3ea",
+            background=COLORS["app"],
+            foreground=COLORS["text_body"],
+            insertbackground=COLORS["text_success"],
             relief="flat",
             padx=8,
             pady=6,
@@ -4119,10 +4164,19 @@ class RaceEngineerApp:
 
         self.inspector_meta_var.set(" · ".join(meta_parts))
 
-        lines = []
-
         start = item.get("start_distance_m")
         end = item.get("end_distance_m")
+        has_telemetry_interval = (
+            isinstance(start, (int, float))
+            and isinstance(end, (int, float))
+            and end > start
+        )
+        self.inspector_telemetry_button.configure(
+            state="normal" if has_telemetry_interval else "disabled",
+            command=lambda plan_label=label: self._show_plan_on_telemetry(plan_label),
+        )
+
+        lines = []
 
         if isinstance(start, (int, float)) or isinstance(end, (int, float)):
             lines.append(("section", "UBICACIÓN"))
@@ -5245,6 +5299,10 @@ class RaceEngineerApp:
         frame = self.ttk.Frame(window, style="Panel.TFrame", padding=16)
         frame.pack(fill="both", expand=True)
         self.ttk.Label(frame, text=title, style="Title.TLabel").pack(anchor="w", pady=(0, 10))
+        section_jumps = debrief_section_jumps(value) if markdown else ()
+        if len(section_jumps) > 1:
+            jump_bar = self.ttk.Frame(frame, style="Panel.TFrame")
+            jump_bar.pack(fill="x", pady=(0, 10))
         text = self.tk.Text(
             frame,
             wrap="word",
@@ -5270,7 +5328,20 @@ class RaceEngineerApp:
         text.configure(yscrollcommand=scrollbar.set)
         scrollbar.pack(side="right", fill="y")
         text.pack(fill="both", expand=True)
-        self._set_text(text, value, markdown=markdown)
+        self._set_text(
+            text,
+            value,
+            markdown=markdown,
+            section_marks={heading: mark for _, heading, mark in section_jumps},
+        )
+        if len(section_jumps) > 1:
+            for label, _, mark in section_jumps:
+                self.ttk.Button(
+                    jump_bar,
+                    text=label,
+                    style="Link.TButton",
+                    command=lambda target=mark: text.see(target),
+                ).pack(side="left", padx=(0, 8))
         return window
 
     def _show_full_debrief(self):
@@ -5286,10 +5357,24 @@ class RaceEngineerApp:
             self.current_laps_text or ui_state_message("LAPS_UNAVAILABLE"),
         )
 
-    def _set_text(self, widget, value: str, *, markdown: bool = False):
+    def _set_text(
+        self,
+        widget,
+        value: str,
+        *,
+        markdown: bool = False,
+        section_marks: dict[str, str] | None = None,
+    ):
         widget.configure(state="normal")
         widget.delete("1.0", "end")
+        section_marks = section_marks or {}
         for line in value.splitlines() or [""]:
+            stripped_line = line.strip()
+            mark = section_marks.get(stripped_line)
+            if not mark and stripped_line.startswith("# Debrief de ingeniería"):
+                mark = section_marks.get("# Debrief de ingeniería")
+            if mark:
+                widget.mark_set(mark, "end-1c")
             tag = None
             clean = line
             if markdown:
@@ -5501,7 +5586,7 @@ class RaceEngineerApp:
         window.title("Diagnóstico del scheduler")
         window.geometry("820x560")
         window.minsize(580, 380)
-        window.configure(background="#101010")
+        window.configure(background=COLORS["app"])
         window.transient(self.root)
 
         container = self.ttk.Frame(window, style="Panel.TFrame", padding=16)
@@ -5718,7 +5803,7 @@ class RaceEngineerApp:
                 tags=("row_even" if index % 2 == 0 else "row_odd", session.status),
             )
         self.tree.tag_configure("row_even", background=COLORS["tree"])
-        self.tree.tag_configure("row_odd", background="#1b1f23")
+        self.tree.tag_configure("row_odd", background=COLORS["tree_odd"])
         for status in SESSION_STATUS_COLORS:
             self.tree.tag_configure(status, foreground=session_status_color(status))
         self.count_var.set(
@@ -6338,11 +6423,7 @@ class RaceEngineerApp:
         if not hasattr(self, "track_plan_selector"):
             return
         values = tuple(
-            (
-                f"{'FOCO ' if priority.is_focus else ''}"
-                f"{priority.priority_id} · {priority.label} · "
-                f"{priority.start_distance_m:.0f}-{priority.end_distance_m:.0f} m"
-            )
+            track_priority_selector_value(priority)
             for priority in self.current_track_priorities
         )
         self.track_plan_selector.configure(
@@ -6470,6 +6551,22 @@ class RaceEngineerApp:
             f"{priority.start_distance_m:.0f}-{priority.end_distance_m:.0f} m · {cues}"
         )
         self._render_track_map()
+
+    def _show_plan_on_telemetry(self, plan_label: str):
+        """Open the exact validated telemetry interval for a plan priority."""
+        selector_value = plan_priority_selector_value(
+            getattr(self, "current_track_priorities", ()),
+            plan_label,
+        )
+        self._show_primary_section("Telemetría")
+        if not selector_value:
+            if hasattr(self, "track_map_zone_status"):
+                self.track_map_zone_status.set(
+                    "La zona del plan todavía no está disponible en el mapa de esta sesión."
+                )
+            return
+        self.track_plan_selector_var.set(selector_value)
+        self._on_track_plan_selected()
 
     def _on_track_play_toggle(self):
         if self.track_playback_active:

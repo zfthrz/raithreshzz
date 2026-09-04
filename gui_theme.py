@@ -41,6 +41,7 @@ COLORS: dict[str, str] = {
     "h53_label":         "#1c1c1c",
     # Textures
     "tree":              "#171717",
+    "tree_odd":          "#1b1f23",
     "tree_heading":      "#2a2a2a",
     # Borders
     "border":            "#343b42",

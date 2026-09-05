@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 
-AUDIT_VERSION = "0.2"
+AUDIT_VERSION = "0.3"
 AUDIT_STATUS = "SHADOW_OBSERVATIONAL_ONLY"
 
 STALE_RENDER_ERROR = (
@@ -199,6 +199,21 @@ def audit_document(path: Path, document: dict[str, Any]) -> dict[str, Any]:
         for count in Counter(line.casefold() for line in content_lines).values()
         if count > 1
     )
+    content_line_word_counts = [len(line.split()) for line in content_lines]
+    plan_cue_texts = {
+        str(cue.get("text") or "").strip().casefold()
+        for zone in zones
+        for cue in (zone["primary_cue"], *zone["secondary_cues"])
+        if str(cue.get("text") or "").strip()
+    }
+    focus = facts.get("next_stint_focus") or {}
+    focus_cue_texts = {
+        str(cue.get("text") or "").strip().casefold()
+        for item in (focus.get("items", []) or [])
+        if isinstance(item, dict)
+        for cue in (item.get("driver_cues", []) or [])
+        if isinstance(cue, dict) and str(cue.get("text") or "").strip()
+    }
     return {
         "source_path": str(path.resolve()),
         "source_sha256": sha256_file(path),
@@ -215,7 +230,13 @@ def audit_document(path: Path, document: dict[str, Any]) -> dict[str, Any]:
             "global_section_count": sum(
                 1 for line in global_analysis.splitlines() if line.startswith("## ")
             ),
+            "global_content_line_word_count_max": (
+                max(content_line_word_counts) if content_line_word_counts else 0
+            ),
             "global_exact_repeated_content_line_count": repeated_lines,
+            "focus_plan_repeated_cue_text_count": len(
+                plan_cue_texts.intersection(focus_cue_texts)
+            ),
         },
     }
 
@@ -268,9 +289,24 @@ def build_audit(results: list[dict[str, Any]]) -> dict[str, Any]:
             result.get("readability", {}).get("global_character_count", 0)
             for result in results
         ),
+        "global_content_line_word_count_max": max(
+            (
+                result.get("readability", {}).get(
+                    "global_content_line_word_count_max", 0
+                )
+                for result in results
+            ),
+            default=0,
+        ),
         "global_exact_repeated_content_line_count": sum(
             result.get("readability", {}).get(
                 "global_exact_repeated_content_line_count", 0
+            )
+            for result in results
+        ),
+        "focus_plan_repeated_cue_text_count": sum(
+            result.get("readability", {}).get(
+                "focus_plan_repeated_cue_text_count", 0
             )
             for result in results
         ),
@@ -352,6 +388,14 @@ def print_summary(audit: dict[str, Any]) -> None:
     print(
         "  exact repeated cue texts: "
         f"{readability['exact_repeated_cue_text_count']}"
+    )
+    print(
+        "  longest visible content line: "
+        f"{readability['global_content_line_word_count_max']} words"
+    )
+    print(
+        "  focus/plan repeated cue texts: "
+        f"{readability['focus_plan_repeated_cue_text_count']}"
     )
     print("Authority: SHADOW ONLY — no channel preference or priority changed")
     print("RESULT: PASS")

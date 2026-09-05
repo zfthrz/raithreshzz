@@ -161,7 +161,9 @@ def test_builds_shadow_summary_from_multiple_artifacts(tmp_path: Path):
             "cue_word_count_mean": 0.0,
             "exact_repeated_cue_text_count": 0,
             "global_character_count_total": 0,
+            "global_content_line_word_count_max": 0,
             "global_exact_repeated_content_line_count": 0,
+            "focus_plan_repeated_cue_text_count": 0,
         },
     }
 
@@ -173,6 +175,10 @@ def test_readability_baseline_counts_text_location_and_exact_repetition(tmp_path
     item["driver_cues"][0]["text"] = "Frená hacia la referencia"
     document = document_with_plan([item])
     document["global_analysis"] = "## Foco\nMisma línea\nMisma línea\n"
+    document["session_coaching_facts"]["next_stint_focus"] = {
+        "status": "ACTIVE",
+        "items": [item],
+    }
     path.write_text(json.dumps(document), encoding="utf-8")
 
     result = audit_document(path, document)
@@ -181,7 +187,9 @@ def test_readability_baseline_counts_text_location_and_exact_repetition(tmp_path
     assert result["zones"][0]["has_named_location"] is False
     assert result["zones"][0]["primary_cue"]["text_word_count"] == 4
     assert result["readability"]["global_section_count"] == 1
+    assert result["readability"]["global_content_line_word_count_max"] == 2
     assert result["readability"]["global_exact_repeated_content_line_count"] == 1
+    assert result["readability"]["focus_plan_repeated_cue_text_count"] == 1
     assert audit["summary"]["readability"] == {
         "zones_without_named_location": 2,
         "secondary_cue_count": 0,
@@ -192,7 +200,9 @@ def test_readability_baseline_counts_text_location_and_exact_repetition(tmp_path
         "cue_word_count_mean": 4.0,
         "exact_repeated_cue_text_count": 1,
         "global_character_count_total": len(document["global_analysis"]) * 2,
+        "global_content_line_word_count_max": 2,
         "global_exact_repeated_content_line_count": 2,
+        "focus_plan_repeated_cue_text_count": 2,
     }
 
 

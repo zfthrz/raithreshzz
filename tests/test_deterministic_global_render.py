@@ -125,3 +125,18 @@ def test_neutral_global_render_is_exactly_legacy_compatible(case_name):
     assert neutral_render(*deepcopy(args)) == legacy.render_global_analysis(
         *deepcopy(args)
     )
+
+
+def test_active_focus_names_selected_zones_without_repeating_plan_cues():
+    args = _case("active_focus")
+    rendered = neutral_render(*deepcopy(args))
+    focus_section = rendered.split("## Foco principal", 1)[1].split(
+        "## Plan para la próxima tanda", 1
+    )[0]
+
+    assert (
+        "- Zona A: foco seleccionado; ver acciones completas en el plan."
+    ) in focus_section
+    assert "reducí el freno" not in focus_section
+    assert "aumentá el acelerador" not in focus_section
+    assert "**Qué cambiar:** Reducí el freno." in rendered

@@ -312,13 +312,17 @@ La auditoría shadow de legibilidad y accionabilidad puede recorrer debriefs ya
 generados sin cambiar el plan ni sus prioridades:
 
 ```powershell
-python audit_session_plan_actionability.py --results-root data/generated/llm_results --allow-stale-render-only --output data/generated/diagnostics/session_plan_actionability_v0_2.json
+python audit_session_plan_actionability.py --results-root data/generated/llm_results --allow-stale-render-only --output data/generated/diagnostics/session_plan_actionability_v0_3.json
 ```
 
-La versión `0.2` informa longitud de cues, zonas sin nombre, cues secundarios,
-primarios con varios componentes y repeticiones textuales exactas. Son métricas
-observacionales: no autorizan preferencias de canal, scores de complejidad ni cambios
-de coaching.
+La versión `0.3` informa longitud de cues y líneas visibles, zonas sin nombre, cues
+secundarios, primarios con varios componentes, repeticiones textuales exactas y
+duplicación de cues entre el foco P11 y el plan. Son métricas observacionales: no
+autorizan preferencias de canal, scores de complejidad ni cambios de coaching.
+
+La presentación global `1.1` evita repetir esas acciones dentro de `Foco principal`:
+allí identifica las zonas elegidas por P11 y remite al plan, que conserva el texto
+completo y toda la evidencia autorizada.
 
 La prioridad conceptual actual es:
 

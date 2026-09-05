@@ -10274,7 +10274,7 @@ def render_global_analysis(
     global_structured,
 ):
     """
-    Presentación v1.0 del debrief de sesión.
+    Presentación v1.1 del debrief de sesión.
 
     El detalle granular sigue disponible en session_coaching_facts y en cada
     comparación. El texto visible prioriza lectura, plan y respaldo.
@@ -10432,13 +10432,11 @@ def render_global_analysis(
             if not cues:
                 continue
 
-            cue_text = "; ".join(
-                str(cue.get("text") or "").strip()
-                for cue in cues[:2]
+            focus_label = prefix.rstrip(": ") or "Zona prioritaria"
+            focus_lines.append(
+                f"- {focus_label}: foco seleccionado; "
+                "ver acciones completas en el plan."
             )
-
-            if cue_text:
-                focus_lines.append(f"- {prefix}{prose(cue_text)}")
 
         if focus_lines:
             lines.append("")

@@ -82,6 +82,26 @@ def _case(name):
                 "events": events,
             },
         }]
+    elif name == "dense_repeated_observation":
+        structured["repeated_observations"] = [
+            "Zona A: aplicación distinta del freno: media +12.0 pp; "
+            "pico +30.0 pp; acelerador distinto: media -8.0 pp"
+        ]
+        zones[0]["quantitative_observations"] = [
+            "freno: media +12.0 pp; pico +30.0 pp; acelerador: media -8.0 pp"
+        ]
+        comparisons = [
+            {
+                "reference_lap": 1,
+                "comparison_lap": 2,
+                "comparison_minus_reference_s": 0.5,
+            },
+            {
+                "reference_lap": 1,
+                "comparison_lap": 3,
+                "comparison_minus_reference_s": 0.8,
+            },
+        ]
     elif name == "physical_patterns":
         facts["repeated_braking_point_patterns"] = [{
             "status": "REPEATED",
@@ -130,6 +150,7 @@ def _case(name):
         "multiple_zones",
         "active_focus",
         "mixed_sequence",
+        "dense_repeated_observation",
         "physical_patterns",
         "steering",
         "quality_exclusion",
@@ -166,3 +187,27 @@ def test_combined_sequence_is_rendered_as_ordered_steps():
     assert "2. Soltá el acelerador aproximadamente 8 m más tarde." in rendered
     assert "3. Reaplicá el acelerador aproximadamente 15 m más tarde." in rendered
     assert "frená aproximadamente 12 m más tarde; después" not in rendered
+
+
+def test_repeated_observation_clauses_are_rendered_as_nested_bullets():
+    rendered = neutral_render(*deepcopy(_case("dense_repeated_observation")))
+    repeated_section = rendered.split("## Patrón que deja la sesión", 1)[1].split(
+        "## Respaldo técnico", 1
+    )[0]
+
+    assert "- Zona A: aplicación distinta del freno: media +12.0 pp." in repeated_section
+    assert "  - Pico +30.0 pp." in repeated_section
+    assert "  - Acelerador distinto: media -8.0 pp." in repeated_section
+    assert ";" not in repeated_section
+
+
+def test_technical_comparisons_and_observations_are_scannable_lists():
+    rendered = neutral_render(*deepcopy(_case("dense_repeated_observation")))
+    technical = rendered.split("## Respaldo técnico", 1)[1]
+
+    assert "**Comparaciones:**\n- 1→2 +0.5000 s.\n- 1→3 +0.8000 s." in technical
+    assert "- Zona A:" in technical
+    assert "  - Freno: media +12.0 pp." in technical
+    assert "  - Pico +30.0 pp." in technical
+    assert "  - Acelerador: media -8.0 pp." in technical
+    assert "**Comparaciones:** 1→2" not in technical

@@ -10277,7 +10277,7 @@ def render_global_analysis(
     global_structured,
 ):
     """
-    Presentación v1.2 del debrief de sesión.
+    Presentación v1.3 del debrief de sesión.
 
     El detalle granular sigue disponible en session_coaching_facts y en cada
     comparación. El texto visible prioriza lectura, plan y respaldo.
@@ -10686,7 +10686,16 @@ def render_global_analysis(
         lines.append("## Patrón que deja la sesión")
         lines.append("")
         for item in repeated[:4]:
-            lines.append(f"- {prose(item)}")
+            clauses = [
+                clause.strip()
+                for clause in str(item or "").split("; ")
+                if clause.strip()
+            ]
+            if not clauses:
+                continue
+            lines.append(f"- {prose(clauses[0])}")
+            for clause in clauses[1:]:
+                lines.append(f"  - {prose(clause)}")
         lines.append("")
 
     # Patrones físicos repetidos que no entraron en el top 3.
@@ -10830,8 +10839,9 @@ def render_global_analysis(
                 f"{r['reference_lap']}→{r['comparison_lap']} "
                 f"{signed_seconds(r['comparison_minus_reference_s'])}{suffix}"
             )
-        comparison_text = ", ".join(comparison_parts)
-        lines.append(f"**Comparaciones:** {comparison_text}.")
+        lines.append("**Comparaciones:**")
+        for comparison_part in comparison_parts:
+            lines.append(f"- {comparison_part}.")
 
     # Los objetivos físicos repetidos ya están presentados en el plan principal
     # o, si quedaron fuera del foco, en "Patrón repetido fuera del foco principal".
@@ -10846,14 +10856,20 @@ def render_global_analysis(
         if not quantitative:
             continue
         label = item.get("plan_label") or "?"
-        technical_zone_observations.append(
-            f"Zona {label}: " + "; ".join(quantitative[:3])
-        )
+        technical_zone_observations.append((label, quantitative[:3]))
     if technical_zone_observations:
         lines.append("")
         lines.append("**Observaciones cuantitativas por zona:**")
-        for value in technical_zone_observations:
-            lines.append(f"- {value}.")
+        for label, values in technical_zone_observations:
+            lines.append(f"- Zona {label}:")
+            for value in values:
+                clauses = [
+                    clause.strip()
+                    for clause in value.split("; ")
+                    if clause.strip()
+                ]
+                for clause in clauses:
+                    lines.append(f"  - {prose(clause)}")
 
     findings = session_coaching_facts.get("priority_findings", []) or []
     if findings:

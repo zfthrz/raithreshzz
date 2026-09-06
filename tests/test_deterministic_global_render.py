@@ -198,13 +198,13 @@ def test_active_focus_names_selected_zones_without_repeating_plan_cues():
     ) in focus_section
     assert "reducí el freno" not in focus_section
     assert "aumentá el acelerador" not in focus_section
-    assert "**Qué cambiar:** Reducí el freno." in rendered
+    assert "**Acción · Qué cambiar:** Reducí el freno." in rendered
 
 
 def test_combined_sequence_is_rendered_as_ordered_steps():
     rendered = neutral_render(*deepcopy(_case("mixed_sequence")))
 
-    assert "**Qué cambiar — secuencia:**" in rendered
+    assert "**Acción · Qué cambiar — secuencia:**" in rendered
     assert "1. Frená aproximadamente 12 m más tarde." in rendered
     assert "2. Soltá el acelerador aproximadamente 8 m más tarde." in rendered
     assert "3. Reaplicá el acelerador aproximadamente 15 m más tarde." in rendered
@@ -241,7 +241,7 @@ def test_reference_profiles_are_rendered_one_channel_per_line():
         "## Respaldo técnico", 1
     )[0]
 
-    assert "**Forma observada en la referencia:**" in plan_section
+    assert "**Contexto · Forma observada en la referencia:**" in plan_section
     assert "- Freno: freno progresivo hasta el ápice." in plan_section
     assert "- Acelerador: acelerador sostenido desde la salida." in plan_section
     assert "Freno: freno progresivo hasta el ápice; Acelerador:" not in plan_section
@@ -252,13 +252,15 @@ def test_cue_references_and_support_reasons_are_rendered_separately():
     first_zone = rendered.split("### 1. Zona A", 1)[1].split("### 2. Zona B", 1)[0]
 
     assert (
-        "**Qué cambiar:** Frená aproximadamente 14 m más tarde y soltá el freno "
+        "**Acción · Qué cambiar:** Frená aproximadamente 14 m más tarde y soltá el freno "
         "aproximadamente 11 m más temprano."
     ) in first_zone
     assert (
-        "**Referencias:** Frenada: ~95 m antes de T5; liberación: "
+        "**Acción · Referencias:** Frenada: ~95 m antes de T5; liberación: "
         "~2 m antes del ápice de T5."
     ) in first_zone
-    assert "**Por qué está en el plan:**\n- El punto físico" in first_zone
+    assert "**Evidencia · Por qué está en el plan:**\n- El punto físico" in first_zone
     assert "\n- La región completa apareció en 3 comparaciones." in first_zone
-    assert "**Por qué está en el plan:** El punto físico" not in first_zone
+    assert "**Evidencia · Por qué está en el plan:** El punto físico" not in first_zone
+    assert "**Evidencia · Referencia del cue:**" in first_zone
+    assert "**Evidencia · Entre vueltas:**" in first_zone

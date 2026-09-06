@@ -8387,7 +8387,11 @@ def _render_precision_evidence_lines(cue):
     if anchor_label:
         reference_parts.append(f"punto de referencia {anchor_label}")
     if reference_parts:
-        lines.append("**Referencia del cue:** " + "; ".join(reference_parts) + ".")
+        lines.append(
+            "**Evidencia · Referencia del cue:** "
+            + "; ".join(reference_parts)
+            + "."
+        )
 
     if supporting_laps:
         if len(supporting_laps) == 1:
@@ -8407,7 +8411,11 @@ def _render_precision_evidence_lines(cue):
                 evidence_parts.append(f"rango observado {low_i}–{high_i} m")
         if representative is not None:
             evidence_parts.append(f"valor representativo {representative} m")
-        lines.append("**Evidencia entre vueltas:** " + "; ".join(evidence_parts) + ".")
+        lines.append(
+            "**Evidencia · Entre vueltas:** "
+            + "; ".join(evidence_parts)
+            + "."
+        )
 
     return lines
 
@@ -10277,7 +10285,7 @@ def render_global_analysis(
     global_structured,
 ):
     """
-    Presentación v1.5 del debrief de sesión.
+    Presentación v1.6 del debrief de sesión.
 
     El detalle granular sigue disponible en session_coaching_facts y en cada
     comparación. El texto visible prioriza lectura, plan y respaldo.
@@ -10492,9 +10500,9 @@ def render_global_analysis(
         if not text_value:
             return
         action_text, marker, reference_text = text_value.partition(". Referencias:")
-        lines.append(f"**{label}:** {prose(action_text)}")
+        lines.append(f"**Acción · {label}:** {prose(action_text)}")
         if marker and reference_text.strip():
-            lines.append(f"**Referencias:** {prose(reference_text)}")
+            lines.append(f"**Acción · Referencias:** {prose(reference_text)}")
         lines.append("")
 
     for index, item in enumerate(plan[:3], start=1):
@@ -10521,7 +10529,7 @@ def render_global_analysis(
                 and sequence.get("status") == "COMBINED"
                 and len(sequence_steps) >= 2
             ):
-                lines.append("**Qué cambiar — secuencia:**")
+                lines.append("**Acción · Qué cambiar — secuencia:**")
                 lines.append("")
                 for step_index, step_text in enumerate(sequence_steps, start=1):
                     lines.append(f"{step_index}. {prose(step_text)}")
@@ -10565,7 +10573,7 @@ def render_global_analysis(
                 profile_texts.append(f"{prefix}: {summary}")
 
             if profile_texts:
-                lines.append("**Forma observada en la referencia:**")
+                lines.append("**Contexto · Forma observada en la referencia:**")
                 for profile_text in profile_texts:
                     lines.append(f"- {prose(profile_text)}")
             lines.append(
@@ -10645,24 +10653,26 @@ def render_global_analysis(
             support_parts.append(f"el contexto mostró {speed_fact}")
 
         if support_parts:
-            lines.append("**Por qué está en el plan:**")
+            lines.append("**Evidencia · Por qué está en el plan:**")
             for support_part in support_parts:
                 lines.append(f"- {prose(support_part)}")
             lines.append("")
 
         if observed:
-            lines.append("**Qué observamos:** " + prose(", ".join(observed)))
+            lines.append(
+                "**Contexto · Qué observamos:** " + prose(", ".join(observed))
+            )
             lines.append("")
 
         if primary_cue_point_count >= 2:
             lines.append(
-                f"**Confianza del cue:** punto físico repetido en "
+                f"**Evidencia · Confianza del cue:** punto físico repetido en "
                 f"{primary_cue_point_count} comparaciones válidas para el plan."
             )
             lines.append("")
         elif item.get("kind") == "repeated_region" and comparison_count:
             lines.append(
-                f"**Confianza:** región repetida en {comparison_count} comparaciones válidas para el plan."
+                f"**Evidencia · Confianza:** región repetida en {comparison_count} comparaciones válidas para el plan."
             )
             lines.append("")
 
@@ -10673,7 +10683,9 @@ def render_global_analysis(
         ]
         if temporal:
             lines.append(
-                "**Secuencia medida:** " + "; ".join(temporal[:2]) + "."
+                "**Contexto · Secuencia medida:** "
+                + "; ".join(temporal[:2])
+                + "."
             )
             lines.append("")
 

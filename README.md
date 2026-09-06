@@ -320,7 +320,7 @@ secundarios, primarios con varios componentes, repeticiones textuales exactas y
 duplicación de cues entre el foco P11 y el plan. Son métricas observacionales: no
 autorizan preferencias de canal, scores de complejidad ni cambios de coaching.
 
-La presentación global `1.4` evita repetir esas acciones dentro de `Foco principal`:
+La presentación global `1.5` evita repetir esas acciones dentro de `Foco principal`:
 allí identifica las zonas elegidas por P11 y remite al plan, que conserva el texto
 completo y toda la evidencia autorizada. Cuando el cue principal es una secuencia
 mixta determinista, el plan presenta sus eventos como pasos numerados en vez de una
@@ -328,7 +328,9 @@ mixta determinista, el plan presenta sus eventos como pasos numerados en vez de 
 como subviñetas. El respaldo técnico presenta además una comparación por línea y
 separa por zona las observaciones cuantitativas. El orden y el contenido estructurado
 no cambian. La forma observada en la referencia se muestra además en una línea por
-canal para evitar mezclar freno y acelerador en un único párrafo.
+canal para evitar mezclar freno y acelerador en un único párrafo. Las razones de
+priorización se presentan como viñetas independientes y las referencias físicas de
+un cue ocupan una línea separada de la acción.
 
 La prioridad conceptual actual es:
 

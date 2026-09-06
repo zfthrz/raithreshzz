@@ -122,7 +122,7 @@ def render_global_analysis(
     global_structured,
 ):
     """
-    Presentación v1.4 del debrief de sesión.
+    Presentación v1.5 del debrief de sesión.
 
     El detalle granular sigue disponible en session_coaching_facts y en cada
     comparación. El texto visible prioriza lectura, plan y respaldo.
@@ -332,6 +332,16 @@ def render_global_analysis(
             value += "."
         return value
 
+    def append_driver_cue(label, text_value):
+        text_value = str(text_value or "").strip()
+        if not text_value:
+            return
+        action_text, marker, reference_text = text_value.partition(". Referencias:")
+        lines.append(f"**{label}:** {prose(action_text)}")
+        if marker and reference_text.strip():
+            lines.append(f"**Referencias:** {prose(reference_text)}")
+        lines.append("")
+
     for index, item in enumerate(plan[:3], start=1):
         label = str(item.get("plan_label") or "?")
         location = track_location_label(item)
@@ -364,13 +374,11 @@ def render_global_analysis(
             else:
                 first_cue = str(primary_cue.get("text") or "").strip()
                 if first_cue:
-                    lines.append(f"**Qué cambiar:** {prose(first_cue)}")
-                    lines.append("")
+                    append_driver_cue("Qué cambiar", first_cue)
             if len(driver_cues) > 1:
                 second_cue = str(driver_cues[1].get("text") or "").strip()
                 if second_cue:
-                    lines.append(f"**Segundo cue:** {prose(second_cue)}")
-                    lines.append("")
+                    append_driver_cue("Segundo cue", second_cue)
 
             precision_lines = _render_precision_evidence_lines(driver_cues[0])
             for precision_line in precision_lines:
@@ -482,9 +490,9 @@ def render_global_analysis(
             support_parts.append(f"el contexto mostró {speed_fact}")
 
         if support_parts:
-            sentence = "; ".join(support_parts)
-            sentence = sentence[0].upper() + sentence[1:] + "."
-            lines.append(f"**Por qué está en el plan:** {sentence}")
+            lines.append("**Por qué está en el plan:**")
+            for support_part in support_parts:
+                lines.append(f"- {prose(support_part)}")
             lines.append("")
 
         if observed:

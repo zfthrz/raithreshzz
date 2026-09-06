@@ -115,6 +115,13 @@ def _case(name):
                 "shape_summary_detailed": "acelerador sostenido desde la salida",
             },
         ]
+    elif name == "cue_references":
+        zones[0]["comparison_count"] = 3
+        zones[0]["driver_cues"][0]["text"] = (
+            "frená aproximadamente 14 m más tarde y soltá el freno "
+            "aproximadamente 11 m más temprano. Referencias: frenada: "
+            "~95 m antes de T5; liberación: ~2 m antes del ápice de T5"
+        )
     elif name == "physical_patterns":
         facts["repeated_braking_point_patterns"] = [{
             "status": "REPEATED",
@@ -165,6 +172,7 @@ def _case(name):
         "mixed_sequence",
         "dense_repeated_observation",
         "reference_profiles",
+        "cue_references",
         "physical_patterns",
         "steering",
         "quality_exclusion",
@@ -237,3 +245,20 @@ def test_reference_profiles_are_rendered_one_channel_per_line():
     assert "- Freno: freno progresivo hasta el ápice." in plan_section
     assert "- Acelerador: acelerador sostenido desde la salida." in plan_section
     assert "Freno: freno progresivo hasta el ápice; Acelerador:" not in plan_section
+
+
+def test_cue_references_and_support_reasons_are_rendered_separately():
+    rendered = neutral_render(*deepcopy(_case("cue_references")))
+    first_zone = rendered.split("### 1. Zona A", 1)[1].split("### 2. Zona B", 1)[0]
+
+    assert (
+        "**Qué cambiar:** Frená aproximadamente 14 m más tarde y soltá el freno "
+        "aproximadamente 11 m más temprano."
+    ) in first_zone
+    assert (
+        "**Referencias:** Frenada: ~95 m antes de T5; liberación: "
+        "~2 m antes del ápice de T5."
+    ) in first_zone
+    assert "**Por qué está en el plan:**\n- El punto físico" in first_zone
+    assert "\n- La región completa apareció en 3 comparaciones." in first_zone
+    assert "**Por qué está en el plan:** El punto físico" not in first_zone

@@ -10277,7 +10277,7 @@ def render_global_analysis(
     global_structured,
 ):
     """
-    Presentación v1.3 del debrief de sesión.
+    Presentación v1.4 del debrief de sesión.
 
     El detalle granular sigue disponible en session_coaching_facts y en cada
     comparación. El texto visible prioriza lectura, plan y respaldo.
@@ -10557,11 +10557,9 @@ def render_global_analysis(
                 profile_texts.append(f"{prefix}: {summary}")
 
             if profile_texts:
-                lines.append(
-                    "**Forma observada en la referencia:** "
-                    + "; ".join(profile_texts)
-                    + "."
-                )
+                lines.append("**Forma observada en la referencia:**")
+                for profile_text in profile_texts:
+                    lines.append(f"- {prose(profile_text)}")
             lines.append(
                 "_Descripción de forma; los puntos numéricos de coaching siguen "
                 "siendo únicamente los autorizados por los detectores de eventos._"

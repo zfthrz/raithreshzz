@@ -102,6 +102,19 @@ def _case(name):
                 "comparison_minus_reference_s": 0.8,
             },
         ]
+    elif name == "reference_profiles":
+        zones[0]["reference_action_profiles"] = [
+            {
+                "channel": "brake",
+                "shape_summary": "freno progresivo",
+                "shape_summary_detailed": "freno progresivo hasta el ápice",
+            },
+            {
+                "channel": "throttle",
+                "shape_summary": "acelerador sostenido",
+                "shape_summary_detailed": "acelerador sostenido desde la salida",
+            },
+        ]
     elif name == "physical_patterns":
         facts["repeated_braking_point_patterns"] = [{
             "status": "REPEATED",
@@ -151,6 +164,7 @@ def _case(name):
         "active_focus",
         "mixed_sequence",
         "dense_repeated_observation",
+        "reference_profiles",
         "physical_patterns",
         "steering",
         "quality_exclusion",
@@ -211,3 +225,15 @@ def test_technical_comparisons_and_observations_are_scannable_lists():
     assert "  - Pico +30.0 pp." in technical
     assert "  - Acelerador: media -8.0 pp." in technical
     assert "**Comparaciones:** 1→2" not in technical
+
+
+def test_reference_profiles_are_rendered_one_channel_per_line():
+    rendered = neutral_render(*deepcopy(_case("reference_profiles")))
+    plan_section = rendered.split("## Plan para la próxima tanda", 1)[1].split(
+        "## Respaldo técnico", 1
+    )[0]
+
+    assert "**Forma observada en la referencia:**" in plan_section
+    assert "- Freno: freno progresivo hasta el ápice." in plan_section
+    assert "- Acelerador: acelerador sostenido desde la salida." in plan_section
+    assert "Freno: freno progresivo hasta el ápice; Acelerador:" not in plan_section

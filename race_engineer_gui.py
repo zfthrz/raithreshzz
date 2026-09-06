@@ -700,6 +700,58 @@ def compact_debrief_markdown(value: str) -> str:
     return "\n".join(output).strip()
 
 
+def action_only_debrief_markdown(value: str) -> str:
+    """Project the validated debrief into a presentation-only action reader."""
+    lines = value.splitlines()
+    if not lines:
+        return ""
+
+    output: list[str] = []
+    in_focus = False
+    in_plan = False
+    include_action_details = False
+    for line in lines:
+        stripped = line.strip()
+        if line.startswith("# ") and not output:
+            output.append(line)
+            continue
+        if line.startswith("## "):
+            heading = line[3:].strip().casefold()
+            in_focus = heading == "foco principal"
+            in_plan = heading == "plan para la próxima tanda"
+            include_action_details = False
+            if in_focus or in_plan:
+                output.extend((line, ""))
+            continue
+        if in_focus:
+            output.append(line)
+            continue
+        if not in_plan:
+            continue
+        if line.startswith("### "):
+            output.extend((line, ""))
+            include_action_details = False
+            continue
+        if line.startswith("**Acción ·"):
+            output.append(line)
+            include_action_details = line.rstrip().endswith(":**")
+            continue
+        number, separator, body = stripped.partition(". ")
+        if include_action_details and (
+            (separator and number.isdigit() and body) or stripped.startswith("- ")
+        ):
+            output.append(line)
+            continue
+        if stripped:
+            include_action_details = False
+        elif output and output[-1]:
+            output.append("")
+
+    while output and not output[-1]:
+        output.pop()
+    return "\n".join(output).strip()
+
+
 def debrief_section_jumps(value: str) -> tuple[tuple[str, str, str], ...]:
     """Return stable navigation targets for sections present in a debrief."""
     candidates = (
@@ -2380,12 +2432,20 @@ class RaceEngineerApp:
             compact=True,
         )
         self.current_debrief_markdown = ""
+        debrief_actions = self.ttk.Frame(self.debrief_text.master.master)
+        debrief_actions.pack(fill="x", pady=(7, 0))
         self.ttk.Button(
-            self.debrief_text.master.master,
+            debrief_actions,
+            text="Solo acciones  →",
+            style="Link.TButton",
+            command=self._show_action_debrief,
+        ).pack(side="left")
+        self.ttk.Button(
+            debrief_actions,
             text="Ver debrief completo  →",
             style="Link.TButton",
             command=self._show_full_debrief,
-        ).pack(anchor="e", pady=(7, 0))
+        ).pack(side="right")
 
         self.plan_cards_frame = self._build_next_stint_panel(
             plan_column,
@@ -5786,6 +5846,14 @@ class RaceEngineerApp:
         self._show_dashboard_text_detail(
             "Debrief completo",
             self.current_debrief_markdown or ui_state_message("DEBRIEF_UNAVAILABLE"),
+            markdown=True,
+        )
+
+    def _show_action_debrief(self):
+        source = self.current_debrief_markdown or ui_state_message("DEBRIEF_UNAVAILABLE")
+        self._show_dashboard_text_detail(
+            "Debrief · Solo acciones",
+            action_only_debrief_markdown(source) or source,
             markdown=True,
         )
 

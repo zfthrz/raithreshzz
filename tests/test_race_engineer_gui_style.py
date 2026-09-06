@@ -8,6 +8,7 @@ from gui_theme import COLORS
 import pytest
 import race_engineer_gui as gui
 from race_engineer_gui import (
+    action_only_debrief_markdown,
     GUI_VERSION,
     GLOBAL_SHORTCUTS,
     PRIMARY_SECTIONS,
@@ -262,6 +263,65 @@ Detalle.
     assert debrief_section_jumps("## Plan para la próxima tanda") == (
         ("Plan", "## Plan para la próxima tanda", "debrief_plan"),
     )
+
+
+def test_action_only_debrief_keeps_focus_and_authorized_actions_only():
+    markdown = """# Debrief de ingeniería — Imola
+
+## Resumen de la sesión
+
+Resumen ejecutivo.
+
+## Foco principal
+
+- T4 — frenada.
+
+## Plan para la próxima tanda
+
+### P1 · T4
+
+**Acción · Qué cambiar — secuencia:**
+1. Frená más tarde.
+2. Soltá el freno antes.
+
+**Evidencia · Entre vueltas:** repetido.
+
+**Acción · Referencias:**
+- Freno: perfil 3.
+
+**Contexto · Secuencia medida:** detalle.
+
+## Respaldo técnico
+
+- Comparación 3->4.
+"""
+
+    result = action_only_debrief_markdown(markdown)
+
+    assert "# Debrief de ingeniería — Imola" in result
+    assert "## Foco principal" in result
+    assert "- T4 — frenada." in result
+    assert "## Plan para la próxima tanda" in result
+    assert "### P1 · T4" in result
+    assert "**Acción · Qué cambiar — secuencia:**" in result
+    assert "1. Frená más tarde." in result
+    assert "2. Soltá el freno antes." in result
+    assert "**Acción · Referencias:**" in result
+    assert "- Freno: perfil 3." in result
+    assert "Resumen ejecutivo" not in result
+    assert "Evidencia ·" not in result
+    assert "Contexto ·" not in result
+    assert "Respaldo técnico" not in result
+
+
+def test_summary_exposes_action_only_and_complete_debrief_readers():
+    build_source = inspect.getsource(RaceEngineerApp._build_layout)
+    action_source = inspect.getsource(RaceEngineerApp._show_action_debrief)
+
+    assert 'text="Solo acciones  →"' in build_source
+    assert "command=self._show_action_debrief" in build_source
+    assert 'text="Ver debrief completo  →"' in build_source
+    assert "action_only_debrief_markdown(source) or source" in action_source
 
 
 @pytest.mark.parametrize(

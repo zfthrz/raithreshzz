@@ -338,6 +338,9 @@ Del mismo modo, una observación cualitativa se omite del plan sólo cuando una
 observación cuantitativa comienza con la misma etiqueta; las no cubiertas permanecen.
 La GUI conserva esa jerarquía al mostrar el Markdown: reconoce pasos numerados y
 subviñetas con sangría diferenciada tanto en Resumen como en el debrief completo.
+Desde Resumen también ofrece una vista **Solo acciones** que proyecta el foco, las
+zonas y los cues del mismo debrief validado; la vista completa y su evidencia se
+mantienen disponibles sin modificar el JSON generado.
 
 La prioridad conceptual actual es:
 

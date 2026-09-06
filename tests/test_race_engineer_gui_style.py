@@ -17,6 +17,7 @@ from race_engineer_gui import (
     calibration_status_color,
     calibration_status_tag,
     calibration_status_tooltip,
+    debrief_markdown_line,
     debrief_section_jumps,
     file_fingerprint,
     format_comparison_columns,
@@ -261,6 +262,32 @@ Detalle.
     assert debrief_section_jumps("## Plan para la próxima tanda") == (
         ("Plan", "## Plan para la próxima tanda", "debrief_plan"),
     )
+
+
+@pytest.mark.parametrize(
+    ("source", "expected"),
+    [
+        ("## Plan", ("h2", "Plan")),
+        ("- evidencia", ("bullet", "• evidencia")),
+        ("  - detalle", ("bullet_nested", "◦ detalle")),
+        ("1. Frená más tarde.", ("ordered", "1. Frená más tarde.")),
+        ("  2. Soltá el freno.", ("ordered_nested", "2. Soltá el freno.")),
+        (
+            "**Acción · Qué cambiar:** texto",
+            ("debrief_action", "Acción · Qué cambiar: texto"),
+        ),
+        (
+            "**Evidencia · Entre vueltas:** texto",
+            ("debrief_evidence_label", "Evidencia · Entre vueltas: texto"),
+        ),
+        (
+            "**Contexto · Secuencia medida:** texto",
+            ("debrief_context", "Contexto · Secuencia medida: texto"),
+        ),
+    ],
+)
+def test_debrief_markdown_line_preserves_visual_hierarchy(source, expected):
+    assert debrief_markdown_line(source) == expected
 
 
 def test_plan_priority_trace_resolves_exact_validated_telemetry_selector():

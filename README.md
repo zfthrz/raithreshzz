@@ -336,6 +336,8 @@ conteos de recurrencia aparecen una sola vez dentro de la justificación: el blo
 `Confianza` redundante se omite, mientras el valor completo permanece en el JSON.
 Del mismo modo, una observación cualitativa se omite del plan sólo cuando una
 observación cuantitativa comienza con la misma etiqueta; las no cubiertas permanecen.
+La GUI conserva esa jerarquía al mostrar el Markdown: reconoce pasos numerados y
+subviñetas con sangría diferenciada tanto en Resumen como en el debrief completo.
 
 La prioridad conceptual actual es:
 

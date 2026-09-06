@@ -626,6 +626,39 @@ def _clean_markdown_line(line: str) -> str:
     return line.replace("**", "").replace("_", "")
 
 
+def debrief_markdown_line(line: str) -> tuple[str | None, str]:
+    """Translate the supported debrief Markdown subset to Tk text + tag."""
+    if line.startswith("### "):
+        return "h3", _clean_markdown_line(line[4:])
+    if line.startswith("## "):
+        return "h2", _clean_markdown_line(line[3:])
+    if line.startswith("# "):
+        return "h1", _clean_markdown_line(line[2:])
+
+    category_tags = {
+        "**Acción ·": "debrief_action",
+        "**Evidencia ·": "debrief_evidence_label",
+        "**Contexto ·": "debrief_context",
+    }
+    for prefix, tag in category_tags.items():
+        if line.startswith(prefix):
+            return tag, _clean_markdown_line(line)
+
+    stripped = line.lstrip()
+    nested = len(stripped) != len(line)
+    if stripped.startswith("- "):
+        marker = "◦ " if nested else "• "
+        tag = "bullet_nested" if nested else "bullet"
+        return tag, _clean_markdown_line(marker + stripped[2:])
+
+    number, separator, body = stripped.partition(". ")
+    if separator and number.isdigit() and body:
+        tag = "ordered_nested" if nested else "ordered"
+        return tag, _clean_markdown_line(f"{number}. {body}")
+
+    return None, _clean_markdown_line(line)
+
+
 def compact_debrief_markdown(value: str) -> str:
     """Build a short dashboard view from existing debrief sections only."""
     lines = value.splitlines()
@@ -5150,6 +5183,24 @@ class RaceEngineerApp:
             lmargin1=18,
             lmargin2=32,
         )
+        text.tag_configure("bullet_nested", lmargin1=38, lmargin2=54)
+        text.tag_configure("ordered", lmargin1=18, lmargin2=42)
+        text.tag_configure("ordered_nested", lmargin1=38, lmargin2=62)
+        text.tag_configure(
+            "debrief_action",
+            font=(FONT_FAMILY_BOLD, 10),
+            foreground=COLORS["text_success"],
+        )
+        text.tag_configure(
+            "debrief_evidence_label",
+            font=(FONT_FAMILY_BOLD, 10),
+            foreground=COLORS["text_warning"],
+        )
+        text.tag_configure(
+            "debrief_context",
+            font=(FONT_FAMILY_BOLD, 10),
+            foreground=COLORS["text_secondary"],
+        )
 
         if not compact:
             scrollbar = self.ttk.Scrollbar(
@@ -5173,6 +5224,12 @@ class RaceEngineerApp:
         text.tag_configure("h2", font=TAG_FONTS["h2"], foreground=COLORS["text_success"], spacing1=12, spacing3=7)
         text.tag_configure("h3", font=TAG_FONTS["h3"], foreground=COLORS["text_primary"], spacing1=8)
         text.tag_configure("bullet", lmargin1=18, lmargin2=32)
+        text.tag_configure("bullet_nested", lmargin1=38, lmargin2=54)
+        text.tag_configure("ordered", lmargin1=18, lmargin2=42)
+        text.tag_configure("ordered_nested", lmargin1=38, lmargin2=62)
+        text.tag_configure("debrief_action", font=(FONT_FAMILY_BOLD, 10), foreground=COLORS["text_success"])
+        text.tag_configure("debrief_evidence_label", font=(FONT_FAMILY_BOLD, 10), foreground=COLORS["text_warning"])
+        text.tag_configure("debrief_context", font=(FONT_FAMILY_BOLD, 10), foreground=COLORS["text_secondary"])
         scrollbar = self.ttk.Scrollbar(frame, orient="vertical", command=text.yview)
         text.configure(yscrollcommand=scrollbar.set)
         scrollbar.pack(side="right", fill="y")
@@ -5699,6 +5756,12 @@ class RaceEngineerApp:
         text.tag_configure("h2", font=FONTS["title"], foreground=COLORS["text_success"], spacing1=12, spacing3=7)
         text.tag_configure("h3", font=FONTS["heading"], foreground=COLORS["text_primary"], spacing1=8)
         text.tag_configure("bullet", lmargin1=18, lmargin2=32)
+        text.tag_configure("bullet_nested", lmargin1=38, lmargin2=54)
+        text.tag_configure("ordered", lmargin1=18, lmargin2=42)
+        text.tag_configure("ordered_nested", lmargin1=38, lmargin2=62)
+        text.tag_configure("debrief_action", font=(FONT_FAMILY_BOLD, 10), foreground=COLORS["text_success"])
+        text.tag_configure("debrief_evidence_label", font=(FONT_FAMILY_BOLD, 10), foreground=COLORS["text_warning"])
+        text.tag_configure("debrief_context", font=(FONT_FAMILY_BOLD, 10), foreground=COLORS["text_secondary"])
         scrollbar = self.ttk.Scrollbar(frame, orient="vertical", command=text.yview)
         text.configure(yscrollcommand=scrollbar.set)
         scrollbar.pack(side="right", fill="y")
@@ -5753,15 +5816,7 @@ class RaceEngineerApp:
             tag = None
             clean = line
             if markdown:
-                if line.startswith("### "):
-                    tag, clean = "h3", line[4:]
-                elif line.startswith("## "):
-                    tag, clean = "h2", line[3:]
-                elif line.startswith("# "):
-                    tag, clean = "h1", line[2:]
-                elif line.startswith("- "):
-                    tag, clean = "bullet", "• " + line[2:]
-                clean = _clean_markdown_line(clean)
+                tag, clean = debrief_markdown_line(line)
             widget.insert("end", clean + "\n", tag)
         widget.configure(state="disabled")
         widget.yview_moveto(0)

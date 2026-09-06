@@ -67,6 +67,21 @@ def _case(name):
             "status": "ACTIVE",
             "items": deepcopy(zones),
         }
+    elif name == "mixed_sequence":
+        events = [
+            {"text": "frená aproximadamente 12 m más tarde"},
+            {"text": "soltá el acelerador aproximadamente 8 m más tarde"},
+            {"text": "reaplicá el acelerador aproximadamente 15 m más tarde"},
+        ]
+        zones[0]["driver_cues"] = [{
+            "channel": "brake+throttle",
+            "kind": "combined_spatial_sequence",
+            "text": "; después, ".join(event["text"] for event in events),
+            "coaching_sequence": {
+                "status": "COMBINED",
+                "events": events,
+            },
+        }]
     elif name == "physical_patterns":
         facts["repeated_braking_point_patterns"] = [{
             "status": "REPEATED",
@@ -114,6 +129,7 @@ def _case(name):
         "empty_plan",
         "multiple_zones",
         "active_focus",
+        "mixed_sequence",
         "physical_patterns",
         "steering",
         "quality_exclusion",
@@ -140,3 +156,13 @@ def test_active_focus_names_selected_zones_without_repeating_plan_cues():
     assert "reducí el freno" not in focus_section
     assert "aumentá el acelerador" not in focus_section
     assert "**Qué cambiar:** Reducí el freno." in rendered
+
+
+def test_combined_sequence_is_rendered_as_ordered_steps():
+    rendered = neutral_render(*deepcopy(_case("mixed_sequence")))
+
+    assert "**Qué cambiar — secuencia:**" in rendered
+    assert "1. Frená aproximadamente 12 m más tarde." in rendered
+    assert "2. Soltá el acelerador aproximadamente 8 m más tarde." in rendered
+    assert "3. Reaplicá el acelerador aproximadamente 15 m más tarde." in rendered
+    assert "frená aproximadamente 12 m más tarde; después" not in rendered

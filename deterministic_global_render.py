@@ -105,10 +105,13 @@ def _deterministic_session_focus(plan):
         where = f"zona {label}"
         if location:
             where += f" ({location})"
-        parts.append(f"{where}: {cues[0]['text']}")
+        parts.append(where)
     if not parts:
         return "No apareció un cue de conducción suficientemente respaldado para la próxima tanda."
-    return "Priorizá " + "; ".join(parts) + "."
+    return (
+        "Priorizá " + "; ".join(parts) + ". "
+        "Las acciones completas están en el plan."
+    )
 
 
 
@@ -119,7 +122,7 @@ def render_global_analysis(
     global_structured,
 ):
     """
-    Presentación v1.1 del debrief de sesión.
+    Presentación v1.2 del debrief de sesión.
 
     El detalle granular sigue disponible en session_coaching_facts y en cada
     comparación. El texto visible prioriza lectura, plan y respaldo.
@@ -341,10 +344,28 @@ def render_global_analysis(
 
         driver_cues = item.get("driver_cues") or build_driver_cues_for_plan_item(item)
         if driver_cues:
-            first_cue = str(driver_cues[0].get("text") or "").strip()
-            if first_cue:
-                lines.append(f"**Qué cambiar:** {prose(first_cue)}")
+            primary_cue = driver_cues[0]
+            sequence = primary_cue.get("coaching_sequence") or {}
+            sequence_steps = [
+                str(event.get("text") or "").strip()
+                for event in (sequence.get("events", []) or [])
+                if isinstance(event, dict) and str(event.get("text") or "").strip()
+            ]
+            if (
+                primary_cue.get("kind") == "combined_spatial_sequence"
+                and sequence.get("status") == "COMBINED"
+                and len(sequence_steps) >= 2
+            ):
+                lines.append("**Qué cambiar — secuencia:**")
                 lines.append("")
+                for step_index, step_text in enumerate(sequence_steps, start=1):
+                    lines.append(f"{step_index}. {prose(step_text)}")
+                lines.append("")
+            else:
+                first_cue = str(primary_cue.get("text") or "").strip()
+                if first_cue:
+                    lines.append(f"**Qué cambiar:** {prose(first_cue)}")
+                    lines.append("")
             if len(driver_cues) > 1:
                 second_cue = str(driver_cues[1].get("text") or "").strip()
                 if second_cue:

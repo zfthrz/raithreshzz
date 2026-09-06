@@ -320,7 +320,7 @@ secundarios, primarios con varios componentes, repeticiones textuales exactas y
 duplicación de cues entre el foco P11 y el plan. Son métricas observacionales: no
 autorizan preferencias de canal, scores de complejidad ni cambios de coaching.
 
-La presentación global `1.6` evita repetir esas acciones dentro de `Foco principal`:
+La presentación global `1.8` evita repetir esas acciones dentro de `Foco principal`:
 allí identifica las zonas elegidas por P11 y remite al plan, que conserva el texto
 completo y toda la evidencia autorizada. Cuando el cue principal es una secuencia
 mixta determinista, el plan presenta sus eventos como pasos numerados en vez de una
@@ -331,7 +331,11 @@ no cambian. La forma observada en la referencia se muestra además en una línea
 canal para evitar mezclar freno y acelerador en un único párrafo. Las razones de
 priorización se presentan como viñetas independientes y las referencias físicas de
 un cue ocupan una línea separada de la acción. Cada bloque del plan identifica además
-su función como `Acción`, `Evidencia` o `Contexto`, sin cambiar su autoridad.
+su función como `Acción`, `Evidencia` o `Contexto`, sin cambiar su autoridad. Los
+conteos de recurrencia aparecen una sola vez dentro de la justificación: el bloque
+`Confianza` redundante se omite, mientras el valor completo permanece en el JSON.
+Del mismo modo, una observación cualitativa se omite del plan sólo cuando una
+observación cuantitativa comienza con la misma etiqueta; las no cubiertas permanecen.
 
 La prioridad conceptual actual es:
 

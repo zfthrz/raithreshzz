@@ -130,7 +130,7 @@ def render_global_analysis(
     global_structured,
 ):
     """
-    Presentación v1.6 del debrief de sesión.
+    Presentación v1.8 del debrief de sesión.
 
     El detalle granular sigue disponible en session_coaching_facts y en cada
     comparación. El texto visible prioriza lectura, plan y respaldo.
@@ -503,21 +503,26 @@ def render_global_analysis(
                 lines.append(f"- {prose(support_part)}")
             lines.append("")
 
-        if observed:
-            lines.append(
-                "**Contexto · Qué observamos:** " + prose(", ".join(observed))
+        quantitative_context = [
+            str(value).strip()
+            for value in (item.get("quantitative_observations", []) or [])
+            if str(value or "").strip()
+        ]
+        uncovered_observed = [
+            observation
+            for observation in observed
+            if not any(
+                quantitative.casefold() == observation.casefold()
+                or quantitative.casefold().startswith(
+                    observation.casefold() + ":"
+                )
+                for quantitative in quantitative_context
             )
-            lines.append("")
-
-        if primary_cue_point_count >= 2:
+        ]
+        if uncovered_observed:
             lines.append(
-                f"**Evidencia · Confianza del cue:** punto físico repetido en "
-                f"{primary_cue_point_count} comparaciones válidas para el plan."
-            )
-            lines.append("")
-        elif item.get("kind") == "repeated_region" and comparison_count:
-            lines.append(
-                f"**Evidencia · Confianza:** región repetida en {comparison_count} comparaciones válidas para el plan."
+                "**Contexto · Qué observamos:** "
+                + prose(", ".join(uncovered_observed))
             )
             lines.append("")
 

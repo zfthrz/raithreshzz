@@ -117,6 +117,10 @@ def _case(name):
         ]
     elif name == "cue_references":
         zones[0]["comparison_count"] = 3
+        zones[0]["observed_differences"] = ["más freno", "trazada distinta"]
+        zones[0]["quantitative_observations"] = [
+            "más freno: promedio +12.0 pp; pico +30.0 pp"
+        ]
         zones[0]["driver_cues"][0]["text"] = (
             "frená aproximadamente 14 m más tarde y soltá el freno "
             "aproximadamente 11 m más temprano. Referencias: frenada: "
@@ -264,3 +268,11 @@ def test_cue_references_and_support_reasons_are_rendered_separately():
     assert "**Evidencia · Por qué está en el plan:** El punto físico" not in first_zone
     assert "**Evidencia · Referencia del cue:**" in first_zone
     assert "**Evidencia · Entre vueltas:**" in first_zone
+    assert "**Evidencia · Confianza" not in first_zone
+    assert first_zone.count(
+        "El punto físico que genera este cue se repitió en 2 comparaciones."
+    ) == 1
+    assert first_zone.count("La región completa apareció en 3 comparaciones.") == 1
+    assert "**Contexto · Qué observamos:** Trazada distinta." in first_zone
+    assert "Qué observamos:** Más freno" not in first_zone
+    assert "  - Más freno: promedio +12.0 pp." in rendered

@@ -369,6 +369,19 @@ Resumen, Solo acciones, saltos del debrief y Telemetría. La presentación ingle
 se valida antes de mostrarse; si no coincide exactamente con el plan autorizado,
 la sesión informa el error de carga en lugar de presentar coaching alterado.
 
+La preparación de la distribución pública se audita sin modificar archivos:
+
+```powershell
+python public_release_contract.py
+```
+
+Mientras existan bloqueos, el comando devuelve exit code 1 y enumera cada gate
+pendiente. El contrato y la secuencia completa están documentados en
+[`docs/PUBLIC_RELEASE_ROADMAP_V0_1.md`](docs/PUBLIC_RELEASE_ROADMAP_V0_1.md).
+La distribución prevista incluirá Python y todas las dependencias: el usuario final
+no tendrá que instalar Python ni ejecutar `pip`. En las primeras versiones, los
+perfiles validados vendrán incorporados y mejorarán junto con cada actualización.
+
 La prioridad conceptual actual es:
 
 ```text

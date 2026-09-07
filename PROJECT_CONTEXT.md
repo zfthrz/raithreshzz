@@ -71,6 +71,15 @@ The UI uses that validated presentation for the summary, cards, checklist and
 telemetry cues; the general application chrome remains Spanish. This is debrief
 localization, not a completed application-wide internationalization migration.
 
+Public release work is governed by `public_release_contract.py` and
+`docs/PUBLIC_RELEASE_ROADMAP_V0_1.md`. The public GUI surface is Resumen,
+Telemetría, Historial and Estadísticas. Circuitos, Diagnóstico and Calibración are
+developer/operator surfaces and must not be initialized by the future public
+entrypoint. Production track profiles are selected from top-level `track_profiles`
+JSON files by exact track/layout identity and highest validated version; shadow
+profiles are excluded. The readiness audit is read-only and never builds, copies,
+publishes or mutates profile data.
+
 `telemetria/` is the standard local location for LMU DuckDB recordings and is ignored by Git.
 
 ---

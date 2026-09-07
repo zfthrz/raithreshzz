@@ -1,5 +1,22 @@
 # Project Status
 
+## Public release R0 — 2026-09-07
+
+- Public release contract and gated roadmap added. The intended user surface is
+  Resumen, Telemetría, Historial and Estadísticas; operator-only Circuitos,
+  Diagnóstico and Calibración are excluded.
+- Production profiles remain independently importable, exact track/layout data.
+  The catalog deterministically selects the highest validated top-level version
+  and excludes `shadow_v2`.
+- The initial read-only audit identifies four expected blockers: public entrypoint,
+  packaging configuration, exact dependency lock and owner-selected license.
+- R1 is the next implementation gate: separate public entrypoint and runtime mode,
+  without changing the developer interface used to close remaining profiles.
+- Initial releases will bundle their validated profile catalog and an embedded
+  Python runtime. End users will not install Python or profile packages separately;
+  signed profile-only updates are deferred until the catalog contract is mature.
+- Validation: 35 release/profile tests and the complete 2004-test suite passed.
+
 ## New-debrief language checkpoint — 2026-09-07
 
 - New reports can use Español/English from the GUI's `Idioma de debriefs nuevos`

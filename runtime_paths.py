@@ -30,6 +30,12 @@ def ensure_dir(path: Path) -> Path:
 
 def local_root() -> Path:
     """Local persistent state that must never be tracked by Git."""
+    configured = os.environ.get("RACE_ENGINEER_LOCAL_DIR")
+    if configured:
+        path = Path(configured).expanduser()
+        if not path.is_absolute():
+            path = PROJECT_ROOT / path
+        return ensure_dir(path.resolve())
     return ensure_dir(PROJECT_ROOT / "data" / "local")
 
 

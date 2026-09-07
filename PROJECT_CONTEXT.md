@@ -80,6 +80,14 @@ JSON files by exact track/layout identity and highest validated version; shadow
 profiles are excluded. The readiness audit is read-only and never builds, copies,
 publishes or mutates profile data.
 
+`RaceEngineerPublic.pyw` configures the public runtime before importing the GUI.
+Generated runs live under `%LOCALAPPDATA%/RaceEngineer/generated` and persistent
+state, including the History database and statistics, under
+`%LOCALAPPDATA%/RaceEngineer/local`. A new Windows user therefore starts with an
+empty History and zero statistics. `RaceEngineer.pyw` retains the source/developer
+runtime. Public mode constructs only the four public frames and does not import the
+calibration, H3 maintenance, scheduler-status or track-readiness modules.
+
 `telemetria/` is the standard local location for LMU DuckDB recordings and is ignored by Git.
 
 ---
@@ -181,7 +189,7 @@ D3.x deterministic-first default and D2.9 production ranker (2026-08-25).
 | Component | Current operational baseline |
 |---|---|
 | `race_engineer.py` | orchestrator v0.4 — estados nuevos usan `debrief`/`debrief_validator`; lectura legacy compatible |
-| `race_engineer_gui.py` | v1.61 — deterministic language preference for newly generated debriefs; English presentation remains a validated projection of canonical evidence |
+| `race_engineer_gui.py` | v1.62 — separate public runtime with per-user data and no operator-panel initialization |
 | `analyze_telemetry.py` | v3.8 + Objective Python v6 |
 | Brake point | 2.1 / schema 2.1 |
 | Throttle point | 1.2.1 / schema 1.2 |

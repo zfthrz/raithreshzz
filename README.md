@@ -382,6 +382,15 @@ La distribución prevista incluirá Python y todas las dependencias: el usuario 
 no tendrá que instalar Python ni ejecutar `pip`. En las primeras versiones, los
 perfiles validados vendrán incorporados y mejorarán junto con cada actualización.
 
+El entrypoint de distribución es `RaceEngineerPublic.pyw`. Separa los datos de cada
+usuario en `%LOCALAPPDATA%\RaceEngineer`; una instalación nueva comienza sin History
+y sus Estadísticas parten de cero. `RaceEngineer.pyw` conserva las herramientas del
+entorno de desarrollo para calibrar y promover perfiles.
+
+GUI v1.62 implementa esta separación de runtime. El proceso público no inicializa
+Circuitos, Diagnóstico ni Calibración y no consulta el scheduler oculto ni sus
+estados de mantenimiento.
+
 La prioridad conceptual actual es:
 
 ```text

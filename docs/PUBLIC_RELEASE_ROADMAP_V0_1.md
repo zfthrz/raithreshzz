@@ -44,15 +44,16 @@ Exit: `public_release_contract.py` reports only the blockers belonging to later 
 
 ### R1 — Public runtime mode
 
-- Add `RaceEngineerPublic.pyw` as a separate entrypoint.
-- Do not initialize operator-only views, scheduler maintenance controls or calibration
-  modules in public mode.
-- Keep the source/developer entrypoint unchanged for profile work.
-- Store user state under an installed-user data directory rather than beside the
-  executable, while preserving the current source-checkout paths for developers.
+- [x] Add `RaceEngineerPublic.pyw` as a separate entrypoint.
+- [x] Do not initialize operator-only views, scheduler maintenance controls or
+  calibration modules in public mode.
+- [x] Keep the source/developer entrypoint unchanged for profile work.
+- [x] Store generated state and History under `%LOCALAPPDATA%\RaceEngineer` rather
+  than beside the executable, while preserving source-checkout paths for developers.
 
-Exit: structural tests prove that the public process cannot navigate to or invoke
-operator-only actions.
+Exit reached structurally: the public process exposes four navigation targets,
+cannot navigate to an absent operator frame and does not import the eight operator
+modules during GUI import. Native visual QA remains part of R4.
 
 ### R2 — Reproducible Windows package
 
@@ -97,6 +98,14 @@ Exit: signed QA report with every required check and no unresolved release block
 - Publishing or pushing remains an explicit owner action.
 
 Exit: immutable public artifact traceable to its source commit and profile catalog.
+
+## Later personalization stage
+
+Personalized recommendations can use a driver's own History to distinguish repeated,
+resolved and newly observed patterns. Any such policy must keep current-session
+telemetry as factual authority, remain isolated per user and pass a separate
+longitudinal promotion gate. Existing H3/H4/H5 historical evidence is a foundation,
+but its current observational status is unchanged for the first public release.
 
 ## Adding the remaining profiles
 

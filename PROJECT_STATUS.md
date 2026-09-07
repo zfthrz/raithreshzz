@@ -17,6 +17,24 @@
   signed profile-only updates are deferred until the catalog contract is mature.
 - Validation: 35 release/profile tests and the complete 2004-test suite passed.
 
+## Public release R1 — 2026-09-07
+
+- Added `RaceEngineerPublic.pyw`; the existing entrypoint remains the development
+  environment used for calibration and profile promotion.
+- Public navigation contains only Resumen, Telemetría, Historial and Estadísticas.
+  Operator panels are not constructed, scheduler maintenance is not polled and the
+  operator modules are lazy imports unavailable from the public navigation surface.
+- Public generated data and History are isolated under `%LOCALAPPDATA%\RaceEngineer`.
+  New installations therefore begin with zero session statistics and cannot include
+  the developer's local History in a future package.
+- Historical personalization remains a later gated stage. R1 does not change H3/H4/H5
+  authority or enable historical coaching.
+- The release audit now has three blockers: packaging configuration, exact dependency
+  lock and owner-selected license. R2 packaging is next.
+- Validation: 156 focused public/runtime tests, 2011 full-suite tests and 55/55
+  deterministic regressions passed. An isolated public `--list` smoke saw no
+  checkout sessions and created no History database.
+
 ## New-debrief language checkpoint — 2026-09-07
 
 - New reports can use Español/English from the GUI's `Idioma de debriefs nuevos`

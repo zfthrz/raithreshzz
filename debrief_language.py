@@ -5,8 +5,10 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from runtime_paths import local_root
+
 LANGUAGES = {"es": "Español", "en": "English"}
-PREFERENCES_PATH = Path(__file__).resolve().parent / "data/local/debrief_preferences.json"
+PREFERENCES_PATH = local_root() / "debrief_preferences.json"
 
 
 def require_language(value: str) -> str:

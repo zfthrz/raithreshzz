@@ -22,6 +22,7 @@ from race_engineer_gui import (
     debrief_section_jumps,
     file_fingerprint,
     format_comparison_columns,
+    global_shortcuts,
     historical_steering_zone_text,
     adjacent_secondary_view,
     load_secondary_view_preferences,
@@ -962,7 +963,8 @@ def test_shortcut_help_documents_every_global_action():
     dismiss_source = inspect.getsource(RaceEngineerApp._dismiss_transient_ui)
 
     assert 'text="Atajos de teclado · F1"' in build_source
-    assert "for row, (shortcut, description) in enumerate(GLOBAL_SHORTCUTS" in help_source
+    assert "global_shortcuts(" in help_source
+    assert global_shortcuts(public_release=False) == GLOBAL_SHORTCUTS
     assert "self._hide_shortcut_help()" in dismiss_source
 
 

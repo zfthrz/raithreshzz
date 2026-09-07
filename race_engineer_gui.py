@@ -14,32 +14,8 @@ from datetime import datetime
 from pathlib import Path
 
 from race_engineer_history_gui import open_history_browser
-from race_engineer_calibration_gui import (
-    launch_calibration_labeling_powershell,
-    resolve_calibration_labeling_target,
-)
-from runtime_paths import history_db_default_path
+from runtime_paths import generated_root, history_db_default_path, local_root
 from race_engineer_statistics import HistoryStatistics, load_history_statistics
-from race_engineer_h5_3_review_status import load_status as load_h5_3_review_status
-from race_engineer_scheduler_status import (
-    diagnostic_report as scheduler_diagnostic_report,
-    load_status as load_scheduler_status,
-)
-from scheduler_queue_actions import defer_blocking_debrief, resume_deferred_debrief
-from race_engineer_h3_materialization_gui import (
-    build_materialization_commands,
-    resolve_materialization_target,
-    stream_commands as stream_h3_materialization_commands,
-)
-from race_engineer_h3_import_gui import (
-    build_import_commands,
-    resolve_import_target,
-    stream_commands as stream_h3_import_commands,
-)
-from h3_automation_status import (
-    build_h3_automation_status,
-    write_h3_automation_status,
-)
 
 from race_engineer_ui_model import (
     SessionDetail,
@@ -58,7 +34,6 @@ from race_engineer_ui_analysis import (
     stream_analysis,
     validate_analysis_candidate,
 )
-from track_readiness import build_track_readiness
 from gui_theme import COLORS, FONTS, FONT_FAMILY, FONT_FAMILY_BOLD, TAG_FONTS, text_defaults, text_accent_defaults, readonly_defaults, comparison_defaults
 from race_engineer_track_map import (
     TrackMapData,
@@ -106,8 +81,8 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.61"
-DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
+GUI_VERSION = "1.62"
+DEFAULT_RUNS_ROOT = generated_root() / "runs"
 STATE_REFRESH_INTERVAL_MS = 5_000
 PROJECT_ROOT = Path(__file__).resolve().parent
 SESSION_FILTER_LABELS = {
@@ -125,6 +100,21 @@ PRIMARY_SECTIONS = (
     "Diagnóstico",
     "Calibración",
 )
+PUBLIC_PRIMARY_SECTIONS = (
+    "Resumen",
+    "Telemetría",
+    "Historial",
+    "Estadísticas",
+)
+
+
+def primary_sections(*, public_release: bool) -> tuple[str, ...]:
+    return PUBLIC_PRIMARY_SECTIONS if public_release else PRIMARY_SECTIONS
+
+
+def global_shortcuts(*, public_release: bool) -> tuple[tuple[str, str], ...]:
+    count = len(primary_sections(public_release=public_release))
+    return ((f"Ctrl+1 … Ctrl+{count}", "Cambiar de sección"), *GLOBAL_SHORTCUTS[1:])
 GLOBAL_SHORTCUTS = (
     ("Ctrl+1 … Ctrl+7", "Cambiar de sección"),
     ("Ctrl+F", "Buscar una sesión"),
@@ -1479,7 +1469,7 @@ def select_active_telemetry_reference(
 
 
 class RaceEngineerApp:
-    def __init__(self, root, runs_root: Path):
+    def __init__(self, root, runs_root: Path, *, public_release: bool = False):
         import tkinter as tk
         from tkinter import ttk
 
@@ -1487,6 +1477,8 @@ class RaceEngineerApp:
         self.ttk = ttk
         self.root = root
         self.runs_root = runs_root
+        self.public_release = public_release
+        self.active_primary_sections = primary_sections(public_release=public_release)
         self.sessions: list[SessionRecord] = []
         self.all_sessions: list[SessionRecord] = []
         self.session_read_errors: list[str] = []
@@ -1554,15 +1546,10 @@ class RaceEngineerApp:
         self.statistics_loading = False
         self.statistics_fingerprint: tuple[int, int] | None = None
         self._closing = False
-        self.telemetry_ingest_state_path = (
-            PROJECT_ROOT / "data" / "local" / "telemetry_auto_ingest.json"
-        )
-        self.session_metadata_cache_path = (
-            PROJECT_ROOT / "data" / "local" / "gui_session_metadata_cache.json"
-        )
-        self.gui_preferences_path = (
-            PROJECT_ROOT / "data" / "local" / "gui_preferences.json"
-        )
+        runtime_local = local_root()
+        self.telemetry_ingest_state_path = runtime_local / "telemetry_auto_ingest.json"
+        self.session_metadata_cache_path = runtime_local / "gui_session_metadata_cache.json"
+        self.gui_preferences_path = runtime_local / "gui_preferences.json"
         self.telemetry_preferences = load_telemetry_preferences(
             self.gui_preferences_path
         )
@@ -1572,27 +1559,13 @@ class RaceEngineerApp:
         self.secondary_view_preferences = load_secondary_view_preferences(
             self.gui_preferences_path
         )
-        self.scheduler_runtime_path = (
-            PROJECT_ROOT / "data" / "local" / "telemetry_scheduler_runtime.json"
-        )
-        self.h3_import_maintenance_path = (
-            PROJECT_ROOT / "data" / "local" / "h3_import_maintenance.json"
-        )
-        self.h3_materialization_readiness_path = (
-            PROJECT_ROOT / "data" / "local" / "h3_materialization_readiness.json"
-        )
-        self.h3_automation_status_path = (
-            PROJECT_ROOT / "data" / "local" / "h3_automation_status.json"
-        )
-        self.h3_materialization_result_path = (
-            PROJECT_ROOT / "data" / "local" / "h3_materialization_last_apply.json"
-        )
-        self.h3_import_result_path = (
-            PROJECT_ROOT / "data" / "local" / "h3_import_last_apply.json"
-        )
-        self.scheduler_log_path = (
-            PROJECT_ROOT / "data" / "local" / "telemetry_auto_ingest_task.log"
-        )
+        self.scheduler_runtime_path = runtime_local / "telemetry_scheduler_runtime.json"
+        self.h3_import_maintenance_path = runtime_local / "h3_import_maintenance.json"
+        self.h3_materialization_readiness_path = runtime_local / "h3_materialization_readiness.json"
+        self.h3_automation_status_path = runtime_local / "h3_automation_status.json"
+        self.h3_materialization_result_path = runtime_local / "h3_materialization_last_apply.json"
+        self.h3_import_result_path = runtime_local / "h3_import_last_apply.json"
+        self.scheduler_log_path = runtime_local / "telemetry_auto_ingest_task.log"
         self.scheduler_diagnostic_window = None
         self.calibration_batches_root = PROJECT_ROOT / "calibration_batches"
         self.track_readiness_payload: dict = {}
@@ -1600,7 +1573,8 @@ class RaceEngineerApp:
         self.track_readiness_tracks: list[dict] = []
         self.settings_warning = ""
 
-        root.title(f"Threshzz's Telemetry Analysis LMU v{GUI_VERSION}")
+        product = "Race Engineer" if public_release else "Threshzz's Telemetry Analysis LMU"
+        root.title(f"{product} v{GUI_VERSION}")
         root.geometry("1600x1040")
         root.minsize(1240, 760)
         root.configure(background=COLORS["app"])
@@ -2145,23 +2119,26 @@ class RaceEngineerApp:
         brand.pack(fill="x")
         ttk.Label(
             brand,
-            text="Threshzz's Telemetry\nAnalysis Tool",
+            text=("Race Engineer" if self.public_release else "Threshzz's Telemetry\nAnalysis Tool"),
             style="SidebarBrand.TLabel",
             justify="left",
         ).pack(anchor="w")
-        self.scheduler_var = tk.StringVar(value="Sistema · cargando…")
-        self.scheduler_label = ttk.Label(brand, textvariable=self.scheduler_var, style="SidebarStatus.TLabel")
-        self.scheduler_label.pack(anchor="w", pady=(7, 0))
+        if not self.public_release:
+            self.scheduler_var = tk.StringVar(value="Sistema · cargando…")
+            self.scheduler_label = ttk.Label(brand, textvariable=self.scheduler_var, style="SidebarStatus.TLabel")
+            self.scheduler_label.pack(anchor="w", pady=(7, 0))
 
         ttk.Separator(sidebar, orient="horizontal").pack(fill="x", padx=16, pady=(2, 8))
 
         initial_section = load_primary_section_preference(self.gui_preferences_path)
+        if initial_section not in self.active_primary_sections:
+            initial_section = "Resumen"
         self.primary_section_var = tk.StringVar(value=initial_section)
         self.primary_section_frames = {}
         self.primary_section_buttons = {}
         nav = ttk.Frame(sidebar, style="Sidebar.TFrame", padding=(8, 0, 8, 6))
         nav.pack(fill="x")
-        for section in PRIMARY_SECTIONS:
+        for section in self.active_primary_sections:
             button = ttk.Button(
                 nav,
                 text=navigation_button_label(section),
@@ -2271,7 +2248,8 @@ class RaceEngineerApp:
             text="Omitir espera 10 min",
             variable=self.skip_stability_var,
         )
-        self.skip_stability_check.pack(anchor="w", pady=(0, 6))
+        if not self.public_release:
+            self.skip_stability_check.pack(anchor="w", pady=(0, 6))
         side_actions = ttk.Frame(sidebar_bottom, style="Sidebar.TFrame")
         side_actions.pack(fill="x")
         self.refresh_button = ttk.Button(side_actions, text="Actualizar", command=self.refresh)
@@ -2397,7 +2375,7 @@ class RaceEngineerApp:
         self.inspector_text.pack(fill="both", expand=True)
         self.inspector_text.configure(state="disabled")
 
-        for section in PRIMARY_SECTIONS:
+        for section in self.active_primary_sections:
             self.primary_section_frames[section] = ttk.Frame(workspace, style="Workspace.TFrame")
 
         summary_frame = self.primary_section_frames["Resumen"]
@@ -2574,18 +2552,19 @@ class RaceEngineerApp:
         statistics_frame = self.primary_section_frames["Estadísticas"]
         self._statistics_panel(statistics_frame)
 
-        readiness_frame = self.primary_section_frames["Circuitos"]
-        self._track_readiness_panel(readiness_frame)
+        if not self.public_release:
+            readiness_frame = self.primary_section_frames["Circuitos"]
+            self._track_readiness_panel(readiness_frame)
 
-        diagnostics_frame = self.primary_section_frames["Diagnóstico"]
-        self.diagnostics_notebook = ttk.Notebook(diagnostics_frame)
-        self.diagnostics_notebook.pack(fill="both", expand=True)
-        self.pipeline_text = self._text_tab(self.diagnostics_notebook, "Pipeline")
-        self.execution_text = self._text_tab(self.diagnostics_notebook, "Ejecución")
-        self._register_secondary_notebook("Diagnóstico", self.diagnostics_notebook)
+            diagnostics_frame = self.primary_section_frames["Diagnóstico"]
+            self.diagnostics_notebook = ttk.Notebook(diagnostics_frame)
+            self.diagnostics_notebook.pack(fill="both", expand=True)
+            self.pipeline_text = self._text_tab(self.diagnostics_notebook, "Pipeline")
+            self.execution_text = self._text_tab(self.diagnostics_notebook, "Ejecución")
+            self._register_secondary_notebook("Diagnóstico", self.diagnostics_notebook)
 
-        calibration_frame = self.primary_section_frames["Calibración"]
-        self._calibration_panel(calibration_frame)
+            calibration_frame = self.primary_section_frames["Calibración"]
+            self._calibration_panel(calibration_frame)
 
         self._show_primary_section(initial_section)
 
@@ -2604,13 +2583,14 @@ class RaceEngineerApp:
             fill="x", padx=18, pady=(0, 7)
         )
 
-        self.h5_3_review_state_path = PROJECT_ROOT / "data" / "local" / "h5_3_review_maintenance.json"
-        self.h5_3_review_var = tk.StringVar(value="H5.3 shadow · cargando…")
-        self.h5_3_review_label = ttk.Label(
-            sidebar,
-            textvariable=self.h5_3_review_var,
-            style="H53Muted.TLabel",
-        )
+        if not self.public_release:
+            self.h5_3_review_state_path = local_root() / "h5_3_review_maintenance.json"
+            self.h5_3_review_var = tk.StringVar(value="H5.3 shadow · cargando…")
+            self.h5_3_review_label = ttk.Label(
+                sidebar,
+                textvariable=self.h5_3_review_var,
+                style="H53Muted.TLabel",
+            )
 
     def _save_debrief_language(self, _event=None):
         from debrief_language import LANGUAGES, save_debrief_language
@@ -3164,6 +3144,8 @@ class RaceEngineerApp:
         return frame
 
     def _refresh_track_readiness(self):
+        from track_readiness import build_track_readiness
+
         self._refresh_h3_maintenance_summary()
         if self.track_readiness_loading:
             return
@@ -3211,7 +3193,8 @@ class RaceEngineerApp:
         self._apply_track_readiness_payload(payload)
 
     def _bind_global_shortcuts(self):
-        for index, section in enumerate(PRIMARY_SECTIONS, start=1):
+        sections = getattr(self, "active_primary_sections", PRIMARY_SECTIONS)
+        for index, section in enumerate(sections, start=1):
             self.root.bind_all(
                 f"<Control-Key-{index}>",
                 lambda _event, name=section: self._navigate_primary_section(name),
@@ -3339,7 +3322,10 @@ class RaceEngineerApp:
             text="Atajos de teclado",
             style="InspectorTitle.TLabel",
         ).grid(row=0, column=0, columnspan=2, sticky="w", pady=(0, 14))
-        for row, (shortcut, description) in enumerate(GLOBAL_SHORTCUTS, start=1):
+        shortcuts = global_shortcuts(
+            public_release=getattr(self, "public_release", False)
+        )
+        for row, (shortcut, description) in enumerate(shortcuts, start=1):
             self.ttk.Label(
                 panel,
                 text=shortcut,
@@ -3354,7 +3340,7 @@ class RaceEngineerApp:
             panel,
             text="Cerrar",
             command=self._hide_shortcut_help,
-        ).grid(row=len(GLOBAL_SHORTCUTS) + 1, column=0, columnspan=2, sticky="e", pady=(16, 0))
+        ).grid(row=len(shortcuts) + 1, column=0, columnspan=2, sticky="e", pady=(16, 0))
         window.bind("<Escape>", self._hide_shortcut_help)
         window.focus_set()
         return "break"
@@ -3936,6 +3922,8 @@ class RaceEngineerApp:
             return None
 
     def _selected_h3_materialization_target(self):
+        from race_engineer_h3_materialization_gui import resolve_materialization_target
+
         row = self._selected_track_readiness_context()
         if not isinstance(row, dict):
             return None
@@ -3950,6 +3938,8 @@ class RaceEngineerApp:
         )
 
     def _selected_h3_import_target(self):
+        from race_engineer_h3_import_gui import resolve_import_target
+
         row = self._selected_track_readiness_context()
         if not isinstance(row, dict):
             return None
@@ -3985,6 +3975,11 @@ class RaceEngineerApp:
             import_button.configure(state="normal" if import_enabled else "disabled")
 
     def _start_h3_materialization(self):
+        from race_engineer_h3_materialization_gui import (
+            build_materialization_commands,
+            stream_commands as stream_h3_materialization_commands,
+        )
+
         from tkinter import messagebox
 
         if self.analysis_running or self.h3_materialization_running or self.h3_import_running:
@@ -4058,6 +4053,11 @@ class RaceEngineerApp:
         self.root.after(100, self._poll_h3_materialization_queue)
 
     def _start_h3_import(self):
+        from race_engineer_h3_import_gui import (
+            build_import_commands,
+            stream_commands as stream_h3_import_commands,
+        )
+
         from tkinter import messagebox
 
         if self.analysis_running or self.h3_materialization_running or self.h3_import_running:
@@ -4202,6 +4202,11 @@ class RaceEngineerApp:
             )
 
     def _rebuild_h3_automation_status(self, return_code: int):
+        from h3_automation_status import (
+            build_h3_automation_status,
+            write_h3_automation_status,
+        )
+
         execution = "PASS" if return_code == 0 else "FAILED"
         try:
             write_h3_automation_status(
@@ -4355,6 +4360,11 @@ class RaceEngineerApp:
         )
 
     def _on_calibration_tree_double_click(self, event=None):
+        from race_engineer_calibration_gui import (
+            launch_calibration_labeling_powershell,
+            resolve_calibration_labeling_target,
+        )
+
         from tkinter import messagebox
 
         if event is None:
@@ -5966,15 +5976,19 @@ class RaceEngineerApp:
         widget.yview_moveto(0)
 
     def _append_execution_line(self, value: str):
+        if getattr(self, "public_release", False):
+            self.footer_var.set(value)
+            return
         self.execution_text.configure(state="normal")
         self.execution_text.insert("end", value + "\n")
         self.execution_text.see("end")
         self.execution_text.configure(state="disabled")
 
     def refresh(self, *, preferred_database: Path | None = None):
-        self._refresh_h5_3_review_status()
-        self._refresh_scheduler_status()
-        self._refresh_calibration_summary()
+        if not getattr(self, "public_release", False):
+            self._refresh_h5_3_review_status()
+            self._refresh_scheduler_status()
+            self._refresh_calibration_summary()
         previous = self.selected_record()
         previous_key = previous.session_key if previous else None
         self.all_sessions, errors = discover_sessions(
@@ -5990,14 +6004,16 @@ class RaceEngineerApp:
             previous_key=previous_key,
         )
         self._state_files_fingerprint = state_files_fingerprint(self.runs_root)
-        self._scheduler_state_fingerprint = self._scheduler_fingerprint()
+        if not getattr(self, "public_release", False):
+            self._scheduler_state_fingerprint = self._scheduler_fingerprint()
 
     def _start_initial_catalog_load(self):
         self._initial_catalog_after_id = None
         if self._closing:
             return
-        self._refresh_h5_3_review_status()
-        self._refresh_scheduler_status()
+        if not getattr(self, "public_release", False):
+            self._refresh_h5_3_review_status()
+            self._refresh_scheduler_status()
 
         def worker():
             try:
@@ -6038,7 +6054,8 @@ class RaceEngineerApp:
             self.session_read_errors = errors
             self._populate_session_tree(errors=errors)
             self._state_files_fingerprint = state_files_fingerprint(self.runs_root)
-            self._scheduler_state_fingerprint = self._scheduler_fingerprint()
+            if not getattr(self, "public_release", False):
+                self._scheduler_state_fingerprint = self._scheduler_fingerprint()
         else:
             self.all_sessions = []
             self.session_read_errors = [str(payload)]
@@ -6066,7 +6083,7 @@ class RaceEngineerApp:
                 current = state_files_fingerprint(self.runs_root)
                 if current != self._state_files_fingerprint:
                     self.refresh()
-                else:
+                elif not getattr(self, "public_release", False):
                     scheduler_current = self._scheduler_fingerprint()
                     if scheduler_current != self._scheduler_state_fingerprint:
                         self._refresh_scheduler_status()
@@ -6080,6 +6097,8 @@ class RaceEngineerApp:
             self._schedule_state_refresh_check()
 
     def _refresh_h5_3_review_status(self):
+        from race_engineer_h5_3_review_status import load_status as load_h5_3_review_status
+
         status = load_h5_3_review_status(self.h5_3_review_state_path)
         self.h5_3_review_var.set(status.text)
         self.h5_3_review_label.configure(style=status.style)
@@ -6090,6 +6109,8 @@ class RaceEngineerApp:
         )
 
     def _refresh_scheduler_status(self):
+        from race_engineer_scheduler_status import load_status as load_scheduler_status
+
         status = load_scheduler_status(
             self.telemetry_ingest_state_path,
             self.scheduler_runtime_path,
@@ -6138,6 +6159,8 @@ class RaceEngineerApp:
         )
 
     def _scheduler_diagnostic_text(self) -> str:
+        from race_engineer_scheduler_status import diagnostic_report as scheduler_diagnostic_report
+
         return scheduler_diagnostic_report(
             self.telemetry_ingest_state_path,
             self.scheduler_runtime_path,
@@ -6145,6 +6168,8 @@ class RaceEngineerApp:
         )
 
     def _show_scheduler_diagnostics(self, _event=None):
+        from race_engineer_scheduler_status import load_status as load_scheduler_status
+
         existing = self.scheduler_diagnostic_window
         if existing is not None:
             try:
@@ -6256,6 +6281,8 @@ class RaceEngineerApp:
             messagebox.showerror("Race Engineer", str(exc), parent=self.root)
 
     def _defer_scheduler_session(self, database_path: str, window):
+        from scheduler_queue_actions import defer_blocking_debrief
+
         from tkinter import messagebox
 
         if not messagebox.askyesno(
@@ -6282,6 +6309,8 @@ class RaceEngineerApp:
         self.footer_var.set("Sesión pospuesta; la cola puede continuar.")
 
     def _resume_scheduler_session(self, database_path: str, window):
+        from scheduler_queue_actions import resume_deferred_debrief
+
         from tkinter import messagebox
 
         if not messagebox.askyesno(
@@ -6476,7 +6505,8 @@ class RaceEngineerApp:
         pipeline = detail.pipeline_text
         if detail.warnings:
             pipeline += "\n\nAdvertencias:\n" + "\n".join(detail.warnings)
-        self._set_text(self.pipeline_text, pipeline)
+        if not getattr(self, "public_release", False):
+            self._set_text(self.pipeline_text, pipeline)
         self.open_button.configure(state="normal")
 
     def _clear_detail(self):
@@ -6493,7 +6523,8 @@ class RaceEngineerApp:
         self._set_text(self.debrief_text, ui_state_message("DEBRIEF_UNAVAILABLE"))
         self._set_text(self.laps_text, ui_state_message("LAPS_UNAVAILABLE"))
         self._set_text(self.historical_reference_text, ui_state_message("HISTORY_UNAVAILABLE"))
-        self._set_text(self.pipeline_text, ui_state_message("PIPELINE_UNAVAILABLE"))
+        if not getattr(self, "public_release", False):
+            self._set_text(self.pipeline_text, ui_state_message("PIPELINE_UNAVAILABLE"))
         comparison_state = ui_state_message("COMPARISON_UNAVAILABLE")
         self.comparison_summary_var.set(comparison_state.replace("\n\n", " · "))
         self._set_text(self.comparison_hist_text, comparison_state)
@@ -8603,14 +8634,15 @@ class RaceEngineerApp:
         self.refresh_button.configure(state="disabled")
         self.progress.start(12)
         self.execution_status.set("Analizando con Python determinista…")
-        self._set_text(
-            self.execution_text,
-            "RACE ENGINEER — EJECUCIÓN DESDE GUI\n"
-            f"Archivo: {plan.database_path}\nMotor: Python determinista\n"
-            f"Override espera 10 min: {'SÍ' if plan.skip_stability_wait else 'NO'}\n",
-        )
-        self._show_primary_section("Diagnóstico")
-        self.diagnostics_notebook.select(self.execution_text.master)
+        if not getattr(self, "public_release", False):
+            self._set_text(
+                self.execution_text,
+                "RACE ENGINEER — EJECUCIÓN DESDE GUI\n"
+                f"Archivo: {plan.database_path}\nMotor: Python determinista\n"
+                f"Override espera 10 min: {'SÍ' if plan.skip_stability_wait else 'NO'}\n",
+            )
+            self._show_primary_section("Diagnóstico")
+            self.diagnostics_notebook.select(self.execution_text.master)
 
         def worker():
             try:
@@ -8761,7 +8793,7 @@ def _print_sessions(runs_root: Path) -> int:
     return 0 if sessions else 1
 
 
-def main(argv: list[str] | None = None) -> int:
+def main(argv: list[str] | None = None, *, public_release: bool = False) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--runs-root", type=Path, default=DEFAULT_RUNS_ROOT)
     parser.add_argument("--list", action="store_true", help="list sessions without opening a window")
@@ -8772,7 +8804,7 @@ def main(argv: list[str] | None = None) -> int:
     import tkinter as tk
 
     root = tk.Tk()
-    RaceEngineerApp(root, args.runs_root)
+    RaceEngineerApp(root, args.runs_root, public_release=public_release)
     root.mainloop()
     return 0
 

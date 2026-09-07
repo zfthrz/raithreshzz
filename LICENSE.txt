@@ -1,0 +1,80 @@
+Race Engineer Personal Use License 1.0
+
+Copyright (c) 2026 Threshzz. All rights reserved.
+
+This license applies to the first-party Race Engineer application source code,
+documentation, track profiles, and other original material distributed with this
+license (the "Software"). Third-party components are governed by their own license
+terms, as identified in THIRD_PARTY_NOTICES.md and in the distribution.
+
+1. Personal-use grant
+
+Subject to these terms, Threshzz grants you a limited, non-exclusive,
+non-transferable, royalty-free license to download, install, and run the Software
+for your own personal, non-commercial use, including analysis of your own telemetry
+and use of the resulting debriefs.
+
+You may make one archival or backup copy for that use. Rights that a source-hosting
+platform independently grants through its terms remain governed by that platform's
+terms.
+
+2. Restrictions
+
+Unless you have prior written permission from Threshzz, you may not:
+
+- redistribute, publish, sublicense, sell, rent, lease, host, or provide the
+  Software or any substantial part of it to another person;
+- use the Software, its track profiles, or its coaching output as part of a paid
+  service, commercial motorsport operation, commercial coaching activity, or other
+  revenue-generating activity;
+- distribute modified versions or derivative works of the Software or its track
+  profiles;
+- remove or alter copyright, license, attribution, or proprietary notices; or
+- use the Race Engineer or Threshzz names or branding to imply endorsement.
+
+Except where applicable law does not permit the restriction, you may not bypass
+technical measures intended to enforce these terms. No patent, trademark, or other
+right is granted except the limited copyright license stated above.
+
+3. User data and outputs
+
+This license does not transfer ownership of telemetry or other input data that you
+own. Threshzz claims no ownership of a debrief or report solely because the Software
+generated it from your data. This does not grant you rights in the Software, track
+profiles, interface, or other protected material that may appear in an output.
+
+4. Third-party software
+
+Third-party software included with or used by Race Engineer is excluded from this
+license. Its authors retain their rights, and their license terms control that
+software. Those terms may grant rights that this license does not grant for Race
+Engineer itself.
+
+5. No warranty
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+PURPOSE, ACCURACY, AND NON-INFRINGEMENT. YOU USE THE SOFTWARE AND ITS DRIVING
+RECOMMENDATIONS AT YOUR OWN RISK.
+
+6. Limitation of liability
+
+TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, THRESHZZ WILL NOT BE LIABLE FOR
+ANY INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, CONSEQUENTIAL, OR PUNITIVE DAMAGES,
+OR FOR LOSS OF DATA, PROFITS, REVENUE, USE, OR GOODWILL, ARISING FROM OR RELATED TO
+THE SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+
+7. Termination
+
+This license terminates automatically if you materially breach its terms. Upon
+termination, you must stop using the Software and delete copies in your possession,
+except where applicable law requires otherwise. Sections 2 through 7 survive
+termination to the extent necessary to give them effect.
+
+8. Other permissions
+
+For redistribution, commercial use, a distributed modification, or another use not
+granted here, obtain a separate written license from Threshzz.
+
+By downloading, installing, copying, or using the Software, you accept these terms.
+If you do not accept them, do not use the Software.

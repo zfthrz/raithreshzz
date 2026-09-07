@@ -55,6 +55,7 @@ def test_release_audit_is_read_only_and_lists_concrete_blockers(tmp_path):
         "PACKAGING_CONFIGURATION_MISSING",
         "RUNTIME_DEPENDENCIES_NOT_EXACTLY_PINNED",
         "LICENSE_MISSING",
+        "THIRD_PARTY_NOTICES_MISSING",
     ]
     assert result["public_gui_sections"] == list(PUBLIC_GUI_SECTIONS)
     assert result["development_gui_sections_excluded"] == list(
@@ -70,7 +71,18 @@ def test_release_audit_can_reach_ready_without_building(tmp_path):
     (tmp_path / "RaceEngineer.spec").write_text("", encoding="utf-8")
     (tmp_path / "requirements.txt").write_text("duckdb==1.0.0\n", encoding="utf-8")
     (tmp_path / "LICENSE").write_text("license", encoding="utf-8")
+    (tmp_path / "THIRD_PARTY_NOTICES.md").write_text("notices", encoding="utf-8")
     assert audit_public_release(tmp_path)["status"] == "READY"
+
+
+def test_release_audit_reports_selected_legal_files(tmp_path):
+    (tmp_path / "LICENSE.txt").write_text("license", encoding="utf-8")
+    (tmp_path / "THIRD_PARTY_NOTICES.md").write_text("notices", encoding="utf-8")
+    result = audit_public_release(tmp_path)
+    assert result["legal"] == {
+        "product_license": "LICENSE.txt",
+        "third_party_notices": "THIRD_PARTY_NOTICES.md",
+    }
 
 
 def test_cli_returns_nonzero_for_blocked_release(tmp_path, capsys):

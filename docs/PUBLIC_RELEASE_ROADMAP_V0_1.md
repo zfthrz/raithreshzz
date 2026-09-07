@@ -18,10 +18,10 @@ The source tree is not yet a distributable product:
 - `RaceEngineer.pyw` opens the complete development interface.
 - `Circuitos`, `Diagnóstico` and `Calibración` expose operator workflows that do
   not belong in the public interface.
-- There is no public entrypoint or packaging configuration.
-- runtime dependencies use lower bounds rather than a reproducible release lock.
-- there is no repository license file, which requires an owner decision before
-  public distribution.
+- The frozen public processes still need packaging configuration and end-to-end
+  validation.
+- The exact release dependencies are pinned, but the complete license files from
+  the built runtime and wheels must be collected into the final artifact.
 - `INSTALL.txt`, `MANIFEST.txt` and `PATCH_MANIFEST.txt` describe old internal
   deliveries and are not public installation material.
 
@@ -96,7 +96,12 @@ Exit: signed QA report with every required check and no unresolved release block
 
 ### R5 — Publication
 
-- Choose license, public product name, semantic version and support channel.
+- [x] Choose the initial license: free personal, non-commercial use under the
+  proprietary Race Engineer Personal Use License 1.0. Source visibility does not
+  make the first-party application open source.
+- [x] Record third-party license families and require their complete notices in the
+  final package.
+- Choose public product name, semantic version and support channel.
 - Write the user installation guide, privacy/data statement and known limitations.
 - Create the versioned artifact, checksums and release notes from a tagged commit.
 - Publishing or pushing remains an explicit owner action.

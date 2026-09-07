@@ -95,6 +95,14 @@ variables registered by `public_runtime.py` select these executables only in a
 frozen build. Source execution continues to use the current Python scripts. Exact
 tested build dependencies live in `requirements-release.txt`.
 
+First-party release material is governed by the proprietary Race Engineer Personal
+Use License 1.0 in `LICENSE.txt`: personal non-commercial use is free, while
+redistribution, commercial use and distributed modifications require separate
+written permission. Public source visibility does not grant additional first-party
+rights. Third-party components keep their own licenses, summarized in
+`THIRD_PARTY_NOTICES.md`; a final package must carry the complete notices from the
+exact embedded Python runtime and dependency wheels.
+
 `telemetria/` is the standard local location for LMU DuckDB recordings and is ignored by Git.
 
 ---

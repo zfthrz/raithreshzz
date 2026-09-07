@@ -396,6 +396,14 @@ launcher seguro y pipeline determinista. Esto mantiene los bloqueos de LMU y de
 estabilidad también cuando Python viene incorporado. Las versiones exactas usadas
 para construir la release están en `requirements-release.txt`.
 
+El código y los perfiles propios se distribuyen bajo
+[`Race Engineer Personal Use License 1.0`](LICENSE.txt): el uso personal no
+comercial es gratuito; redistribución, uso comercial y distribución de versiones
+modificadas requieren permiso escrito. Que el repositorio sea visible públicamente
+no lo convierte en open source. Python y las demás dependencias conservan sus
+licencias, resumidas en [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md); la build
+final debe incluir sus textos completos exactos.
+
 La prioridad conceptual actual es:
 
 ```text

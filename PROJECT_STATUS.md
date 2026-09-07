@@ -1,5 +1,16 @@
 # Project Status
 
+## Public release legal gate — 2026-09-07
+
+- Added Race Engineer Personal Use License 1.0: free personal, non-commercial use;
+  redistribution, commercial use and distributed modifications require separate
+  written permission from Threshzz.
+- Added the third-party dependency inventory. Python, NumPy, pandas, DuckDB and
+  PyInstaller retain their own terms; the eventual package must include the exact
+  full notices from its embedded runtime and wheels.
+- Readiness audit 0.2 requires both legal files. The remaining source-tree blocker
+  is packaging configuration.
+
 ## Public release R0 — 2026-09-07
 
 - Public release contract and gated roadmap added. The intended user surface is

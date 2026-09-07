@@ -12,12 +12,13 @@ from typing import Any
 from cross_session_zone_localization import normalize_identity
 from track_readiness import ProfileRecord, discover_profiles
 
-AUDIT_VERSION = "0.1"
+AUDIT_VERSION = "0.2"
 PUBLIC_GUI_SECTIONS = ("Resumen", "Telemetría", "Historial", "Estadísticas")
 DEVELOPMENT_GUI_SECTIONS = ("Circuitos", "Diagnóstico", "Calibración")
 PUBLIC_ENTRYPOINT = "RaceEngineerPublic.pyw"
 PACKAGING_FILES = ("pyproject.toml", "RaceEngineer.spec")
 LEGAL_FILES = ("LICENSE", "LICENSE.txt", "LICENSE.md")
+THIRD_PARTY_NOTICE = "THIRD_PARTY_NOTICES.md"
 
 
 def _best_profile(records: list[ProfileRecord]) -> ProfileRecord | None:
@@ -91,6 +92,8 @@ def audit_public_release(project_root: Path) -> dict[str, Any]:
         blockers.append("RUNTIME_DEPENDENCIES_NOT_EXACTLY_PINNED")
     if not any((root / name).is_file() for name in LEGAL_FILES):
         blockers.append("LICENSE_MISSING")
+    if not (root / THIRD_PARTY_NOTICE).is_file():
+        blockers.append("THIRD_PARTY_NOTICES_MISSING")
     if profile_errors:
         blockers.append("PROFILE_CATALOG_INVALID")
 
@@ -108,6 +111,14 @@ def audit_public_release(project_root: Path) -> dict[str, Any]:
             "errors": profile_errors,
         },
         "runtime_dependencies": dependency_specs,
+        "legal": {
+            "product_license": next(
+                (name for name in LEGAL_FILES if (root / name).is_file()), None
+            ),
+            "third_party_notices": (
+                THIRD_PARTY_NOTICE if (root / THIRD_PARTY_NOTICE).is_file() else None
+            ),
+        },
         "blockers": blockers,
     }
 

@@ -13,7 +13,12 @@
   Python, NumPy, pandas, DuckDB, python-dateutil, tzdata and six license material is
   included under `third_party_licenses`.
 - Added deterministic SHA-256 build manifests with exact source commit, dependency
-  lock and profile catalog. Final clean double-build comparison remains pending.
+  lock and profile catalog. Two clean builds from commit `7d9828f` produced the
+  same 1842 files, 129,746,756 content bytes and identical SHA-256 manifests.
+- The reproducible artifact opened and closed its native GUI process normally; CLI
+  and safe-analyzer help started, and the worker rejected an LLM module with exit 2.
+  A packaged end-to-end telemetry run remains pending until a real fixture is
+  available.
 - Validation: 20 focused packaging tests and 2022 full-suite tests passed.
 
 ## Public release legal gate — 2026-09-07

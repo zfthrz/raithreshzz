@@ -78,6 +78,10 @@ modules during GUI import. Native visual QA remains part of R4.
 Exit: two clean builds from the same commit have the same declared contents and
 pass the portable smoke test.
 
+Reproducibility reached for commit `7d9828f`: two clean builds had identical
+1842-file SHA-256 manifests and 129,746,756 content bytes. GUI/process smoke passed;
+the supplied-fixture deterministic pipeline smoke remains open before R2 exit.
+
 ### R3 — Installation and first run
 
 - Provide a clear first-run choice for telemetry location and debrief language.

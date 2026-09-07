@@ -106,7 +106,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.60"
+GUI_VERSION = "1.61"
 DEFAULT_RUNS_ROOT = Path(__file__).resolve().parent / "data" / "generated" / "runs"
 STATE_REFRESH_INTERVAL_MS = 5_000
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -636,6 +636,9 @@ def debrief_markdown_line(line: str) -> tuple[str | None, str]:
         return "h1", _clean_markdown_line(line[2:])
 
     category_tags = {
+        "**Action ·": "debrief_action",
+        "**Evidence ·": "debrief_evidence_label",
+        "**Context ·": "debrief_context",
         "**Acción ·": "debrief_action",
         "**Evidencia ·": "debrief_evidence_label",
         "**Contexto ·": "debrief_context",
@@ -665,7 +668,7 @@ def compact_debrief_markdown(value: str) -> str:
     if not lines:
         return ""
 
-    wanted = ("resumen de la sesión", "foco principal")
+    wanted = ("resumen de la sesión", "foco principal", "session summary", "main focus")
     sections: list[list[str]] = []
     index = 0
     while index < len(lines):
@@ -690,7 +693,7 @@ def compact_debrief_markdown(value: str) -> str:
         heading = block[0]
         output.extend((heading, ""))
         body = [line for line in block[1:] if line.strip()]
-        if heading[3:].strip().casefold() == "foco principal":
+        if heading[3:].strip().casefold() in {"foco principal", "main focus"}:
             bullets = [line for line in body if line.lstrip().startswith("-")]
             body = bullets[:2] if bullets else body[:4]
         else:
@@ -722,8 +725,8 @@ def action_only_debrief_markdown(value: str) -> str:
             continue
         if line.startswith("## "):
             heading = line[3:].strip().casefold()
-            in_focus = heading == "foco principal"
-            in_plan = heading == "plan para la próxima tanda"
+            in_focus = heading in {"foco principal", "main focus"}
+            in_plan = heading in {"plan para la próxima tanda", "next-stint plan"}
             include_action_details = False
             if in_focus or in_plan:
                 output.extend((line, ""))
@@ -738,7 +741,7 @@ def action_only_debrief_markdown(value: str) -> str:
             output.extend((line, ""))
             include_action_details = False
             continue
-        if line.startswith("**Acción ·"):
+        if line.startswith(("**Acción ·", "**Action ·")):
             output.append(line)
             include_action_details = line.rstrip().endswith(":**")
             continue
@@ -777,6 +780,10 @@ def debrief_section_jumps(value: str) -> tuple[tuple[str, str, str], ...]:
         ("Foco", "## Foco principal", "debrief_focus"),
         ("Plan", "## Plan para la próxima tanda", "debrief_plan"),
         ("Respaldo", "## Respaldo técnico", "debrief_evidence"),
+        ("Start", "# Engineering debrief", "debrief_start"),
+        ("Focus", "## Main focus", "debrief_focus"),
+        ("Plan", "## Next-stint plan", "debrief_plan"),
+        ("Support", "## Technical support", "debrief_evidence"),
     )
     lines = tuple(line.strip() for line in value.splitlines())
     return tuple(
@@ -784,7 +791,7 @@ def debrief_section_jumps(value: str) -> tuple[tuple[str, str, str], ...]:
         for label, heading, mark in candidates
         if any(
             line == heading
-            or (heading == "# Debrief de ingeniería" and line.startswith(heading))
+            or (heading in {"# Debrief de ingeniería", "# Engineering debrief"} and line.startswith(heading))
             for line in lines
         )
     )
@@ -2250,6 +2257,14 @@ class RaceEngineerApp:
 
         sidebar_bottom = ttk.Frame(sidebar, style="Sidebar.TFrame", padding=(12, 9, 10, 12))
         sidebar_bottom.pack(fill="x")
+        from debrief_language import LANGUAGES, load_debrief_language
+        ttk.Label(sidebar_bottom, text="Idioma de debriefs nuevos", style="SidebarMeta.TLabel").pack(anchor="w")
+        self.debrief_language_var = tk.StringVar(value=LANGUAGES[load_debrief_language()])
+        language_selector = ttk.Combobox(sidebar_bottom, state="readonly", width=16,
+                                        textvariable=self.debrief_language_var,
+                                        values=tuple(LANGUAGES.values()))
+        language_selector.pack(fill="x", pady=(2, 6))
+        language_selector.bind("<<ComboboxSelected>>", self._save_debrief_language)
         self.skip_stability_var = tk.BooleanVar(value=False)
         self.skip_stability_check = ttk.Checkbutton(
             sidebar_bottom,
@@ -2596,6 +2611,15 @@ class RaceEngineerApp:
             textvariable=self.h5_3_review_var,
             style="H53Muted.TLabel",
         )
+
+    def _save_debrief_language(self, _event=None):
+        from debrief_language import LANGUAGES, save_debrief_language
+        selected = self.debrief_language_var.get()
+        language = next(key for key, value in LANGUAGES.items() if value == selected)
+        try:
+            save_debrief_language(language)
+        except OSError as exc:
+            self.footer_var.set(f"No se pudo guardar el idioma: {exc}")
 
     def _show_primary_section(self, section):
         if section not in self.primary_section_frames:
@@ -5929,6 +5953,8 @@ class RaceEngineerApp:
             mark = section_marks.get(stripped_line)
             if not mark and stripped_line.startswith("# Debrief de ingeniería"):
                 mark = section_marks.get("# Debrief de ingeniería")
+            if not mark and stripped_line.startswith("# Engineering debrief"):
+                mark = section_marks.get("# Engineering debrief")
             if mark:
                 widget.mark_set(mark, "end-1c")
             tag = None

@@ -7,15 +7,16 @@ backend.  The legacy module delegates to these same functions.
 
 from __future__ import annotations
 
+import argparse
 import os
 import sys
-from pathlib import Path
+from functools import partial
 
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
-def find_json_file():
+def find_json_file(arguments=None):
     """Return the analysis JSON to process.
 
     Usage:
@@ -23,8 +24,9 @@ def find_json_file():
 
     If no argument and exactly one JSON candidate exists, use it automatically.
     """
-    if len(sys.argv) > 1:
-        path = sys.argv[1]
+    arguments = sys.argv[1:] if arguments is None else arguments
+    if arguments:
+        path = arguments[0]
 
         if not os.path.isabs(path):
             path = os.path.join(
@@ -79,9 +81,12 @@ def reset_deepseek_usage():
     """Clear legacy usage counters. No-op when legacy module is not loaded."""
 
 
-def build_debrief_runtime(*, output_dir: str, base_dir: str):
+def build_debrief_runtime(*, output_dir: str, base_dir: str, language=None):
     """Build the product runtime while preserving the legacy artifact schema."""
-    from deterministic_debrief_app import build_debrief_runtime as build_neutral_debrief_runtime
+    from debrief_language import load_debrief_language
+    from deterministic_debrief_app import (
+        build_debrief_runtime as build_neutral_debrief_runtime,
+    )
     from deterministic_debrief_compatibility import LegacyArtifactMetadata
     from deterministic_debrief_output import save_compatible_debrief
 
@@ -103,7 +108,8 @@ def build_debrief_runtime(*, output_dir: str, base_dir: str):
         ),
         usage_record=usage_record,
         usage_presentation=usage_presentation,
-        save_output=save_compatible_debrief,
+        save_output=partial(save_compatible_debrief, language=language,
+                            default_language=load_debrief_language()),
     )
 
 
@@ -124,13 +130,19 @@ def main():
 
     reset_deepseek_usage()
 
-    input_path = find_json_file()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("source", nargs="?")
+    parser.add_argument("--language", choices=("es", "en"), default=None,
+                        help="Language for a new debrief; defaults to the saved preference")
+    args = parser.parse_args()
+    input_path = find_json_file([args.source] if args.source else [])
 
     output_dir = _resolve_output_dir(input_path)
 
     stages, presentation = build_debrief_runtime(
         output_dir=output_dir,
         base_dir=BASE_DIR,
+        language=args.language,
     )
     run_deterministic_debrief(
         stages=stages,

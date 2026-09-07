@@ -50,6 +50,27 @@ full debrief without calling any LLM transport. Opt-in LLM backends are
 available only for reproduction, benchmarks, or legacy workflows; they are
 never invoked automatically by the product runtime.
 
+New deterministic reports support a saved `es`/`en` debrief preference through
+`debrief_language.py` (default Spanish) and an explicit generator `--language`
+override. The preference is captured for a new run; changing it never converts
+existing artifacts. An existing report retains its stored language (legacy = es),
+and an explicit conflicting language is rejected before overwriting that report.
+The setting is local in `data/local/debrief_preferences.json` and is independent
+from GUI navigation preferences and all telemetry/History state.
+
+Presentation contract 2.5 retains canonical Spanish facts, structured responses
+and `global_analysis` for evidence/compatibility. Its canonical validator uses the
+same neutral global renderer as the product generator; older versions keep their
+historical renderer. English is an additive `localized_presentation` version 1.0
+built by `debrief_english.py`, with `metadata.debrief_language=en`. Its report and
+per-plan cue texts must match an exact deterministic reconstruction from the
+canonical plan. Unknown action/observation vocabulary fails closed, without an
+LLM or a guessed translation. It never selects new actions, changes P11/plan order,
+modifies a numeric target, weakens steering gates or authorizes historical coaching.
+The UI uses that validated presentation for the summary, cards, checklist and
+telemetry cues; the general application chrome remains Spanish. This is debrief
+localization, not a completed application-wide internationalization migration.
+
 `telemetria/` is the standard local location for LMU DuckDB recordings and is ignored by Git.
 
 ---
@@ -151,7 +172,7 @@ D3.x deterministic-first default and D2.9 production ranker (2026-08-25).
 | Component | Current operational baseline |
 |---|---|
 | `race_engineer.py` | orchestrator v0.4 — estados nuevos usan `debrief`/`debrief_validator`; lectura legacy compatible |
-| `race_engineer_gui.py` | v1.60 — centralized theme constants (`gui_theme.py`), widget colors use `COLORS`, fonts use `FONTS`/`TAG_FONTS` |
+| `race_engineer_gui.py` | v1.61 — deterministic language preference for newly generated debriefs; English presentation remains a validated projection of canonical evidence |
 | `analyze_telemetry.py` | v3.8 + Objective Python v6 |
 | Brake point | 2.1 / schema 2.1 |
 | Throttle point | 1.2.1 / schema 1.2 |

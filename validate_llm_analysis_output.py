@@ -884,8 +884,14 @@ def validate_global_render(
         )
 
     try:
+        # New product reports use the neutral renderer. Older reports retain
+        # their exact historical renderer, rather than accepting either text.
+        render_global = llm_renderer.render_global_analysis
+        if data.get("metadata", {}).get("report_presentation_version") == "2.5":
+            from deterministic_global_render import render_global_analysis
+            render_global = render_global_analysis
         expected_analysis = (
-            llm_renderer.render_global_analysis(
+            render_global(
                 data.get("metadata", {}),
                 data.get("comparisons", []),
                 data.get("session_coaching_facts", {}),
@@ -1093,6 +1099,13 @@ def validate_file(
         data,
         errors,
     )
+
+    from debrief_english import validate_presentation
+
+    try:
+        validate_presentation(data)
+    except (ValueError, KeyError, TypeError, AttributeError) as exc:
+        errors.append(f"Localized presentation: {exc}")
 
     return errors, warnings
 

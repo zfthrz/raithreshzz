@@ -1,5 +1,24 @@
 # Project Status
 
+## New-debrief language checkpoint — 2026-09-07
+
+- New reports can use Español/English from the GUI's `Idioma de debriefs nuevos`
+  selector; the generator also accepts `--language es|en`. Default remains Spanish.
+- Existing reports keep their language; no existing telemetry, History or reports
+  are migrated by changing the preference.
+- Presentation 2.5 validates canonical output against the product's neutral
+  renderer, retaining the historical validation path for older artifacts.
+- English presentation 1.0 is independently reconstructed and validated over the
+  same authorized plan. Summary, cards, checklist, section jumps and telemetry
+  cues consume the stored language; application-wide chrome translation is pending.
+- Read-only corpus check: 86 artifacts, 255 zones, 434 cues; plan order and numeric
+  action content preserved. New Imola ES/EN runs in isolated local directories
+  passed the full artifact validator; original source files stayed unchanged.
+- Validation: 222 focused tests, 2000 full-suite tests and 55 deterministic
+  regressions passed.
+- The scheduler audit and public-release roadmap remain separate work. No scheduler
+  configuration, calibration, coaching policy or LLM transport changed here.
+
 ## Current integration checkpoint
 
 Checkpoint: **2026-08-22** / published `main` commit `b9b75a5` plus the integrated

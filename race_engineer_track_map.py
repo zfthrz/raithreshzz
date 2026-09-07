@@ -1910,6 +1910,12 @@ def load_track_priorities(path: Path | None) -> tuple[TrackMapPriority, ...]:
     payload = json.loads(source.read_text(encoding="utf-8"))
     if not isinstance(payload, dict):
         raise ValueError("El debrief no contiene un objeto JSON.")
+    from debrief_english import validate_presentation
+    validate_presentation(payload)
+    localized = {
+        item["plan_label"]: item
+        for item in (payload.get("localized_presentation") or {}).get("plan", [])
+    }
     facts = payload.get("session_coaching_facts")
     facts = facts if isinstance(facts, dict) else {}
     values = facts.get("next_stint_plan")
@@ -1956,13 +1962,14 @@ def load_track_priorities(path: Path | None) -> tuple[TrackMapPriority, ...]:
             if text:
                 cues.append(text)
         priority_id = str(value.get("plan_label") or index)
+        presentation = localized.get(priority_id)
         priorities.append(
             TrackMapPriority(
                 priority_id=priority_id,
-                label=str(location.get("label") or f"Zona {priority_id}"),
+                label=presentation["location"] if presentation else str(location.get("label") or f"Zona {priority_id}"),
                 start_distance_m=start,
                 end_distance_m=end,
-                cues=tuple(cues),
+                cues=tuple(c["text"] for c in presentation["cues"]) if presentation else tuple(cues),
                 is_focus=priority_id in focus_ids,
                 has_validated_steering=has_validated_steering_action(value),
             )

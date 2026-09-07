@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import copy
 import json
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -1177,6 +1178,8 @@ def load_session_detail(
     if record.debrief_path:
         try:
             payload = _json(record.debrief_path)
+            from debrief_english import validate_presentation
+            validate_presentation(payload)
             debrief = str(payload.get("global_analysis") or debrief)
             coaching_facts = _dict(payload.get("session_coaching_facts"))
             plan = _plan_text(coaching_facts)
@@ -1195,6 +1198,18 @@ def load_session_detail(
                     for item in _list(focus.get("items"))
                     if _dict(item).get("plan_label") is not None
                 )
+            localized = payload.get("localized_presentation")
+            if localized is not None:
+                debrief = localized["global_analysis"]
+                localized_items = copy.deepcopy(plan_items)
+                for item, presentation in zip(localized_items, localized["plan"]):
+                    if isinstance(item.get("track_location"), dict):
+                        item["track_location"]["label"] = presentation["location"]
+                    for cue, text in zip(item.get("driver_cues") or [], presentation["cues"]):
+                        cue["text"] = text["text"]
+                        for event, step in zip((cue.get("coaching_sequence") or {}).get("events") or [], text["steps"]):
+                            event["text"] = step
+                plan_items = localized_items
         except (OSError, UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
             warnings.append(f"No se pudo leer el debrief: {exc}")
     if record.analysis_path:

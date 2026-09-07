@@ -344,6 +344,31 @@ mantienen disponibles sin modificar el JSON generado. El checklist puede copiars
 al portapapeles con una acción y conserva el mismo orden validado del plan. Los
 debriefs guardados con las etiquetas históricas se proyectan de forma retrocompatible.
 
+**Idioma de debriefs nuevos:** el selector de la barra lateral permite elegir
+`Español` (predeterminado) o `English`. El análisis normal, incluido el automático,
+usa esa preferencia al generar un debrief nuevo. Los resultados existentes mantienen
+su idioma; cambiar la preferencia no convierte tus sesiones anteriores ni recalcula
+telemetría, History o calibraciones. Las cards, el checklist y los cues de telemetría
+leen el idioma del resultado seleccionado. La interfaz general continúa en español.
+
+Para generar un debrief desde un análisis JSON con un idioma explícito:
+
+```powershell
+python deterministic_debrief.py "data/generated/analysis/SESION.json" --language en
+```
+
+El override acepta `es` o `en`. Si ya existe el debrief con otro idioma, se rechaza
+la conversión; no se sobrescribe para traducirlo. No se necesita un LLM: la versión
+inglesa se construye y valida de forma determinista. El artefacto conserva los
+campos canónicos de evidencia y agrega su presentación inglesa validada. Una forma
+de acción no soportada produce un error explícito en lugar de inventar o eliminar
+una instrucción.
+
+GUI v1.61 incorpora esta preferencia local y reconoce las secciones inglesas en
+Resumen, Solo acciones, saltos del debrief y Telemetría. La presentación inglesa
+se valida antes de mostrarse; si no coincide exactamente con el plan autorizado,
+la sesión informa el error de carga en lugar de presentar coaching alterado.
+
 La prioridad conceptual actual es:
 
 ```text

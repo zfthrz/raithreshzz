@@ -37,20 +37,29 @@ def build_analysis_plan(
     project_root: Path,
     python_executable: str | Path = sys.executable,
     skip_stability_wait: bool = False,
+    environ: dict[str, str] | None = None,
 ) -> AnalysisLaunchPlan:
     root = Path(project_root).resolve()
     launcher = root / "analyze_telemetry_file.py"
-    if not launcher.is_file():
-        raise FileNotFoundError(launcher)
     database = Path(database_path).expanduser().resolve()
-    python = console_python_executable(python_executable)
-    command_parts = [
-        str(python),
-        "-u",
-        str(launcher),
-        str(database),
-        "--deterministic-debrief",
-    ]
+    values = os.environ if environ is None else environ
+    packaged_launcher = values.get("RACE_ENGINEER_ANALYZER_EXECUTABLE")
+    if packaged_launcher:
+        python = Path(packaged_launcher).expanduser().resolve()
+        if not python.is_file():
+            raise FileNotFoundError(python)
+        command_parts = [str(python), str(database), "--deterministic-debrief"]
+    else:
+        if not launcher.is_file():
+            raise FileNotFoundError(launcher)
+        python = console_python_executable(python_executable)
+        command_parts = [
+            str(python),
+            "-u",
+            str(launcher),
+            str(database),
+            "--deterministic-debrief",
+        ]
     if skip_stability_wait:
         command_parts.append("--skip-stability-wait")
     command = tuple(command_parts)

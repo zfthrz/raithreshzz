@@ -34,6 +34,17 @@ def test_explicit_public_data_root_supports_portable_qa(tmp_path):
     assert public_data_root({"RACE_ENGINEER_PUBLIC_DATA_DIR": str(tmp_path)}) == tmp_path
 
 
+def test_frozen_runtime_registers_dedicated_child_executables(tmp_path, monkeypatch):
+    environment = {"RACE_ENGINEER_PUBLIC_DATA_DIR": str(tmp_path)}
+    monkeypatch.setattr(sys, "frozen", True, raising=False)
+    monkeypatch.setattr(sys, "executable", str(tmp_path / "RaceEngineer.exe"))
+    configure_public_runtime(environment)
+    assert environment["RACE_ENGINEER_ANALYZER_EXECUTABLE"].endswith(
+        "RaceEngineerAnalyze.exe"
+    )
+    assert environment["RACE_ENGINEER_CLI_EXECUTABLE"].endswith("RaceEngineerCLI.exe")
+
+
 def test_public_surface_has_no_operator_sections_or_shortcuts():
     sections = primary_sections(public_release=True)
     assert sections == PUBLIC_GUI_SECTIONS

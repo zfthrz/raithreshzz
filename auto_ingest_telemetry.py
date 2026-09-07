@@ -291,13 +291,21 @@ def run_race_engineer(
     *,
     env: dict[str, str] | None = None,
 ) -> None:
-    command = [
-        sys.executable,
-        str(PROJECT_ROOT / "race_engineer.py"),
-        "analyze",
-        str(path),
-        *extra_args,
-    ]
+    values = os.environ if env is None else env
+    packaged_cli = values.get("RACE_ENGINEER_CLI_EXECUTABLE")
+    if packaged_cli:
+        executable = Path(packaged_cli).expanduser().resolve()
+        if not executable.is_file():
+            raise FileNotFoundError(executable)
+        command = [str(executable), "analyze", str(path), *extra_args]
+    else:
+        command = [
+            sys.executable,
+            str(PROJECT_ROOT / "race_engineer.py"),
+            "analyze",
+            str(path),
+            *extra_args,
+        ]
     print("+ " + subprocess.list2cmdline(command))
     subprocess.run(command, cwd=PROJECT_ROOT, check=True, env=env)
 

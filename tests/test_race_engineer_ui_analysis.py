@@ -56,6 +56,24 @@ def test_plan_can_skip_only_the_stability_wait(tmp_path: Path):
     assert plan.skip_stability_wait is True
 
 
+def test_packaged_plan_invokes_dedicated_safe_launcher(tmp_path: Path):
+    root = tmp_path / "packaged"
+    root.mkdir()
+    launcher = root / "RaceEngineerAnalyze.exe"
+    launcher.write_bytes(b"exe")
+    database = tmp_path / "file.duckdb"
+    plan = build_analysis_plan(
+        database,
+        project_root=root,
+        environ={"RACE_ENGINEER_ANALYZER_EXECUTABLE": str(launcher)},
+    )
+    assert plan.command == (
+        str(launcher.resolve()),
+        str(database.resolve()),
+        "--deterministic-debrief",
+    )
+
+
 def test_pythonw_is_replaced_by_console_sibling_when_available(tmp_path: Path):
     pythonw = tmp_path / "pythonw.exe"
     python = tmp_path / "python.exe"

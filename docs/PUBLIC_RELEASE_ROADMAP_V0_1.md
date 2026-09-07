@@ -57,7 +57,11 @@ modules during GUI import. Native visual QA remains part of R4.
 
 ### R2 — Reproducible Windows package
 
-- Choose and configure the packager after measuring startup time and package size.
+- [x] Pin the tested analysis/runtime libraries and PyInstaller build tool in
+  `requirements-release.txt`.
+- [x] Define separate GUI, safe-launcher and deterministic-CLI entrypoints so a
+  frozen GUI never masquerades as `python.exe` when spawning pipeline stages.
+- Configure and validate the packager after measuring startup time and package size.
 - Bundle the Python interpreter and native runtime dependencies. Public users must
   not install Python or run `pip`; Python remains a development/calibration tool.
 - Produce an exact runtime dependency lock from the tested environment.

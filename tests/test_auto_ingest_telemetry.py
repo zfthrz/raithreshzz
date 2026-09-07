@@ -36,6 +36,29 @@ def test_automatic_debrief_environment_is_fail_closed(monkeypatch):
     assert env["RACE_ENGINEER_LLM_RANKER"] == "0"
 
 
+def test_packaged_runner_invokes_dedicated_cli(tmp_path, monkeypatch):
+    executable = tmp_path / "RaceEngineerCLI.exe"
+    executable.write_bytes(b"exe")
+    database = tmp_path / "session.duckdb"
+    observed = {}
+
+    def fake_run(command, **kwargs):
+        observed["command"] = command
+        observed["kwargs"] = kwargs
+        return subprocess.CompletedProcess(command, 0)
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+    environment = {"RACE_ENGINEER_CLI_EXECUTABLE": str(executable)}
+    ingest.run_race_engineer(database, ["--no-debrief"], env=environment)
+    assert observed["command"] == [
+        str(executable.resolve()),
+        "analyze",
+        str(database),
+        "--no-debrief",
+    ]
+    assert observed["kwargs"]["env"] is environment
+
+
 def make_db(directory: Path, name: str = "session.duckdb") -> Path:
     directory.mkdir(parents=True, exist_ok=True)
     path = directory / name

@@ -78,7 +78,10 @@ def audit_public_release(project_root: Path) -> dict[str, Any]:
     """Report release blockers without building, copying, or deleting files."""
     root = Path(project_root).resolve()
     profiles, profile_errors = public_profile_catalog(root / "track_profiles")
-    dependency_specs = _dependency_specs(root / "requirements.txt")
+    release_requirements = root / "requirements-release.txt"
+    dependency_specs = _dependency_specs(
+        release_requirements if release_requirements.is_file() else root / "requirements.txt"
+    )
     blockers = []
     if not (root / PUBLIC_ENTRYPOINT).is_file():
         blockers.append("PUBLIC_ENTRYPOINT_MISSING")

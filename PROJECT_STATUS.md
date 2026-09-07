@@ -35,6 +35,18 @@
   deterministic regressions passed. An isolated public `--list` smoke saw no
   checkout sessions and created no History database.
 
+## Public release R2a — 2026-09-07
+
+- Added packaged process seams for `RaceEngineerAnalyze.exe` and
+  `RaceEngineerCLI.exe`; source-mode commands remain unchanged.
+- Added an exact release/build dependency lock: Python 3.12 runtime with
+  numpy 2.5.2, pandas 3.0.5, DuckDB 1.5.5 and PyInstaller 6.22.2.
+- The readiness audit now has two blockers: packaging configuration and license.
+  No package is claimed as functional until the built distribution completes the
+  safe-launcher and deterministic pipeline smoke.
+- Validation: 51 focused packaging tests, 2014 full-suite tests and 55/55
+  deterministic regressions passed.
+
 ## New-debrief language checkpoint — 2026-09-07
 
 - New reports can use Español/English from the GUI's `Idioma de debriefs nuevos`

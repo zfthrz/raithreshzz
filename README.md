@@ -391,6 +391,11 @@ GUI v1.62 implementa esta separación de runtime. El proceso público no inicial
 Circuitos, Diagnóstico ni Calibración y no consulta el scheduler oculto ni sus
 estados de mantenimiento.
 
+La distribución congelada conserva tres procesos explícitos: interfaz pública,
+launcher seguro y pipeline determinista. Esto mantiene los bloqueos de LMU y de
+estabilidad también cuando Python viene incorporado. Las versiones exactas usadas
+para construir la release están en `requirements-release.txt`.
+
 La prioridad conceptual actual es:
 
 ```text

@@ -88,6 +88,13 @@ empty History and zero statistics. `RaceEngineer.pyw` retains the source/develop
 runtime. Public mode constructs only the four public frames and does not import the
 calibration, H3 maintenance, scheduler-status or track-readiness modules.
 
+Public packaging preserves the existing process boundaries. A frozen GUI launches
+`RaceEngineerAnalyze.exe`, which retains LMU/stability/file gates; that process
+launches `RaceEngineerCLI.exe` for the deterministic orchestrator. Environment
+variables registered by `public_runtime.py` select these executables only in a
+frozen build. Source execution continues to use the current Python scripts. Exact
+tested build dependencies live in `requirements-release.txt`.
+
 `telemetria/` is the standard local location for LMU DuckDB recordings and is ignored by Git.
 
 ---

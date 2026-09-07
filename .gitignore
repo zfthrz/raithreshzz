@@ -30,3 +30,10 @@ race_engineer_history_backup.duckdb
 .env.*
 !.env.example
 .aider*
+
+# Local tooling, test workspaces and generated calibration/map exports
+.qwen/
+.test-tmp/
+temp_gui_diff*.txt
+track_exports/
+calibration_batches/*/

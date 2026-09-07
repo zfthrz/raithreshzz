@@ -710,6 +710,11 @@ def action_only_debrief_markdown(value: str) -> str:
     in_focus = False
     in_plan = False
     include_action_details = False
+    legacy_action_labels = {
+        "**Qué cambiar:**": "**Acción · Qué cambiar:**",
+        "**Segundo cue:**": "**Acción · Segundo cue:**",
+        "**Referencia del cue:**": "**Acción · Referencias:**",
+    }
     for line in lines:
         stripped = line.strip()
         if line.startswith("# ") and not output:
@@ -724,7 +729,8 @@ def action_only_debrief_markdown(value: str) -> str:
                 output.extend((line, ""))
             continue
         if in_focus:
-            output.append(line)
+            if not stripped or stripped.startswith("- "):
+                output.append(line)
             continue
         if not in_plan:
             continue
@@ -735,6 +741,18 @@ def action_only_debrief_markdown(value: str) -> str:
         if line.startswith("**Acción ·"):
             output.append(line)
             include_action_details = line.rstrip().endswith(":**")
+            continue
+        legacy_prefix = next(
+            (prefix for prefix in legacy_action_labels if line.startswith(prefix)),
+            None,
+        )
+        if legacy_prefix:
+            output.append(line.replace(
+                legacy_prefix,
+                legacy_action_labels[legacy_prefix],
+                1,
+            ))
+            include_action_details = False
             continue
         number, separator, body = stripped.partition(". ")
         if include_action_details and (
@@ -5782,7 +5800,14 @@ class RaceEngineerApp:
         self.track_map_zone_label.configure(wraplength=wraplength)
         self.track_map_telemetry_label.configure(wraplength=wraplength)
 
-    def _show_dashboard_text_detail(self, title: str, value: str, *, markdown: bool = False):
+    def _show_dashboard_text_detail(
+        self,
+        title: str,
+        value: str,
+        *,
+        markdown: bool = False,
+        copy_value: str | None = None,
+    ):
         window = self.tk.Toplevel(self.root)
         window.title(title)
         window.geometry("820x700")
@@ -5790,7 +5815,15 @@ class RaceEngineerApp:
         window.configure(background=COLORS["app"])
         frame = self.ttk.Frame(window, style="Panel.TFrame", padding=16)
         frame.pack(fill="both", expand=True)
-        self.ttk.Label(frame, text=title, style="Title.TLabel").pack(anchor="w", pady=(0, 10))
+        header = self.ttk.Frame(frame, style="Panel.TFrame")
+        header.pack(fill="x", pady=(0, 10))
+        self.ttk.Label(header, text=title, style="Title.TLabel").pack(side="left")
+        if copy_value is not None:
+            copy_button = self.ttk.Button(header, text="Copiar checklist")
+            copy_button.configure(
+                command=lambda: self._copy_debrief_checklist(copy_value, copy_button)
+            )
+            copy_button.pack(side="right")
         section_jumps = debrief_section_jumps(value) if markdown else ()
         if len(section_jumps) > 1:
             jump_bar = self.ttk.Frame(frame, style="Panel.TFrame")
@@ -5842,6 +5875,21 @@ class RaceEngineerApp:
                 ).pack(side="left", padx=(0, 8))
         return window
 
+    def _copy_debrief_checklist(self, value: str, button):
+        self.root.clipboard_clear()
+        self.root.clipboard_append(value)
+        self.root.update_idletasks()
+        button.configure(text="Copiado ✓", state="disabled")
+        self.root.after(
+            1600,
+            lambda: self._restore_debrief_copy_button(button),
+        )
+
+    @staticmethod
+    def _restore_debrief_copy_button(button):
+        if button.winfo_exists():
+            button.configure(text="Copiar checklist", state="normal")
+
     def _show_full_debrief(self):
         self._show_dashboard_text_detail(
             "Debrief completo",
@@ -5851,10 +5899,12 @@ class RaceEngineerApp:
 
     def _show_action_debrief(self):
         source = self.current_debrief_markdown or ui_state_message("DEBRIEF_UNAVAILABLE")
+        checklist = action_only_debrief_markdown(source) or source
         self._show_dashboard_text_detail(
             "Debrief · Solo acciones",
-            action_only_debrief_markdown(source) or source,
+            checklist,
             markdown=True,
+            copy_value=checklist,
         )
 
     def _show_full_laps(self):

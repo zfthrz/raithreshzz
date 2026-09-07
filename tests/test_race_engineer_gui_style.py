@@ -314,14 +314,55 @@ Resumen ejecutivo.
     assert "Respaldo técnico" not in result
 
 
+def test_action_only_debrief_normalizes_legacy_plan_labels():
+    markdown = """# Debrief de ingeniería — Sarthe
+
+## Foco principal
+
+- Zona A — T10: Frená más tarde.
+
+2 comparaciones excluidas permanecen disponibles en el JSON.
+
+## Plan para la próxima tanda
+
+### 1. Zona A — T10
+
+**Qué cambiar:** Frená aproximadamente 8 m más tarde.
+
+**Segundo cue:** Reaplicá como en la referencia.
+
+**Referencia del cue:** vuelta 3; ~30 m antes de T10.
+**Evidencia entre vueltas:** apareció en la vuelta 4.
+
+**Por qué está en el plan:** punto repetido.
+"""
+
+    result = action_only_debrief_markdown(markdown)
+
+    assert "**Acción · Qué cambiar:** Frená aproximadamente 8 m más tarde." in result
+    assert "**Acción · Segundo cue:** Reaplicá como en la referencia." in result
+    assert "**Acción · Referencias:** vuelta 3; ~30 m antes de T10." in result
+    assert "comparaciones excluidas" not in result
+    assert "Evidencia entre vueltas" not in result
+    assert "Por qué está en el plan" not in result
+
+
 def test_summary_exposes_action_only_and_complete_debrief_readers():
     build_source = inspect.getsource(RaceEngineerApp._build_layout)
     action_source = inspect.getsource(RaceEngineerApp._show_action_debrief)
+    detail_source = inspect.getsource(RaceEngineerApp._show_dashboard_text_detail)
+    copy_source = inspect.getsource(RaceEngineerApp._copy_debrief_checklist)
 
     assert 'text="Solo acciones  →"' in build_source
     assert "command=self._show_action_debrief" in build_source
     assert 'text="Ver debrief completo  →"' in build_source
-    assert "action_only_debrief_markdown(source) or source" in action_source
+    assert "checklist = action_only_debrief_markdown(source) or source" in action_source
+    assert "copy_value=checklist" in action_source
+    assert 'text="Copiar checklist"' in detail_source
+    assert "self._copy_debrief_checklist(copy_value, copy_button)" in detail_source
+    assert "clipboard_append(value)" in copy_source
+    assert 'text="Copiado ✓"' in copy_source
+    assert "self._restore_debrief_copy_button(button)" in copy_source
 
 
 @pytest.mark.parametrize(

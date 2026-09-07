@@ -340,7 +340,9 @@ La GUI conserva esa jerarquía al mostrar el Markdown: reconoce pasos numerados 
 subviñetas con sangría diferenciada tanto en Resumen como en el debrief completo.
 Desde Resumen también ofrece una vista **Solo acciones** que proyecta el foco, las
 zonas y los cues del mismo debrief validado; la vista completa y su evidencia se
-mantienen disponibles sin modificar el JSON generado.
+mantienen disponibles sin modificar el JSON generado. El checklist puede copiarse
+al portapapeles con una acción y conserva el mismo orden validado del plan. Los
+debriefs guardados con las etiquetas históricas se proyectan de forma retrocompatible.
 
 La prioridad conceptual actual es:
 

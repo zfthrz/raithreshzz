@@ -72,6 +72,8 @@ modules during GUI import. Native visual QA remains part of R4.
   tools, local state, telemetry and generated artifacts.
 - [x] Generate SHA-256 checksums and a machine-readable build manifest containing
   the source commit, dependency lock and exact profile catalog.
+- [x] Fix `PYTHONHASHSEED` and derive `SOURCE_DATE_EPOCH` from the source commit in
+  `build_public_release.ps1`; refuse pre-existing work/output directories.
 
 Exit: two clean builds from the same commit have the same declared contents and
 pass the portable smoke test.

@@ -418,6 +418,15 @@ python public_build_manifest.py "RUTA\RaceEngineer" --verify
 El manifiesto incluye SHA-256 de cada archivo, commit fuente, lock de dependencias y
 catálogo exacto de perfiles.
 
+El wrapper reproducible fija `PYTHONHASHSEED` y `SOURCE_DATE_EPOCH` desde el commit,
+rechaza reutilizar directorios y genera/verifica el manifiesto automáticamente:
+
+```powershell
+.\build_public_release.ps1 `
+  -OutputRoot "data\local\public_builds\BUILD-NUEVA" `
+  -WorkRoot ".test-tmp\pyinstaller-BUILD-NUEVA"
+```
+
 La prioridad conceptual actual es:
 
 ```text

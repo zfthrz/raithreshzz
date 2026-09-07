@@ -62,3 +62,13 @@ def test_manifest_rejects_missing_required_content(tmp_path):
     build.mkdir()
     with pytest.raises(ValueError, match="RaceEngineer.exe"):
         manifest.build_manifest(build, tmp_path)
+
+
+def test_reproducible_wrapper_fixes_build_entropy_and_refuses_reuse():
+    script = (Path(__file__).parents[1] / "build_public_release.ps1").read_text(
+        encoding="utf-8"
+    )
+    assert '$env:PYTHONHASHSEED = "1"' in script
+    assert "$env:SOURCE_DATE_EPOCH = $commitEpoch" in script
+    assert script.count("OutputRoot already exists") == 1
+    assert script.count("WorkRoot already exists") == 1

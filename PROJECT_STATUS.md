@@ -1,5 +1,21 @@
 # Project Status
 
+## Public release R2b — 2026-09-07
+
+- Added `RaceEngineer.spec` for a four-process Windows distribution: GUI, safe
+  analyzer, deterministic CLI and a closed deterministic worker.
+- Frozen subprocess stages route through `RaceEngineerWorker.exe`; its allowlist
+  rejects LLM modules and preserves the existing process boundaries.
+- Tcl/Tk is collected explicitly because the initial bundled build environment did
+  not expose it to PyInstaller's isolated probe. A functional package opened and
+  closed its native GUI process successfully.
+- The release lock now pins direct and transitive runtime/build dependencies. Full
+  Python, NumPy, pandas, DuckDB, python-dateutil, tzdata and six license material is
+  included under `third_party_licenses`.
+- Added deterministic SHA-256 build manifests with exact source commit, dependency
+  lock and profile catalog. Final clean double-build comparison remains pending.
+- Validation: 20 focused packaging tests and 2022 full-suite tests passed.
+
 ## Public release legal gate — 2026-09-07
 
 - Added Race Engineer Personal Use License 1.0: free personal, non-commercial use;

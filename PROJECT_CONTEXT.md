@@ -95,6 +95,14 @@ variables registered by `public_runtime.py` select these executables only in a
 frozen build. Source execution continues to use the current Python scripts. Exact
 tested build dependencies live in `requirements-release.txt`.
 
+The frozen orchestrator routes its Python-owned stages through
+`RaceEngineerWorker.exe`. Its module allowlist contains only deterministic analysis,
+validation, History and historical-observation tools; LLM modules are rejected.
+`RaceEngineer.spec` builds the four sibling executables, ships the production
+profiles and complete dependency notices, and supplies Tcl/Tk explicitly for the
+isolated Windows build toolchain. `public_build_manifest.py` hashes every shipped
+file and verifies the exact source commit, dependency lock and profile catalog.
+
 First-party release material is governed by the proprietary Race Engineer Personal
 Use License 1.0 in `LICENSE.txt`: personal non-commercial use is free, while
 redistribution, commercial use and distributed modifications require separate

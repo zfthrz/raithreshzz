@@ -404,6 +404,20 @@ no lo convierte en open source. Python y las demás dependencias conservan sus
 licencias, resumidas en [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md); la build
 final debe incluir sus textos completos exactos.
 
+La build Windows se define en `RaceEngineer.spec` y produce cuatro ejecutables
+hermanos: `RaceEngineer.exe`, `RaceEngineerAnalyze.exe`, `RaceEngineerCLI.exe` y
+`RaceEngineerWorker.exe`. El worker acepta solamente los módulos deterministas de
+su lista cerrada y rechaza los entrypoints LLM. Después de construir, el contenido
+se registra y verifica con:
+
+```powershell
+python public_build_manifest.py "RUTA\RaceEngineer"
+python public_build_manifest.py "RUTA\RaceEngineer" --verify
+```
+
+El manifiesto incluye SHA-256 de cada archivo, commit fuente, lock de dependencias y
+catálogo exacto de perfiles.
+
 La prioridad conceptual actual es:
 
 ```text

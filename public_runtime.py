@@ -34,4 +34,7 @@ def configure_public_runtime(environ: dict[str, str] | None = None) -> Path:
         values["RACE_ENGINEER_CLI_EXECUTABLE"] = str(
             executable_dir / "RaceEngineerCLI.exe"
         )
+        values["RACE_ENGINEER_WORKER_EXECUTABLE"] = str(
+            executable_dir / "RaceEngineerWorker.exe"
+        )
     return root

@@ -61,14 +61,17 @@ modules during GUI import. Native visual QA remains part of R4.
   `requirements-release.txt`.
 - [x] Define separate GUI, safe-launcher and deterministic-CLI entrypoints so a
   frozen GUI never masquerades as `python.exe` when spawning pipeline stages.
-- Configure and validate the packager after measuring startup time and package size.
-- Bundle the Python interpreter and native runtime dependencies. Public users must
+- [x] Configure the packager and measure the first functional onedir build: about
+  123.6 MiB before final size optimization.
+- [x] Bundle the Python interpreter and native runtime dependencies. Public users must
   not install Python or run `pip`; Python remains a development/calibration tool.
-- Produce an exact runtime dependency lock from the tested environment.
+- [x] Produce an exact direct/transitive runtime and build dependency lock from the
+  tested environment.
 - Include only runtime Python modules, production profiles and user documentation.
 - Exclude tests, calibration batches, raw/reference sessions, LLM backends, audit
   tools, local state, telemetry and generated artifacts.
-- Generate checksums and a machine-readable build manifest.
+- [x] Generate SHA-256 checksums and a machine-readable build manifest containing
+  the source commit, dependency lock and exact profile catalog.
 
 Exit: two clean builds from the same commit have the same declared contents and
 pass the portable smoke test.

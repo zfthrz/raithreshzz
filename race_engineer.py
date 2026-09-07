@@ -140,9 +140,24 @@ def record_stage(
 
 
 def run_checked(args: list[str], *, env: dict[str, str] | None = None) -> None:
+    args = packaged_worker_command(args, env=env)
     print()
     print("+ " + " ".join(_quote_for_display(x) for x in args))
     subprocess.run(args, cwd=PROJECT_ROOT, check=True, env=env)
+
+
+def packaged_worker_command(
+    args: list[str], *, env: dict[str, str] | None = None
+) -> list[str]:
+    """Route a Python script stage through the closed worker in frozen builds."""
+    values = os.environ if env is None else env
+    worker = values.get("RACE_ENGINEER_WORKER_EXECUTABLE")
+    if not worker or len(args) < 2:
+        return args
+    script = Path(args[1])
+    if args[0] != sys.executable or script.suffix.casefold() != ".py":
+        return args
+    return [worker, script.stem, *args[2:]]
 
 
 def deterministic_debrief_subprocess_env() -> dict[str, str]:

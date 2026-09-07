@@ -43,6 +43,9 @@ def test_frozen_runtime_registers_dedicated_child_executables(tmp_path, monkeypa
         "RaceEngineerAnalyze.exe"
     )
     assert environment["RACE_ENGINEER_CLI_EXECUTABLE"].endswith("RaceEngineerCLI.exe")
+    assert environment["RACE_ENGINEER_WORKER_EXECUTABLE"].endswith(
+        "RaceEngineerWorker.exe"
+    )
 
 
 def test_public_surface_has_no_operator_sections_or_shortcuts():

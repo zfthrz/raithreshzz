@@ -10,6 +10,9 @@ or restrict those terms.
 | NumPy | 2.5.2 | BSD-3-Clause plus licenses for bundled components | [NumPy license](https://numpy.org/doc/stable/license.html) |
 | pandas | 3.0.5 | BSD-3-Clause | [pandas license](https://github.com/pandas-dev/pandas/blob/v3.0.5/LICENSE) |
 | DuckDB | 1.5.5 | MIT | [DuckDB license](https://github.com/duckdb/duckdb/blob/v1.5.5/LICENSE) |
+| python-dateutil | 2.9.0.post0 | Apache-2.0 or BSD-3-Clause | [python-dateutil license](https://github.com/dateutil/dateutil/blob/2.9.0.post0/LICENSE) |
+| tzdata | 2026.3 | Apache-2.0 plus upstream timezone-data notices | [tzdata package](https://pypi.org/project/tzdata/2026.3/) |
+| six | 1.17.0 | MIT | [six license](https://github.com/benjaminp/six/blob/1.17.0/LICENSE) |
 | PyInstaller | 6.22.2 (build tool) | GPL-2.0-or-later with the PyInstaller bootloader exception; some files use Apache-2.0 | [PyInstaller license](https://pyinstaller.org/en/stable/license.html) |
 
 The final Windows artifact must include the complete license and notice files from

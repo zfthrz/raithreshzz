@@ -420,6 +420,11 @@ y los estados vacíos compartidos. Las etiquetas históricas y de estado que tod
 llegan pre-renderizadas se migrarán a códigos estables antes de considerar Resumen
 completo.
 
+GUI v1.68 termina la pasada de Resumen basada en datos estructurados: estados del
+catálogo, métricas, filtros, orden, trazabilidad y cambios entre sesiones se
+reconstruyen desde sus códigos estables en lugar de traducir frases españolas por
+reemplazo. Esto conserva intactos los hechos y el orden determinista.
+
 La distribución congelada conserva tres procesos explícitos: interfaz pública,
 launcher seguro y pipeline determinista. Esto mantiene los bloqueos de LMU y de
 estabilidad también cuando Python viene incorporado. Las versiones exactas usadas

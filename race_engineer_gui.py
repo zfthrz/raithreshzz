@@ -92,7 +92,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.67"
+GUI_VERSION = "1.68"
 DEFAULT_RUNS_ROOT = generated_root() / "runs"
 STATE_REFRESH_INTERVAL_MS = 5_000
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -251,6 +251,61 @@ UI_STATE_MESSAGES = {
         "Reintentá con Ctrl+R y, si persiste, revisá Diagnóstico → Ejecución.",
     ),
 }
+SESSION_FILTER_LABELS_EN = {
+    "All": "ALL",
+    "With debrief": "DEBRIEF_READY",
+    "History only": "HISTORY_READY",
+    "Failed": "FAILED",
+}
+SESSION_CHANGE_STATUS_LABELS_EN = {
+    "REPEATED": "Still present",
+    "NEW": "New",
+    "RESOLVED": "No longer present",
+}
+
+
+def session_change_presentation_label(change: dict, language: str = "es") -> str:
+    if language != "en":
+        return str(change.get("presentation_label") or "").strip()
+    basis = str(change.get("match_basis") or "")
+    status = str(change.get("status") or "")
+    family = str(change.get("action_family") or "")
+    direction = str(change.get("coaching_direction") or "")
+    channel = {
+        "brake": "brake",
+        "throttle": "throttle",
+        "steering_magnitude": "steering",
+    }.get(str(change.get("channel") or ""), "brake/throttle")
+    if basis == "physical_action_atom":
+        labels = {
+            ("braking_point", "later"): "later braking point",
+            ("braking_point", "earlier"): "earlier braking point",
+            ("brake_release", "later"): "later brake release",
+            ("brake_release", "earlier"): "earlier brake release",
+            ("throttle_onset", "later"): "later throttle application",
+            ("throttle_onset", "earlier"): "earlier throttle application",
+            ("throttle_release", "later"): "later throttle lift",
+            ("throttle_release", "earlier"): "earlier throttle lift",
+        }
+        return labels.get((family, direction), "observed physical action")
+    templates = {
+        "reference_action_profile": {
+            "REPEATED": f"repeated {channel} pattern",
+            "NEW": f"new {channel} pattern",
+            "RESOLVED": f"{channel} pattern no longer observed",
+        },
+        "qualitative_brake_throttle_action": {
+            "REPEATED": f"repeated qualitative {channel} action",
+            "NEW": f"new qualitative {channel} action",
+            "RESOLVED": f"qualitative {channel} action no longer observed",
+        },
+        "validated_steering_action": {
+            "REPEATED": "repeated steering action",
+            "NEW": "new steering action",
+            "RESOLVED": "steering action no longer observed",
+        },
+    }
+    return templates.get(basis, {}).get(status, "observational change")
 
 UI_STATE_MESSAGES_EN = {
     "SESSION_REQUIRED": (
@@ -385,6 +440,11 @@ SESSION_SORT_LABELS = {
     "date": "Fecha",
     "track": "Circuito",
     "status": "Estado",
+}
+SESSION_SORT_LABELS_EN = {
+    "date": "Date",
+    "track": "Track",
+    "status": "Status",
 }
 
 TELEMETRY_PREFERENCE_DEFAULTS = {
@@ -616,9 +676,15 @@ def historical_steering_zone_text(zone: TrackMapZone) -> str:
     )
 
 
-def compact_session_change_rows(view, *, max_groups: int = 3, max_changes: int = 3):
+def compact_session_change_rows(
+    view,
+    *,
+    max_groups: int = 3,
+    max_changes: int = 3,
+    language: str = "es",
+):
     """Bound historical-change content for the Resumen inspector card."""
-    rows = session_change_rows(view)
+    rows = session_change_rows(view, language=language)
     compact = []
     hidden_changes = 0
     for group_index, group in enumerate(rows):
@@ -637,7 +703,7 @@ def compact_session_change_rows(view, *, max_groups: int = 3, max_changes: int =
     return compact, hidden_changes
 
 
-def session_change_rows(view):
+def session_change_rows(view, *, language: str = "es"):
     if not isinstance(view, dict) or view.get("status") != "AVAILABLE":
         return []
 
@@ -649,8 +715,13 @@ def session_change_rows(view):
         for change in group.get("changes") or []:
             if not isinstance(change, dict):
                 continue
-            label = str(change.get("presentation_label") or "").strip()
-            status_label = SESSION_CHANGE_STATUS_LABELS.get(change.get("status"))
+            label = session_change_presentation_label(change, language)
+            status_labels = (
+                SESSION_CHANGE_STATUS_LABELS_EN
+                if language == "en"
+                else SESSION_CHANGE_STATUS_LABELS
+            )
+            status_label = status_labels.get(change.get("status"))
             if not label or status_label is None:
                 continue
             changes.append({
@@ -661,7 +732,8 @@ def session_change_rows(view):
         if changes:
             rows.append({
                 "location_label": str(
-                    group.get("location_label") or "Ubicación sin etiqueta"
+                    group.get("location_label")
+                    or ui_text(language, "Ubicación sin etiqueta", "Unlabeled location")
                 ),
                 "changes": changes,
             })
@@ -698,6 +770,28 @@ SESSION_STATUS_SUMMARY = {
     "FAILED": "Fallida",
     "INCOMPLETE": "Incompleta",
 }
+SESSION_STATUS_SUMMARY_EN = {
+    "DEBRIEF_READY": "Debrief ready",
+    "DEBRIEF_UNVALIDATED": "Not validated",
+    "HISTORY_READY": "History ready",
+    "ANALYZED": "Analyzed",
+    "FAILED": "Failed",
+    "INCOMPLETE": "Incomplete",
+}
+SESSION_STATUS_DETAIL_EN = {
+    "DEBRIEF_READY": "Validated debrief",
+    "DEBRIEF_UNVALIDATED": "Debrief validation pending",
+    "HISTORY_READY": "Saved in History; debrief pending",
+    "ANALYZED": "Deterministic analysis available",
+    "FAILED": "Analysis failed",
+    "INCOMPLETE": "Incomplete run",
+}
+
+
+def session_status_detail_text(status: str, original: str, language: str = "es") -> str:
+    if language != "en":
+        return original
+    return SESSION_STATUS_DETAIL_EN.get(status, "Unknown status")
 
 
 def _open_path(path: Path) -> None:
@@ -910,7 +1004,7 @@ def plan_priority_selector_value(priorities, plan_label) -> str | None:
     return None
 
 
-def plan_item_traceability_lines(item) -> tuple[str, ...]:
+def plan_item_traceability_lines(item, *, language: str = "es") -> tuple[str, ...]:
     """Render exact provenance already attached to one validated plan item."""
     if not isinstance(item, dict):
         return ()
@@ -923,7 +1017,10 @@ def plan_item_traceability_lines(item) -> tuple[str, ...]:
         if str(value or "").strip()
     )
     if comparisons:
-        lines.append("Comparaciones: " + ", ".join(comparisons))
+        lines.append(
+            ui_text(language, "Comparaciones: ", "Comparisons: ")
+            + ", ".join(comparisons)
+        )
 
     cues = item.get("driver_cues")
     cues = cues if isinstance(cues, list) else []
@@ -942,13 +1039,25 @@ def plan_item_traceability_lines(item) -> tuple[str, ...]:
             )
             lap_parts = []
             if reference_lap is not None:
-                lap_parts.append(f"referencia vuelta {reference_lap}")
+                lap_parts.append(
+                    ui_text(
+                        language,
+                        f"referencia vuelta {reference_lap}",
+                        f"reference lap {reference_lap}",
+                    )
+                )
             if supporting_laps:
                 lap_parts.append(
-                    "apoyo " + ", ".join(f"vuelta {lap}" for lap in supporting_laps)
+                    ui_text(language, "apoyo ", "support ")
+                    + ", ".join(
+                        ui_text(language, f"vuelta {lap}", f"lap {lap}")
+                        for lap in supporting_laps
+                    )
                 )
             if lap_parts:
-                value = "Evidencia del cue: " + "; ".join(lap_parts)
+                value = ui_text(
+                    language, "Evidencia del cue: ", "Cue evidence: "
+                ) + "; ".join(lap_parts)
                 if value not in lines:
                     lines.append(value)
     return tuple(lines)
@@ -1122,19 +1231,31 @@ def session_summary_values(
     has_historical_reference: bool,
     has_historical_comparison: bool,
     status: str,
+    language: str = "es",
 ) -> tuple[str, str, str, str]:
-    historical = (
-        "Comparación lista"
-        if has_historical_comparison
-        else "Referencia disponible"
-        if has_historical_reference
-        else "Sin compatible"
-    )
+    if language == "en":
+        historical = (
+            "Comparison ready"
+            if has_historical_comparison
+            else "Reference available"
+            if has_historical_reference
+            else "No compatible session"
+        )
+        status_text = SESSION_STATUS_SUMMARY_EN.get(status, "Unknown status")
+    else:
+        historical = (
+            "Comparación lista"
+            if has_historical_comparison
+            else "Referencia disponible"
+            if has_historical_reference
+            else "Sin compatible"
+        )
+        status_text = SESSION_STATUS_SUMMARY.get(status, "Estado desconocido")
     return (
         format_lap_time(reference_time_s),
         str(max(valid_lap_count, 0)),
         historical,
-        SESSION_STATUS_SUMMARY.get(status, "Estado desconocido"),
+        status_text,
     )
 
 
@@ -2328,11 +2449,16 @@ class RaceEngineerApp:
         self.session_query_var = tk.StringVar()
         self.session_query_entry = ttk.Entry(browser, textvariable=self.session_query_var)
         self.session_query_entry.pack(fill="x", pady=(7, 6))
-        self.session_filter_var = tk.StringVar(value="Todas")
+        session_filter_labels = (
+            SESSION_FILTER_LABELS_EN
+            if self.interface_language == "en"
+            else SESSION_FILTER_LABELS
+        )
+        self.session_filter_var = tk.StringVar(value=next(iter(session_filter_labels)))
         self.session_filter_combo = ttk.Combobox(
             browser,
             textvariable=self.session_filter_var,
-            values=tuple(SESSION_FILTER_LABELS),
+            values=tuple(session_filter_labels),
             state="readonly",
         )
         self.session_filter_combo.pack(fill="x", pady=(0, 8))
@@ -4867,7 +4993,10 @@ class RaceEngineerApp:
             for cue in cue_texts:
                 lines.append(("value", f"• {cue}"))
 
-        traceability = plan_item_traceability_lines(item)
+        traceability = plan_item_traceability_lines(
+            item,
+            language=self.interface_language,
+        )
         if traceability:
             lines.append(("section", self._ui("TRAZABILIDAD", "TRACEABILITY")))
             for value in traceability:
@@ -5113,9 +5242,12 @@ class RaceEngineerApp:
             child.destroy()
 
         if self.session_change_compact:
-            rows, hidden_changes = compact_session_change_rows(view)
+            rows, hidden_changes = compact_session_change_rows(
+                view,
+                language=self.interface_language,
+            )
         else:
-            rows = session_change_rows(view)
+            rows = session_change_rows(view, language=self.interface_language)
             hidden_changes = 0
         self.session_change_title_var.set("INSPECTOR")
         self.session_change_panel.pack(
@@ -5139,8 +5271,14 @@ class RaceEngineerApp:
             ).pack(anchor="w", pady=(6, 0))
             return
 
-        comparison_title = str(
-            view.get("title") or "Cambios vs. última sesión comparable"
+        comparison_title = self._ui(
+            str(view.get("title") or "Cambios vs. última sesión comparable"),
+            "Changes vs. last comparable session"
+            + (
+                f" — {view['previous_timestamp_label']}"
+                if view.get("previous_timestamp_label")
+                else ""
+            ),
         )
         self.ttk.Label(
             self.session_change_host,
@@ -6591,7 +6729,12 @@ class RaceEngineerApp:
         )
 
     def _update_session_sort_headings(self):
-        for name, label in SESSION_SORT_LABELS.items():
+        labels = (
+            SESSION_SORT_LABELS_EN
+            if self.interface_language == "en"
+            else SESSION_SORT_LABELS
+        )
+        for name, label in labels.items():
             suffix = ""
             if name == self.session_sort_column:
                 suffix = " ▼" if self.session_sort_descending else " ▲"
@@ -6625,7 +6768,12 @@ class RaceEngineerApp:
         preferred_database: Path | None = None,
         previous_key: str | None = None,
     ):
-        status_filter = SESSION_FILTER_LABELS[self.session_filter_var.get()]
+        filter_labels = (
+            SESSION_FILTER_LABELS_EN
+            if self.interface_language == "en"
+            else SESSION_FILTER_LABELS
+        )
+        status_filter = filter_labels[self.session_filter_var.get()]
         self.sessions = filter_sessions(
             self.all_sessions,
             query=self.session_query_var.get(),
@@ -6649,7 +6797,11 @@ class RaceEngineerApp:
                     session.vehicle,
                     session.valid_lap_count,
                     format_lap_time(session.reference_time_s),
-                    session.status_detail,
+                    session_status_detail_text(
+                        session.status,
+                        session.status_detail,
+                        self.interface_language,
+                    ),
                 ),
                 tags=("row_even" if index % 2 == 0 else "row_odd", session.status),
             )
@@ -6658,8 +6810,12 @@ class RaceEngineerApp:
         for status in SESSION_STATUS_COLORS:
             self.tree.tag_configure(status, foreground=session_status_color(status))
         self.count_var.set(
-            f"{len(self.sessions)} de {len(self.all_sessions)} sesiones"
-            + (f" · {len(errors)} errores" if errors else "")
+            self._ui(
+                f"{len(self.sessions)} de {len(self.all_sessions)} sesiones"
+                + (f" · {len(errors)} errores" if errors else ""),
+                f"{len(self.sessions)} of {len(self.all_sessions)} sessions"
+                + (f" · {len(errors)} errors" if errors else ""),
+            )
         )
         footer_parts = [str(self.runs_root)]
         if errors:
@@ -6717,7 +6873,8 @@ class RaceEngineerApp:
         self.detail_subtitle.set(
             self._ui(
                 f"{record.vehicle} · {record.valid_lap_count} vueltas válidas · {record.status_detail}",
-                f"{record.vehicle} · {record.valid_lap_count} valid laps · {record.status_detail}",
+                f"{record.vehicle} · {record.valid_lap_count} valid laps · "
+                f"{session_status_detail_text(record.status, record.status_detail, 'en')}",
             )
         )
         (
@@ -6731,6 +6888,7 @@ class RaceEngineerApp:
             has_historical_reference=record.reference_selection_path is not None,
             has_historical_comparison=record.cross_session_path is not None,
             status=record.status,
+            language=self.interface_language,
         )
         self.summary_reference_var.set(reference_value)
         self.summary_laps_var.set(laps_value)
@@ -8948,7 +9106,9 @@ class RaceEngineerApp:
             self.execution_status.set("Análisis terminado correctamente")
             self._append_execution_line("\nGUI RESULT: PASS")
             self.session_query_var.set("")
-            self.session_filter_var.set("Todas")
+            self.session_filter_var.set(
+                "All" if self.interface_language == "en" else "Todas"
+            )
             self.refresh(preferred_database=database)
             self._show_primary_section("Resumen")
             messagebox.showinfo(

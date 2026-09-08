@@ -128,6 +128,11 @@ windows, checklist controls and shared empty-state actions. Debrief and cue bodi
 continue to come from their already validated artifact language. Session-change and
 catalog status labels still require code-based localization before Summary is
 declared complete.
+GUI v1.68 completes that code-based Summary pass. Historical-change labels are
+reconstructed in English from status, match-basis, action-family, direction and
+channel codes; catalog status and summary metrics likewise render from stable status
+codes. Priority traceability uses structured lap evidence. Spanish model text is not
+translated heuristically, and developer defaults remain unchanged.
 
 The frozen orchestrator routes its Python-owned stages through
 `RaceEngineerWorker.exe`. Its module allowlist contains only deterministic analysis,
@@ -246,7 +251,7 @@ D3.x deterministic-first default and D2.9 production ranker (2026-08-25).
 | Component | Current operational baseline |
 |---|---|
 | `race_engineer.py` | orchestrator v0.4 — estados nuevos usan `debrief`/`debrief_validator`; lectura legacy compatible |
-| `race_engineer_gui.py` | v1.67 — localized public shell, History and first Summary slice |
+| `race_engineer_gui.py` | v1.68 — localized public shell, History and code-based Summary |
 | `analyze_telemetry.py` | v3.8 + Objective Python v6 |
 | Brake point | 2.1 / schema 2.1 |
 | Throttle point | 1.2.1 / schema 1.2 |

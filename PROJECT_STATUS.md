@@ -1,5 +1,16 @@
 # Project Status
 
+## Public interface localization R3c.3b — 2026-09-08
+
+- Summary historical changes are now reconstructed in English from their stable
+  status, match-basis, action-family, direction and channel fields.
+- Catalog status detail, Summary status metrics, filters, sort headings, counts and
+  priority traceability now use the active public language.
+- No replacement-based translation is applied to model data. Spanish behavior and
+  the underlying deterministic change tracking remain unchanged.
+- The remaining R3c work is Telemetry, main-window History/Statistics, dialogs and
+  the final residual-string audit.
+
 ## Public interface localization R3c.3a — 2026-09-08
 
 - Localized Summary dashboard headings/previews, next-stint cards and empty states,

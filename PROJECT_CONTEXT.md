@@ -118,6 +118,10 @@ section identifiers remain the existing stable Spanish keys, while navigation,
 workspace headings and initial shell controls resolve to Español or English from
 the existing language preference. This is the first R3c slice, not completion of
 the residual-string gate.
+GUI v1.66 passes the active public language into the separate read-only History
+browser. Its search, columns, counts, empty states, session detail, lap flags and
+source labels now have complete Español/English presentation. Existing callers
+default to Spanish and the History model/database remain unchanged.
 
 The frozen orchestrator routes its Python-owned stages through
 `RaceEngineerWorker.exe`. Its module allowlist contains only deterministic analysis,
@@ -236,7 +240,7 @@ D3.x deterministic-first default and D2.9 production ranker (2026-08-25).
 | Component | Current operational baseline |
 |---|---|
 | `race_engineer.py` | orchestrator v0.4 — estados nuevos usan `debrief`/`debrief_validator`; lectura legacy compatible |
-| `race_engineer_gui.py` | v1.65 — stable-key public UI localization foundation |
+| `race_engineer_gui.py` | v1.66 — localized public shell and read-only History browser |
 | `analyze_telemetry.py` | v3.8 + Objective Python v6 |
 | Brake point | 2.1 / schema 2.1 |
 | Throttle point | 1.2.1 / schema 1.2 |

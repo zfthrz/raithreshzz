@@ -92,7 +92,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.65"
+GUI_VERSION = "1.66"
 DEFAULT_RUNS_ROOT = generated_root() / "runs"
 STATE_REFRESH_INTERVAL_MS = 5_000
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -8680,6 +8680,7 @@ class RaceEngineerApp:
             self.root,
             history_db_default_path(),
             preferred_database=preferred,
+            language=self.interface_language,
         )
 
     def _choose_analysis_file(self):

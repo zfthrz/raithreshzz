@@ -408,6 +408,12 @@ disponibles y que faltarán los nombres de curvas, sin mostrar nombres de etapas
 perfiles ni estados de calibración. La interfaz de desarrollo conserva el diagnóstico
 técnico completo.
 
+GUI v1.65–v1.66 inicia R3c: la preferencia inglesa ya alcanza la navegación y la
+estructura principal de la interfaz pública, y la ventana de History queda traducida
+por completo, incluidos sus estados y detalles dinámicos. Las cuatro áreas de
+contenido principales y sus diálogos continúan en migración hasta superar la
+auditoría final de textos residuales.
+
 La distribución congelada conserva tres procesos explícitos: interfaz pública,
 launcher seguro y pipeline determinista. Esto mantiene los bloqueos de LMU y de
 estabilidad también cuando Python viene incorporado. Las versiones exactas usadas

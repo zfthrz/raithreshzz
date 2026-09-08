@@ -11,23 +11,33 @@ from race_engineer_history_model import (
     load_history_sessions,
 )
 from race_engineer_ui_model import format_lap_time, format_timestamp
+from public_ui_locale import ui_text
 
 
-def _flag_text(lap) -> str:
+def _flag_text(lap, language: str = "es") -> str:
     flags = []
     if lap.is_reference:
-        flags.append("REFERENCIA")
+        flags.append(ui_text(language, "REFERENCIA", "REFERENCE"))
     if lap.is_valid:
-        flags.append("válida")
+        flags.append(ui_text(language, "válida", "valid"))
     if lap.is_discarded:
-        flags.append("descartada")
+        flags.append(ui_text(language, "descartada", "discarded"))
     if lap.is_ignored_initial:
-        flags.append("inicial ignorada")
-    return ", ".join(flags) or "sin clasificación"
+        flags.append(ui_text(language, "inicial ignorada", "ignored initial lap"))
+    return ", ".join(flags) or ui_text(
+        language, "sin clasificación", "unclassified"
+    )
 
 
 class HistoryBrowser:
-    def __init__(self, parent, database_path: Path, preferred_database: Path | None = None):
+    def __init__(
+        self,
+        parent,
+        database_path: Path,
+        preferred_database: Path | None = None,
+        *,
+        language: str = "es",
+    ):
         import tkinter as tk
         from tkinter import ttk
 
@@ -35,6 +45,7 @@ class HistoryBrowser:
         self.ttk = ttk
         self.database_path = Path(database_path).resolve()
         self.preferred_database = preferred_database
+        self.language = language
         self.sessions: list[HistorySession] = []
         self.filtered: list[HistorySession] = []
 
@@ -50,7 +61,11 @@ class HistoryBrowser:
         self.query = tk.StringVar()
         search = ttk.Entry(header, textvariable=self.query, width=38)
         search.pack(side="right", padx=(8, 0))
-        ttk.Label(header, text="Buscar:", style="Subtitle.TLabel").pack(side="right")
+        ttk.Label(
+            header,
+            text=ui_text(language, "Buscar:", "Search:"),
+            style="Subtitle.TLabel",
+        ).pack(side="right")
         self.query.trace_add("write", lambda *_: self._apply_filter())
 
         body = ttk.Panedwindow(self.window, orient="horizontal")
@@ -60,13 +75,19 @@ class HistoryBrowser:
         body.add(left, weight=7)
         body.add(right, weight=5)
 
-        self.count = tk.StringVar(value="Leyendo History…")
+        self.count = tk.StringVar(
+            value=ui_text(language, "Leyendo History…", "Loading History…")
+        )
         ttk.Label(left, textvariable=self.count, style="Metric.TLabel").pack(anchor="w", pady=(0, 8))
         columns = ("id", "date", "track", "vehicle", "laps", "reference")
         self.tree = ttk.Treeview(left, columns=columns, show="headings", selectmode="browse")
         labels = {
-            "id": "ID", "date": "Fecha", "track": "Circuito",
-            "vehicle": "Vehículo", "laps": "Válidas", "reference": "Referencia",
+            "id": "ID",
+            "date": ui_text(language, "Fecha", "Date"),
+            "track": ui_text(language, "Circuito", "Track"),
+            "vehicle": ui_text(language, "Vehículo", "Vehicle"),
+            "laps": ui_text(language, "Válidas", "Valid"),
+            "reference": ui_text(language, "Referencia", "Reference"),
         }
         widths = {"id": 48, "date": 120, "track": 210, "vehicle": 210, "laps": 60, "reference": 90}
         for name in columns:
@@ -78,7 +99,13 @@ class HistoryBrowser:
         self.tree.pack(fill="both", expand=True)
         self.tree.bind("<<TreeviewSelect>>", self._on_select)
 
-        self.title = tk.StringVar(value="Seleccioná una sesión histórica")
+        self.title = tk.StringVar(
+            value=ui_text(
+                language,
+                "Seleccioná una sesión histórica",
+                "Select a historical session",
+            )
+        )
         ttk.Label(right, textvariable=self.title, style="Metric.TLabel").pack(anchor="w", pady=(0, 8))
         self.detail = tk.Text(
             right, wrap="word", background="#15181c", foreground="#dce7ef",
@@ -136,7 +163,13 @@ class HistoryBrowser:
             )
         self.tree.tag_configure("row_even", background="#171717")
         self.tree.tag_configure("row_odd", background="#1b1f23")
-        self.count.set(f"{len(self.filtered)} de {len(self.sessions)} sesiones")
+        self.count.set(
+            ui_text(
+                self.language,
+                f"{len(self.filtered)} de {len(self.sessions)} sesiones",
+                f"{len(self.filtered)} of {len(self.sessions)} sessions",
+            )
+        )
         target = self._preferred_index()
         if target is None and self.filtered:
             target = 0
@@ -147,7 +180,13 @@ class HistoryBrowser:
             self.tree.see(iid)
             self._show(self.filtered[target])
         else:
-            self.title.set("Sin sesiones para este filtro")
+            self.title.set(
+                ui_text(
+                    self.language,
+                    "Sin sesiones para este filtro",
+                    "No sessions match this filter",
+                )
+            )
             self._set_detail("")
 
     def _preferred_index(self) -> int | None:
@@ -179,23 +218,75 @@ class HistoryBrowser:
             messagebox.showerror("Race Engineer — History", str(exc), parent=self.window)
             return
         self.title.set(f"History #{session.session_id} · {session.track}")
+        timestamp = format_timestamp(session.timestamp_utc, 0)
+        reference_time = format_lap_time(session.reference_time_s)
+        reference_lap = session.reference_lap or "—"
         lines = [
-            f"Fecha: {format_timestamp(session.timestamp_utc, 0)}",
-            f"Contexto: {session.track} / {session.track_layout}",
-            f"Vehículo: {session.vehicle_variant} / {session.car_name}",
-            f"Sesión: {session.session_type} / clima: {session.weather}",
-            f"Referencia: vuelta {session.reference_lap or '—'} / {format_lap_time(session.reference_time_s)}",
-            f"Vueltas válidas: {session.valid_lap_count} / comparaciones: {session.comparison_count}",
+            ui_text(self.language, f"Fecha: {timestamp}", f"Date: {timestamp}"),
+            ui_text(
+                self.language,
+                f"Contexto: {session.track} / {session.track_layout}",
+                f"Context: {session.track} / {session.track_layout}",
+            ),
+            ui_text(
+                self.language,
+                f"Vehículo: {session.vehicle_variant} / {session.car_name}",
+                f"Vehicle: {session.vehicle_variant} / {session.car_name}",
+            ),
+            ui_text(
+                self.language,
+                f"Sesión: {session.session_type} / clima: {session.weather}",
+                f"Session: {session.session_type} / weather: {session.weather}",
+            ),
+            ui_text(
+                self.language,
+                f"Referencia: vuelta {reference_lap} / {reference_time}",
+                f"Reference: lap {reference_lap} / {reference_time}",
+            ),
+            ui_text(
+                self.language,
+                f"Vueltas válidas: {session.valid_lap_count} / comparaciones: {session.comparison_count}",
+                f"Valid laps: {session.valid_lap_count} / comparisons: {session.comparison_count}",
+            ),
             "",
-            "Vueltas almacenadas:",
+            ui_text(self.language, "Vueltas almacenadas:", "Stored laps:"),
         ]
         for lap in detail.laps:
             lines.append(
-                f"  Vuelta {lap.lap}: {format_lap_time(lap.duration_s)} · {_flag_text(lap)}"
+                ui_text(
+                    self.language,
+                    f"  Vuelta {lap.lap}: {format_lap_time(lap.duration_s)} · {_flag_text(lap, self.language)}",
+                    f"  Lap {lap.lap}: {format_lap_time(lap.duration_s)} · {_flag_text(lap, self.language)}",
+                )
             )
-        lines.extend(("", f"Análisis fuente: {session.source_json_path or '—'}", f"DuckDB fuente: {session.source_database_path or '—'}"))
+        lines.extend(
+            (
+                "",
+                ui_text(
+                    self.language,
+                    f"Análisis fuente: {session.source_json_path or '—'}",
+                    f"Source analysis: {session.source_json_path or '—'}",
+                ),
+                ui_text(
+                    self.language,
+                    f"DuckDB fuente: {session.source_database_path or '—'}",
+                    f"Source DuckDB: {session.source_database_path or '—'}",
+                ),
+            )
+        )
         self._set_detail("\n".join(lines))
 
 
-def open_history_browser(parent, database_path: Path, preferred_database: Path | None = None):
-    return HistoryBrowser(parent, database_path, preferred_database)
+def open_history_browser(
+    parent,
+    database_path: Path,
+    preferred_database: Path | None = None,
+    *,
+    language: str = "es",
+):
+    return HistoryBrowser(
+        parent,
+        database_path,
+        preferred_database,
+        language=language,
+    )

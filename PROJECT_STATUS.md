@@ -1,5 +1,14 @@
 # Project Status
 
+## Public interface localization R3c.2 — 2026-09-07
+
+- The read-only History browser now receives the active public application language.
+- Search, table headings, loading/count/empty states, session details, lap flags and
+  source labels are available in complete Español and English variants.
+- Existing callers retain Spanish by default. No History query, database field,
+  stored value or artifact changed.
+- R3c remains open for the four main workspace contents, dynamic states and dialogs.
+
 ## Public interface localization R3c.1 — 2026-09-07
 
 - Added a presentation-only locale layer over stable internal section identifiers.

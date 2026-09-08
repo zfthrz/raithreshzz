@@ -1,5 +1,16 @@
 # Project Status
 
+## Public interface localization R3c.3a — 2026-09-08
+
+- Localized Summary dashboard headings/previews, next-stint cards and empty states,
+  priority inspector headings, full debrief, Actions-only, lap reader and checklist
+  feedback.
+- Shared public empty states now have explicit English title/action pairs without
+  pointing users to hidden developer diagnostics.
+- Validated debrief and cue bodies still render from their stored artifact language.
+- Summary remains open for code-based session-change and catalog-status labels; these
+  will not be translated with brittle string replacement.
+
 ## Public interface localization R3c.2 — 2026-09-07
 
 - The read-only History browser now receives the active public application language.

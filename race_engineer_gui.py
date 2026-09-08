@@ -92,7 +92,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.66"
+GUI_VERSION = "1.67"
 DEFAULT_RUNS_ROOT = generated_root() / "runs"
 STATE_REFRESH_INTERVAL_MS = 5_000
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -252,9 +252,51 @@ UI_STATE_MESSAGES = {
     ),
 }
 
+UI_STATE_MESSAGES_EN = {
+    "SESSION_REQUIRED": (
+        "No session is selected.",
+        "Select a catalog session or run a new analysis.",
+    ),
+    "DEBRIEF_UNAVAILABLE": (
+        "No debrief is available.",
+        "Analyze the session again to generate one.",
+    ),
+    "LAPS_UNAVAILABLE": (
+        "No lap analysis is available.",
+        "Analyze the session again to generate it.",
+    ),
+    "HISTORY_UNAVAILABLE": (
+        "No compatible historical reference is available.",
+        "Analyze more sessions with the same track, layout, vehicle, and car.",
+    ),
+    "COMPARISON_UNAVAILABLE": (
+        "No validated historical comparison is available.",
+        "A compatible historical reference is required first.",
+    ),
+    "STATISTICS_EMPTY": (
+        "History does not contain statistics yet.",
+        "Analyze a valid session to add it to History.",
+    ),
+    "PIPELINE_UNAVAILABLE": (
+        "No pipeline diagnostics are available.",
+        "Select a session to review its stages and warnings.",
+    ),
+    "LOAD_FAILED": (
+        "The information could not be loaded.",
+        "Try Ctrl+R and retry if the problem persists.",
+    ),
+}
 
-def ui_state_message(code: str, *, detail: str | None = None, compact: bool = False) -> str:
-    title, action = UI_STATE_MESSAGES[code]
+
+def ui_state_message(
+    code: str,
+    *,
+    detail: str | None = None,
+    compact: bool = False,
+    language: str = "es",
+) -> str:
+    messages = UI_STATE_MESSAGES_EN if language == "en" else UI_STATE_MESSAGES
+    title, action = messages[code]
     if detail:
         title = f"{title} {detail}"
     separator = " · " if compact else "\n\n"
@@ -2172,6 +2214,14 @@ class RaceEngineerApp:
     def _ui(self, spanish: str, english: str) -> str:
         return ui_text(self.interface_language, spanish, english)
 
+    def _state(self, code: str, *, detail: str | None = None, compact: bool = False) -> str:
+        return ui_state_message(
+            code,
+            detail=detail,
+            compact=compact,
+            language=self.interface_language,
+        )
+
     def _section_label(self, section: str) -> str:
         if not self.public_release:
             return section
@@ -2545,7 +2595,9 @@ class RaceEngineerApp:
         self.debrief_text = self._summary_text_panel(
             debrief_column,
             "DEBRIEF",
-            subtitle="Síntesis ejecutiva de la sesión",
+            subtitle=self._ui(
+                "Síntesis ejecutiva de la sesión", "Executive session summary"
+            ),
             height=12,
             expand=True,
             compact=True,
@@ -2555,13 +2607,13 @@ class RaceEngineerApp:
         debrief_actions.pack(fill="x", pady=(7, 0))
         self.ttk.Button(
             debrief_actions,
-            text="Solo acciones  →",
+            text=self._ui("Solo acciones  →", "Actions only  →"),
             style="Link.TButton",
             command=self._show_action_debrief,
         ).pack(side="left")
         self.ttk.Button(
             debrief_actions,
-            text="Ver debrief completo  →",
+            text=self._ui("Ver debrief completo  →", "View full debrief  →"),
             style="Link.TButton",
             command=self._show_full_debrief,
         ).pack(side="right")
@@ -2573,8 +2625,10 @@ class RaceEngineerApp:
 
         self.laps_text = self._summary_text_panel(
             laps_column,
-            "VUELTAS CLAVE",
-            subtitle="Referencia, ritmo y consistencia",
+            self._ui("VUELTAS CLAVE", "KEY LAPS"),
+            subtitle=self._ui(
+                "Referencia, ritmo y consistencia", "Reference, pace, and consistency"
+            ),
             height=12,
             expand=True,
             compact=True,
@@ -2583,7 +2637,7 @@ class RaceEngineerApp:
         self.current_laps_text = ""
         self.ttk.Button(
             self.laps_panel,
-            text="Ver vueltas  →",
+            text=self._ui("Ver vueltas  →", "View laps  →"),
             style="Link.TButton",
             command=self._show_full_laps,
         ).pack(anchor="e", pady=(7, 0))
@@ -2614,8 +2668,11 @@ class RaceEngineerApp:
 
         map_preview = self._build_summary_visual_card(
             visual_row,
-            title="MAPA DEL CIRCUITO",
-            subtitle="Zonas, prioridades y contexto espacial",
+            title=self._ui("MAPA DEL CIRCUITO", "TRACK MAP"),
+            subtitle=self._ui(
+                "Zonas, prioridades y contexto espacial",
+                "Zones, priorities, and spatial context",
+            ),
             column=0,
             padx=(0, 5),
         )
@@ -2631,8 +2688,11 @@ class RaceEngineerApp:
 
         telemetry_preview = self._build_summary_visual_card(
             visual_row,
-            title="TELEMETRÍA COMPARADA",
-            subtitle="Velocidad, acelerador y freno · vista rápida",
+            title=self._ui("TELEMETRÍA COMPARADA", "TELEMETRY COMPARISON"),
+            subtitle=self._ui(
+                "Velocidad, acelerador y freno · vista rápida",
+                "Speed, throttle, and brake · quick view",
+            ),
             column=1,
             padx=(5, 0),
         )
@@ -4692,7 +4752,7 @@ class RaceEngineerApp:
         title = str(
             location.get("label")
             or item.get("description")
-            or f"Prioridad {index}"
+            or self._ui(f"Prioridad {index}", f"Priority {index}")
         )
 
         label = str(item.get("plan_label") or index)
@@ -4700,13 +4760,13 @@ class RaceEngineerApp:
 
         self.inspector_title_var.set(title)
 
-        meta_parts = [f"P{index} · Zona {label}"]
+        meta_parts = [self._ui(f"P{index} · Zona {label}", f"P{index} · Zone {label}")]
 
         if focused:
             meta_parts.append("FOCUS")
 
         if kind == "repeated_region":
-            meta_parts.append("PATRÓN REPETIDO")
+            meta_parts.append(self._ui("PATRÓN REPETIDO", "REPEATED PATTERN"))
         else:
             meta_parts.append(kind.replace("_", " ").upper())
 
@@ -4727,13 +4787,13 @@ class RaceEngineerApp:
         lines = []
 
         if isinstance(start, (int, float)) or isinstance(end, (int, float)):
-            lines.append(("section", "UBICACIÓN"))
+            lines.append(("section", self._ui("UBICACIÓN", "LOCATION")))
             if isinstance(start, (int, float)) and isinstance(end, (int, float)):
                 lines.append(("value", f"{start:.0f}–{end:.0f} m"))
             elif isinstance(start, (int, float)):
-                lines.append(("value", f"Desde {start:.0f} m"))
+                lines.append(("value", self._ui(f"Desde {start:.0f} m", f"From {start:.0f} m")))
             else:
-                lines.append(("value", f"Hasta {end:.0f} m"))
+                lines.append(("value", self._ui(f"Hasta {end:.0f} m", f"Up to {end:.0f} m")))
 
         priority_reason = item.get("priority_reason")
         if not isinstance(priority_reason, dict):
@@ -4742,26 +4802,29 @@ class RaceEngineerApp:
         comparison_count = priority_reason.get("comparison_count")
 
         if isinstance(comparison_count, int) and comparison_count > 0:
-            lines.append(("section", "POR QUÉ ES PRIORIDAD"))
+            lines.append(("section", self._ui("POR QUÉ ES PRIORIDAD", "WHY IT IS A PRIORITY")))
             provenance = []
 
             if priority_reason.get("repeated") is True:
-                provenance.append("Patrón repetido")
+                provenance.append(self._ui("Patrón repetido", "Repeated pattern"))
 
             if comparison_count == 1:
-                provenance.append("1 comparación válida")
+                provenance.append(self._ui("1 comparación válida", "1 valid comparison"))
             else:
-                provenance.append(f"{comparison_count} comparaciones válidas")
+                provenance.append(self._ui(
+                    f"{comparison_count} comparaciones válidas",
+                    f"{comparison_count} valid comparisons",
+                ))
 
             physical_anchor_types = priority_reason.get("physical_anchor_types")
             if not isinstance(physical_anchor_types, list):
                 physical_anchor_types = []
 
             anchor_labels = {
-                "braking_point": "punto de frenada",
-                "brake_release": "liberación de freno",
-                "throttle_onset": "inicio de acelerador",
-                "throttle_release": "levantada de acelerador",
+                "braking_point": self._ui("punto de frenada", "braking point"),
+                "brake_release": self._ui("liberación de freno", "brake release"),
+                "throttle_onset": self._ui("inicio de acelerador", "throttle onset"),
+                "throttle_release": self._ui("levantada de acelerador", "throttle release"),
             }
 
             rendered_anchors = [
@@ -4772,7 +4835,8 @@ class RaceEngineerApp:
 
             if rendered_anchors:
                 provenance.append(
-                    "Anchor físico: " + ", ".join(rendered_anchors)
+                    self._ui("Referencia física: ", "Physical anchor: ")
+                    + ", ".join(rendered_anchors)
                 )
 
             for value in provenance:
@@ -4805,7 +4869,7 @@ class RaceEngineerApp:
 
         traceability = plan_item_traceability_lines(item)
         if traceability:
-            lines.append(("section", "TRAZABILIDAD"))
+            lines.append(("section", self._ui("TRAZABILIDAD", "TRACEABILITY")))
             for value in traceability:
                 lines.append(("value", f"• {value}"))
 
@@ -4827,7 +4891,7 @@ class RaceEngineerApp:
                 all_targets.append(value)
 
         if all_targets:
-            lines.append(("section", "TARGETS AUTORIZADOS"))
+            lines.append(("section", self._ui("TARGETS AUTORIZADOS", "AUTHORIZED TARGETS")))
             for target in all_targets:
                 lines.append(("value", f"• {target}"))
 
@@ -4842,7 +4906,7 @@ class RaceEngineerApp:
         ]
 
         if observations:
-            lines.append(("section", "OBSERVADO"))
+            lines.append(("section", self._ui("OBSERVADO", "OBSERVED")))
             for value in observations[:4]:
                 lines.append(("value", f"• {value}"))
 
@@ -4851,12 +4915,12 @@ class RaceEngineerApp:
             physical_anchor_types = []
 
         if physical_anchor_types:
-            lines.append(("section", "PATRONES FÍSICOS"))
+            lines.append(("section", self._ui("PATRONES FÍSICOS", "PHYSICAL PATTERNS")))
             anchor_labels = {
-                "braking_point": "Punto de frenada",
-                "brake_release": "Liberación de freno",
-                "throttle_onset": "Inicio de acelerador",
-                "throttle_release": "Levantada de acelerador",
+                "braking_point": self._ui("Punto de frenada", "Braking point"),
+                "brake_release": self._ui("Liberación de freno", "Brake release"),
+                "throttle_onset": self._ui("Inicio de acelerador", "Throttle onset"),
+                "throttle_release": self._ui("Levantada de acelerador", "Throttle release"),
             }
             for value in physical_anchor_types:
                 label_text = anchor_labels.get(value)
@@ -4870,21 +4934,33 @@ class RaceEngineerApp:
             lines.append(
                 (
                     "value",
-                    f"{actionable_count} cue autorizado"
+                    self._ui(
+                        f"{actionable_count} cue autorizado",
+                        f"{actionable_count} authorized cue",
+                    )
                     if actionable_count == 1
-                    else f"{actionable_count} cues autorizados",
+                    else self._ui(
+                        f"{actionable_count} cues autorizados",
+                        f"{actionable_count} authorized cues",
+                    ),
                 )
             )
 
         profiles = item.get("reference_action_profiles")
         if isinstance(profiles, list) and profiles:
-            lines.append(("section", "REFERENCIA"))
+            lines.append(("section", self._ui("REFERENCIA", "REFERENCE")))
             lines.append(
                 (
                     "value",
-                    f"{len(profiles)} perfil de acción de referencia"
+                    self._ui(
+                        f"{len(profiles)} perfil de acción de referencia",
+                        f"{len(profiles)} reference action profile",
+                    )
                     if len(profiles) == 1
-                    else f"{len(profiles)} perfiles de acción de referencia",
+                    else self._ui(
+                        f"{len(profiles)} perfiles de acción de referencia",
+                        f"{len(profiles)} reference action profiles",
+                    ),
                 )
             )
 
@@ -4892,7 +4968,10 @@ class RaceEngineerApp:
             lines.append(
                 (
                     "value",
-                    "No hay metadata adicional para esta prioridad.",
+                    self._ui(
+                        "No hay metadata adicional para esta prioridad.",
+                        "No additional metadata is available for this priority.",
+                    ),
                 )
             )
 
@@ -4933,13 +5012,16 @@ class RaceEngineerApp:
 
         self.ttk.Label(
             container,
-            text="PRÓXIMA TANDA",
+            text=self._ui("PRÓXIMA TANDA", "NEXT STINT"),
             style="SummaryAccentTitle.TLabel",
         ).pack(anchor="w")
 
         self.ttk.Label(
             container,
-            text="Qué llevar a pista en el próximo stint",
+            text=self._ui(
+                "Qué llevar a pista en el próximo stint",
+                "What to take onto the track in the next stint",
+            ),
             style="SummaryAccentSubtitle.TLabel",
         ).pack(anchor="w", pady=(2, 10))
 
@@ -4971,9 +5053,12 @@ class RaceEngineerApp:
         self.ttk.Label(
             container,
             text=(
-                "Cambios vs. sesión comparable"
+                self._ui("Cambios vs. sesión comparable", "Changes vs. comparable session")
                 if compact
-                else "Contexto histórico de la sesión seleccionada"
+                else self._ui(
+                    "Contexto histórico de la sesión seleccionada",
+                    "Historical context for the selected session",
+                )
             ),
             style="SummarySubtitle.TLabel",
             wraplength=250 if compact else 760,
@@ -5041,10 +5126,12 @@ class RaceEngineerApp:
         if not rows:
             self.ttk.Label(
                 self.session_change_host,
-                text=(
+                text=self._ui(
                     "Seleccioná una prioridad para abrir su detalle.\n\n"
                     "No hay una comparación histórica contextual disponible "
-                    "para esta sesión."
+                    "para esta sesión.",
+                    "Select a priority to open its details.\n\n"
+                    "No contextual historical comparison is available for this session.",
                 ),
                 style="SummarySubtitle.TLabel",
                 wraplength=230 if self.session_change_compact else 760,
@@ -5098,7 +5185,10 @@ class RaceEngineerApp:
         if hidden_changes:
             self.ttk.Label(
                 self.session_change_host,
-                text=f"+ {hidden_changes} cambios más en Historial",
+                text=self._ui(
+                    f"+ {hidden_changes} cambios más en Historial",
+                    f"+ {hidden_changes} more changes in History",
+                ),
                 style="SummaryAccentSubtitle.TLabel",
                 justify="left",
             ).pack(anchor="w", pady=(9, 2))
@@ -5187,7 +5277,11 @@ class RaceEngineerApp:
         if not items:
             self.ttk.Label(
                 self.plan_cards_host,
-                text=detail.plan_text or "No hay un plan de próxima tanda disponible.",
+                text=detail.plan_text
+                or self._ui(
+                    "No hay un plan de próxima tanda disponible.",
+                    "No next-stint plan is available.",
+                ),
                 style="SummaryAccentSubtitle.TLabel",
                 wraplength=760,
                 justify="left",
@@ -5206,7 +5300,7 @@ class RaceEngineerApp:
             title = str(
                 location.get("label")
                 or item.get("description")
-                or "Zona sin nombre"
+                or self._ui("Zona sin nombre", "Unnamed zone")
             )
 
             card = self.ttk.Frame(
@@ -5272,7 +5366,7 @@ class RaceEngineerApp:
 
             detail_button = self.ttk.Button(
                 top,
-                text="Detalle  →",
+                text=self._ui("Detalle  →", "Details  →"),
                 style="Link.TButton",
                 command=open_inspector,
             )
@@ -5300,7 +5394,12 @@ class RaceEngineerApp:
                     cue_texts.append(value)
 
             if not cue_texts:
-                cue_texts = ["Sin cue de conducción autorizado."]
+                cue_texts = [
+                    self._ui(
+                        "Sin cue de conducción autorizado.",
+                        "No authorized driving cue is available.",
+                    )
+                ]
 
             cue_labels = []
             for cue in cue_texts:
@@ -5994,7 +6093,10 @@ class RaceEngineerApp:
         header.pack(fill="x", pady=(0, 10))
         self.ttk.Label(header, text=title, style="Title.TLabel").pack(side="left")
         if copy_value is not None:
-            copy_button = self.ttk.Button(header, text="Copiar checklist")
+            copy_button = self.ttk.Button(
+                header,
+                text=self._ui("Copiar checklist", "Copy checklist"),
+            )
             copy_button.configure(
                 command=lambda: self._copy_debrief_checklist(copy_value, copy_button)
             )
@@ -6054,29 +6156,34 @@ class RaceEngineerApp:
         self.root.clipboard_clear()
         self.root.clipboard_append(value)
         self.root.update_idletasks()
-        button.configure(text="Copiado ✓", state="disabled")
+        button.configure(
+            text=self._ui("Copiado ✓", "Copied ✓"),
+            state="disabled",
+        )
         self.root.after(
             1600,
             lambda: self._restore_debrief_copy_button(button),
         )
 
-    @staticmethod
-    def _restore_debrief_copy_button(button):
+    def _restore_debrief_copy_button(self, button):
         if button.winfo_exists():
-            button.configure(text="Copiar checklist", state="normal")
+            button.configure(
+                text=self._ui("Copiar checklist", "Copy checklist"),
+                state="normal",
+            )
 
     def _show_full_debrief(self):
         self._show_dashboard_text_detail(
-            "Debrief completo",
-            self.current_debrief_markdown or ui_state_message("DEBRIEF_UNAVAILABLE"),
+            self._ui("Debrief completo", "Full debrief"),
+            self.current_debrief_markdown or self._state("DEBRIEF_UNAVAILABLE"),
             markdown=True,
         )
 
     def _show_action_debrief(self):
-        source = self.current_debrief_markdown or ui_state_message("DEBRIEF_UNAVAILABLE")
+        source = self.current_debrief_markdown or self._state("DEBRIEF_UNAVAILABLE")
         checklist = action_only_debrief_markdown(source) or source
         self._show_dashboard_text_detail(
-            "Debrief · Solo acciones",
+            self._ui("Debrief · Solo acciones", "Debrief · Actions only"),
             checklist,
             markdown=True,
             copy_value=checklist,
@@ -6084,8 +6191,8 @@ class RaceEngineerApp:
 
     def _show_full_laps(self):
         self._show_dashboard_text_detail(
-            "Análisis de vueltas",
-            self.current_laps_text or ui_state_message("LAPS_UNAVAILABLE"),
+            self._ui("Análisis de vueltas", "Lap analysis"),
+            self.current_laps_text or self._state("LAPS_UNAVAILABLE"),
         )
 
     def _set_text(
@@ -6608,7 +6715,10 @@ class RaceEngineerApp:
         detail: SessionDetail = load_session_detail(record)
         self.detail_title.set(f"{record.track} · {format_lap_time(record.reference_time_s)}")
         self.detail_subtitle.set(
-            f"{record.vehicle} · {record.valid_lap_count} vueltas válidas · {record.status_detail}"
+            self._ui(
+                f"{record.vehicle} · {record.valid_lap_count} vueltas válidas · {record.status_detail}",
+                f"{record.vehicle} · {record.valid_lap_count} valid laps · {record.status_detail}",
+            )
         )
         (
             reference_value,
@@ -6651,8 +6761,10 @@ class RaceEngineerApp:
         self.open_button.configure(state="normal")
 
     def _clear_detail(self):
-        self.detail_title.set("No hay sesiones disponibles")
-        self.detail_subtitle.set(ui_state_message("SESSION_REQUIRED", compact=True))
+        self.detail_title.set(
+            self._ui("No hay sesiones disponibles", "No sessions available")
+        )
+        self.detail_subtitle.set(self._state("SESSION_REQUIRED", compact=True))
         self.summary_reference_var.set("—")
         self.summary_laps_var.set("—")
         self.summary_history_var.set("—")
@@ -6661,12 +6773,12 @@ class RaceEngineerApp:
         self.current_laps_text = ""
         self._cancel_session_change_request()
         self._render_session_changes({"status": "UNAVAILABLE"})
-        self._set_text(self.debrief_text, ui_state_message("DEBRIEF_UNAVAILABLE"))
-        self._set_text(self.laps_text, ui_state_message("LAPS_UNAVAILABLE"))
-        self._set_text(self.historical_reference_text, ui_state_message("HISTORY_UNAVAILABLE"))
+        self._set_text(self.debrief_text, self._state("DEBRIEF_UNAVAILABLE"))
+        self._set_text(self.laps_text, self._state("LAPS_UNAVAILABLE"))
+        self._set_text(self.historical_reference_text, self._state("HISTORY_UNAVAILABLE"))
         if not getattr(self, "public_release", False):
             self._set_text(self.pipeline_text, ui_state_message("PIPELINE_UNAVAILABLE"))
-        comparison_state = ui_state_message("COMPARISON_UNAVAILABLE")
+        comparison_state = self._state("COMPARISON_UNAVAILABLE")
         self.comparison_summary_var.set(comparison_state.replace("\n\n", " · "))
         self._set_text(self.comparison_hist_text, comparison_state)
         self._set_text(self.comparison_current_text, comparison_state)

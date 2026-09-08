@@ -354,15 +354,15 @@ def test_summary_exposes_action_only_and_complete_debrief_readers():
     detail_source = inspect.getsource(RaceEngineerApp._show_dashboard_text_detail)
     copy_source = inspect.getsource(RaceEngineerApp._copy_debrief_checklist)
 
-    assert 'text="Solo acciones  →"' in build_source
+    assert 'self._ui("Solo acciones  →", "Actions only  →")' in build_source
     assert "command=self._show_action_debrief" in build_source
-    assert 'text="Ver debrief completo  →"' in build_source
+    assert 'self._ui("Ver debrief completo  →", "View full debrief  →")' in build_source
     assert "checklist = action_only_debrief_markdown(source) or source" in action_source
     assert "copy_value=checklist" in action_source
-    assert 'text="Copiar checklist"' in detail_source
+    assert 'self._ui("Copiar checklist", "Copy checklist")' in detail_source
     assert "self._copy_debrief_checklist(copy_value, copy_button)" in detail_source
     assert "clipboard_append(value)" in copy_source
-    assert 'text="Copiado ✓"' in copy_source
+    assert 'self._ui("Copiado ✓", "Copied ✓")' in copy_source
     assert "self._restore_debrief_copy_button(button)" in copy_source
 
 
@@ -422,7 +422,7 @@ def test_plan_priority_trace_resolves_exact_validated_telemetry_selector():
 def test_next_stint_cards_expose_an_explicit_inspector_action():
     source = inspect.getsource(RaceEngineerApp._render_next_stint_cards)
 
-    assert 'text="Detalle  →"' in source
+    assert 'self._ui("Detalle  →", "Details  →")' in source
     assert "command=open_inspector" in source
     assert 'detail_button.grid(row=0, column=3, sticky="ne")' in source
 
@@ -607,10 +607,10 @@ def test_standard_summary_splits_cards_and_visuals_evenly():
 
 def test_clear_detail_populates_actionable_workspace_states():
     clear_source = inspect.getsource(RaceEngineerApp._clear_detail)
-    assert 'ui_state_message("DEBRIEF_UNAVAILABLE")' in clear_source
-    assert 'ui_state_message("LAPS_UNAVAILABLE")' in clear_source
-    assert 'ui_state_message("HISTORY_UNAVAILABLE")' in clear_source
-    assert 'ui_state_message("COMPARISON_UNAVAILABLE")' in clear_source
+    assert 'self._state("DEBRIEF_UNAVAILABLE")' in clear_source
+    assert 'self._state("LAPS_UNAVAILABLE")' in clear_source
+    assert 'self._state("HISTORY_UNAVAILABLE")' in clear_source
+    assert 'self._state("COMPARISON_UNAVAILABLE")' in clear_source
     assert 'ui_state_message("PIPELINE_UNAVAILABLE")' in clear_source
 
 

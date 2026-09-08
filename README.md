@@ -414,6 +414,12 @@ por completo, incluidos sus estados y detalles dinámicos. Las cuatro áreas de
 contenido principales y sus diálogos continúan en migración hasta superar la
 auditoría final de textos residuales.
 
+GUI v1.67 extiende inglés a la estructura de Resumen, las cards de próxima tanda,
+el inspector de prioridades, los lectores de debrief/acciones/vueltas, el checklist
+y los estados vacíos compartidos. Las etiquetas históricas y de estado que todavía
+llegan pre-renderizadas se migrarán a códigos estables antes de considerar Resumen
+completo.
+
 La distribución congelada conserva tres procesos explícitos: interfaz pública,
 launcher seguro y pipeline determinista. Esto mantiene los bloqueos de LMU y de
 estabilidad también cuando Python viene incorporado. Las versiones exactas usadas

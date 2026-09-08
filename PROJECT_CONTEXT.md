@@ -122,6 +122,12 @@ GUI v1.66 passes the active public language into the separate read-only History
 browser. Its search, columns, counts, empty states, session detail, lap flags and
 source labels now have complete Español/English presentation. Existing callers
 default to Spanish and the History model/database remain unchanged.
+GUI v1.67 localizes the first Summary slice: dashboard headings and previews,
+next-stint empty/card states, priority inspector headings, debrief/action-only/lap
+windows, checklist controls and shared empty-state actions. Debrief and cue bodies
+continue to come from their already validated artifact language. Session-change and
+catalog status labels still require code-based localization before Summary is
+declared complete.
 
 The frozen orchestrator routes its Python-owned stages through
 `RaceEngineerWorker.exe`. Its module allowlist contains only deterministic analysis,
@@ -240,7 +246,7 @@ D3.x deterministic-first default and D2.9 production ranker (2026-08-25).
 | Component | Current operational baseline |
 |---|---|
 | `race_engineer.py` | orchestrator v0.4 — estados nuevos usan `debrief`/`debrief_validator`; lectura legacy compatible |
-| `race_engineer_gui.py` | v1.66 — localized public shell and read-only History browser |
+| `race_engineer_gui.py` | v1.67 — localized public shell, History and first Summary slice |
 | `analyze_telemetry.py` | v3.8 + Objective Python v6 |
 | Brake point | 2.1 / schema 2.1 |
 | Throttle point | 1.2.1 / schema 1.2 |

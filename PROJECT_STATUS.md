@@ -1,5 +1,17 @@
 # Project Status
 
+## Public interface localization R3c.4 — 2026-09-08
+
+- Telemetry controls, map/chart legends, playback, lap/reference selection, zoom,
+  point/interval readings and load/error states now use the active public language.
+- English comparison and auxiliary-channel labels map reversibly to the existing
+  persisted Spanish keys, preserving all prior user preferences.
+- Public missing-profile summaries now have an explicit English rendering without
+  exposing calibration or internal stage terminology.
+- Telemetry, comparisons, stored artifacts, profiles and coaching authority remain
+  unchanged. Remaining R3c work is main-window History/Statistics, dialogs and the
+  final residual-string audit.
+
 ## Public interface localization R3c.3b — 2026-09-08
 
 - Summary historical changes are now reconstructed in English from their stable

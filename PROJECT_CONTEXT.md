@@ -133,6 +133,11 @@ reconstructed in English from status, match-basis, action-family, direction and
 channel codes; catalog status and summary metrics likewise render from stable status
 codes. Priority traceability uses structured lap evidence. Spanish model text is not
 translated heuristically, and developer defaults remain unchanged.
+GUI v1.69 localizes the complete public Telemetry workspace: map and chart controls,
+lap/reference selectors, playback, zoom, legends, point/interval readings and
+load/error states. A reversible presentation mapping keeps the existing Spanish
+preference keys stable, so English labels do not migrate saved settings or alter
+telemetry, comparisons, profiles or coaching authority.
 
 The frozen orchestrator routes its Python-owned stages through
 `RaceEngineerWorker.exe`. Its module allowlist contains only deterministic analysis,
@@ -251,7 +256,7 @@ D3.x deterministic-first default and D2.9 production ranker (2026-08-25).
 | Component | Current operational baseline |
 |---|---|
 | `race_engineer.py` | orchestrator v0.4 — estados nuevos usan `debrief`/`debrief_validator`; lectura legacy compatible |
-| `race_engineer_gui.py` | v1.68 — localized public shell, History and code-based Summary |
+| `race_engineer_gui.py` | v1.69 — localized public shell, History, Summary and Telemetry |
 | `analyze_telemetry.py` | v3.8 + Objective Python v6 |
 | Brake point | 2.1 / schema 2.1 |
 | Throttle point | 1.2.1 / schema 1.2 |

@@ -425,6 +425,12 @@ catálogo, métricas, filtros, orden, trazabilidad y cambios entre sesiones se
 reconstruyen desde sus códigos estables en lugar de traducir frases españolas por
 reemplazo. Esto conserva intactos los hechos y el orden determinista.
 
+GUI v1.69 completa la pasada pública de Telemetría: mapa, selectores, reproducción,
+resolución, comparación, canal auxiliar, zoom, leyendas, lecturas puntuales y por
+intervalo y estados de carga/error tienen variantes explícitas en Español e inglés.
+Las preferencias continúan guardando sus claves históricas (`Referencia sesión`,
+`Marcha`, `Volante`); una capa reversible cambia sólo su etiqueta visible.
+
 La distribución congelada conserva tres procesos explícitos: interfaz pública,
 launcher seguro y pipeline determinista. Esto mantiene los bloqueos de LMU y de
 estabilidad también cuando Python viene incorporado. Las versiones exactas usadas

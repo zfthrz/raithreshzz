@@ -1,3 +1,5 @@
+from types import SimpleNamespace
+
 import pytest
 
 from public_ui_locale import (
@@ -12,6 +14,10 @@ from race_engineer_gui import (
     plan_item_traceability_lines,
     session_status_detail_text,
     session_summary_values,
+    telemetry_choice_label,
+    telemetry_choice_value,
+    telemetry_comparison_sample_text,
+    track_zone_summary_text,
     ui_state_message,
 )
 
@@ -140,3 +146,77 @@ def test_priority_traceability_is_reconstructed_in_english():
         "Comparisons: lap 2 vs 3",
         "Cue evidence: reference lap 2; support lap 3, lap 4",
     )
+
+
+def test_telemetry_choices_localize_without_changing_persisted_keys():
+    assert telemetry_choice_label("Referencia sesión", "en") == "Session reference"
+    assert telemetry_choice_label("Volante", "en") == "Steering"
+    assert telemetry_choice_value("No comparison", "en") == "Sin comparación"
+    assert telemetry_choice_value("Gear", "en") == "Marcha"
+    assert telemetry_choice_value("Referencia sesión", "es") == "Referencia sesión"
+
+
+def test_public_track_summary_has_complete_english_states():
+    assert track_zone_summary_text(
+        zone_count=0,
+        loss_count=0,
+        gain_count=0,
+        focus_count=0,
+        priority_count=0,
+        profile_id=None,
+        public_release=True,
+        language="en",
+    ).startswith("This track or layout is not available")
+    assert track_zone_summary_text(
+        zone_count=2,
+        loss_count=1,
+        gain_count=1,
+        focus_count=1,
+        priority_count=3,
+        profile_id="spa_2022",
+        public_release=True,
+        language="en",
+    ) == (
+        "Comparison: 2 zones · losses: 1 · gains: 1 · focus areas: 1 · "
+        "full plan: 3 · click a section for details."
+    )
+
+
+def test_point_comparison_has_an_explicit_english_rendering():
+    sample = SimpleNamespace(
+        current_speed_kmh=151.2,
+        reference_speed_kmh=148.4,
+        speed_delta_kmh=2.8,
+        current_brake_percent=42.0,
+        reference_brake_percent=51.0,
+        brake_delta_percent=-9.0,
+        current_throttle_percent=18.0,
+        reference_throttle_percent=12.0,
+        throttle_delta_percent=6.0,
+        current_gear=4,
+        reference_gear=3,
+        current_steering_percent=-21.0,
+        reference_steering_percent=-18.0,
+        steering_delta_percent=-3.0,
+        accumulated_delta_s=0.0842,
+    )
+    assert telemetry_comparison_sample_text(
+        sample, "History H4", language="en"
+    ) == (
+        "Point comparison · current/History H4 · "
+        "speed 151.2/148.4 km/h (+2.8 km/h) · "
+        "brake 42.0/51.0% (-9.0%) · throttle 18.0/12.0% (+6.0%) · "
+        "gear 4/3 · steering -21.0/-18.0% (-3.0%) · accumulated delta +0.084 s"
+    )
+
+
+def test_telemetry_workspace_uses_the_active_interface_language():
+    import inspect
+
+    build = inspect.getsource(RaceEngineerApp._track_map_tab)
+    render = inspect.getsource(RaceEngineerApp._render_track_telemetry_chart)
+    preferences = inspect.getsource(RaceEngineerApp._save_telemetry_preferences)
+    for expected in ("Select a session", "Choose corner", "Compare with", "Reset view"):
+        assert expected in build
+    assert "Local delta · green gains time" in render
+    assert "telemetry_choice_value(" in preferences

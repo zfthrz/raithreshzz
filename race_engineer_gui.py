@@ -92,7 +92,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.68"
+GUI_VERSION = "1.69"
 DEFAULT_RUNS_ROOT = generated_root() / "runs"
 STATE_REFRESH_INTERVAL_MS = 5_000
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -362,6 +362,10 @@ PUBLIC_UNSUPPORTED_TRACK_MESSAGE = (
     "Este circuito o trazado todavía no está disponible en esta versión. "
     "El mapa y la telemetría siguen disponibles, pero no se mostrarán nombres de curvas."
 )
+PUBLIC_UNSUPPORTED_TRACK_MESSAGE_EN = (
+    "This track or layout is not available in this version yet. "
+    "The map and telemetry remain available, but corner names will not be shown."
+)
 
 
 def track_zone_summary_text(
@@ -374,9 +378,24 @@ def track_zone_summary_text(
     profile_id: str | None,
     errors: tuple[str, ...] = (),
     public_release: bool = False,
+    language: str = "es",
 ) -> str:
     """Describe optional map layers without exposing operator terms publicly."""
     if public_release:
+        if language == "en":
+            unavailable = " Some session details are unavailable." if errors else ""
+            if zone_count == 0 and priority_count == 0:
+                if profile_id:
+                    return "Click the track to identify each corner." + unavailable
+                return PUBLIC_UNSUPPORTED_TRACK_MESSAGE_EN + unavailable
+            text = (
+                f"Comparison: {zone_count} zones · losses: {loss_count} · "
+                f"gains: {gain_count} · focus areas: {focus_count} · "
+                f"full plan: {priority_count} · click a section for details."
+            )
+            if not profile_id:
+                text += " " + PUBLIC_UNSUPPORTED_TRACK_MESSAGE_EN
+            return text + unavailable
         unavailable = " Algunos detalles de esta sesión no están disponibles." if errors else ""
         if zone_count == 0 and priority_count == 0:
             if profile_id:
@@ -458,6 +477,28 @@ TELEMETRY_PREFERENCE_VALUES = {
     "comparison": ("Referencia sesión", "History H4", "Sin comparación"),
     "aux_channel": ("Marcha", "Volante"),
 }
+TELEMETRY_CHOICE_LABELS_EN = {
+    "Referencia sesión": "Session reference",
+    "History H4": "History H4",
+    "Sin comparación": "No comparison",
+    "Marcha": "Gear",
+    "Volante": "Steering",
+}
+
+
+def telemetry_choice_label(value: str, language: str = "es") -> str:
+    """Localize a telemetry preference without changing its persisted key."""
+    return TELEMETRY_CHOICE_LABELS_EN.get(value, value) if language == "en" else value
+
+
+def telemetry_choice_value(label: str, language: str = "es") -> str:
+    """Resolve a localized telemetry label to its stable persisted key."""
+    if language == "en":
+        return next(
+            (key for key, localized in TELEMETRY_CHOICE_LABELS_EN.items() if localized == label),
+            label,
+        )
+    return label
 
 
 def load_session_sort_preference(path: Path) -> tuple[str, bool]:
@@ -986,21 +1027,21 @@ def debrief_section_jumps(value: str) -> tuple[tuple[str, str, str], ...]:
     )
 
 
-def track_priority_selector_value(priority) -> str:
+def track_priority_selector_value(priority, *, language: str = "es") -> str:
     """Render the stable selector value for one validated plan priority."""
     return (
-        f"{'FOCO ' if priority.is_focus else ''}"
+        f"{ui_text(language, 'FOCO ', 'FOCUS ') if priority.is_focus else ''}"
         f"{priority.priority_id} · {priority.label} · "
         f"{priority.start_distance_m:.0f}-{priority.end_distance_m:.0f} m"
     )
 
 
-def plan_priority_selector_value(priorities, plan_label) -> str | None:
+def plan_priority_selector_value(priorities, plan_label, *, language: str = "es") -> str | None:
     """Resolve a plan label to its exact validated telemetry selector value."""
     wanted = str(plan_label or "").strip()
     for priority in priorities:
         if str(priority.priority_id) == wanted:
-            return track_priority_selector_value(priority)
+            return track_priority_selector_value(priority, language=language)
     return None
 
 
@@ -1092,7 +1133,9 @@ def telemetry_priority_bands(priorities, *, axis_start_m, axis_end_m):
     return tuple(bands)
 
 
-def telemetry_comparison_sample_text(sample, reference_label: str) -> str:
+def telemetry_comparison_sample_text(
+    sample, reference_label: str, *, language: str = "es"
+) -> str:
     """Render one already-aligned deterministic sample for GUI inspection."""
 
     def pair(current, reference, delta, suffix, *, precision=1):
@@ -1114,36 +1157,40 @@ def telemetry_comparison_sample_text(sample, reference_label: str) -> str:
         else f"{sample.accumulated_delta_s:+.3f} s"
     )
     parts = [
-        f"Comparación puntual · actual/{reference_label}",
-        "velocidad "
+        ui_text(
+            language,
+            f"Comparación puntual · actual/{reference_label}",
+            f"Point comparison · current/{reference_label}",
+        ),
+        ui_text(language, "velocidad ", "speed ")
         + pair(
             sample.current_speed_kmh,
             sample.reference_speed_kmh,
             sample.speed_delta_kmh,
             " km/h",
         ),
-        "freno "
+        ui_text(language, "freno ", "brake ")
         + pair(
             sample.current_brake_percent,
             sample.reference_brake_percent,
             sample.brake_delta_percent,
             "%",
         ),
-        "acelerador "
+        ui_text(language, "acelerador ", "throttle ")
         + pair(
             sample.current_throttle_percent,
             sample.reference_throttle_percent,
             sample.throttle_delta_percent,
             "%",
         ),
-        f"marcha {gear}",
+        ui_text(language, f"marcha {gear}", f"gear {gear}"),
     ]
     if (
         sample.current_steering_percent is not None
         or sample.reference_steering_percent is not None
     ):
         parts.append(
-            "volante "
+            ui_text(language, "volante ", "steering ")
             + pair(
                 sample.current_steering_percent,
                 sample.reference_steering_percent,
@@ -1151,7 +1198,13 @@ def telemetry_comparison_sample_text(sample, reference_label: str) -> str:
                 "%",
             )
         )
-    parts.append(f"delta acumulado {accumulated_delta}")
+    parts.append(
+        ui_text(
+            language,
+            f"delta acumulado {accumulated_delta}",
+            f"accumulated delta {accumulated_delta}",
+        )
+    )
     return " · ".join(parts)
 
 
@@ -5734,7 +5787,10 @@ class RaceEngineerApp:
         else:
             frame.pack(fill="both", expand=True)
         self.track_map_status = self.tk.StringVar(
-            value="Seleccioná una sesión para reconstruir el mapa GPS."
+            value=self._ui(
+                "Seleccioná una sesión para reconstruir el mapa GPS.",
+                "Select a session to reconstruct the GPS map.",
+            )
         )
         self.ttk.Label(
             frame,
@@ -5768,7 +5824,10 @@ class RaceEngineerApp:
         map_zoom_controls = self.ttk.Frame(map_panel, style="Panel.TFrame")
         map_zoom_controls.pack(fill="x", pady=(4, 0))
         self.track_map_zoom_status = self.tk.StringVar(
-            value="Mapa completo · rueda: zoom · botón derecho: desplazar"
+            value=self._ui(
+                "Mapa completo · rueda: zoom · botón derecho: desplazar",
+                "Full map · wheel: zoom · right button: pan",
+            )
         )
         self.ttk.Label(
             map_zoom_controls,
@@ -5777,7 +5836,7 @@ class RaceEngineerApp:
         ).pack(side="left")
         self.track_map_zoom_reset_button = self.ttk.Button(
             map_zoom_controls,
-            text="Restablecer mapa",
+            text=self._ui("Restablecer mapa", "Reset map"),
             command=self._reset_track_map_zoom,
             state="disabled",
         )
@@ -5786,13 +5845,13 @@ class RaceEngineerApp:
         turn_controls.pack(fill="x", pady=(4, 0))
         self.ttk.Label(
             turn_controls,
-            text="Navegación:",
+            text=self._ui("Navegación:", "Navigation:"),
             style="Muted.TLabel",
         ).pack(side="left")
         self.show_track_profile_var = self.tk.BooleanVar(value=False)
         self.track_profile_layer_check = self.ttk.Checkbutton(
             turn_controls,
-            text="Curvas",
+            text=self._ui("Curvas", "Corners"),
             variable=self.show_track_profile_var,
             command=self._render_track_map,
             state="disabled",
@@ -5803,13 +5862,15 @@ class RaceEngineerApp:
         )
         self.telemetry_priority_layer_check = self.ttk.Checkbutton(
             turn_controls,
-            text="Recomendaciones",
+            text=self._ui("Recomendaciones", "Recommendations"),
             variable=self.show_telemetry_priorities_var,
             command=self._on_telemetry_preferences_changed,
             state="disabled",
         )
         self.telemetry_priority_layer_check.pack(side="left", padx=(10, 8))
-        self.track_turn_selector_var = self.tk.StringVar(value="Elegir curva…")
+        self.track_turn_selector_var = self.tk.StringVar(
+            value=self._ui("Elegir curva…", "Choose corner…")
+        )
         self.track_turn_selector = self.ttk.Combobox(
             turn_controls,
             textvariable=self.track_turn_selector_var,
@@ -5822,7 +5883,7 @@ class RaceEngineerApp:
             self._on_track_turn_selected,
         )
         self.track_plan_selector_var = self.tk.StringVar(
-            value="Elegir zona del plan…"
+            value=self._ui("Elegir zona del plan…", "Choose plan area…")
         )
         self.track_plan_selector = self.ttk.Combobox(
             turn_controls,
@@ -5839,12 +5900,12 @@ class RaceEngineerApp:
         playback_controls.pack(fill="x", pady=(4, 0))
         self.ttk.Label(
             playback_controls,
-            text="Playback:",
+            text=self._ui("Reproducción:", "Playback:"),
             style="Muted.TLabel",
         ).pack(side="left")
         self.track_rewind_button = self.ttk.Button(
             playback_controls,
-            text="⏮ Inicio",
+            text=self._ui("⏮ Inicio", "⏮ Start"),
             command=self._on_track_rewind,
             state="disabled",
         )
@@ -5859,7 +5920,7 @@ class RaceEngineerApp:
         self.track_play_button.pack(side="left", padx=(0, 12))
         self.ttk.Label(
             playback_controls,
-            text="Resolución:",
+            text=self._ui("Resolución:", "Resolution:"),
             style="Muted.TLabel",
         ).pack(side="left", padx=(18, 6))
         self.track_resolution_var = self.tk.StringVar(
@@ -5881,7 +5942,7 @@ class RaceEngineerApp:
         lap_controls.pack(fill="x", padx=8, pady=(8, 2))
         self.ttk.Label(
             lap_controls,
-            text="Vuelta mostrada:",
+            text=self._ui("Vuelta mostrada:", "Displayed lap:"),
             style="Muted.TLabel",
         ).pack(side="left")
         self.track_lap_selector_var = self.tk.StringVar(value="—")
@@ -5896,7 +5957,9 @@ class RaceEngineerApp:
             "<<ComboboxSelected>>",
             self._on_track_lap_selected,
         )
-        self.track_reference_lap_var = self.tk.StringVar(value="Referencia: —")
+        self.track_reference_lap_var = self.tk.StringVar(
+            value=self._ui("Referencia: —", "Reference: —")
+        )
         self.ttk.Label(
             lap_controls,
             textvariable=self.track_reference_lap_var,
@@ -5904,16 +5967,21 @@ class RaceEngineerApp:
         ).pack(side="left")
         self.ttk.Label(
             lap_controls,
-            text="Comparar con:",
+            text=self._ui("Comparar con:", "Compare with:"),
             style="Muted.TLabel",
         ).pack(side="left", padx=(24, 6))
         self.track_comparison_var = self.tk.StringVar(
-            value=str(self.telemetry_preferences["comparison"])
+            value=telemetry_choice_label(
+                str(self.telemetry_preferences["comparison"]), self.interface_language
+            )
         )
         self.track_comparison_selector = self.ttk.Combobox(
             lap_controls,
             textvariable=self.track_comparison_var,
-            values=("Referencia sesión", "History H4", "Sin comparación"),
+            values=tuple(
+                telemetry_choice_label(value, self.interface_language)
+                for value in TELEMETRY_PREFERENCE_VALUES["comparison"]
+            ),
             state="readonly",
             width=19,
         )
@@ -5924,16 +5992,21 @@ class RaceEngineerApp:
         )
         self.ttk.Label(
             lap_controls,
-            text="Canal inferior:",
+            text=self._ui("Canal inferior:", "Bottom channel:"),
             style="Muted.TLabel",
         ).pack(side="left", padx=(24, 6))
         self.track_aux_channel_var = self.tk.StringVar(
-            value=str(self.telemetry_preferences["aux_channel"])
+            value=telemetry_choice_label(
+                str(self.telemetry_preferences["aux_channel"]), self.interface_language
+            )
         )
         self.track_aux_channel_selector = self.ttk.Combobox(
             lap_controls,
             textvariable=self.track_aux_channel_var,
-            values=("Marcha", "Volante"),
+            values=tuple(
+                telemetry_choice_label(value, self.interface_language)
+                for value in TELEMETRY_PREFERENCE_VALUES["aux_channel"]
+            ),
             state="readonly",
             width=10,
         )
@@ -5944,7 +6017,10 @@ class RaceEngineerApp:
         )
 
         self.track_map_zone_status = self.tk.StringVar(
-            value="Sin zonas H5.2 para esta sesión."
+            value=self._ui(
+                "Sin zonas H5.2 para esta sesión.",
+                "No comparison areas are available for this session.",
+            )
         )
         self.track_map_zone_label = self.ttk.Label(
             channels_panel,
@@ -5955,7 +6031,10 @@ class RaceEngineerApp:
         )
         self.track_map_zone_label.pack(fill="x", padx=8, pady=(8, 4))
         self.track_map_telemetry_status = self.tk.StringVar(
-            value="Hacé clic en el trazado para inspeccionar velocidad, freno y acelerador."
+            value=self._ui(
+                "Hacé clic en el trazado para inspeccionar velocidad, freno y acelerador.",
+                "Click the track to inspect speed, brake, and throttle.",
+            )
         )
         self.track_map_telemetry_label = self.ttk.Label(
             channels_panel,
@@ -6018,7 +6097,10 @@ class RaceEngineerApp:
         zoom_controls = self.ttk.Frame(channels_panel, style="Panel.TFrame")
         zoom_controls.pack(fill="x", pady=(4, 0))
         self.telemetry_zoom_status = self.tk.StringVar(
-            value="Gráfico completo · rueda: zoom · Shift+rueda: desplazar"
+            value=self._ui(
+                "Gráfico completo · rueda: zoom · Shift+rueda: desplazar",
+                "Full chart · wheel: zoom · Shift+wheel: pan",
+            )
         )
         self.ttk.Label(
             zoom_controls,
@@ -6027,14 +6109,14 @@ class RaceEngineerApp:
         ).pack(side="left")
         self.telemetry_zoom_reset_button = self.ttk.Button(
             zoom_controls,
-            text="Restablecer gráfico",
+            text=self._ui("Restablecer gráfico", "Reset chart"),
             command=self._reset_telemetry_zoom,
             state="disabled",
         )
         self.telemetry_zoom_reset_button.pack(side="right")
         self.telemetry_view_reset_button = self.ttk.Button(
             zoom_controls,
-            text="Restablecer vista",
+            text=self._ui("Restablecer vista", "Reset view"),
             command=self._reset_telemetry_view,
         )
         self.telemetry_view_reset_button.pack(side="right", padx=(0, 8))
@@ -6073,13 +6155,14 @@ class RaceEngineerApp:
         )
         if reference_option is None:
             self.track_reference_lap_var.set(
-                f"Referencia: V{reference_lap}"
+                self._ui(f"Referencia: V{reference_lap}", f"Reference: L{reference_lap}")
                 if reference_lap is not None
-                else "Referencia: —"
+                else self._ui("Referencia: —", "Reference: —")
             )
         else:
             self.track_reference_lap_var.set(
-                f"Referencia: V{reference_option.lap} · "
+                self._ui("Referencia: ", "Reference: ")
+                + f"V{reference_option.lap} · "
                 f"{format_lap_time(reference_option.duration_s)}"
             )
 
@@ -6089,7 +6172,7 @@ class RaceEngineerApp:
         if hasattr(self, "track_lap_selector"):
             self.track_lap_selector.configure(values=(), state="disabled")
             self.track_lap_selector_var.set("—")
-            self.track_reference_lap_var.set("Referencia: —")
+            self.track_reference_lap_var.set(self._ui("Referencia: —", "Reference: —"))
 
     def _on_track_comparison_changed(self, _event=None):
         self._on_telemetry_preferences_changed()
@@ -6098,8 +6181,12 @@ class RaceEngineerApp:
         save_telemetry_preferences(
             self.gui_preferences_path,
             resolution=self.track_resolution_var.get(),
-            comparison=self.track_comparison_var.get(),
-            aux_channel=self.track_aux_channel_var.get(),
+            comparison=telemetry_choice_value(
+                self.track_comparison_var.get(), self.interface_language
+            ),
+            aux_channel=telemetry_choice_value(
+                self.track_aux_channel_var.get(), self.interface_language
+            ),
             show_recommendations=bool(
                 self.show_telemetry_priorities_var.get()
             ),
@@ -6133,6 +6220,7 @@ class RaceEngineerApp:
                 self._track_map_status_text(
                     reference,
                     resolution_hz=self.track_resolution_hz,
+                    language=self.interface_language,
                 )
             )
             self._render_track_map()
@@ -6968,10 +7056,18 @@ class RaceEngineerApp:
         self.track_map_pan_anchor = None
         self.track_map_canvas.delete("all")
         self.track_telemetry_canvas.delete("all")
-        self.track_map_status.set(ui_state_message("SESSION_REQUIRED", compact=True))
-        self.track_map_zone_status.set("Sin capas de zonas para esta sesión.")
+        self.track_map_status.set(ui_state_message(
+            "SESSION_REQUIRED", compact=True, language=self.interface_language
+        ))
+        self.track_map_zone_status.set(self._ui(
+            "Sin capas de zonas para esta sesión.",
+            "No area layers are available for this session.",
+        ))
         self.track_map_telemetry_status.set(
-            "Hacé clic en el trazado para inspeccionar velocidad, freno y acelerador."
+            self._ui(
+                "Hacé clic en el trazado para inspeccionar velocidad, freno y acelerador.",
+                "Click the track to inspect speed, brake, and throttle.",
+            )
         )
         self._set_telemetry_zoom_status()
         self._set_track_map_zoom_status()
@@ -7005,9 +7101,12 @@ class RaceEngineerApp:
             self.track_resolution_hz,
         )
         label = (
-            f"History #{request['session_id']} · vuelta {request['lap']}"
+            self._ui(
+                f"History #{request['session_id']} · vuelta {request['lap']}",
+                f"History #{request['session_id']} · lap {request['lap']}",
+            )
             if request.get("session_id") is not None and request.get("lap") is not None
-            else "Referencia histórica H4"
+            else self._ui("Referencia histórica H4", "Historical reference H4")
         )
         cached = self.track_map_cache.get(cache_key)
         if cached is not None:
@@ -7075,9 +7174,15 @@ class RaceEngineerApp:
             self.track_map_pan_anchor = None
             self.track_map_canvas.delete("all")
             self.track_telemetry_canvas.delete("all")
-            self.track_map_zone_status.set("Buscando zonas H5.2 y prioridades del debrief…")
+            self.track_map_zone_status.set(self._ui(
+                "Buscando zonas H5.2 y prioridades del debrief…",
+                "Loading comparison areas and debrief priorities…",
+            ))
             self.track_map_telemetry_status.set(
-                "Hacé clic en el trazado para inspeccionar velocidad, freno y acelerador."
+                self._ui(
+                    "Hacé clic en el trazado para inspeccionar velocidad, freno y acelerador.",
+                    "Click the track to inspect speed, brake, and throttle.",
+                )
             )
             self._set_telemetry_zoom_status()
             self._set_track_map_zoom_status()
@@ -7087,15 +7192,27 @@ class RaceEngineerApp:
 
         database = record.database_path
         if database is None:
-            self.track_map_status.set("La sesión no registra su DuckDB original.")
-            self.track_map_zone_status.set("Sin mapa GPS para superponer zonas.")
+            self.track_map_status.set(self._ui(
+                "La sesión no registra su DuckDB original.",
+                "The session does not record its original DuckDB file.",
+            ))
+            self.track_map_zone_status.set(self._ui(
+                "Sin mapa GPS para superponer zonas.",
+                "No GPS map is available for overlays.",
+            ))
             return
         try:
             resolved = database.expanduser().resolve()
             modified_ns = resolved.stat().st_mtime_ns
         except OSError as exc:
-            self.track_map_status.set(f"No se puede abrir la telemetría GPS: {exc}")
-            self.track_map_zone_status.set("Sin mapa GPS para superponer zonas.")
+            self.track_map_status.set(self._ui(
+                f"No se puede abrir la telemetría GPS: {exc}",
+                f"GPS telemetry cannot be opened: {exc}",
+            ))
+            self.track_map_zone_status.set(self._ui(
+                "Sin mapa GPS para superponer zonas.",
+                "No GPS map is available for overlays.",
+            ))
             return
         duration_key = (
             None
@@ -7174,6 +7291,7 @@ class RaceEngineerApp:
                 self._track_map_status_text(
                     cached,
                     resolution_hz=self.track_resolution_hz,
+                    language=self.interface_language,
                 )
             )
             self._render_track_map()
@@ -7183,7 +7301,10 @@ class RaceEngineerApp:
 
         self.track_map_loading = True
         self.track_map_status.set(
-            f"Cargando telemetría a {self.track_resolution_hz:.0f} Hz en segundo plano…"
+            self._ui(
+                f"Cargando telemetría a {self.track_resolution_hz:.0f} Hz en segundo plano…",
+                f"Loading telemetry at {self.track_resolution_hz:.0f} Hz in the background…",
+            )
         )
 
         def worker():
@@ -7287,7 +7408,8 @@ class RaceEngineerApp:
                 self._set_telemetry_zoom_status()
                 self._set_track_map_zoom_status()
                 self.track_map_status.set(
-                    f"Vuelta seleccionada V{option.lap} · "
+                    self._ui("Vuelta seleccionada ", "Selected lap ")
+                    + f"V{option.lap} · "
                     f"{format_lap_time(selected_data.duration_s)} · "
                     f"{self.track_resolution_hz:.0f} Hz"
                 )
@@ -7296,7 +7418,10 @@ class RaceEngineerApp:
             if kind == "manual_lap_error":
                 self.manual_track_map_loading = False
                 self.track_map_status.set(
-                    ui_state_message("LOAD_FAILED", detail=str(value), compact=True)
+                    ui_state_message(
+                        "LOAD_FAILED", detail=str(value), compact=True,
+                        language=self.interface_language,
+                    )
                 )
                 continue
             current_completed = True
@@ -7333,6 +7458,7 @@ class RaceEngineerApp:
                     self._track_map_status_text(
                         data,
                         resolution_hz=self.track_resolution_hz,
+                        language=self.interface_language,
                     )
                 )
                 self._set_track_zone_summary(layer_errors=list(layer_errors))
@@ -7341,8 +7467,10 @@ class RaceEngineerApp:
                 if getattr(self, "track_map_preserve_visual_token", None) == token:
                     self.track_map_preserve_visual_token = None
                     self.track_map_status.set(
-                        f"No se pudo cargar {self.track_resolution_hz:.0f} Hz; "
-                        f"se conserva el gráfico anterior: {value}"
+                        self._ui(
+                            f"No se pudo cargar {self.track_resolution_hz:.0f} Hz; se conserva el gráfico anterior: {value}",
+                            f"{self.track_resolution_hz:.0f} Hz could not be loaded; the previous chart is preserved: {value}",
+                        )
                     )
                     continue
                 self.current_track_map = None
@@ -7357,8 +7485,13 @@ class RaceEngineerApp:
                 self.selected_track_point_index = None
                 self.track_map_canvas.delete("all")
                 self.track_telemetry_canvas.delete("all")
-                self.track_map_status.set(f"Mapa GPS no disponible: {value}")
-                self.track_map_zone_status.set("Sin mapa GPS para superponer zonas.")
+                self.track_map_status.set(self._ui(
+                    f"Mapa GPS no disponible: {value}", f"GPS map unavailable: {value}"
+                ))
+                self.track_map_zone_status.set(self._ui(
+                    "Sin mapa GPS para superponer zonas.",
+                    "No GPS map is available for overlays.",
+                ))
         if (
             self.track_map_loading
             or self.historical_track_map_loading
@@ -7366,27 +7499,30 @@ class RaceEngineerApp:
         ):
             self.root.after(100, self._poll_track_map_queue)
 
-    @staticmethod
     def _track_map_status_text(
+        self,
         data: TrackMapData,
         *,
         resolution_hz: float | None = None,
+        language: str | None = None,
     ) -> str:
+        language = language or self.interface_language
         if data.selection_reason == "REFERENCE_DURATION_MATCH":
             requested = data.requested_lap if data.requested_lap is not None else data.lap
-            lap_text = (
-                f"referencia {requested} · grupo GPS {data.lap} "
-                f"alineado por duración {format_lap_time(data.duration_s)}"
+            lap_text = ui_text(
+                language,
+                f"referencia {requested} · grupo GPS {data.lap} alineado por duración {format_lap_time(data.duration_s)}",
+                f"reference {requested} · GPS group {data.lap} aligned by duration {format_lap_time(data.duration_s)}",
             )
         elif data.selection_reason == "EXACT_GPS_LAP":
-            lap_text = f"vuelta GPS {data.lap} · trazado completo"
+            lap_text = ui_text(language, f"vuelta GPS {data.lap} · trazado completo", f"GPS lap {data.lap} · full track")
         else:
-            lap_text = f"vuelta GPS completa {data.lap} · selección automática"
+            lap_text = ui_text(language, f"vuelta GPS completa {data.lap} · selección automática", f"complete GPS lap {data.lap} · automatic selection")
         resolution = (
             f"{resolution_hz:.0f} Hz · " if resolution_hz is not None else ""
         )
         return (
-            f"{data.track} · {lap_text} · {len(data.points)} puntos · "
+            f"{data.track} · {lap_text} · {len(data.points)} {ui_text(language, 'puntos', 'points')} · "
             f"{resolution}{data.width_m:.0f} × {data.height_m:.0f} m"
         )
 
@@ -7412,6 +7548,7 @@ class RaceEngineerApp:
                 ),
                 errors=tuple(errors),
                 public_release=getattr(self, "public_release", False),
+                language=self.interface_language,
             )
         )
 
@@ -7428,13 +7565,13 @@ class RaceEngineerApp:
         self.track_profile_layer_check.configure(
             state="normal" if values else "disabled"
         )
-        self.track_turn_selector_var.set("Elegir curva…")
+        self.track_turn_selector_var.set(self._ui("Elegir curva…", "Choose corner…"))
 
     def _update_track_plan_controls(self):
         if not hasattr(self, "track_plan_selector"):
             return
         values = tuple(
-            track_priority_selector_value(priority)
+            track_priority_selector_value(priority, language=self.interface_language)
             for priority in self.current_track_priorities
         )
         self.track_plan_selector.configure(
@@ -7445,7 +7582,7 @@ class RaceEngineerApp:
             self.telemetry_priority_layer_check.configure(
                 state="normal" if values else "disabled"
             )
-        self.track_plan_selector_var.set("Elegir zona del plan…")
+        self.track_plan_selector_var.set(self._ui("Elegir zona del plan…", "Choose plan area…"))
 
     def _on_track_turn_selected(self, _event=None):
         self._stop_track_playback()
@@ -7496,7 +7633,7 @@ class RaceEngineerApp:
                 data.points[apex_index],
             )
         self.track_map_zone_status.set(
-            f"T{turn.turn} — {turn.name} · curva validada · "
+            f"T{turn.turn} — {turn.name} · {self._ui('curva validada', 'validated corner')} · "
             f"{turn.start_distance_m:.0f}-{turn.end_distance_m:.0f} m · "
             f"ápice {turn.apex_distance_m:.0f} m"
         )
@@ -7508,7 +7645,7 @@ class RaceEngineerApp:
         data = self.current_track_map
         if not raw or data is None:
             return
-        key = raw[5:] if raw.startswith("FOCO ") else raw
+        key = raw[6:] if raw.startswith("FOCUS ") else raw[5:] if raw.startswith("FOCO ") else raw
         priority_id = key.split(" · ", 1)[0].strip()
         priority = next(
             (
@@ -7535,7 +7672,9 @@ class RaceEngineerApp:
                 ),
             )
         if priority.has_validated_steering:
-            self.track_aux_channel_var.set("Volante")
+            self.track_aux_channel_var.set(
+                telemetry_choice_label("Volante", self.interface_language)
+            )
         self.selected_track_overlay = ("priority", priority.priority_id)
         self.telemetry_zoom_range = (
             priority.start_distance_m,
@@ -7573,8 +7712,10 @@ class RaceEngineerApp:
                 priority.end_distance_m,
                 data.points[center_index],
             )
-        focus_label = "Foco" if priority.is_focus else "Plan"
-        cues = "; ".join(priority.cues[:2]) if priority.cues else "sin cue textual"
+        focus_label = self._ui("Foco", "Focus") if priority.is_focus else "Plan"
+        cues = "; ".join(priority.cues[:2]) if priority.cues else self._ui(
+            "sin cue textual", "no text cue"
+        )
         self.track_map_zone_status.set(
             f"{focus_label} {priority.priority_id} · {priority.label} · "
             f"{priority.start_distance_m:.0f}-{priority.end_distance_m:.0f} m · {cues}"
@@ -7586,12 +7727,16 @@ class RaceEngineerApp:
         selector_value = plan_priority_selector_value(
             getattr(self, "current_track_priorities", ()),
             plan_label,
+            language=self.interface_language,
         )
         self._show_primary_section("Telemetría")
         if not selector_value:
             if hasattr(self, "track_map_zone_status"):
                 self.track_map_zone_status.set(
-                    "La zona del plan todavía no está disponible en el mapa de esta sesión."
+                    self._ui(
+                        "La zona del plan todavía no está disponible en el mapa de esta sesión.",
+                        "This plan area is not available on the session map yet.",
+                    )
                 )
             return
         self.track_plan_selector_var.set(selector_value)
@@ -7620,7 +7765,7 @@ class RaceEngineerApp:
         self.track_playback_elapsed_s = anchor
         self.track_playback_started_at = time.perf_counter()
         self.track_playback_active = True
-        self.track_play_button.configure(text="⏸ Pausa")
+        self.track_play_button.configure(text=self._ui("⏸ Pausa", "⏸ Pause"))
         self._schedule_track_playback()
 
     def _schedule_track_playback(self):
@@ -7670,8 +7815,9 @@ class RaceEngineerApp:
         seconds = max(elapsed_s, 0.0) - minutes * 60.0
         timing = f"{minutes}:{seconds:06.3f}"
         current = self.track_map_telemetry_status.get().strip()
-        suffix = current.split(" · tiempo ", 1)[0] if current else "Telemetría"
-        self.track_map_telemetry_status.set(f"{suffix} · tiempo {timing}")
+        time_separator = self._ui(" · tiempo ", " · time ")
+        suffix = current.split(time_separator, 1)[0] if current else self._ui("Telemetría", "Telemetry")
+        self.track_map_telemetry_status.set(f"{suffix}{time_separator}{timing}")
 
     def _stop_track_playback(self):
         self.track_playback_active = False
@@ -7698,7 +7844,9 @@ class RaceEngineerApp:
         distance = (
             "—" if point.lap_distance_m is None else f"{point.lap_distance_m:.0f} m"
         )
-        self.track_map_zone_status.set(f"Inicio de la vuelta · {distance}")
+        self.track_map_zone_status.set(self._ui(
+            f"Inicio de la vuelta · {distance}", f"Start of lap · {distance}"
+        ))
 
     def _on_track_resolution_changed(self, _event=None):
         raw = self.track_resolution_var.get().strip()
@@ -7768,7 +7916,10 @@ class RaceEngineerApp:
             self.selected_track_point_index = None
             self._set_track_zone_summary()
             self.track_map_telemetry_status.set(
-                "Hacé clic en el trazado para inspeccionar velocidad, freno y acelerador."
+                self._ui(
+                    "Hacé clic en el trazado para inspeccionar velocidad, freno y acelerador.",
+                    "Click the track to inspect speed, brake, and throttle.",
+                )
             )
             self._render_track_map()
             return False
@@ -7808,8 +7959,10 @@ class RaceEngineerApp:
         )
         if priority is not None:
             self.selected_track_overlay = ("priority", priority.priority_id)
-            cue_text = "; ".join(priority.cues) or "sin cue textual disponible"
-            priority_kind = "Foco" if priority.is_focus else "Plan"
+            cue_text = "; ".join(priority.cues) or self._ui(
+                "sin cue textual disponible", "no text cue available"
+            )
+            priority_kind = self._ui("Foco", "Focus") if priority.is_focus else "Plan"
             self.track_map_zone_status.set(
                 f"{priority_kind} {priority.priority_id} · {priority.label} · "
                 f"{priority.start_distance_m:.0f}-{priority.end_distance_m:.0f} m · "
@@ -7837,8 +7990,10 @@ class RaceEngineerApp:
                 f"{location.label} · " if location is not None else ""
             )
             self.track_map_zone_status.set(
-                f"{location_text}punto {distance_text} · fuera de las zonas "
-                "comparativas H5.2."
+                self._ui(
+                    f"{location_text}punto {distance_text} · fuera de las zonas comparativas H5.2.",
+                    f"{location_text}point {distance_text} · outside the comparison areas.",
+                )
             )
             self.track_map_telemetry_status.set(
                 self._point_telemetry_text(point)
@@ -7851,13 +8006,13 @@ class RaceEngineerApp:
                 if zone.delta_change_s is None
                 else f"{zone.delta_change_s:+.3f} s"
             )
-            kind = {"loss": "pérdida", "gain": "ganancia"}.get(
+            kind = ({"loss": "loss", "gain": "gain"} if self.interface_language == "en" else {"loss": "pérdida", "gain": "ganancia"}).get(
                 zone.kind, zone.kind
             )
             self.track_map_zone_status.set(
                 f"{zone.label} [{zone.zone_id}] · {kind} · "
                 f"{zone.start_distance_m:.0f}-{zone.end_distance_m:.0f} m · "
-                f"cambio {delta_text}"
+                f"{self._ui('cambio', 'change')} {delta_text}"
             )
             self._set_interval_telemetry(
                 data,
@@ -7900,7 +8055,7 @@ class RaceEngineerApp:
         self.track_map_telemetry_status.set(
             self._interval_telemetry_text(summary)
             + delta_text
-            + " · punto seleccionado: "
+            + self._ui(" · punto seleccionado: ", " · selected point: ")
             + self._point_telemetry_text(selected_point, prefix=False)
             + self._point_comparison_text(data, selected_point)
         )
@@ -7921,16 +8076,23 @@ class RaceEngineerApp:
             float(point.lap_distance_m),
         )
         if sample is None:
-            return "\nComparación puntual · fuera de la cobertura común."
+            return self._ui(
+                "\nComparación puntual · fuera de la cobertura común.",
+                "\nPoint comparison · outside common coverage.",
+            )
         reference_label = (
-            "referencia de sesión"
+            self._ui("referencia de sesión", "session reference")
             if comparison_mode == "Referencia sesión"
             else "History H4"
         )
-        return "\n" + telemetry_comparison_sample_text(sample, reference_label)
+        return "\n" + telemetry_comparison_sample_text(
+            sample, reference_label, language=self.interface_language
+        )
 
     def _active_telemetry_comparison(self, data: TrackMapData):
-        comparison_mode = self.track_comparison_var.get()
+        comparison_mode = telemetry_choice_value(
+            self.track_comparison_var.get(), self.interface_language
+        )
         reference = select_active_telemetry_reference(
             comparison_mode,
             data,
@@ -7966,24 +8128,25 @@ class RaceEngineerApp:
             end_distance_m,
         )
         if interval is None:
-            return " · delta de zona —"
-        direction = {
-            "GAIN": "ganancia",
-            "LOSS": "pérdida",
-            "NEUTRAL": "neutral",
-        }[interval.direction]
+            return self._ui(" · delta de zona —", " · area delta —")
+        directions = (
+            {"GAIN": "gain", "LOSS": "loss", "NEUTRAL": "neutral"}
+            if self.interface_language == "en"
+            else {"GAIN": "ganancia", "LOSS": "pérdida", "NEUTRAL": "neutral"}
+        )
+        direction = directions[interval.direction]
         reference_label = (
-            "referencia de sesión"
+            self._ui("referencia de sesión", "session reference")
             if comparison_mode == "Referencia sesión"
             else "History H4"
         )
         return (
-            f" · delta de zona {interval.delta_change_s:+.3f} s "
+            f" · {self._ui('delta de zona', 'area delta')} {interval.delta_change_s:+.3f} s "
             f"({direction} vs {reference_label})"
         )
 
-    @staticmethod
     def _point_telemetry_text(
+        self,
         point: TrackMapPoint,
         *,
         prefix: bool = True,
@@ -8000,15 +8163,14 @@ class RaceEngineerApp:
             if point.steering_percent is None
             else f"{point.steering_percent:+.0f}%"
         )
-        label = "Telemetría · " if prefix else ""
+        label = self._ui("Telemetría · ", "Telemetry · ") if prefix else ""
         return (
-            f"{label}{distance} · velocidad {speed} · "
-            f"freno {brake} · acelerador {throttle} · marcha {gear} · "
-            f"volante {steering}"
+            f"{label}{distance} · {self._ui('velocidad', 'speed')} {speed} · "
+            f"{self._ui('freno', 'brake')} {brake} · {self._ui('acelerador', 'throttle')} {throttle} · "
+            f"{self._ui('marcha', 'gear')} {gear} · {self._ui('volante', 'steering')} {steering}"
         )
 
-    @staticmethod
-    def _interval_telemetry_text(summary: TrackTelemetrySummary) -> str:
+    def _interval_telemetry_text(self, summary: TrackTelemetrySummary) -> str:
         def number(value: float | None, suffix: str) -> str:
             return "—" if value is None else f"{value:.0f}{suffix}"
 
@@ -8018,14 +8180,14 @@ class RaceEngineerApp:
             else (
                 f"{number(summary.speed_min_kmh, '')}-"
                 f"{number(summary.speed_max_kmh, '')} km/h "
-                f"(media {number(summary.speed_mean_kmh, '')})"
+                f"({self._ui('media', 'average')} {number(summary.speed_mean_kmh, '')})"
             )
         )
         return (
-            f"Telemetría de zona · {summary.start_distance_m:.0f}-"
-            f"{summary.end_distance_m:.0f} m · velocidad {speed} · "
-            f"freno medio/máx {number(summary.brake_mean_percent, '%')}/"
-            f"{number(summary.brake_max_percent, '%')} · acelerador medio/máx "
+            f"{self._ui('Telemetría de zona', 'Area telemetry')} · {summary.start_distance_m:.0f}-"
+            f"{summary.end_distance_m:.0f} m · {self._ui('velocidad', 'speed')} {speed} · "
+            f"{self._ui('freno medio/máx', 'brake avg/max')} {number(summary.brake_mean_percent, '%')}/"
+            f"{number(summary.brake_max_percent, '%')} · {self._ui('acelerador medio/máx', 'throttle avg/max')} "
             f"{number(summary.throttle_mean_percent, '%')}/"
             f"{number(summary.throttle_max_percent, '%')}"
         )
@@ -8157,7 +8319,7 @@ class RaceEngineerApp:
         canvas.create_text(
             start_x + 10,
             start_y - 10,
-            text="Inicio",
+            text=self._ui("Inicio", "Start"),
             fill=COLORS["text_primary"],
             anchor="sw",
             font=(FONT_FAMILY, 9),
@@ -8174,11 +8336,11 @@ class RaceEngineerApp:
             legend_rows = []
             if self.current_track_zones:
                 legend_rows.extend(
-                    (("#e45a5a", 5, "Pérdida"), ("#45c98c", 5, "Ganancia"))
+                    (("#e45a5a", 5, self._ui("Pérdida", "Loss")), ("#45c98c", 5, self._ui("Ganancia", "Gain")))
                 )
             if self.current_track_priorities:
                 if any(priority.is_focus for priority in self.current_track_priorities):
-                    legend_rows.append(("#62b6ff", 8, "Foco"))
+                    legend_rows.append(("#62b6ff", 8, self._ui("Foco", "Focus")))
                 if any(not priority.is_focus for priority in self.current_track_priorities):
                     legend_rows.append(("#315f8f", 5, "Plan"))
             legend_height = 20 + 19 * len(legend_rows)
@@ -8281,9 +8443,15 @@ class RaceEngineerApp:
     def _set_track_map_zoom_status(self):
         active = self.track_map_zoom_scale > 1.001
         text = (
-            f"Mapa ampliado · {self.track_map_zoom_scale:.2f}× · rueda: zoom · botón derecho: desplazar"
+            self._ui(
+                f"Mapa ampliado · {self.track_map_zoom_scale:.2f}× · rueda: zoom · botón derecho: desplazar",
+                f"Zoomed map · {self.track_map_zoom_scale:.2f}× · wheel: zoom · right button: pan",
+            )
             if active
-            else "Mapa completo · rueda: zoom · botón derecho: desplazar"
+            else self._ui(
+                "Mapa completo · rueda: zoom · botón derecho: desplazar",
+                "Full map · wheel: zoom · right button: pan",
+            )
         )
         if hasattr(self, "track_map_zoom_status"):
             self.track_map_zoom_status.set(text)
@@ -8304,7 +8472,10 @@ class RaceEngineerApp:
             canvas.create_text(
                 max(width // 2, 8),
                 max(height // 2, 8),
-                text="Ampliá el panel de canales para ver velocidad, acelerador y freno.",
+                text=self._ui(
+                    "Ampliá el panel de canales para ver velocidad, acelerador y freno.",
+                    "Expand the channels panel to view speed, throttle, and brake.",
+                ),
                 fill="#8fa5b8",
                 anchor="center",
                 width=max(width - 24, 80),
@@ -8313,7 +8484,7 @@ class RaceEngineerApp:
             return
 
         comparison_mode = (
-            self.track_comparison_var.get()
+            telemetry_choice_value(self.track_comparison_var.get(), self.interface_language)
             if hasattr(self, "track_comparison_var")
             else "Referencia sesión"
         )
@@ -8350,7 +8521,9 @@ class RaceEngineerApp:
         )
         show_steering = (
             getattr(self, "track_aux_channel_var", None) is not None
-            and self.track_aux_channel_var.get() == "Volante"
+            and telemetry_choice_value(
+                self.track_aux_channel_var.get(), self.interface_language
+            ) == "Volante"
         )
         zoom_start = (
             None if self.telemetry_zoom_range is None else self.telemetry_zoom_range[0]
@@ -8373,7 +8546,10 @@ class RaceEngineerApp:
             canvas.create_text(
                 12,
                 12,
-                text="Canales de telemetría no disponibles.",
+                text=self._ui(
+                    "Canales de telemetría no disponibles.",
+                    "Telemetry channels are unavailable.",
+                ),
                 fill="#8fa5b8",
                 anchor="nw",
                 font=("Segoe UI", 9),
@@ -8494,7 +8670,7 @@ class RaceEngineerApp:
                 canvas.create_text(
                     (start_x + end_x) / 2.0,
                     15,
-                    text=f"{'FOCO' if is_focus else 'PLAN'} {priority_id}",
+                    text=f"{'FOCUS' if is_focus and self.interface_language == 'en' else 'FOCO' if is_focus else 'PLAN'} {priority_id}",
                     fill=(
                         COLORS["text_warning"]
                         if is_focus
@@ -8531,11 +8707,13 @@ class RaceEngineerApp:
             )
 
         lane_labels = (
-            (f"Velocidad\n0–{chart.speed_max_kmh:.0f}", "#55b7e8"),
-            ("Acelerador\n0–100%", "#45c98c"),
-            ("Freno\n0–100%", "#e45a5a"),
+            (f"{self._ui('Velocidad', 'Speed')}\n0–{chart.speed_max_kmh:.0f}", "#55b7e8"),
+            (f"{self._ui('Acelerador', 'Throttle')}\n0–100%", "#45c98c"),
+            (f"{self._ui('Freno', 'Brake')}\n0–100%", "#e45a5a"),
             (
-                "Volante\n−100…+100" if show_steering else f"Marcha\nN–{chart.gear_max}",
+                f"{self._ui('Volante', 'Steering')}\n−100…+100"
+                if show_steering
+                else f"{self._ui('Marcha', 'Gear')}\nN–{chart.gear_max}",
                 "#b78cff" if show_steering else "#d5a94f",
             ),
         )
@@ -8553,7 +8731,10 @@ class RaceEngineerApp:
             canvas.create_text(
                 84,
                 height - 7,
-                text="Delta local · verde gana tiempo · rojo pierde tiempo",
+                text=self._ui(
+                    "Delta local · verde gana tiempo · rojo pierde tiempo",
+                    "Local delta · green gains time · red loses time",
+                ),
                 fill="#b8c7d1",
                 anchor="sw",
                 font=("Segoe UI", 8),
@@ -8562,7 +8743,10 @@ class RaceEngineerApp:
             canvas.create_text(
                 84,
                 height - (19 if telemetry_comparison is not None else 7),
-                text="Recomendaciones · azul: plan · ámbar: foco principal",
+                text=self._ui(
+                    "Recomendaciones · azul: plan · ámbar: foco principal",
+                    "Recommendations · blue: plan · amber: main focus",
+                ),
                 fill=COLORS["text_body"],
                 anchor="sw",
                 font=("Segoe UI", 8),
@@ -8636,9 +8820,12 @@ class RaceEngineerApp:
                 dash=(2, 4),
             )
             reference_label = (
-                "Referencia de sesión"
+                self._ui("Referencia de sesión", "Session reference")
                 if session_reference is None
-                else f"Referencia sesión · V{session_reference.lap}"
+                else self._ui(
+                    f"Referencia sesión · V{session_reference.lap}",
+                    f"Session reference · L{session_reference.lap}",
+                )
             )
             canvas.create_text(
                 reference_legend_x + 35,
@@ -8664,10 +8851,12 @@ class RaceEngineerApp:
                 legend_x + 35,
                 19,
                 text=(
-                    self.current_historical_track_label or "Referencia histórica H4"
+                    self.current_historical_track_label
+                    or self._ui("Referencia histórica H4", "Historical reference H4")
                 )
                 + (
-                    f" · cobertura {telemetry_comparison.current_coverage_ratio:.0%}"
+                    self._ui(" · cobertura ", " · coverage ")
+                    + f"{telemetry_comparison.current_coverage_ratio:.0%}"
                     if telemetry_comparison is not None
                     else ""
                 ),
@@ -8857,8 +9046,12 @@ class RaceEngineerApp:
         resolution_changed = self.track_resolution_hz != 20.0
         self.track_resolution_hz = 20.0
         self.track_resolution_var.set(TELEMETRY_PREFERENCE_DEFAULTS["resolution"])
-        self.track_comparison_var.set(TELEMETRY_PREFERENCE_DEFAULTS["comparison"])
-        self.track_aux_channel_var.set(TELEMETRY_PREFERENCE_DEFAULTS["aux_channel"])
+        self.track_comparison_var.set(telemetry_choice_label(
+            TELEMETRY_PREFERENCE_DEFAULTS["comparison"], self.interface_language
+        ))
+        self.track_aux_channel_var.set(telemetry_choice_label(
+            TELEMETRY_PREFERENCE_DEFAULTS["aux_channel"], self.interface_language
+        ))
         self.show_telemetry_priorities_var.set(
             TELEMETRY_PREFERENCE_DEFAULTS["show_recommendations"]
         )
@@ -8873,13 +9066,16 @@ class RaceEngineerApp:
 
     def _set_telemetry_zoom_status(self):
         if self.telemetry_zoom_range is None:
-            text = "Gráfico completo · ←/→: muestra · Shift+←/→: 1 s · rueda: zoom"
+            text = self._ui(
+                "Gráfico completo · ←/→: muestra · Shift+←/→: 1 s · rueda: zoom",
+                "Full chart · ←/→: sample · Shift+←/→: 1 s · wheel: zoom",
+            )
             state = "disabled"
         else:
             start, end = self.telemetry_zoom_range
-            text = (
-                f"Zoom del gráfico {start:.0f}-{end:.0f} m ({end - start:.0f} m) · "
-                "←/→: muestra · Shift+←/→: 1 s · rueda: zoom"
+            text = self._ui(
+                f"Zoom del gráfico {start:.0f}-{end:.0f} m ({end - start:.0f} m) · ←/→: muestra · Shift+←/→: 1 s · rueda: zoom",
+                f"Chart zoom {start:.0f}-{end:.0f} m ({end - start:.0f} m) · ←/→: sample · Shift+←/→: 1 s · wheel: zoom",
             )
             state = "normal"
         if hasattr(self, "telemetry_zoom_status"):

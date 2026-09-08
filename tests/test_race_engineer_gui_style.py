@@ -522,7 +522,7 @@ def test_recommendation_overlay_is_user_controllable_and_enabled_by_default(tmp_
 
     assert 'self.telemetry_preferences["show_recommendations"]' in layout_source
     assert load_telemetry_preferences(tmp_path / "missing.json")["show_recommendations"] is True
-    assert 'text="Recomendaciones"' in layout_source
+    assert 'self._ui("Recomendaciones", "Recommendations")' in layout_source
     assert "show_telemetry_priorities_var.get()" in render_source
     assert 'state="normal" if values else "disabled"' in controls_source
 
@@ -531,7 +531,7 @@ def test_telemetry_view_has_safe_persistent_reset():
     layout_source = inspect.getsource(RaceEngineerApp._track_map_tab)
     reset_source = inspect.getsource(RaceEngineerApp._reset_telemetry_view)
 
-    assert 'text="Restablecer vista"' in layout_source
+    assert 'self._ui("Restablecer vista", "Reset view")' in layout_source
     assert "self._stop_track_playback()" in reset_source
     assert 'TELEMETRY_PREFERENCE_DEFAULTS["resolution"]' in reset_source
     assert 'TELEMETRY_PREFERENCE_DEFAULTS["comparison"]' in reset_source
@@ -577,7 +577,8 @@ def test_recommendation_bands_label_visible_plan_identity():
     source = inspect.getsource(RaceEngineerApp._render_track_telemetry_chart)
 
     assert "end_x - start_x >= 28" in source
-    assert 'text=f"{\'FOCO\' if is_focus else \'PLAN\'} {priority_id}"' in source
+    assert "'FOCUS' if is_focus and self.interface_language == 'en'" in source
+    assert "'FOCO' if is_focus else 'PLAN'" in source
 
 
 def test_summary_layout_adapts_from_four_columns_to_one():

@@ -106,6 +106,14 @@ status text omits profile, H5 and calibration diagnostics; developer mode retain
 the exact layer errors for operator work. This is presentation-only and does not
 relax exact profile matching.
 
+The public-release language choice is an application-language contract, not only a
+debrief-rendering preference. R3c must localize every reachable public GUI state and
+the read-only History browser while keeping internal section/status keys stable.
+Changing language must affect presentation and future debriefs only; existing
+artifacts, telemetry and History are never translated or regenerated. Developer and
+operator surfaces may remain Spanish. A residual-string audit is required before
+R3c can be marked complete.
+
 The frozen orchestrator routes its Python-owned stages through
 `RaceEngineerWorker.exe`. Its module allowlist contains only deterministic analysis,
 validation, History and historical-observation tools; LLM modules are rejected.

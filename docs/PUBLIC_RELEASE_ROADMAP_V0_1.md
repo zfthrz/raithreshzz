@@ -84,10 +84,27 @@ the supplied-fixture deterministic pipeline smoke remains open before R2 exit.
 
 ### R3 — Installation and first run
 
-- [x] Provide a clear first-run choice for telemetry location and debrief language.
+- [x] Provide a clear first-run choice for telemetry location and application language.
 - [x] Verify the persisted path contract with spaces and non-ASCII characters.
 - [x] Explain unsupported track/layout states without exposing calibration internals.
 - Define update and uninstall behavior without deleting user telemetry or History.
+
+### R3c — Complete public-interface localization
+
+- Make the first-run Español/English choice control both the public interface and
+  newly generated debriefs.
+- Keep internal section, status and artifact identifiers language-neutral so saved
+  preferences and old sessions remain compatible.
+- Localize the four public workspaces, sidebar, dialogs, empty/error/loading states,
+  contextual inspector, telemetry controls, statistics and the read-only History
+  browser.
+- Allow changing language later without rewriting existing debriefs, telemetry or
+  History.
+- Add an automated public-surface audit that fails when an untranslated Spanish UI
+  string is reachable in English mode.
+
+Exit: both languages cover the complete public surface with no mixed-language
+states. Developer/operator views may remain Spanish and keep their current keys.
 
 Exit: a clean Windows account can install, analyze a supplied fixture, reopen the
 session and uninstall while its explicitly retained user data stays intact.
@@ -99,6 +116,8 @@ session and uninstall while its explicitly retained user data stays intact.
 - Exercise short/long debriefs, no-debrief, History-only and load-error states.
 - Test window resize, DPI scaling, clipboard, English/Spanish new reports and LMU
   coexistence on the supported Windows versions.
+- Test the complete public interface in Español and English, including dynamic,
+  empty, error and History-window states.
 - Confirm zero writes to bundled profiles and zero automatic LLM calls.
 
 Exit: signed QA report with every required check and no unresolved release blocker.

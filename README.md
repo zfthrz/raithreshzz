@@ -351,6 +351,11 @@ su idioma; cambiar la preferencia no convierte tus sesiones anteriores ni recalc
 telemetría, History o calibraciones. Las cards, el checklist y los cues de telemetría
 leen el idioma del resultado seleccionado. La interfaz general continúa en español.
 
+Para la distribución pública, esa limitación es transitoria: R3c amplía la misma
+elección Español/English a toda la interfaz pública, incluida la ventana de History
+y los estados dinámicos. Los identificadores internos y los debriefs ya guardados
+permanecen sin cambios. La interfaz de desarrollo puede continuar en español.
+
 Para generar un debrief desde un análisis JSON con un idioma explícito:
 
 ```powershell

@@ -86,7 +86,7 @@ the supplied-fixture deterministic pipeline smoke remains open before R2 exit.
 
 - [x] Provide a clear first-run choice for telemetry location and debrief language.
 - [x] Verify the persisted path contract with spaces and non-ASCII characters.
-- Explain unsupported track/layout states without exposing calibration internals.
+- [x] Explain unsupported track/layout states without exposing calibration internals.
 - Define update and uninstall behavior without deleting user telemetry or History.
 
 Exit: a clean Windows account can install, analyze a supplied fixture, reopen the

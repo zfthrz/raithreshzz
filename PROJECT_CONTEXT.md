@@ -100,6 +100,11 @@ stores the optional LMU telemetry directory as a Unicode absolute path and reuse
 it in later file pickers, while the existing debrief-language preference continues
 to affect only newly generated reports. The telemetry directory can be changed
 later from the public sidebar; neither preference migrates History or telemetry.
+Public GUI v1.64 projects a missing exact track/layout profile as a version coverage
+limitation: map and telemetry remain available, while named corners do not. Public
+status text omits profile, H5 and calibration diagnostics; developer mode retains
+the exact layer errors for operator work. This is presentation-only and does not
+relax exact profile matching.
 
 The frozen orchestrator routes its Python-owned stages through
 `RaceEngineerWorker.exe`. Its module allowlist contains only deterministic analysis,
@@ -218,7 +223,7 @@ D3.x deterministic-first default and D2.9 production ranker (2026-08-25).
 | Component | Current operational baseline |
 |---|---|
 | `race_engineer.py` | orchestrator v0.4 — estados nuevos usan `debrief`/`debrief_validator`; lectura legacy compatible |
-| `race_engineer_gui.py` | v1.63 — public first-run language/telemetry choices on isolated per-user state |
+| `race_engineer_gui.py` | v1.64 — public coverage messaging without operator diagnostics |
 | `analyze_telemetry.py` | v3.8 + Objective Python v6 |
 | Brake point | 2.1 / schema 2.1 |
 | Throttle point | 1.2.1 / schema 1.2 |

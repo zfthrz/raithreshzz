@@ -1,5 +1,14 @@
 # Project Status
 
+## Public release R3b — 2026-09-07
+
+- A missing exact circuit/layout profile is presented publicly as coverage not yet
+  included in that application version.
+- The public status keeps map, telemetry, comparison and plan availability explicit,
+  while omitting profile, H5 and calibration terminology and raw layer errors.
+- Developer mode retains the complete technical diagnostics. Exact profile matching,
+  generated artifacts and coaching authority are unchanged.
+
 ## Public release R3a — 2026-09-07
 
 - Public first run now records the language for newly generated debriefs and an

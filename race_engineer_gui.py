@@ -87,7 +87,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.63"
+GUI_VERSION = "1.64"
 DEFAULT_RUNS_ROOT = generated_root() / "runs"
 STATE_REFRESH_INTERVAL_MS = 5_000
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -254,6 +254,58 @@ def ui_state_message(code: str, *, detail: str | None = None, compact: bool = Fa
         title = f"{title} {detail}"
     separator = " · " if compact else "\n\n"
     return f"{title}{separator}{action}"
+
+
+PUBLIC_UNSUPPORTED_TRACK_MESSAGE = (
+    "Este circuito o trazado todavía no está disponible en esta versión. "
+    "El mapa y la telemetría siguen disponibles, pero no se mostrarán nombres de curvas."
+)
+
+
+def track_zone_summary_text(
+    *,
+    zone_count: int,
+    loss_count: int,
+    gain_count: int,
+    focus_count: int,
+    priority_count: int,
+    profile_id: str | None,
+    errors: tuple[str, ...] = (),
+    public_release: bool = False,
+) -> str:
+    """Describe optional map layers without exposing operator terms publicly."""
+    if public_release:
+        unavailable = " Algunos detalles de esta sesión no están disponibles." if errors else ""
+        if zone_count == 0 and priority_count == 0:
+            if profile_id:
+                return (
+                    "Podés hacer clic en el trazado para identificar cada curva."
+                    + unavailable
+                )
+            return PUBLIC_UNSUPPORTED_TRACK_MESSAGE + unavailable
+        text = (
+            f"Comparación: {zone_count} zonas · pérdidas: {loss_count} · "
+            f"ganancias: {gain_count} · focos: {focus_count} · "
+            f"plan completo: {priority_count} · hacé clic en un tramo para ver el detalle."
+        )
+        if not profile_id:
+            text += " " + PUBLIC_UNSUPPORTED_TRACK_MESSAGE
+        return text + unavailable
+
+    suffix = f" · {'; '.join(errors)}" if errors else ""
+    if zone_count == 0 and priority_count == 0:
+        if profile_id:
+            return (
+                f"Perfil validado {profile_id} · "
+                "hacé clic en el trazado para identificar la curva." + suffix
+            )
+        return "Sin zonas H5.2, prioridades ni perfil exacto para esta sesión." + suffix
+    text = (
+        f"Zonas H5.2: {zone_count} · pérdidas: {loss_count} · "
+        f"ganancias: {gain_count} · focos: {focus_count} · "
+        f"plan completo: {priority_count} · hacé clic en un tramo para ver el detalle."
+    )
+    return text + suffix
 
 
 def summary_layout_spec(width: int) -> tuple[str, tuple[tuple[int, int], ...]]:
@@ -7032,30 +7084,25 @@ class RaceEngineerApp:
         priorities = self.current_track_priorities
         profile = self.current_track_profile
         errors = layer_errors or []
-        if not zones and not priorities:
-            suffix = f" · {'; '.join(errors)}" if errors else ""
-            if profile is not None:
-                self.track_map_zone_status.set(
-                    f"Perfil validado {profile.get('profile_id', 'disponible')} · "
-                    "hacé clic en el trazado para identificar la curva." + suffix
-                )
-            else:
-                self.track_map_zone_status.set(
-                    "Sin zonas H5.2, prioridades ni perfil exacto para esta sesión."
-                    + suffix
-                )
-            return
         losses = sum(zone.kind == "loss" for zone in zones)
         gains = sum(zone.kind == "gain" for zone in zones)
         focuses = sum(priority.is_focus for priority in priorities)
-        text = (
-            f"Zonas H5.2: {len(zones)} · pérdidas: {losses} · ganancias: {gains} · "
-            f"focos: {focuses} · plan completo: {len(priorities)} · "
-            "hacé clic en un tramo para ver el detalle."
+        self.track_map_zone_status.set(
+            track_zone_summary_text(
+                zone_count=len(zones),
+                loss_count=losses,
+                gain_count=gains,
+                focus_count=focuses,
+                priority_count=len(priorities),
+                profile_id=(
+                    str(profile.get("profile_id") or "disponible")
+                    if profile is not None
+                    else None
+                ),
+                errors=tuple(errors),
+                public_release=getattr(self, "public_release", False),
+            )
         )
-        if errors:
-            text += " · " + "; ".join(errors)
-        self.track_map_zone_status.set(text)
 
     def _update_track_turn_controls(self):
         if not hasattr(self, "track_turn_selector"):

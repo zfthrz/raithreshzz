@@ -14,6 +14,7 @@ from race_engineer_gui import (
     _complete_public_first_run,
     global_shortcuts,
     primary_sections,
+    track_zone_summary_text,
 )
 from public_first_run import PublicPreferences
 
@@ -153,3 +154,54 @@ def test_public_file_picker_uses_saved_telemetry_directory(tmp_path):
     app.public_release = True
     app.public_preferences = PublicPreferences(True, telemetry)
     assert app._analysis_picker_directory() == telemetry
+
+
+def test_public_missing_track_support_is_explained_without_operator_terms():
+    text = track_zone_summary_text(
+        zone_count=0,
+        loss_count=0,
+        gain_count=0,
+        focus_count=0,
+        priority_count=0,
+        profile_id=None,
+        errors=("perfil: detalle interno",),
+        public_release=True,
+    )
+    assert "todavía no está disponible en esta versión" in text
+    assert "mapa y la telemetría siguen disponibles" in text
+    assert "perfil" not in text.casefold()
+    assert "h5" not in text.casefold()
+    assert "calibr" not in text.casefold()
+    assert "detalle interno" not in text
+
+
+def test_public_comparison_remains_useful_without_named_corners():
+    text = track_zone_summary_text(
+        zone_count=3,
+        loss_count=2,
+        gain_count=1,
+        focus_count=1,
+        priority_count=2,
+        profile_id=None,
+        public_release=True,
+    )
+    assert "Comparación: 3 zonas" in text
+    assert "plan completo: 2" in text
+    assert "no se mostrarán nombres de curvas" in text
+
+
+def test_development_track_status_keeps_operator_diagnostics():
+    text = track_zone_summary_text(
+        zone_count=0,
+        loss_count=0,
+        gain_count=0,
+        focus_count=0,
+        priority_count=0,
+        profile_id=None,
+        errors=("perfil: missing",),
+        public_release=False,
+    )
+    assert text == (
+        "Sin zonas H5.2, prioridades ni perfil exacto para esta sesión."
+        " · perfil: missing"
+    )

@@ -397,6 +397,12 @@ telemetría LMU. Ambas preferencias viven en los datos locales del usuario; la
 carpeta puede cambiarse después desde la barra lateral y el selector de archivos la
 reutiliza. Las rutas con espacios y caracteres no ASCII se conservan como Unicode.
 
+GUI v1.64 presenta los circuitos o trazados todavía no incluidos como una limitación
+de la versión. La interfaz pública aclara que el mapa y la telemetría siguen
+disponibles y que faltarán los nombres de curvas, sin mostrar nombres de etapas,
+perfiles ni estados de calibración. La interfaz de desarrollo conserva el diagnóstico
+técnico completo.
+
 La distribución congelada conserva tres procesos explícitos: interfaz pública,
 launcher seguro y pipeline determinista. Esto mantiene los bloqueos de LMU y de
 estabilidad también cuando Python viene incorporado. Las versiones exactas usadas

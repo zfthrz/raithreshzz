@@ -22,6 +22,11 @@ from public_first_run import (
     save_public_preferences,
     telemetry_picker_directory,
 )
+from public_ui_locale import (
+    public_section_description,
+    public_section_label,
+    ui_text,
+)
 
 from race_engineer_ui_model import (
     SessionDetail,
@@ -87,7 +92,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.64"
+GUI_VERSION = "1.65"
 DEFAULT_RUNS_ROOT = generated_root() / "runs"
 STATE_REFRESH_INTERVAL_MS = 5_000
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -497,9 +502,9 @@ def save_telemetry_preferences(
     )
 
 
-def navigation_button_label(section: str) -> str:
+def navigation_button_label(section: str, language: str = "es") -> str:
     index = PRIMARY_SECTIONS.index(section) + 1
-    return f"{section}    Ctrl+{index}"
+    return f"{public_section_label(section, language)}    Ctrl+{index}"
 
 
 def adjacent_secondary_view(section: str, current: str, step: int) -> str:
@@ -1536,6 +1541,8 @@ class RaceEngineerApp:
         self.root = root
         self.runs_root = runs_root
         self.public_release = public_release
+        from debrief_language import load_debrief_language
+        self.interface_language = load_debrief_language() if public_release else "es"
         self.public_preferences = (
             load_public_preferences() if public_release else PublicPreferences()
         )
@@ -1644,7 +1651,9 @@ class RaceEngineerApp:
         self._configure_style()
         self._build_layout()
         self._bind_global_shortcuts()
-        self.count_var.set("Cargando catálogo de sesiones…")
+        self.count_var.set(
+            self._ui("Cargando catálogo de sesiones…", "Loading session catalog…")
+        )
         self.footer_var.set(str(self.runs_root))
         self._initial_catalog_after_id = self.root.after(
             75,
@@ -2140,6 +2149,7 @@ class RaceEngineerApp:
             borderwidth=0,
             thickness=5,
         )
+
         style.configure(
             "MetricCard.TFrame",
             background=COLORS["metric_card"],
@@ -2158,6 +2168,19 @@ class RaceEngineerApp:
             foreground=COLORS["text_primary"],
             font=FONTS["title_priority"],
         )
+
+    def _ui(self, spanish: str, english: str) -> str:
+        return ui_text(self.interface_language, spanish, english)
+
+    def _section_label(self, section: str) -> str:
+        if not self.public_release:
+            return section
+        return public_section_label(section, self.interface_language)
+
+    def _section_description(self, section: str) -> str:
+        if not self.public_release:
+            return SECTION_DESCRIPTIONS.get(section, "")
+        return public_section_description(section, self.interface_language)
 
     def _build_layout(self):
         ttk = self.ttk
@@ -2202,7 +2225,7 @@ class RaceEngineerApp:
         for section in self.active_primary_sections:
             button = ttk.Button(
                 nav,
-                text=navigation_button_label(section),
+                text=navigation_button_label(section, self.interface_language),
                 style="SidebarNav.TButton",
                 command=lambda name=section: self._show_primary_section(name),
             )
@@ -2213,8 +2236,14 @@ class RaceEngineerApp:
 
         selected_box = ttk.Frame(sidebar, style="Sidebar.TFrame", padding=(16, 0, 14, 8))
         selected_box.pack(fill="x")
-        ttk.Label(selected_box, text="SESIÓN SELECCIONADA", style="SidebarMeta.TLabel").pack(anchor="w")
-        self.detail_title = tk.StringVar(value="Seleccioná una sesión")
+        ttk.Label(
+            selected_box,
+            text=self._ui("SESIÓN SELECCIONADA", "SELECTED SESSION"),
+            style="SidebarMeta.TLabel",
+        ).pack(anchor="w")
+        self.detail_title = tk.StringVar(
+            value=self._ui("Seleccioná una sesión", "Select a session")
+        )
         self.detail_subtitle = tk.StringVar(value="")
         ttk.Label(
             selected_box,
@@ -2232,7 +2261,7 @@ class RaceEngineerApp:
         ).pack(anchor="w", pady=(3, 8))
         self.open_button = ttk.Button(
             selected_box,
-            text="Abrir carpeta de la sesión",
+            text=self._ui("Abrir carpeta de la sesión", "Open session folder"),
             command=self._open_selected_folder,
             state="disabled",
         )
@@ -2242,7 +2271,9 @@ class RaceEngineerApp:
 
         browser = ttk.Frame(sidebar, style="Sidebar.TFrame", padding=(12, 0, 10, 0))
         browser.pack(fill="both", expand=True)
-        self.count_var = tk.StringVar(value="Buscando sesiones…")
+        self.count_var = tk.StringVar(
+            value=self._ui("Buscando sesiones…", "Searching sessions…")
+        )
         ttk.Label(browser, textvariable=self.count_var, style="SidebarMeta.TLabel").pack(anchor="w")
         self.session_query_var = tk.StringVar()
         self.session_query_entry = ttk.Entry(browser, textvariable=self.session_query_var)
@@ -2271,9 +2302,9 @@ class RaceEngineerApp:
             selectmode="browse",
         )
         for name, text, width, stretch in (
-            ("date", "Fecha", 78, False),
-            ("track", "Circuito", 104, True),
-            ("status", "Estado", 48, False),
+            ("date", self._ui("Fecha", "Date"), 78, False),
+            ("track", self._ui("Circuito", "Track"), 104, True),
+            ("status", self._ui("Estado", "Status"), 48, False),
         ):
             self.tree.heading(
                 name,
@@ -2296,7 +2327,11 @@ class RaceEngineerApp:
         sidebar_bottom = ttk.Frame(sidebar, style="Sidebar.TFrame", padding=(12, 9, 10, 12))
         sidebar_bottom.pack(fill="x")
         from debrief_language import LANGUAGES, load_debrief_language
-        ttk.Label(sidebar_bottom, text="Idioma de debriefs nuevos", style="SidebarMeta.TLabel").pack(anchor="w")
+        ttk.Label(
+            sidebar_bottom,
+            text=self._ui("Idioma de la aplicación", "Application language"),
+            style="SidebarMeta.TLabel",
+        ).pack(anchor="w")
         self.debrief_language_var = tk.StringVar(value=LANGUAGES[load_debrief_language()])
         language_selector = ttk.Combobox(sidebar_bottom, state="readonly", width=16,
                                         textvariable=self.debrief_language_var,
@@ -2306,7 +2341,7 @@ class RaceEngineerApp:
         if self.public_release:
             ttk.Button(
                 sidebar_bottom,
-                text="Carpeta de telemetría",
+                text=self._ui("Carpeta de telemetría", "Telemetry folder"),
                 command=self._choose_telemetry_folder,
             ).pack(fill="x", pady=(0, 6))
         self.skip_stability_var = tk.BooleanVar(value=False)
@@ -2319,13 +2354,17 @@ class RaceEngineerApp:
             self.skip_stability_check.pack(anchor="w", pady=(0, 6))
         side_actions = ttk.Frame(sidebar_bottom, style="Sidebar.TFrame")
         side_actions.pack(fill="x")
-        self.refresh_button = ttk.Button(side_actions, text="Actualizar", command=self.refresh)
+        self.refresh_button = ttk.Button(
+            side_actions,
+            text=self._ui("Actualizar", "Refresh"),
+            command=self.refresh,
+        )
         self.refresh_button.pack(side="left", fill="x", expand=True)
         self.history_button = ttk.Button(side_actions, text="History", command=self._open_history)
         self.history_button.pack(side="left", fill="x", expand=True, padx=(6, 0))
         self.shortcut_help_button = ttk.Button(
             sidebar_bottom,
-            text="Atajos de teclado · F1",
+            text=self._ui("Atajos de teclado · F1", "Keyboard shortcuts · F1"),
             command=self._show_shortcut_help,
         )
         self.shortcut_help_button.pack(fill="x", pady=(7, 0))
@@ -2341,8 +2380,10 @@ class RaceEngineerApp:
         self.sidebar_toggle_button.pack(side="left", padx=(0, 10))
         header_labels = ttk.Frame(header, style="WorkspaceHeader.TFrame")
         header_labels.pack(side="left", fill="x", expand=True)
-        self.workspace_title_var = tk.StringVar(value="Resumen")
-        self.workspace_subtitle_var = tk.StringVar(value=SECTION_DESCRIPTIONS["Resumen"])
+        self.workspace_title_var = tk.StringVar(value=self._section_label("Resumen"))
+        self.workspace_subtitle_var = tk.StringVar(
+            value=self._section_description("Resumen")
+        )
         ttk.Label(header_labels, textvariable=self.workspace_title_var, style="WorkspaceTitle.TLabel").pack(anchor="w")
         ttk.Label(
             header_labels,
@@ -2351,7 +2392,7 @@ class RaceEngineerApp:
         ).pack(anchor="w", pady=(3, 0))
         self.analyze_button = ttk.Button(
             header,
-            text="Analizar sesión…",
+            text=self._ui("Analizar sesión…", "Analyze session…"),
             style="Accent.TButton",
             command=self._choose_analysis_file,
         )
@@ -2386,7 +2427,7 @@ class RaceEngineerApp:
         inspector_header = ttk.Frame(self.inspector_frame, style="Inspector.TFrame")
         inspector_header.pack(fill="x", pady=(0, 14))
         inspector_header.columnconfigure(0, weight=1)
-        self.inspector_title_var = tk.StringVar(value="Detalle")
+        self.inspector_title_var = tk.StringVar(value=self._ui("Detalle", "Details"))
         self.inspector_meta_var = tk.StringVar(value="")
         ttk.Label(
             inspector_header,
@@ -2411,7 +2452,7 @@ class RaceEngineerApp:
         ).pack(fill="x", pady=(0, 10))
         self.inspector_telemetry_button = ttk.Button(
             self.inspector_frame,
-            text="Ver zona en telemetría  →",
+            text=self._ui("Ver zona en telemetría  →", "View zone in telemetry  →"),
             style="Link.TButton",
             state="disabled",
         )
@@ -2711,8 +2752,8 @@ class RaceEngineerApp:
         frame = self.primary_section_frames[section]
         frame.pack(fill="both", expand=True)
         self.primary_section_var.set(section)
-        self.workspace_title_var.set(section)
-        self.workspace_subtitle_var.set(SECTION_DESCRIPTIONS.get(section, ""))
+        self.workspace_title_var.set(self._section_label(section))
+        self.workspace_subtitle_var.set(self._section_description(section))
         try:
             save_primary_section_preference(self.gui_preferences_path, section)
         except OSError as exc:

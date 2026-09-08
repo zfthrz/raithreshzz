@@ -113,6 +113,11 @@ Changing language must affect presentation and future debriefs only; existing
 artifacts, telemetry and History are never translated or regenerated. Developer and
 operator surfaces may remain Spanish. A residual-string audit is required before
 R3c can be marked complete.
+GUI v1.65 begins that migration with a presentation-only locale layer. Public
+section identifiers remain the existing stable Spanish keys, while navigation,
+workspace headings and initial shell controls resolve to Español or English from
+the existing language preference. This is the first R3c slice, not completion of
+the residual-string gate.
 
 The frozen orchestrator routes its Python-owned stages through
 `RaceEngineerWorker.exe`. Its module allowlist contains only deterministic analysis,
@@ -231,7 +236,7 @@ D3.x deterministic-first default and D2.9 production ranker (2026-08-25).
 | Component | Current operational baseline |
 |---|---|
 | `race_engineer.py` | orchestrator v0.4 — estados nuevos usan `debrief`/`debrief_validator`; lectura legacy compatible |
-| `race_engineer_gui.py` | v1.64 — public coverage messaging without operator diagnostics |
+| `race_engineer_gui.py` | v1.65 — stable-key public UI localization foundation |
 | `analyze_telemetry.py` | v3.8 + Objective Python v6 |
 | Brake point | 2.1 / schema 2.1 |
 | Throttle point | 1.2.1 / schema 1.2 |

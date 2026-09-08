@@ -962,7 +962,7 @@ def test_shortcut_help_documents_every_global_action():
     help_source = inspect.getsource(RaceEngineerApp._show_shortcut_help)
     dismiss_source = inspect.getsource(RaceEngineerApp._dismiss_transient_ui)
 
-    assert 'text="Atajos de teclado · F1"' in build_source
+    assert 'self._ui("Atajos de teclado · F1", "Keyboard shortcuts · F1")' in build_source
     assert "global_shortcuts(" in help_source
     assert global_shortcuts(public_release=False) == GLOBAL_SHORTCUTS
     assert "self._hide_shortcut_help()" in dismiss_source
@@ -997,11 +997,11 @@ def test_layout_uses_fixed_sidebar_and_workspace_header():
     assert 'displaycolumns=("date", "track", "status")' in build_source
     assert "Threshzz's Telemetry" in build_source
     assert "Analysis Tool" in build_source
-    assert 'self.workspace_title_var = tk.StringVar(value="Resumen")' in build_source
+    assert 'self.workspace_title_var = tk.StringVar(value=self._section_label("Resumen"))' in build_source
     assert "self.sidebar_toggle_button = ttk.Button" in build_source
     assert 'self._calibration_panel(calibration_frame)' in build_source
     assert '"SidebarNavActive.TButton"' in show_source
-    assert 'self.workspace_title_var.set(section)' in show_source
+    assert 'self.workspace_title_var.set(self._section_label(section))' in show_source
 
 
 def test_summary_resize_reflows_cards_and_visual_previews():
@@ -1429,7 +1429,7 @@ def test_initial_session_catalog_is_deferred_until_tk_mainloop():
     init_source = inspect.getsource(RaceEngineerApp.__init__)
     worker_source = inspect.getsource(RaceEngineerApp._start_initial_catalog_load)
 
-    assert 'self.count_var.set("Cargando catálogo de sesiones…")' in init_source
+    assert 'self._ui("Cargando catálogo de sesiones…", "Loading session catalog…")' in init_source
     assert "self.root.after(" in init_source
     assert "self.refresh()" not in init_source
     assert "threading.Thread(" in worker_source

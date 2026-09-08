@@ -1,5 +1,15 @@
 # Project Status
 
+## Public interface localization R3c.1 — 2026-09-07
+
+- Added a presentation-only locale layer over stable internal section identifiers.
+- An existing English preference now localizes public navigation, workspace titles
+  and descriptions, session-shell headings and primary actions at startup.
+- Spanish remains the developer-mode default. Existing reports and persisted section
+  keys remain compatible.
+- R3c remains open: workspace contents, dynamic states, dialogs and History still
+  require complete catalog coverage and the residual-string audit.
+
 ## Public interface localization audit — 2026-09-07
 
 - The release requirement now covers the complete public interface in Español and

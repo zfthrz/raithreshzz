@@ -11,9 +11,11 @@ from public_release_contract import DEVELOPMENT_GUI_SECTIONS, PUBLIC_GUI_SECTION
 from public_runtime import configure_public_runtime, public_data_root
 from race_engineer_gui import (
     RaceEngineerApp,
+    _complete_public_first_run,
     global_shortcuts,
     primary_sections,
 )
+from public_first_run import PublicPreferences
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -105,3 +107,49 @@ def test_public_entrypoint_list_never_reads_checkout_sessions(tmp_path):
     assert result.returncode == 1
     assert result.stdout == ""
     assert not (tmp_path / "local" / "race_engineer_history.duckdb").exists()
+
+
+def test_completed_public_onboarding_opens_without_prompt(monkeypatch):
+    monkeypatch.setattr(
+        "race_engineer_gui.load_public_preferences",
+        lambda: PublicPreferences(onboarding_complete=True),
+    )
+    assert _complete_public_first_run(object()) is True
+
+
+def test_public_onboarding_saves_language_and_unicode_directory(tmp_path, monkeypatch):
+    from tkinter import filedialog, messagebox
+
+    telemetry = tmp_path / "Piloto Ñ" / "Telemetría LMU"
+    telemetry.mkdir(parents=True)
+    saved_languages = []
+    saved_preferences = []
+    answers = iter((True, True))
+    monkeypatch.setattr(
+        "race_engineer_gui.load_public_preferences", lambda: PublicPreferences()
+    )
+    monkeypatch.setattr(
+        "race_engineer_gui.save_public_preferences", saved_preferences.append
+    )
+    monkeypatch.setattr(
+        "debrief_language.save_debrief_language", saved_languages.append
+    )
+    monkeypatch.setattr(messagebox, "askyesno", lambda *args, **kwargs: next(answers))
+    monkeypatch.setattr(
+        filedialog,
+        "askdirectory",
+        lambda *args, **kwargs: str(telemetry),
+    )
+
+    assert _complete_public_first_run(object()) is True
+    assert saved_languages == ["en"]
+    assert saved_preferences == [PublicPreferences(True, telemetry)]
+
+
+def test_public_file_picker_uses_saved_telemetry_directory(tmp_path):
+    telemetry = tmp_path / "Piloto Ñ" / "LMU Telemetry"
+    telemetry.mkdir(parents=True)
+    app = RaceEngineerApp.__new__(RaceEngineerApp)
+    app.public_release = True
+    app.public_preferences = PublicPreferences(True, telemetry)
+    assert app._analysis_picker_directory() == telemetry

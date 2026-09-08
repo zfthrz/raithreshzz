@@ -391,6 +391,12 @@ GUI v1.62 implementa esta separación de runtime. El proceso público no inicial
 Circuitos, Diagnóstico ni Calibración y no consulta el scheduler oculto ni sus
 estados de mantenimiento.
 
+GUI v1.63 agrega la configuración inicial de la distribución pública. En el primer
+arranque se elige el idioma de los debriefs nuevos y, opcionalmente, la carpeta de
+telemetría LMU. Ambas preferencias viven en los datos locales del usuario; la
+carpeta puede cambiarse después desde la barra lateral y el selector de archivos la
+reutiliza. Las rutas con espacios y caracteres no ASCII se conservan como Unicode.
+
 La distribución congelada conserva tres procesos explícitos: interfaz pública,
 launcher seguro y pipeline determinista. Esto mantiene los bloqueos de LMU y de
 estabilidad también cuando Python viene incorporado. Las versiones exactas usadas

@@ -1,5 +1,18 @@
 # Project Status
 
+## Public release R3a — 2026-09-07
+
+- Public first run now records the language for newly generated debriefs and an
+  optional LMU telemetry directory in isolated per-user state.
+- The public sidebar can change the directory later, and the analysis file picker
+  reuses the first existing choice: saved directory, standard LMU directory, then
+  the user's home directory.
+- Preference serialization preserves Windows paths containing spaces and non-ASCII
+  characters. Existing telemetry, reports, History and coaching authority remain
+  unchanged.
+- A packaged end-to-end run is still pending because this workspace contains no
+  real telemetry DuckDB fixture.
+
 ## Public release R2b — 2026-09-07
 
 - Added `RaceEngineer.spec` for a four-process Windows distribution: GUI, safe

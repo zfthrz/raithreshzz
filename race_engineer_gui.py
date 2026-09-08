@@ -16,6 +16,12 @@ from pathlib import Path
 from race_engineer_history_gui import open_history_browser
 from runtime_paths import generated_root, history_db_default_path, local_root
 from race_engineer_statistics import HistoryStatistics, load_history_statistics
+from public_first_run import (
+    PublicPreferences,
+    load_public_preferences,
+    save_public_preferences,
+    telemetry_picker_directory,
+)
 
 from race_engineer_ui_model import (
     SessionDetail,
@@ -81,7 +87,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.62"
+GUI_VERSION = "1.63"
 DEFAULT_RUNS_ROOT = generated_root() / "runs"
 STATE_REFRESH_INTERVAL_MS = 5_000
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -1478,6 +1484,9 @@ class RaceEngineerApp:
         self.root = root
         self.runs_root = runs_root
         self.public_release = public_release
+        self.public_preferences = (
+            load_public_preferences() if public_release else PublicPreferences()
+        )
         self.active_primary_sections = primary_sections(public_release=public_release)
         self.sessions: list[SessionRecord] = []
         self.all_sessions: list[SessionRecord] = []
@@ -2242,6 +2251,12 @@ class RaceEngineerApp:
                                         values=tuple(LANGUAGES.values()))
         language_selector.pack(fill="x", pady=(2, 6))
         language_selector.bind("<<ComboboxSelected>>", self._save_debrief_language)
+        if self.public_release:
+            ttk.Button(
+                sidebar_bottom,
+                text="Carpeta de telemetría",
+                command=self._choose_telemetry_folder,
+            ).pack(fill="x", pady=(0, 6))
         self.skip_stability_var = tk.BooleanVar(value=False)
         self.skip_stability_check = ttk.Checkbutton(
             sidebar_bottom,
@@ -2600,6 +2615,39 @@ class RaceEngineerApp:
             save_debrief_language(language)
         except OSError as exc:
             self.footer_var.set(f"No se pudo guardar el idioma: {exc}")
+
+    def _choose_telemetry_folder(self):
+        from tkinter import filedialog
+
+        selected = filedialog.askdirectory(
+            parent=self.root,
+            title="Seleccionar carpeta de telemetría LMU",
+            initialdir=str(self._analysis_picker_directory()),
+            mustexist=True,
+        )
+        if not selected:
+            return
+        directory = Path(selected)
+        self.public_preferences = PublicPreferences(
+            onboarding_complete=True,
+            telemetry_directory=directory,
+        )
+        try:
+            save_public_preferences(self.public_preferences)
+            self.footer_var.set(f"Carpeta de telemetría: {directory}")
+        except OSError as exc:
+            self.footer_var.set(f"No se pudo guardar la carpeta: {exc}")
+
+    def _analysis_picker_directory(self) -> Path:
+        standard = Path(
+            r"C:\Program Files (x86)\Steam\steamapps\common\Le Mans Ultimate\UserData\Telemetry"
+        )
+        fallback = Path.home() if self.public_release else PROJECT_ROOT / "telemetria"
+        return telemetry_picker_directory(
+            self.public_preferences,
+            standard_lmu_directory=standard,
+            fallback_directory=fallback,
+        )
 
     def _show_primary_section(self, section):
         if section not in self.primary_section_frames:
@@ -8556,14 +8604,10 @@ class RaceEngineerApp:
                 parent=self.root,
             )
             return
-        lmu_dir = Path(
-            r"C:\Program Files (x86)\Steam\steamapps\common\Le Mans Ultimate\UserData\Telemetry"
-        )
-        initial = lmu_dir if lmu_dir.is_dir() else PROJECT_ROOT / "telemetria"
         selected = filedialog.askopenfilename(
             parent=self.root,
             title="Seleccionar telemetría LMU",
-            initialdir=str(initial),
+            initialdir=str(self._analysis_picker_directory()),
             filetypes=(("Telemetría DuckDB", "*.duckdb"), ("Todos los archivos", "*.*")),
         )
         if not selected:
@@ -8804,9 +8848,64 @@ def main(argv: list[str] | None = None, *, public_release: bool = False) -> int:
     import tkinter as tk
 
     root = tk.Tk()
+    if public_release and not _complete_public_first_run(root):
+        root.destroy()
+        return 0
     RaceEngineerApp(root, args.runs_root, public_release=public_release)
     root.mainloop()
     return 0
+
+
+def _complete_public_first_run(root) -> bool:
+    preferences = load_public_preferences()
+    if preferences.onboarding_complete:
+        return True
+
+    from tkinter import filedialog, messagebox
+    from debrief_language import save_debrief_language
+
+    use_english = messagebox.askyesno(
+        "Race Engineer · Primera configuración",
+        "¿Querés que los debriefs nuevos se generen en inglés?\n\n"
+        "Podés cambiar esta opción más adelante. Tus debriefs existentes no se modifican.",
+        parent=root,
+    )
+    standard = Path(
+        r"C:\Program Files (x86)\Steam\steamapps\common\Le Mans Ultimate\UserData\Telemetry"
+    )
+    initial = standard if standard.is_dir() else Path.home()
+    choose_directory = messagebox.askyesno(
+        "Race Engineer · Primera configuración",
+        "¿Querés elegir ahora la carpeta donde LMU guarda la telemetría?\n\n"
+        "También podés hacerlo más adelante desde la barra lateral.",
+        parent=root,
+    )
+    directory = None
+    if choose_directory:
+        selected = filedialog.askdirectory(
+            parent=root,
+            title="Seleccionar carpeta de telemetría LMU",
+            initialdir=str(initial),
+            mustexist=True,
+        )
+        if selected:
+            directory = Path(selected)
+    try:
+        save_debrief_language("en" if use_english else "es")
+        save_public_preferences(
+            PublicPreferences(
+                onboarding_complete=True,
+                telemetry_directory=directory,
+            )
+        )
+    except OSError as exc:
+        messagebox.showerror(
+            "Race Engineer",
+            f"No se pudo guardar la configuración inicial:\n\n{exc}",
+            parent=root,
+        )
+        return False
+    return True
 
 
 if __name__ == "__main__":

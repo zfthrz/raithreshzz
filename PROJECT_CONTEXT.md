@@ -95,6 +95,12 @@ variables registered by `public_runtime.py` select these executables only in a
 frozen build. Source execution continues to use the current Python scripts. Exact
 tested build dependencies live in `requirements-release.txt`.
 
+Public GUI v1.63 records first-run choices under the per-user local runtime. It
+stores the optional LMU telemetry directory as a Unicode absolute path and reuses
+it in later file pickers, while the existing debrief-language preference continues
+to affect only newly generated reports. The telemetry directory can be changed
+later from the public sidebar; neither preference migrates History or telemetry.
+
 The frozen orchestrator routes its Python-owned stages through
 `RaceEngineerWorker.exe`. Its module allowlist contains only deterministic analysis,
 validation, History and historical-observation tools; LLM modules are rejected.
@@ -212,7 +218,7 @@ D3.x deterministic-first default and D2.9 production ranker (2026-08-25).
 | Component | Current operational baseline |
 |---|---|
 | `race_engineer.py` | orchestrator v0.4 — estados nuevos usan `debrief`/`debrief_validator`; lectura legacy compatible |
-| `race_engineer_gui.py` | v1.62 — separate public runtime with per-user data and no operator-panel initialization |
+| `race_engineer_gui.py` | v1.63 — public first-run language/telemetry choices on isolated per-user state |
 | `analyze_telemetry.py` | v3.8 + Objective Python v6 |
 | Brake point | 2.1 / schema 2.1 |
 | Throttle point | 1.2.1 / schema 1.2 |

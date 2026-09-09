@@ -493,6 +493,10 @@ en [`docs/PUBLIC_RELEASE_R4_QA_2026_09_09.md`](docs/PUBLIC_RELEASE_R4_QA_2026_09
 El estado `READY` del auditor confirma el contrato del árbol fuente; la publicación
 requiere además cerrar y firmar R4.
 
+La secuencia posterior al candidato, incluidos los cuatro perfiles restantes,
+publicación, actualizaciones y personalización histórica, está definida en
+[`docs/PRODUCT_PERFECTION_ROADMAP_V1_0.md`](docs/PRODUCT_PERFECTION_ROADMAP_V1_0.md).
+
 La distribución incluye `PUBLIC_INSTALLATION.md` en Español e inglés. Las
 actualizaciones se extraen en una carpeta nueva y reutilizan el estado aislado en
 `%LOCALAPPDATA%\RaceEngineer`. Eliminar la carpeta de la aplicación conserva ese

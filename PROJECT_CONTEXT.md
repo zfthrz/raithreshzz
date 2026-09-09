@@ -1645,6 +1645,14 @@ Do not clutter the repo root with every historical release; place superseded rel
 
 # 29. Current known debt / roadmap
 
+The product sequence after the current release candidate is defined in
+`docs/PRODUCT_PERFECTION_ROADMAP_V1_0.md`. It gates work as P0 candidate closure,
+P1 completion of the four owner-selected profiles, P2 first publication, P3
+maintainable updates, P4 observational personalization, P5 narrowly promoted adaptive
+recommendations and P6 ongoing quality. The first public release waits for the four
+profiles; only Barcelona is currently identified, so the other three identities must
+not be inferred. Profile packages and adaptive coaching remain conditional later work.
+
 Completed after the integration checkpoint:
 
 1. The H5.2 observational narrative passed on the real Fuji pair with DeepSeek and its dedicated validator.

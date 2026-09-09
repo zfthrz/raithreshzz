@@ -1,5 +1,9 @@
 # Public release roadmap v0.1
 
+This roadmap governs the first-release implementation and remains the detailed record
+for R0-R5. The post-candidate sequence continues in
+`docs/PRODUCT_PERFECTION_ROADMAP_V1_0.md`.
+
 ## Goal
 
 Ship a Windows desktop build for drivers who want to analyze LMU sessions, without

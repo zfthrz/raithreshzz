@@ -1,5 +1,16 @@
 # Project Status
 
+## Product perfection roadmap v1.0 — 2026-09-09
+
+- Added a gated post-candidate roadmap covering R4 closure, the four remaining
+  profiles, first publication, maintainable updates and longitudinal personalization.
+- The first public release waits for those four profiles. Barcelona is the only target
+  currently identified from real local state; the other three require explicit names
+  and source sessions rather than inference.
+- Profile-only packages remain conditional on demonstrated update burden. Adaptive
+  recommendations begin observationally and cannot change production coaching before
+  a separate longitudinal promotion gate.
+
 ## Public release R4 candidate audit — 2026-09-09
 
 - RC `4c78ebb` is traceable through a valid 1843-entry manifest and contains 12

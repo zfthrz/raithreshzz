@@ -9,12 +9,15 @@ from public_ui_locale import (
 )
 from race_engineer_gui import (
     RaceEngineerApp,
+    compact_laps_text,
     format_comparison_columns,
+    global_shortcuts,
     navigation_button_label,
     session_change_rows,
     plan_item_traceability_lines,
     session_status_detail_text,
     session_summary_values,
+    session_status_tooltip,
     secondary_view_label,
     secondary_view_value,
     statistics_month_label,
@@ -268,3 +271,31 @@ def test_main_statistics_workspace_uses_active_language_and_stable_month_key():
     assert "statistics_month_label(" in apply
     assert "self.statistics_month_keys.get(" in month
     assert "secondary_view_value(" in navigation
+
+
+def test_public_shortcut_help_has_complete_english_descriptions():
+    shortcuts = global_shortcuts(public_release=True, language="en")
+    assert shortcuts[0] == ("Ctrl+1 … Ctrl+4", "Switch section")
+    assert shortcuts[-1] == ("Ctrl+0", "Reset the Telemetry view")
+    assert session_status_tooltip("FAILED", "en") == "A processing stage failed."
+    assert "more laps in details" in compact_laps_text(
+        "lap 1\nlap 2\nlap 3\nlap 4\nlap 5", max_rows=2, language="en"
+    )
+
+
+def test_public_dialogs_and_analysis_outcomes_have_english_variants():
+    import inspect
+    import race_engineer_gui
+
+    picker = inspect.getsource(RaceEngineerApp._choose_analysis_file)
+    finish = inspect.getsource(RaceEngineerApp._finish_analysis)
+    close = inspect.getsource(RaceEngineerApp._on_close)
+    help_dialog = inspect.getsource(RaceEngineerApp._show_shortcut_help)
+    onboarding = inspect.getsource(race_engineer_gui._complete_public_first_run)
+    assert "Select LMU telemetry" in picker
+    assert "Analysis completed successfully" in finish
+    assert "The analysis failed" in finish
+    assert "An operation is running" in close
+    assert "Keyboard shortcuts" in help_dialog
+    assert "Use English for the application and new debriefs?" in onboarding
+    assert "Select LMU telemetry folder" in onboarding

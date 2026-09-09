@@ -92,7 +92,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.70"
+GUI_VERSION = "1.71"
 DEFAULT_RUNS_ROOT = generated_root() / "runs"
 STATE_REFRESH_INTERVAL_MS = 5_000
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -123,9 +123,25 @@ def primary_sections(*, public_release: bool) -> tuple[str, ...]:
     return PUBLIC_PRIMARY_SECTIONS if public_release else PRIMARY_SECTIONS
 
 
-def global_shortcuts(*, public_release: bool) -> tuple[tuple[str, str], ...]:
+def global_shortcuts(
+    *, public_release: bool, language: str = "es"
+) -> tuple[tuple[str, str], ...]:
     count = len(primary_sections(public_release=public_release))
-    return ((f"Ctrl+1 … Ctrl+{count}", "Cambiar de sección"), *GLOBAL_SHORTCUTS[1:])
+    shortcuts = ((f"Ctrl+1 … Ctrl+{count}", "Cambiar de sección"), *GLOBAL_SHORTCUTS[1:])
+    if language != "en":
+        return shortcuts
+    descriptions = (
+        "Switch section",
+        "Search sessions",
+        "Refresh current view",
+        "Close help, inspector, or tooltip",
+        "Show this help",
+        "Switch subview",
+        "Show or hide the session sidebar",
+        "Play or pause Telemetry",
+        "Reset the Telemetry view",
+    )
+    return tuple((shortcut, descriptions[index]) for index, (shortcut, _) in enumerate(shortcuts))
 GLOBAL_SHORTCUTS = (
     ("Ctrl+1 … Ctrl+7", "Cambiar de sección"),
     ("Ctrl+F", "Buscar una sesión"),
@@ -728,7 +744,9 @@ def sort_session_records(sessions, *, column: str, descending: bool):
     return [*available, *unavailable]
 
 
-def historical_steering_zone_text(zone: TrackMapZone) -> str:
+def historical_steering_zone_text(
+    zone: TrackMapZone, *, language: str = "es"
+) -> str:
     """Render validated corner morphology without turning it into coaching."""
 
     values = (
@@ -740,12 +758,16 @@ def historical_steering_zone_text(zone: TrackMapZone) -> str:
     if any(value is None for value in values):
         return ""
     return (
-        "Volante histórico (observacional): variación actual/referencia "
-        f"{zone.steering_current_variation_per_100m:.1f}/"
-        f"{zone.steering_reference_variation_per_100m:.1f} p.p./100 m · "
-        "cruces de signo "
-        f"{zone.steering_current_sign_change_count}/"
-        f"{zone.steering_reference_sign_change_count}"
+        ui_text(
+            language,
+            "Volante histórico (observacional): variación actual/referencia ",
+            "Historical steering (observational): current/reference variation ",
+        )
+        + f"{zone.steering_current_variation_per_100m:.1f}/"
+        + f"{zone.steering_reference_variation_per_100m:.1f} p.p./100 m · "
+        + ui_text(language, "cruces de signo ", "sign changes ")
+        + f"{zone.steering_current_sign_change_count}/"
+        + f"{zone.steering_reference_sign_change_count}"
     )
 
 
@@ -1240,7 +1262,9 @@ def telemetry_comparison_sample_text(
     return " · ".join(parts)
 
 
-def compact_laps_text(value: str, *, max_rows: int = 4) -> str:
+def compact_laps_text(
+    value: str, *, max_rows: int = 4, language: str = "es"
+) -> str:
     """Keep the dashboard lap card scannable while preserving the full source elsewhere."""
     lines = [line.strip() for line in value.splitlines() if line.strip()]
     if len(lines) <= max_rows:
@@ -1251,7 +1275,11 @@ def compact_laps_text(value: str, *, max_rows: int = 4) -> str:
         selected[-1] = reference[0]
     remaining = max(0, len(lines) - len(selected))
     if remaining:
-        selected.append(f"+ {remaining} vueltas más en el detalle")
+        selected.append(ui_text(
+            language,
+            f"+ {remaining} vueltas más en el detalle",
+            f"+ {remaining} more laps in details",
+        ))
     return "\n".join(selected)
 
 
@@ -1370,16 +1398,31 @@ SESSION_STATUS_TOOLTIPS = {
     ),
     "FAILED": "Falló en alguna etapa; revisá Diagnóstico → Pipeline.",
 }
+SESSION_STATUS_TOOLTIPS_EN = {
+    "DEBRIEF_READY": "Validated debrief ready to review.",
+    "DEBRIEF_UNVALIDATED": "A debrief exists, but validation is still pending.",
+    "HISTORY_READY": "Saved in History; analysis can generate the deterministic debrief.",
+    "ANALYZED": "Analyzed and validated; History import is pending.",
+    "PENDING_STABILITY": "New telemetry; waiting for file stability.",
+    "INCOMPLETE": "Incomplete session or no comparable laps.",
+    "CHANGED_REVIEW_REQUIRED": "The file changed after processing and needs review.",
+    "FAILED": "A processing stage failed.",
+}
 
 
 def session_status_color(status: str) -> str:
     return SESSION_STATUS_COLORS.get(status, "#9aa5ad")
 
 
-def session_status_tooltip(status: str) -> str:
-    return SESSION_STATUS_TOOLTIPS.get(
+def session_status_tooltip(status: str, language: str = "es") -> str:
+    tooltips = SESSION_STATUS_TOOLTIPS_EN if language == "en" else SESSION_STATUS_TOOLTIPS
+    return tooltips.get(
         status,
-        "Estado no clasificado; revisá Diagnóstico → Pipeline.",
+        ui_text(
+            language,
+            "Estado no clasificado; revisá Diagnóstico → Pipeline.",
+            "Unclassified status.",
+        ),
     )
 
 
@@ -2978,7 +3021,9 @@ class RaceEngineerApp:
 
         execution_bar = ttk.Frame(main, style="App.TFrame")
         execution_bar.pack(fill="x", pady=(8, 0))
-        self.execution_status = tk.StringVar(value="Sin análisis en ejecución")
+        self.execution_status = tk.StringVar(
+            value=self._ui("Sin análisis en ejecución", "No analysis running")
+        )
         ttk.Label(execution_bar, textvariable=self.execution_status, style="Subtitle.TLabel").pack(side="left")
         self.progress = ttk.Progressbar(execution_bar, mode="indeterminate", length=150)
         self.progress.pack(side="right")
@@ -3006,15 +3051,25 @@ class RaceEngineerApp:
         language = next(key for key, value in LANGUAGES.items() if value == selected)
         try:
             save_debrief_language(language)
+            self.footer_var.set(self._ui(
+                "Idioma guardado; reiniciá la aplicación para actualizar toda la interfaz.",
+                "Language saved; restart the application to update the full interface.",
+            ))
         except OSError as exc:
-            self.footer_var.set(f"No se pudo guardar el idioma: {exc}")
+            self.footer_var.set(self._ui(
+                f"No se pudo guardar el idioma: {exc}",
+                f"The language could not be saved: {exc}",
+            ))
 
     def _choose_telemetry_folder(self):
         from tkinter import filedialog
 
         selected = filedialog.askdirectory(
             parent=self.root,
-            title="Seleccionar carpeta de telemetría LMU",
+            title=self._ui(
+                "Seleccionar carpeta de telemetría LMU",
+                "Select LMU telemetry folder",
+            ),
             initialdir=str(self._analysis_picker_directory()),
             mustexist=True,
         )
@@ -3027,9 +3082,15 @@ class RaceEngineerApp:
         )
         try:
             save_public_preferences(self.public_preferences)
-            self.footer_var.set(f"Carpeta de telemetría: {directory}")
+            self.footer_var.set(self._ui(
+                f"Carpeta de telemetría: {directory}",
+                f"Telemetry folder: {directory}",
+            ))
         except OSError as exc:
-            self.footer_var.set(f"No se pudo guardar la carpeta: {exc}")
+            self.footer_var.set(self._ui(
+                f"No se pudo guardar la carpeta: {exc}",
+                f"The folder could not be saved: {exc}",
+            ))
 
     def _analysis_picker_directory(self) -> Path:
         standard = Path(
@@ -3057,7 +3118,10 @@ class RaceEngineerApp:
         try:
             save_primary_section_preference(self.gui_preferences_path, section)
         except OSError as exc:
-            self.settings_warning = f"No se pudo guardar la sección: {exc}"
+            self.settings_warning = self._ui(
+                f"No se pudo guardar la sección: {exc}",
+                f"The section could not be saved: {exc}",
+            )
         if section == "Circuitos":
             self._refresh_track_readiness()
         elif section == "Estadísticas":
@@ -3204,8 +3268,8 @@ class RaceEngineerApp:
         data = self.current_track_map
         if data is None or len(data.points) < 2:
             for canvas, message in (
-                (map_canvas, ui_state_message("SESSION_REQUIRED", compact=True)),
-                (telemetry_canvas, ui_state_message("SESSION_REQUIRED", compact=True)),
+                (map_canvas, self._state("SESSION_REQUIRED", compact=True)),
+                (telemetry_canvas, self._state("SESSION_REQUIRED", compact=True)),
             ):
                 width = max(canvas.winfo_width(), 120)
                 height = max(canvas.winfo_height(), 80)
@@ -3297,7 +3361,7 @@ class RaceEngineerApp:
         map_canvas.create_text(
             12,
             map_height - 12,
-            text="Click para abrir Telemetría",
+            text=self._ui("Click para abrir Telemetría", "Click to open Telemetry"),
             fill=COLORS["text_card_label"],
             anchor="sw",
             font=(FONT_FAMILY, 8),
@@ -3316,7 +3380,10 @@ class RaceEngineerApp:
             telemetry_canvas.create_text(
                 tel_width / 2,
                 tel_height / 2,
-                text="Canales de telemetría no disponibles.",
+                text=self._ui(
+                    "Canales de telemetría no disponibles.",
+                    "Telemetry channels are unavailable.",
+                ),
                 fill=COLORS["text_card_label"],
                 font=(FONT_FAMILY, 9),
             )
@@ -3342,7 +3409,10 @@ class RaceEngineerApp:
         telemetry_canvas.create_text(
             12,
             tel_height - 10,
-            text="Velocidad  ·  Acelerador  ·  Freno    ·    Click para ampliar",
+            text=self._ui(
+                "Velocidad  ·  Acelerador  ·  Freno    ·    Click para ampliar",
+                "Speed  ·  Throttle  ·  Brake    ·    Click to enlarge",
+            ),
             fill="#7f929f",
             anchor="sw",
             font=("Segoe UI", 8),
@@ -3729,7 +3799,10 @@ class RaceEngineerApp:
         try:
             save_secondary_view_preference(self.gui_preferences_path, section, view)
         except OSError as exc:
-            self.settings_warning = f"No se pudo guardar la subvista: {exc}"
+            self.settings_warning = self._ui(
+                f"No se pudo guardar la subvista: {exc}",
+                f"The subview could not be saved: {exc}",
+            )
 
     def _cycle_secondary_view(self, step, _event=None):
         section = self.primary_section_var.get()
@@ -3761,7 +3834,7 @@ class RaceEngineerApp:
         self.shortcut_help_previous_focus = self.root.focus_get()
         window = self.tk.Toplevel(self.root)
         self.shortcut_help_window = window
-        window.title("Atajos de teclado")
+        window.title(self._ui("Atajos de teclado", "Keyboard shortcuts"))
         window.configure(background=COLORS["app"])
         window.resizable(False, False)
         window.transient(self.root)
@@ -3771,11 +3844,12 @@ class RaceEngineerApp:
         panel.pack(fill="both", expand=True)
         self.ttk.Label(
             panel,
-            text="Atajos de teclado",
+            text=self._ui("Atajos de teclado", "Keyboard shortcuts"),
             style="InspectorTitle.TLabel",
         ).grid(row=0, column=0, columnspan=2, sticky="w", pady=(0, 14))
         shortcuts = global_shortcuts(
-            public_release=getattr(self, "public_release", False)
+            public_release=getattr(self, "public_release", False),
+            language=self.interface_language,
         )
         for row, (shortcut, description) in enumerate(shortcuts, start=1):
             self.ttk.Label(
@@ -3790,7 +3864,7 @@ class RaceEngineerApp:
             ).grid(row=row, column=1, sticky="w", pady=4)
         self.ttk.Button(
             panel,
-            text="Cerrar",
+            text=self._ui("Cerrar", "Close"),
             command=self._hide_shortcut_help,
         ).grid(row=len(shortcuts) + 1, column=0, columnspan=2, sticky="e", pady=(16, 0))
         window.bind("<Escape>", self._hide_shortcut_help)
@@ -4987,7 +5061,7 @@ class RaceEngineerApp:
         except (ValueError, IndexError):
             return
         self._show_row_tooltip(
-            session_status_tooltip(session.status),
+            session_status_tooltip(session.status, self.interface_language),
             event.x_root,
             event.y_root,
         )
@@ -6373,7 +6447,8 @@ class RaceEngineerApp:
             self._set_telemetry_zoom_status()
             self._set_track_map_zoom_status()
             self.track_map_status.set(
-                f"Vuelta seleccionada V{option.lap} · "
+                self._ui("Vuelta seleccionada ", "Selected lap ")
+                + f"V{option.lap} · "
                 f"{format_lap_time(cached.duration_s)} · "
                 f"{self.track_resolution_hz:.0f} Hz"
             )
@@ -6382,7 +6457,10 @@ class RaceEngineerApp:
 
         self.manual_track_map_loading = True
         self.track_map_status.set(
-            f"Cargando vuelta V{option.lap} para comparar con la referencia…"
+            self._ui(
+                f"Cargando vuelta V{option.lap} para comparar con la referencia…",
+                f"Loading lap V{option.lap} for reference comparison…",
+            )
         )
 
         def worker():
@@ -6955,7 +7033,10 @@ class RaceEngineerApp:
                 self.session_sort_descending,
             )
         except OSError as exc:
-            self.settings_warning = f"No se pudo guardar el orden: {exc}"
+            self.settings_warning = self._ui(
+                f"No se pudo guardar el orden: {exc}",
+                f"The sort order could not be saved: {exc}",
+            )
         self._update_session_sort_headings()
         self._populate_session_tree(
             errors=self.session_read_errors,
@@ -7107,7 +7188,12 @@ class RaceEngineerApp:
         self._render_session_changes(detail.session_change_view)
         self._request_session_change_view(record)
         self.current_laps_text = detail.laps_text or ""
-        self._set_text(self.laps_text, compact_laps_text(self.current_laps_text))
+        self._set_text(
+            self.laps_text,
+            compact_laps_text(
+                self.current_laps_text, language=self.interface_language
+            ),
+        )
         self._set_text(self.historical_reference_text, detail.historical_reference_text)
         self._set_comparison_view(
             detail.historical_comparison_view,
@@ -7750,7 +7836,7 @@ class RaceEngineerApp:
         self.track_map_zone_status.set(
             f"T{turn.turn} — {turn.name} · {self._ui('curva validada', 'validated corner')} · "
             f"{turn.start_distance_m:.0f}-{turn.end_distance_m:.0f} m · "
-            f"ápice {turn.apex_distance_m:.0f} m"
+            f"{self._ui('ápice', 'apex')} {turn.apex_distance_m:.0f} m"
         )
         self._render_track_map()
 
@@ -8135,7 +8221,9 @@ class RaceEngineerApp:
                 zone.end_distance_m,
                 point,
             )
-            steering_context = historical_steering_zone_text(zone)
+            steering_context = historical_steering_zone_text(
+                zone, language=self.interface_language
+            )
             if steering_context:
                 self.track_map_telemetry_status.set(
                     self.track_map_telemetry_status.get()
@@ -9252,7 +9340,11 @@ class RaceEngineerApp:
         try:
             _open_path(target)
         except (OSError, RuntimeError) as exc:
-            messagebox.showerror("Race Engineer", str(exc), parent=self.root)
+            messagebox.showerror(
+                "Race Engineer",
+                self._ui(str(exc), f"The session folder could not be opened: {target}"),
+                parent=self.root,
+            )
 
     def _open_history(self):
         record = self.selected_record()
@@ -9270,15 +9362,18 @@ class RaceEngineerApp:
         if self.analysis_running:
             messagebox.showinfo(
                 "Race Engineer",
-                "Ya hay un análisis en ejecución.",
+                self._ui(
+                    "Ya hay un análisis en ejecución.",
+                    "An analysis is already running.",
+                ),
                 parent=self.root,
             )
             return
         selected = filedialog.askopenfilename(
             parent=self.root,
-            title="Seleccionar telemetría LMU",
+            title=self._ui("Seleccionar telemetría LMU", "Select LMU telemetry"),
             initialdir=str(self._analysis_picker_directory()),
-            filetypes=(("Telemetría DuckDB", "*.duckdb"), ("Todos los archivos", "*.*")),
+            filetypes=((self._ui("Telemetría DuckDB", "DuckDB telemetry"), "*.duckdb"), (self._ui("Todos los archivos", "All files"), "*.*")),
         )
         if not selected:
             return
@@ -9302,7 +9397,10 @@ class RaceEngineerApp:
         if record.database_path is None:
             messagebox.showerror(
                 "Race Engineer",
-                "Esta sesión no registra la ruta de su DuckDB original.",
+                self._ui(
+                    "Esta sesión no registra la ruta de su DuckDB original.",
+                    "This session does not record the path to its original DuckDB file.",
+                ),
                 parent=self.root,
             )
             return
@@ -9311,8 +9409,10 @@ class RaceEngineerApp:
         except (FileNotFoundError, ValueError, OSError) as exc:
             messagebox.showerror(
                 "Race Engineer",
-                "El DuckDB original de esta sesión ya no está disponible:\n\n"
-                f"{exc}",
+                self._ui(
+                    f"El DuckDB original de esta sesión ya no está disponible:\n\n{exc}",
+                    f"The original DuckDB file for this session is no longer available:\n\n{exc}",
+                ),
                 parent=self.root,
             )
             return
@@ -9324,7 +9424,10 @@ class RaceEngineerApp:
         if self.analysis_running or self.h3_materialization_running or self.h3_import_running:
             messagebox.showinfo(
                 "Race Engineer",
-                "Ya hay una operación en ejecución.",
+                self._ui(
+                    "Ya hay una operación en ejecución.",
+                    "An operation is already running.",
+                ),
                 parent=self.root,
             )
             return
@@ -9336,7 +9439,11 @@ class RaceEngineerApp:
                 skip_stability_wait=skip_stability_wait,
             )
         except (ValueError, FileNotFoundError, OSError) as exc:
-            messagebox.showerror("Race Engineer", str(exc), parent=self.root)
+            messagebox.showerror(
+                "Race Engineer",
+                self._ui(str(exc), f"The telemetry file cannot be analyzed:\n\n{exc}"),
+                parent=self.root,
+            )
             return
         self._start_analysis(plan)
 
@@ -9347,7 +9454,10 @@ class RaceEngineerApp:
         self.skip_stability_check.configure(state="disabled")
         self.refresh_button.configure(state="disabled")
         self.progress.start(12)
-        self.execution_status.set("Analizando con Python determinista…")
+        self.execution_status.set(self._ui(
+            "Analizando con Python determinista…",
+            "Analyzing with deterministic Python…",
+        ))
         if not getattr(self, "public_release", False):
             self._set_text(
                 self.execution_text,
@@ -9414,7 +9524,9 @@ class RaceEngineerApp:
             validated_debrief_available=validated_debrief_available,
         )
         if outcome == "PASS":
-            self.execution_status.set("Análisis terminado correctamente")
+            self.execution_status.set(self._ui(
+                "Análisis terminado correctamente", "Analysis completed successfully"
+            ))
             self._append_execution_line("\nGUI RESULT: PASS")
             self.session_query_var.set("")
             self.session_filter_var.set(
@@ -9424,34 +9536,51 @@ class RaceEngineerApp:
             self._show_primary_section("Resumen")
             messagebox.showinfo(
                 "Race Engineer",
-                "El análisis terminó correctamente y la lista fue actualizada.",
+                self._ui(
+                    "El análisis terminó correctamente y la lista fue actualizada.",
+                    "The analysis completed successfully and the session list was updated.",
+                ),
                 parent=self.root,
             )
         elif outcome == "BLOCKED":
-            self.execution_status.set("Análisis bloqueado de forma segura")
+            self.execution_status.set(self._ui(
+                "Análisis bloqueado de forma segura", "Analysis blocked safely"
+            ))
             self._append_execution_line("\nGUI RESULT: BLOCKED")
             messagebox.showwarning(
                 "Race Engineer",
-                "El launcher bloqueó el análisis. Revisá la pestaña Ejecución.",
+                self._ui(
+                    "El launcher bloqueó el análisis. Revisá la pestaña Ejecución.",
+                    "The launcher blocked the analysis. Review the run details.",
+                ),
                 parent=self.root,
             )
         elif outcome == "RECOVERED_VALID_DEBRIEF":
-            self.execution_status.set("Debrief válido recuperado; pipeline incompleto")
+            self.execution_status.set(self._ui(
+                "Debrief válido recuperado; pipeline incompleto",
+                "Valid debrief recovered; pipeline incomplete",
+            ))
             self._append_execution_line("\nGUI RESULT: RECOVERED_VALID_DEBRIEF")
             self._show_primary_section("Resumen")
             messagebox.showwarning(
                 "Race Engineer",
-                "El proceso informó un error posterior, pero el debrief ya había sido "
-                "guardado y validado. Se muestra el resultado recuperado; revisá Pipeline "
-                "para comprobar si quedó alguna etapa posterior pendiente.",
+                self._ui(
+                    "El proceso informó un error posterior, pero el debrief ya había sido guardado y validado. Se muestra el resultado recuperado; revisá Pipeline para comprobar si quedó alguna etapa posterior pendiente.",
+                    "The process reported a later error, but the debrief had already been saved and validated. The recovered result is shown; a later stage may still be pending.",
+                ),
                 parent=self.root,
             )
         else:
-            self.execution_status.set("El análisis terminó con un error")
+            self.execution_status.set(self._ui(
+                "El análisis terminó con un error", "The analysis ended with an error"
+            ))
             self._append_execution_line("\nGUI RESULT: FAILED")
             messagebox.showerror(
                 "Race Engineer",
-                "El análisis falló. Revisá la pestaña Ejecución.",
+                self._ui(
+                    "El análisis falló. Revisá la pestaña Ejecución.",
+                    "The analysis failed. Try again or review the session status.",
+                ),
                 parent=self.root,
             )
         self.analysis_database = None
@@ -9462,8 +9591,10 @@ class RaceEngineerApp:
         if self.analysis_running or self.h3_materialization_running or self.h3_import_running:
             messagebox.showwarning(
                 "Race Engineer",
-                "Hay una operación en ejecución. La ventana no se cerrará ni cancelará el proceso.\n\n"
-                "Esperá a que termine.",
+                self._ui(
+                    "Hay una operación en ejecución. La ventana no se cerrará ni cancelará el proceso.\n\nEsperá a que termine.",
+                    "An operation is running. The window will stay open and the process will continue.\n\nWait for it to finish.",
+                ),
                 parent=self.root,
             )
             return
@@ -9537,33 +9668,49 @@ def _complete_public_first_run(root) -> bool:
     from debrief_language import save_debrief_language
 
     use_english = messagebox.askyesno(
-        "Race Engineer · Primera configuración",
-        "¿Querés que los debriefs nuevos se generen en inglés?\n\n"
-        "Podés cambiar esta opción más adelante. Tus debriefs existentes no se modifican.",
+        "Race Engineer · First setup / Primera configuración",
+        "Use English for the application and new debriefs?\n\n"
+        "¿Usar inglés para la aplicación y los debriefs nuevos?\n\n"
+        "You can change this later. Existing debriefs will not change. / "
+        "Podés cambiarlo más adelante. Los debriefs existentes no se modifican.",
         parent=root,
+    )
+    language = "en" if use_english else "es"
+
+    def setup_text(spanish: str, english: str) -> str:
+        return english if language == "en" else spanish
+
+    setup_title = setup_text(
+        "Race Engineer · Primera configuración",
+        "Race Engineer · First setup",
     )
     standard = Path(
         r"C:\Program Files (x86)\Steam\steamapps\common\Le Mans Ultimate\UserData\Telemetry"
     )
     initial = standard if standard.is_dir() else Path.home()
     choose_directory = messagebox.askyesno(
-        "Race Engineer · Primera configuración",
-        "¿Querés elegir ahora la carpeta donde LMU guarda la telemetría?\n\n"
-        "También podés hacerlo más adelante desde la barra lateral.",
+        setup_title,
+        setup_text(
+            "¿Querés elegir ahora la carpeta donde LMU guarda la telemetría?\n\nTambién podés hacerlo más adelante desde la barra lateral.",
+            "Do you want to choose the folder where LMU stores telemetry now?\n\nYou can also do this later from the sidebar.",
+        ),
         parent=root,
     )
     directory = None
     if choose_directory:
         selected = filedialog.askdirectory(
             parent=root,
-            title="Seleccionar carpeta de telemetría LMU",
+            title=setup_text(
+                "Seleccionar carpeta de telemetría LMU",
+                "Select LMU telemetry folder",
+            ),
             initialdir=str(initial),
             mustexist=True,
         )
         if selected:
             directory = Path(selected)
     try:
-        save_debrief_language("en" if use_english else "es")
+        save_debrief_language(language)
         save_public_preferences(
             PublicPreferences(
                 onboarding_complete=True,
@@ -9573,7 +9720,10 @@ def _complete_public_first_run(root) -> bool:
     except OSError as exc:
         messagebox.showerror(
             "Race Engineer",
-            f"No se pudo guardar la configuración inicial:\n\n{exc}",
+            setup_text(
+                f"No se pudo guardar la configuración inicial:\n\n{exc}",
+                f"The initial settings could not be saved:\n\n{exc}",
+            ),
             parent=root,
         )
         return False

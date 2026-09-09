@@ -437,6 +437,12 @@ y detalle por mes. Las subpestañas traducidas vuelven a sus claves estables ant
 guardar o navegar, y el bucket `Sin fecha` conserva su identidad aunque se muestre
 como `No date`.
 
+GUI v1.71 cierra R3c con los diálogos públicos, ayuda de teclado, selectores de
+archivos/carpetas, estados del análisis y cierre seguro en ambos idiomas. La auditoría
+residual también cubrió previews, tooltips, vueltas compactadas y mensajes dinámicos
+de Telemetría. Los textos españoles restantes pertenecen a claves persistidas,
+artefactos del usuario o paneles de desarrollo que no se incluyen en la release.
+
 La distribución congelada conserva tres procesos explícitos: interfaz pública,
 launcher seguro y pipeline determinista. Esto mantiene los bloqueos de LMU y de
 estabilidad también cuando Python viene incorporado. Las versiones exactas usadas

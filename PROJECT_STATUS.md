@@ -1,5 +1,16 @@
 # Project Status
 
+## Public interface localization R3c complete — 2026-09-09
+
+- Public file/folder pickers, keyboard help, analysis completion dialogs, safe-close
+  warning and first-run setup now have explicit Español/English presentation.
+- The residual audit fixed Summary previews, status tooltips, compact lap overflow,
+  manual-lap loading and observational steering text missed by earlier slices.
+- Remaining Spanish literals are stable persisted identifiers, supported Spanish
+  output, existing user artifact bodies or developer-only diagnostics/calibration.
+- R3c is complete. No generated data, History rows, telemetry, profiles or coaching
+  authority changed.
+
 ## Public interface localization R3c.5 — 2026-09-08
 
 - Main-window History and Statistics now render their tabs, headings, cards, charts,

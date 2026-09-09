@@ -143,6 +143,10 @@ facts are rendered in the selected interface language from their structured H4
 artifact, while any validated narrative body remains unchanged. Localized secondary
 tab and missing-date labels resolve back to stable Spanish preference/aggregation
 keys before navigation or persistence.
+GUI v1.71 completes public-interface localization R3c. File/folder pickers, keyboard
+help, analysis outcomes, safe-close messaging and first-run setup now follow the
+selected language. The residual audit treats stable persisted keys, user artifact
+bodies and developer-only panels as non-interface sources; they remain unchanged.
 
 The frozen orchestrator routes its Python-owned stages through
 `RaceEngineerWorker.exe`. Its module allowlist contains only deterministic analysis,
@@ -261,7 +265,7 @@ D3.x deterministic-first default and D2.9 production ranker (2026-08-25).
 | Component | Current operational baseline |
 |---|---|
 | `race_engineer.py` | orchestrator v0.4 — estados nuevos usan `debrief`/`debrief_validator`; lectura legacy compatible |
-| `race_engineer_gui.py` | v1.70 — localized public shell and all four user workspaces |
+| `race_engineer_gui.py` | v1.71 — complete Español/English public interface |
 | `analyze_telemetry.py` | v3.8 + Objective Python v6 |
 | Brake point | 2.1 / schema 2.1 |
 | Throttle point | 1.2.1 / schema 1.2 |

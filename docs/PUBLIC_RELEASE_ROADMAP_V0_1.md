@@ -117,14 +117,18 @@ R4 release-candidate QA.
 
 ### R4 — Release candidate QA
 
-- Run the full pytest and deterministic regression suites.
-- Validate every shipped production profile and exact identity.
+- [x] Run the full pytest and deterministic regression suites.
+- [x] Validate every shipped production profile and exact identity.
 - Exercise short/long debriefs, no-debrief, History-only and load-error states.
 - Test window resize, DPI scaling, clipboard, English/Spanish new reports and LMU
   coexistence on the supported Windows versions.
 - Test the complete public interface in Español and English, including dynamic,
   empty, error and History-window states.
-- Confirm zero writes to bundled profiles and zero automatic LLM calls.
+- [x] Confirm zero writes to bundled profiles and zero automatic LLM calls.
+
+The current candidate evidence and remaining manual coverage are recorded in
+`docs/PUBLIC_RELEASE_R4_QA_2026_09_09.md`. R4 remains open until every pending
+real-session, lifecycle, DPI and LMU coexistence check is complete.
 
 Exit: signed QA report with every required check and no unresolved release blocker.
 

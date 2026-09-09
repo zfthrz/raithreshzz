@@ -488,6 +488,11 @@ rechaza reutilizar directorios y genera/verifica el manifiesto automáticamente:
   -WorkRoot ".test-tmp\pyinstaller-BUILD-NUEVA"
 ```
 
+La evidencia del candidato actual y los controles manuales todavía pendientes están
+en [`docs/PUBLIC_RELEASE_R4_QA_2026_09_09.md`](docs/PUBLIC_RELEASE_R4_QA_2026_09_09.md).
+El estado `READY` del auditor confirma el contrato del árbol fuente; la publicación
+requiere además cerrar y firmar R4.
+
 La distribución incluye `PUBLIC_INSTALLATION.md` en Español e inglés. Las
 actualizaciones se extraen en una carpeta nueva y reutilizan el estado aislado en
 `%LOCALAPPDATA%\RaceEngineer`. Eliminar la carpeta de la aplicación conserva ese

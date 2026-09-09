@@ -1,5 +1,16 @@
 # Project Status
 
+## Public release R4 candidate audit — 2026-09-09
+
+- RC `4c78ebb` is traceable through a valid 1843-entry manifest and contains 12
+  production profiles. The release contract reports `READY` with zero source blockers.
+- The complete suite passed 2059 tests; deterministic regressions passed 55/55; 335
+  profile tests passed with zero source-profile hash changes.
+- Packaged CLI and launcher help pass in English, and the closed worker rejects
+  `llm_analysis` with exit 2. No LLM was called.
+- `docs/PUBLIC_RELEASE_R4_QA_2026_09_09.md` records the evidence and the remaining
+  real-session, clean-account, DPI and LMU checks. R4 is not signed off yet.
+
 ## Public release R4 command-line localization — 2026-09-09
 
 - Packaged smoke checks found Spanish and mojibake in the public CLI and safe-launcher

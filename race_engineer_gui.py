@@ -92,7 +92,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.71"
+GUI_VERSION = "1.72"
 DEFAULT_RUNS_ROOT = generated_root() / "runs"
 STATE_REFRESH_INTERVAL_MS = 5_000
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -1744,6 +1744,16 @@ def format_comparison_columns(
         )
     )
     return summary, hist_text, current_text, detail_text
+
+
+def session_catalog_error_text(error: str, language: str = "es") -> str:
+    """Localize known catalog diagnostics without changing their source contract."""
+
+    missing_runs_prefix = "No existe el directorio de ejecuciones:"
+    if language == "en" and error.startswith(missing_runs_prefix):
+        path = error[len(missing_runs_prefix) :].strip()
+        return f"Runs directory does not exist: {path}"
+    return error
 
 
 def resolve_historical_telemetry_reference(
@@ -7101,7 +7111,9 @@ class RaceEngineerApp:
         )
         footer_parts = [str(self.runs_root)]
         if errors:
-            footer_parts.append(errors[0])
+            footer_parts.append(
+                session_catalog_error_text(errors[0], self.interface_language)
+            )
         if self.settings_warning:
             footer_parts.append(self.settings_warning)
         self.footer_var.set(" · ".join(footer_parts))

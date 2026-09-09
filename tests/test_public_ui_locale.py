@@ -16,6 +16,7 @@ from race_engineer_gui import (
     session_change_rows,
     plan_item_traceability_lines,
     session_status_detail_text,
+    session_catalog_error_text,
     session_summary_values,
     session_status_tooltip,
     secondary_view_label,
@@ -299,3 +300,12 @@ def test_public_dialogs_and_analysis_outcomes_have_english_variants():
     assert "Keyboard shortcuts" in help_dialog
     assert "Use English for the application and new debriefs?" in onboarding
     assert "Select LMU telemetry folder" in onboarding
+
+
+def test_missing_public_runs_directory_is_localized_at_presentation_boundary():
+    error = "No existe el directorio de ejecuciones: C:\\Users\\Driver\\RaceEngineer\\runs"
+    assert session_catalog_error_text(error, "en") == (
+        "Runs directory does not exist: C:\\Users\\Driver\\RaceEngineer\\runs"
+    )
+    assert session_catalog_error_text(error, "es") == error
+    assert session_catalog_error_text("corrupt state.json", "en") == "corrupt state.json"

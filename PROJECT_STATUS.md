@@ -1,5 +1,12 @@
 # Project Status
 
+## Public release R4 packaged smoke fix — 2026-09-09
+
+- A native smoke of the package built from `37fe313` opened the English public GUI
+  and reproduced one mixed-language empty-catalog footer.
+- GUI v1.72 localizes that known missing-runs diagnostic at the presentation boundary;
+  session discovery and its error contract remain unchanged.
+
 ## Public release R3 installation lifecycle — 2026-09-09
 
 - The portable build now requires and bundles a bilingual public installation guide.

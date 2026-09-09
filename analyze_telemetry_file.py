@@ -153,7 +153,7 @@ def analyze_selected_file(
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Launcher seguro para analizar un DuckDB desde Windows Explorer."
+        description="Safe launcher for analyzing a DuckDB from Windows Explorer."
     )
     parser.add_argument("database")
     parser.add_argument(
@@ -166,8 +166,8 @@ def build_parser() -> argparse.ArgumentParser:
         "--skip-stability-wait",
         action="store_true",
         help=(
-            "omite sólo la espera de 10 minutos; LMU cerrado, tamaño y vueltas "
-            "válidas siguen siendo obligatorios"
+            "skip only the 10-minute stability wait; LMU must still be closed "
+            "and file-size and valid-lap checks still apply"
         ),
     )
     parser.add_argument(

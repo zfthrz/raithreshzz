@@ -1,5 +1,13 @@
 # Project Status
 
+## Public release R4 command-line localization — 2026-09-09
+
+- Packaged smoke checks found Spanish and mojibake in the public CLI and safe-launcher
+  help output. GUI v1.74 replaces those user-facing parser descriptions and option
+  explanations with ASCII-safe English while preserving every command and default.
+- Parser regressions now keep both public help surfaces English-only. No telemetry,
+  History, generated report, profile, statistic or coaching contract changed.
+
 ## Public release R4 responsive packaged smoke — 2026-09-09
 
 - Native QA covered maximized and restored 2402×1608/1862×1608 windows, Summary with

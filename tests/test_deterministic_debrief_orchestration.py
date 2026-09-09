@@ -9,6 +9,19 @@ import pytest
 import race_engineer
 
 
+def test_public_cli_help_is_english_only():
+    parser = race_engineer.build_parser()
+    help_text = parser.format_help()
+    analyze_help = parser._subparsers._group_actions[0].choices["analyze"].format_help()
+
+    assert "Race Engineer operational orchestrator" in help_text
+    assert "deterministic analysis and debrief" in help_text
+    assert "Telemetry DuckDB" in analyze_help
+    assert "Rebuild and validate" in analyze_help
+    assert "Orquestador operativo" not in help_text
+    assert "telemetría" not in analyze_help
+
+
 def test_deterministic_debrief_environment_removes_remote_credentials(monkeypatch):
     monkeypatch.setenv("DEEPSEEK_API_KEY", "secret")
     monkeypatch.setenv("RACE_ENGINEER_DETERMINISTIC_FIRST", "0")

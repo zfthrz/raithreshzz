@@ -211,6 +211,15 @@ def test_parser_exposes_explicit_stability_override():
     assert args.skip_stability_wait is True
 
 
+def test_public_help_is_english_only():
+    help_text = launcher.build_parser().format_help()
+
+    assert "Safe launcher" in help_text
+    assert "skip only the 10-minute stability wait" in help_text
+    assert "Launcher seguro" not in help_text
+    assert "omite sólo" not in help_text
+
+
 def test_parser_exposes_deterministic_debrief_mode():
     args = launcher.build_parser().parse_args(
         ["session.duckdb", "--deterministic-debrief"]

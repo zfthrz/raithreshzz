@@ -1532,15 +1532,15 @@ def analyze_command(args: argparse.Namespace) -> int:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Orquestador operativo de Race Engineer."
+        description="Race Engineer operational orchestrator."
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     analyze = subparsers.add_parser(
         "analyze",
-        help="DuckDB -> análisis y debrief deterministas -> History -> H4/H5",
+        help="DuckDB -> deterministic analysis and debrief -> History -> H4/H5",
     )
-    analyze.add_argument("database", help="DuckDB de telemetría, normalmente telemetria\\archivo.duckdb")
+    analyze.add_argument("database", help="Telemetry DuckDB, usually telemetria\\file.duckdb")
     analyze.add_argument(
         "--backend",
         choices=("deepseek", "ollama", "llamacpp"),
@@ -1548,14 +1548,14 @@ def build_parser() -> argparse.ArgumentParser:
         help=argparse.SUPPRESS,
     )
     analyze.add_argument("--history-db", default=None)
-    analyze.add_argument("--force", action="store_true", help="Reejecutar todas las etapas aplicables.")
+    analyze.add_argument("--force", action="store_true", help="Rerun every applicable stage.")
     analyze.add_argument("--force-analyze", action="store_true")
     analyze.add_argument("--force-llm", action="store_true", help=argparse.SUPPRESS)
     analyze.add_argument(
         "--force-debrief",
         dest="force_deterministic_debrief",
         action="store_true",
-        help="Reconstruir solamente el debrief determinista y validarlo.",
+        help="Rebuild and validate only the deterministic debrief.",
     )
     analyze.add_argument(
         "--force-deterministic-debrief",
@@ -1567,7 +1567,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--no-debrief",
         dest="no_llm",
         action="store_true",
-        help="Omitir el debrief; conserva análisis determinista e History.",
+        help="Skip the debrief while preserving deterministic analysis and History.",
     )
     analyze.add_argument(
         "--no-llm",

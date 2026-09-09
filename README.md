@@ -448,6 +448,9 @@ sin cambiar el contrato interno de descubrimiento.
 GUI v1.73 corrige el recálculo de Summary al abrir/cerrar la sidebar, el ajuste del
 mensaje vacío en las cards de Statistics y la etiqueta `Ctrl+Space` de la ayuda en
 inglés, todos reproducidos en el ejecutable empaquetado.
+GUI v1.74 completa la ayuda pública empaquetada: el CLI determinista y el launcher
+seguro describen sus argumentos en inglés compatible con consolas Windows, sin
+cambiar comandos ni comportamiento.
 
 La distribución congelada conserva tres procesos explícitos: interfaz pública,
 launcher seguro y pipeline determinista. Esto mantiene los bloqueos de LMU y de

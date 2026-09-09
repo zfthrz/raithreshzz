@@ -162,3 +162,22 @@ def test_choose_default_lap_prefers_the_highest_deterministic_score():
     }
 
     assert choose_default_lap(metrics) == 1
+
+
+def test_choose_default_lap_rejects_later_partial_lap_with_better_geometry_ratio():
+    metrics = {
+        0: {
+            "gps_coverage": 1.0,
+            "duration_s": 165.3,
+            "lap_dist_max_m": 4645.2,
+            "gps_path_m": 4530.5,
+        },
+        1: {
+            "gps_coverage": 1.0,
+            "duration_s": 35.9,
+            "lap_dist_max_m": 1839.5,
+            "gps_path_m": 1860.9,
+        },
+    }
+
+    assert choose_default_lap(metrics) == 0

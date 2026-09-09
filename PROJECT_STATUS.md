@@ -1,5 +1,16 @@
 # Project Status
 
+## Barcelona profile preparation / GPS lap selection — 2026-09-09
+
+- Direct LMU telemetry inventory found five `LMP2_ELMS` Barcelona DuckDBs across the
+  owner-defined independent sessions; four contain at least one complete usable lap.
+  Exact identity is `Circuit de Barcelona / Circuit de Barcelona`.
+- The real 2026-09-02 file reproduced an exporter defect: its later 1839.5 m partial
+  lap outranked the complete 4645.2 m lap because of a slightly better GPS/path ratio.
+- Automatic GPS export now restricts scoring to candidates within 90% of the longest
+  viable lap. The real file consequently selects lap 0. This changes calibration
+  tooling only and does not alter telemetry, profiles or coaching authority.
+
 ## Product perfection roadmap v1.0 — 2026-09-09
 
 - Added a gated post-candidate roadmap covering R4 closure, the four remaining

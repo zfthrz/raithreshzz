@@ -65,6 +65,10 @@ Genera CSV, GeoJSON y summary, y muestra duración, cobertura GPS, `Lap Dist`,
 recorrido GPS y muestras de cada vuelta. Para una vuelta concreta, usar un directorio
 separado para no sobrescribir evidencia:
 
+La selección automática puntúa sólo vueltas viables cuya distancia alcance al menos
+el 90% de la candidata viable más larga. Así, una última vuelta parcial no desplaza a
+una vuelta completa por tener una relación GPS/distancia marginalmente mejor.
+
 ```powershell
 python extract_lmu_track_gps.py `
   "C:\ruta\Telemetry\Circuito_P_FECHA.duckdb" `

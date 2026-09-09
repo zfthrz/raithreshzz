@@ -479,7 +479,7 @@ def choose_default_lap(metrics: dict[int, dict[str, Any]]) -> int:
     """
     Prefiere:
     - mucha cobertura GPS
-    - distancia de vuelta cercana a la mediana de vueltas largas
+    - distancia de vuelta dentro del 90% de la mayor candidata viable
     - duración > 30 s
     - evita outlaps de 2x longitud
     """
@@ -498,6 +498,17 @@ def choose_default_lap(metrics: dict[int, dict[str, Any]]) -> int:
 
     if not viable:
         return max(metrics, key=lambda k: metrics[k]["gps_coverage"])
+
+    longest_distance = max(
+        (m["lap_dist_max_m"] or 0.0) for m in viable.values()
+    )
+    complete = {
+        lap: m
+        for lap, m in viable.items()
+        if (m["lap_dist_max_m"] or 0.0) >= 0.90 * longest_distance
+    }
+    if complete:
+        viable = complete
 
     lengths = [
         m["lap_dist_max_m"]

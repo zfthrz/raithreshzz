@@ -1,5 +1,17 @@
 # Project Status
 
+## Barcelona profile v0.1 promoted — 2026-09-09
+
+- Added `barcelona-lmu-fia14-v0.1` for exact LMU identity
+  `Circuit de Barcelona / Circuit de Barcelona`, using the 4657 m FIA 14-turn layout.
+- The source is a complete `LMP2_ELMS` lap from the owner-defined 2026-09-04 session.
+  Three additional owner-confirmed independent `LMP2_ELMS` sessions each reproduced
+  14/14 turns with zero warnings or failures; maximum apex offsets were 19.055 m,
+  16 m and 20 m under the unchanged 35 m PASS tolerance.
+- The profile is `VALIDATED_MULTI_SESSION` and the public release audit selects it as
+  profile 13 with `READY` status. Full pytest passed 2065 tests and deterministic
+  regressions passed 55/55. Telemetry and ignored GPS evidence were not modified.
+
 ## Barcelona profile preparation / GPS lap selection — 2026-09-09
 
 - Direct LMU telemetry inventory found five `LMP2_ELMS` Barcelona DuckDBs across the

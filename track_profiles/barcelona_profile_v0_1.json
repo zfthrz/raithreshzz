@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "profile_id": "barcelona-lmu-fia14-v0.1",
+  "status": "VALIDATED_MULTI_SESSION",
+  "track": "Circuit de Barcelona",
+  "layout": "Circuit de Barcelona",
+  "distance_coordinate": "LMU Lap Dist",
+  "lap_length_m": 4657.0,
+  "calibration": {
+    "source_session": "Circuit de Barcelona_P_2026-09-04T22_32_38Z",
+    "source_lap_internal_index": 1,
+    "source_lap_time_s_approx": 92.2,
+    "source_lap_dist_max_m": 4651.9,
+    "source_gps_path_m_approx": 4615.5,
+    "gps_coverage": 1.0,
+    "geometry_method": "GPS trajectory + signed curvature + FIA 14-turn direction-sequence constrained calibration",
+    "numbering_scheme": "FIA 14-turn scheme",
+    "requires_cross_session_validation": false,
+    "validation_status": "PASS",
+    "same_session_validation_laps": [],
+    "excluded_laps": [
+      {
+        "session": "Circuit de Barcelona_P_2026-09-04T22_32_38Z",
+        "lap_internal_index": 2,
+        "lap_dist_max_m": 3832.9,
+        "reason": "partial final lap"
+      }
+    ],
+    "validation_summary": {
+      "independent_sessions": [
+        {
+          "session": "Circuit de Barcelona_P_2026-09-02T19_15_30Z",
+          "lap_internal_index": 0,
+          "lap_time_s_approx": 165.3,
+          "lap_dist_max_m": 4645.2,
+          "gps_path_m_approx": 4530.5,
+          "gps_coverage": 1.0,
+          "method": "same-direction nearest local extremum inside each calibrated interval; 2 m resampling, 20 m heading window, 14 m smoothing",
+          "apex_pass_tolerance_m": 35.0,
+          "apex_warning_tolerance_m": 70.0,
+          "pass_count": 14,
+          "warning_count": 0,
+          "failure_count": 0,
+          "median_abs_offset_m": 3.055,
+          "max_abs_offset_m": 19.055,
+          "overall_status": "PASS"
+        },
+        {
+          "session": "Circuit de Barcelona_P_2026-09-04T22_21_50Z",
+          "lap_internal_index": 2,
+          "lap_time_s_approx": 93.2,
+          "lap_dist_max_m": 4648.6,
+          "gps_path_m_approx": 4604.6,
+          "gps_coverage": 1.0,
+          "method": "same-direction nearest local extremum inside each calibrated interval; 2 m resampling, 20 m heading window, 14 m smoothing",
+          "apex_pass_tolerance_m": 35.0,
+          "apex_warning_tolerance_m": 70.0,
+          "pass_count": 14,
+          "warning_count": 0,
+          "failure_count": 0,
+          "median_abs_offset_m": 6.0,
+          "max_abs_offset_m": 16.0,
+          "overall_status": "PASS"
+        },
+        {
+          "session": "Circuit de Barcelona_P_2026-09-04T22_27_13Z",
+          "lap_internal_index": 1,
+          "lap_time_s_approx": 95.3,
+          "lap_dist_max_m": 4558.5,
+          "gps_path_m_approx": 4553.9,
+          "gps_coverage": 1.0,
+          "method": "same-direction nearest local extremum inside each calibrated interval; 2 m resampling, 20 m heading window, 14 m smoothing",
+          "apex_pass_tolerance_m": 35.0,
+          "apex_warning_tolerance_m": 70.0,
+          "pass_count": 14,
+          "warning_count": 0,
+          "failure_count": 0,
+          "median_abs_offset_m": 5.0,
+          "max_abs_offset_m": 20.0,
+          "overall_status": "PASS"
+        }
+      ]
+    },
+    "interpretation": "All 14 FIA turns are represented in the complete source lap and reproduced in three owner-confirmed independent LMP2_ELMS sessions. Every calibrated region passes the signed-curvature audit without warnings. T6-T8 and T10-T11 are continuous low-separation complexes whose numbering is constrained by the FIA sequence rather than by raw candidate rank."
+  },
+  "manual_low_curvature_turns": [
+    {"turn": 6, "reason": "first left component of the T6-T8 complex"},
+    {"turn": 7, "reason": "second left component of the T6-T8 complex"},
+    {"turn": 8, "reason": "short right component of the T6-T8 complex"},
+    {"turn": 11, "reason": "second left component of the broad T10-T11 region"}
+  ],
+  "turns": [
+    {"turn": 1, "name": "Turn 1", "group": "Turns 1-2", "direction": "right", "start_m": 786.0, "apex_m": 806.0, "end_m": 898.0},
+    {"turn": 2, "name": "Turn 2", "group": "Turns 1-2", "direction": "left", "start_m": 902.0, "apex_m": 952.0, "end_m": 992.0},
+    {"turn": 3, "name": "Turn 3", "group": "Turn 3", "direction": "right", "start_m": 1034.0, "apex_m": 1208.0, "end_m": 1350.0},
+    {"turn": 4, "name": "Turn 4", "group": "Turn 4", "direction": "right", "start_m": 1650.0, "apex_m": 1780.0, "end_m": 1892.0},
+    {"turn": 5, "name": "Turn 5", "group": "Turn 5", "direction": "left", "start_m": 2070.0, "apex_m": 2144.0, "end_m": 2196.0},
+    {"turn": 6, "name": "Turn 6", "group": "Turns 6-8", "direction": "left", "start_m": 2490.0, "apex_m": 2530.0, "end_m": 2558.0},
+    {"turn": 7, "name": "Turn 7", "group": "Turns 6-8", "direction": "left", "start_m": 2558.0, "apex_m": 2586.0, "end_m": 2611.0},
+    {"turn": 8, "name": "Turn 8", "group": "Turns 6-8", "direction": "right", "start_m": 2611.0, "apex_m": 2636.0, "end_m": 2660.0},
+    {"turn": 9, "name": "Turn 9", "group": "Turn 9", "direction": "right", "start_m": 2818.0, "apex_m": 2928.0, "end_m": 2990.0},
+    {"turn": 10, "name": "Turn 10", "group": "Turns 10-11", "direction": "left", "start_m": 3370.0, "apex_m": 3398.0, "end_m": 3440.0},
+    {"turn": 11, "name": "Turn 11", "group": "Turns 10-11", "direction": "left", "start_m": 3440.0, "apex_m": 3584.0, "end_m": 3660.0},
+    {"turn": 12, "name": "Turn 12", "group": "Turn 12", "direction": "right", "start_m": 3690.0, "apex_m": 3800.0, "end_m": 3898.0},
+    {"turn": 13, "name": "Turn 13", "group": "Turn 13", "direction": "right", "start_m": 4006.0, "apex_m": 4088.0, "end_m": 4150.0},
+    {"turn": 14, "name": "Turn 14", "group": "Turn 14", "direction": "right", "start_m": 4268.0, "apex_m": 4354.0, "end_m": 4446.0}
+  ],
+  "display_policy": {
+    "prefer_corner_name": true,
+    "turn_number_is_secondary": false,
+    "turn_number_suffix": "FIA",
+    "always_preserve_lmu_distance_m": true
+  },
+  "provenance": {
+    "gps_exports": [
+      "track_exports/barcelona_inventory_20260909/elms_2026-09-04T22_32_38Z/Circuit de Barcelona_P_2026-09-04T22_32_38Z_track_gps.csv",
+      "track_exports/barcelona_inventory_20260909/elms_2026-09-04T22_32_38Z/Circuit de Barcelona_P_2026-09-04T22_32_38Z_track_gps_summary.json",
+      "track_exports/barcelona_inventory_20260909/turn_candidates_28_source_20260904_lap9/Circuit de Barcelona_P_2026-09-04T22_32_38Z_turn_candidates.json",
+      "track_exports/barcelona_inventory_20260909/elms_2026-09-02T19_15_30Z/Circuit de Barcelona_P_2026-09-02T19_15_30Z_track_gps.csv",
+      "track_exports/barcelona_inventory_20260909/validation_20260902_lap0_v2/validation_report.json",
+      "track_exports/barcelona_inventory_20260909/elms_2026-09-04T22_21_50Z/Circuit de Barcelona_P_2026-09-04T22_21_50Z_track_gps.csv",
+      "track_exports/barcelona_inventory_20260909/validation_20260904_a_lap2_v2/validation_report.json",
+      "track_exports/barcelona_inventory_20260909/elms_2026-09-04T22_27_13Z/Circuit de Barcelona_P_2026-09-04T22_27_13Z_track_gps.csv",
+      "track_exports/barcelona_inventory_20260909/validation_20260904_b_lap5_v2/validation_report.json"
+    ],
+    "reference_urls": [
+      "https://www.circuitcat.com/en/",
+      "https://winter-series.racing/wp-content/uploads/2026-ws-tracklayout-barcelonacat.pdf"
+    ]
+  }
+}

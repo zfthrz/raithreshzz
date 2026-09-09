@@ -1653,6 +1653,13 @@ recommendations and P6 ongoing quality. The first public release waits for the f
 profiles; only Barcelona is currently identified, so the other three identities must
 not be inferred. Profile packages and adaptive coaching remain conditional later work.
 
+Barcelona is now production profile `barcelona-lmu-fia14-v0.1` for exact identity
+`Circuit de Barcelona / Circuit de Barcelona`. Its FIA 14-turn geometry passed
+three owner-confirmed independent `LMP2_ELMS` session audits at 14/14 with no warnings;
+the largest apex offset was 20 m under the unchanged 35 m PASS tolerance. The public
+catalog therefore contains 13 exact identities, leaving the other three owner-selected
+targets unnamed and pending real data.
+
 Completed after the integration checkpoint:
 
 1. The H5.2 observational narrative passed on the real Fuji pair with DeepSeek and its dedicated validator.

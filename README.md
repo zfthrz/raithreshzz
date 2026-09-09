@@ -496,6 +496,9 @@ requiere además cerrar y firmar R4.
 La secuencia posterior al candidato, incluidos los cuatro perfiles restantes,
 publicación, actualizaciones y personalización histórica, está definida en
 [`docs/PRODUCT_PERFECTION_ROADMAP_V1_0.md`](docs/PRODUCT_PERFECTION_ROADMAP_V1_0.md).
+Barcelona ya integra el catálogo como `barcelona-lmu-fia14-v0.1`, validado sobre
+tres sesiones `LMP2_ELMS` independientes además de su vuelta fuente. El catálogo
+público contiene ahora 13 identidades exactas.
 
 La distribución incluye `PUBLIC_INSTALLATION.md` en Español e inglés. Las
 actualizaciones se extraen en una carpeta nueva y reutilizan el estado aislado en

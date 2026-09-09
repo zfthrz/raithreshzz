@@ -250,3 +250,5 @@ No hagas push salvo autorización explícita.
   PASS sin warnings, con máximo 13.038 m en la evidencia elegida.
 - Sebring: `VALIDATED_MULTI_SESSION`; dos vueltas independientes dieron 17/17 PASS
   sin warnings, con máximo 10 m en la evidencia elegida.
+- Barcelona: `VALIDATED_MULTI_SESSION`; tres sesiones `LMP2_ELMS` independientes
+  reprodujeron 14/14 curvas sin warnings, con máximos de 19.055 m, 16 m y 20 m.

@@ -59,11 +59,16 @@ chosen first public release.
 
 ### P1b — Barcelona
 
-- Recover the existing source sessions without copying or modifying them.
-- Validate lap coverage, geometry, direction, start/finish continuity and turn bounds.
-- Build the smallest profile version supported by the available independent evidence.
-- Run profile validation, localization tests and representative real-session analysis.
-- Promote only after the existing profile gate passes.
+- [x] Recover the existing source sessions without copying or modifying them.
+- [x] Validate lap coverage, geometry, direction, start/finish continuity and turn bounds.
+- [x] Build the smallest profile version supported by the available independent evidence.
+- [x] Run profile and localization validation against independent real-session GPS.
+- [x] Promote only after the existing profile gate passes.
+
+Completed as `barcelona-lmu-fia14-v0.1`: source plus three independent
+`LMP2_ELMS` validations, each 14/14 PASS with no warnings. Representative complete
+pipeline analysis remains part of P0 packaged end-to-end QA rather than profile
+geometry authority.
 
 ### P1c — Other three profiles
 

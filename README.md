@@ -479,6 +479,12 @@ rechaza reutilizar directorios y genera/verifica el manifiesto automáticamente:
   -WorkRoot ".test-tmp\pyinstaller-BUILD-NUEVA"
 ```
 
+La distribución incluye `PUBLIC_INSTALLATION.md` en Español e inglés. Las
+actualizaciones se extraen en una carpeta nueva y reutilizan el estado aislado en
+`%LOCALAPPDATA%\RaceEngineer`. Eliminar la carpeta de la aplicación conserva ese
+estado y la telemetría de LMU; su borrado es siempre una acción separada y explícita
+del usuario.
+
 La prioridad conceptual actual es:
 
 ```text

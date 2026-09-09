@@ -25,6 +25,7 @@ common_datas = [
     (str(root / "track_profiles"), "track_profiles"),
     (str(root / "LICENSE.txt"), "."),
     (str(root / "THIRD_PARTY_NOTICES.md"), "."),
+    (str(root / "PUBLIC_INSTALLATION.md"), "."),
     (str(python_root / "LICENSE.txt"), "third_party_licenses/Python-3.12.10"),
     (
         str(python_root / "Lib" / "site-packages" / "numpy-2.5.2.dist-info" / "licenses"),

@@ -72,3 +72,14 @@ def test_reproducible_wrapper_fixes_build_entropy_and_refuses_reuse():
     assert "$env:SOURCE_DATE_EPOCH = $commitEpoch" in script
     assert script.count("OutputRoot already exists") == 1
     assert script.count("WorkRoot already exists") == 1
+
+
+def test_public_package_requires_installation_and_data_retention_guide():
+    root = Path(__file__).parents[1]
+    guide = (root / "PUBLIC_INSTALLATION.md").read_text(encoding="utf-8")
+    spec = (root / "RaceEngineer.spec").read_text(encoding="utf-8")
+    assert "PUBLIC_INSTALLATION.md" in manifest.REQUIRED_FILES
+    assert 'root / "PUBLIC_INSTALLATION.md"' in spec
+    assert "%LOCALAPPDATA%\\RaceEngineer" in guide
+    assert "never deletes the LMU telemetry folder" in guide
+    assert "nunca elimina la carpeta de telemetría de LMU" in guide

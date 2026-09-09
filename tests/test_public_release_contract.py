@@ -56,6 +56,7 @@ def test_release_audit_is_read_only_and_lists_concrete_blockers(tmp_path):
         "RUNTIME_DEPENDENCIES_NOT_EXACTLY_PINNED",
         "LICENSE_MISSING",
         "THIRD_PARTY_NOTICES_MISSING",
+        "PUBLIC_INSTALLATION_GUIDE_MISSING",
     ]
     assert result["public_gui_sections"] == list(PUBLIC_GUI_SECTIONS)
     assert result["development_gui_sections_excluded"] == list(
@@ -72,6 +73,7 @@ def test_release_audit_can_reach_ready_without_building(tmp_path):
     (tmp_path / "requirements.txt").write_text("duckdb==1.0.0\n", encoding="utf-8")
     (tmp_path / "LICENSE").write_text("license", encoding="utf-8")
     (tmp_path / "THIRD_PARTY_NOTICES.md").write_text("notices", encoding="utf-8")
+    (tmp_path / "PUBLIC_INSTALLATION.md").write_text("guide", encoding="utf-8")
     assert audit_public_release(tmp_path)["status"] == "READY"
 
 
@@ -83,6 +85,17 @@ def test_release_audit_reports_selected_legal_files(tmp_path):
         "product_license": "LICENSE.txt",
         "third_party_notices": "THIRD_PARTY_NOTICES.md",
     }
+
+
+def test_release_audit_requires_public_installation_guide(tmp_path):
+    result = audit_public_release(tmp_path)
+    assert result["installation_guide"] is None
+    assert "PUBLIC_INSTALLATION_GUIDE_MISSING" in result["blockers"]
+
+    (tmp_path / "PUBLIC_INSTALLATION.md").write_text("guide", encoding="utf-8")
+    result = audit_public_release(tmp_path)
+    assert result["installation_guide"] == "PUBLIC_INSTALLATION.md"
+    assert "PUBLIC_INSTALLATION_GUIDE_MISSING" not in result["blockers"]
 
 
 def test_cli_returns_nonzero_for_blocked_release(tmp_path, capsys):

@@ -1,5 +1,15 @@
 # Project Status
 
+## Public release R3 installation lifecycle — 2026-09-09
+
+- The portable build now requires and bundles a bilingual public installation guide.
+- Updates use a new empty application folder and reuse the isolated per-user state.
+- Removing the application folder preserves settings, generated reports, History,
+  statistics and LMU telemetry; deleting application data is a separate explicit
+  user action.
+- The release audit reports a missing guide as a blocker. Clean-account installation,
+  supplied-fixture analysis and retained-data uninstall remain R4 QA work.
+
 ## Public interface localization R3c complete — 2026-09-09
 
 - Public file/folder pickers, keyboard help, analysis completion dialogs, safe-close

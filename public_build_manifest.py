@@ -19,6 +19,7 @@ REQUIRED_FILES = (
     "RaceEngineerCLI.exe",
     "RaceEngineerWorker.exe",
     "LICENSE.txt",
+    "PUBLIC_INSTALLATION.md",
     "THIRD_PARTY_NOTICES.md",
 )
 REQUIRED_DIRECTORIES = (

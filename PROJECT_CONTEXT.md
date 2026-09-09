@@ -147,6 +147,10 @@ GUI v1.71 completes public-interface localization R3c. File/folder pickers, keyb
 help, analysis outcomes, safe-close messaging and first-run setup now follow the
 selected language. The residual audit treats stable persisted keys, user artifact
 bodies and developer-only panels as non-interface sources; they remain unchanged.
+The portable public package ships a bilingual `PUBLIC_INSTALLATION.md`. Updates are
+installed into a new empty application directory and reuse the isolated per-user
+state under `%LOCALAPPDATA%\RaceEngineer`; uninstalling the application directory
+preserves that state and the independently owned LMU telemetry directory.
 
 The frozen orchestrator routes its Python-owned stages through
 `RaceEngineerWorker.exe`. Its module allowlist contains only deterministic analysis,

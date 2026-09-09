@@ -87,7 +87,7 @@ the supplied-fixture deterministic pipeline smoke remains open before R2 exit.
 - [x] Provide a clear first-run choice for telemetry location and application language.
 - [x] Verify the persisted path contract with spaces and non-ASCII characters.
 - [x] Explain unsupported track/layout states without exposing calibration internals.
-- Define update and uninstall behavior without deleting user telemetry or History.
+- [x] Define update and uninstall behavior without deleting user telemetry or History.
 
 ### R3c — Complete public-interface localization
 
@@ -108,6 +108,12 @@ states. Developer/operator views may remain Spanish and keep their current keys.
 
 Exit: a clean Windows account can install, analyze a supplied fixture, reopen the
 session and uninstall while its explicitly retained user data stays intact.
+
+The portable package now ships `PUBLIC_INSTALLATION.md` in English and Spanish.
+Updates use a new empty application folder and reuse isolated per-user state;
+removing the application folder preserves that state and the separately owned LMU
+telemetry directory. Clean-account and supplied-fixture validation remains part of
+R4 release-candidate QA.
 
 ### R4 — Release candidate QA
 

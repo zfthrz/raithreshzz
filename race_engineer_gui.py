@@ -92,7 +92,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.72"
+GUI_VERSION = "1.73"
 DEFAULT_RUNS_ROOT = generated_root() / "runs"
 STATE_REFRESH_INTERVAL_MS = 5_000
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -141,7 +141,13 @@ def global_shortcuts(
         "Play or pause Telemetry",
         "Reset the Telemetry view",
     )
-    return tuple((shortcut, descriptions[index]) for index, (shortcut, _) in enumerate(shortcuts))
+    return tuple(
+        (
+            "Ctrl+Space" if shortcut == "Ctrl+Espacio" else shortcut,
+            descriptions[index],
+        )
+        for index, (shortcut, _) in enumerate(shortcuts)
+    )
 GLOBAL_SHORTCUTS = (
     ("Ctrl+1 … Ctrl+7", "Cambiar de sección"),
     ("Ctrl+F", "Buscar una sesión"),
@@ -3749,6 +3755,7 @@ class RaceEngineerApp:
             self.sidebar.pack(before=self.main_frame, side="left", fill="y")
             self.sidebar_visible = True
             self.sidebar_toggle_button.configure(text="◀")
+        self._refresh_summary_after_inspector_change(reset_scroll=False)
         return "break"
 
     def _toggle_telemetry_playback_shortcut(self, _event=None):
@@ -4197,6 +4204,8 @@ class RaceEngineerApp:
             canvas.create_text(
                 width / 2,
                 height / 2,
+                width=max(width - 32, 120),
+                justify="center",
                 text=self._state("STATISTICS_EMPTY", compact=True),
                 fill=COLORS["text_card_label"],
                 font=("Segoe UI", 10),

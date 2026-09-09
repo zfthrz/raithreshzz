@@ -277,6 +277,8 @@ def test_main_statistics_workspace_uses_active_language_and_stable_month_key():
 def test_public_shortcut_help_has_complete_english_descriptions():
     shortcuts = global_shortcuts(public_release=True, language="en")
     assert shortcuts[0] == ("Ctrl+1 … Ctrl+4", "Switch section")
+    assert ("Ctrl+Space", "Play or pause Telemetry") in shortcuts
+    assert all("Espacio" not in shortcut for shortcut, _description in shortcuts)
     assert shortcuts[-1] == ("Ctrl+0", "Reset the Telemetry view")
     assert session_status_tooltip("FAILED", "en") == "A processing stage failed."
     assert "more laps in details" in compact_laps_text(

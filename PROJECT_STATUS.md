@@ -1,5 +1,15 @@
 # Project Status
 
+## Public release R4 responsive packaged smoke — 2026-09-09
+
+- Native QA covered maximized and restored 2402×1608/1862×1608 windows, Summary with
+  sidebar open/closed, empty History and Statistics, and English keyboard help.
+- Reproduced three presentation defects: stale Summary layout after a sidebar geometry
+  change, clipped empty Statistics text and `Ctrl+Espacio` in English help.
+- GUI v1.73 fixes those defects without changing session data, statistics calculations
+  or coaching authority. The apparent blank Summary rectangle was confirmed as the
+  Computer Use cursor halo rather than an application control.
+
 ## Public release R4 packaged smoke fix — 2026-09-09
 
 - A native smoke of the package built from `37fe313` opened the English public GUI

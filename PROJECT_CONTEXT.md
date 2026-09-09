@@ -149,6 +149,9 @@ selected language. The residual audit treats stable persisted keys, user artifac
 bodies and developer-only panels as non-interface sources; they remain unchanged.
 GUI v1.72 fixes the packaged empty-catalog footer by localizing the known missing-runs
 diagnostic at the presentation boundary while preserving the catalog error contract.
+GUI v1.73 fixes three native-smoke presentation defects: Summary schedules a layout
+refresh after sidebar geometry changes, empty Statistics messages wrap to their chart
+width, and English shortcut help labels the space key as `Ctrl+Space`.
 The portable public package ships a bilingual `PUBLIC_INSTALLATION.md`. Updates are
 installed into a new empty application directory and reuse the isolated per-user
 state under `%LOCALAPPDATA%\RaceEngineer`; uninstalling the application directory

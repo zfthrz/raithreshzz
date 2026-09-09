@@ -1018,6 +1018,7 @@ def test_summary_resize_reflows_cards_and_visual_previews():
     assert 'mode == "narrow"' in layout_source
     assert "self.sidebar.pack_forget()" in toggle_source
     assert "self.sidebar.pack(before=self.main_frame" in toggle_source
+    assert "self._refresh_summary_after_inspector_change(reset_scroll=False)" in toggle_source
 
 
 def test_sidebar_and_plan_inspector_preserve_a_flexible_workspace():
@@ -1468,6 +1469,8 @@ def test_history_statistics_are_lazy_read_only_and_run_outside_tk_thread():
     chart_source = inspect.getsource(RaceEngineerApp._redraw_statistics_chart)
     assert 'canvas.create_arc(' in chart_source
     assert "self._ui('POR VUELTAS VÁLIDAS', 'BY VALID LAPS')" in chart_source
+    assert "width=max(width - 32, 120)" in chart_source
+    assert 'justify="center"' in chart_source
 
 
 

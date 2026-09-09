@@ -1174,7 +1174,8 @@ def test_detail_defers_change_tracking_and_reuses_existing_full_catalog():
     request_source = inspect.getsource(RaceEngineerApp._request_session_change_view)
     double_click_source = inspect.getsource(RaceEngineerApp._on_session_double_click)
 
-    assert "load_session_detail(record)" in source
+    assert "load_session_detail(" in source
+    assert "language=self.interface_language" in source
     assert "_request_session_change_view(record)" in source
     assert "discover_sessions" not in source
     assert "_render_session_changes(detail.session_change_view)" in source
@@ -1466,7 +1467,7 @@ def test_history_statistics_are_lazy_read_only_and_run_outside_tk_thread():
     assert 'self.statistics_sessions_by_month.get(month, ())' in detail_source
     chart_source = inspect.getsource(RaceEngineerApp._redraw_statistics_chart)
     assert 'canvas.create_arc(' in chart_source
-    assert 'text=f"{title} · POR VUELTAS VÁLIDAS"' in chart_source
+    assert "self._ui('POR VUELTAS VÁLIDAS', 'BY VALID LAPS')" in chart_source
 
 
 

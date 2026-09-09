@@ -92,7 +92,7 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.69"
+GUI_VERSION = "1.70"
 DEFAULT_RUNS_ROOT = generated_root() / "runs"
 STATE_REFRESH_INTERVAL_MS = 5_000
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -251,6 +251,38 @@ UI_STATE_MESSAGES = {
         "Reintentá con Ctrl+R y, si persiste, revisá Diagnóstico → Ejecución.",
     ),
 }
+SECTION_VIEW_LABELS_EN = {
+    "Debrief": "Debrief",
+    "Próxima tanda": "Next stint",
+    "Vueltas": "Laps",
+    "Mapa y canales": "Map and channels",
+    "Referencia": "Reference",
+    "Comparación": "Comparison",
+    "General": "Overview",
+    "Mensual": "Monthly",
+}
+
+
+def secondary_view_label(view: str, language: str = "es") -> str:
+    """Localize a secondary view without changing its preference key."""
+    return SECTION_VIEW_LABELS_EN.get(view, view) if language == "en" else view
+
+
+def secondary_view_value(label: str, language: str = "es") -> str:
+    """Resolve a visible secondary label to its stable preference key."""
+    if language == "en":
+        return next(
+            (key for key, localized in SECTION_VIEW_LABELS_EN.items() if localized == label),
+            label,
+        )
+    return label
+
+
+def statistics_month_label(month: str, language: str = "es") -> str:
+    """Localize the missing-date bucket while preserving its aggregation key."""
+    if month == "Sin fecha" and language == "en":
+        return "No date"
+    return month
 SESSION_FILTER_LABELS_EN = {
     "All": "ALL",
     "With debrief": "DEBRIEF_READY",
@@ -1596,51 +1628,77 @@ def h3_automation_next_action(path: Path, context_row: dict) -> str | None:
     )
 
 
-def format_comparison_columns(view: dict) -> tuple[str, str, str, str]:
+def format_comparison_columns(
+    view: dict, *, language: str = "es"
+) -> tuple[str, str, str, str]:
     available = bool(view.get("available"))
     hist = view.get("historical") or {}
     current = view.get("current") or {}
+    no_comparison = ui_text(
+        language, "Sin comparación histórica.", "No historical comparison."
+    )
     hist_text = (
         (
-            f"Sesión histórica: #{hist.get('session_id', '—')}\n"
-            f"Vuelta: {hist.get('lap', '—')}\n"
-            f"Tiempo: {hist.get('duration_text', '—')}"
+            f"{ui_text(language, 'Sesión histórica', 'Historical session')}: #{hist.get('session_id', '—')}\n"
+            f"{ui_text(language, 'Vuelta', 'Lap')}: {hist.get('lap', '—')}\n"
+            f"{ui_text(language, 'Tiempo', 'Time')}: {hist.get('duration_text', '—')}"
         )
         if available
-        else "Sin comparación histórica."
+        else no_comparison
     )
     current_text = (
         (
-            f"Sesión actual: #{current.get('session_id', '—')}\n"
-            f"Vuelta: {current.get('lap', '—')}\n"
-            f"Tiempo: {current.get('duration_text', '—')}"
+            f"{ui_text(language, 'Sesión actual', 'Current session')}: #{current.get('session_id', '—')}\n"
+            f"{ui_text(language, 'Vuelta', 'Lap')}: {current.get('lap', '—')}\n"
+            f"{ui_text(language, 'Tiempo', 'Time')}: {current.get('duration_text', '—')}"
         )
         if available
-        else "Sin comparación histórica."
+        else no_comparison
     )
     summary = (
-        f"Delta actual − histórica: {view.get('delta_text', '—')}"
+        f"{ui_text(language, 'Delta actual − histórica', 'Current − historical delta')}: {view.get('delta_text', '—')}"
         if available
-        else f"H5.2: {view.get('stage_status', 'NO_EJECUTADA')}"
+        else ui_text(
+            language,
+            f"H5.2: {view.get('stage_status', 'NO_EJECUTADA')}",
+            "Historical comparison unavailable",
+        )
     )
     detail_lines: list[str] = []
     if available:
         zones = view.get("zones") or []
         if zones:
-            detail_lines.append("Zonas de mayor impacto (top 3):")
+            detail_lines.append(ui_text(
+                language,
+                "Zonas de mayor impacto (top 3):",
+                "Highest-impact areas (top 3):",
+            ))
             for zone in zones:
                 change = zone.get("delta_change_s")
                 change_text = f"{change:+.3f} s" if change is not None else "—"
                 detail_lines.append(
-                    f"• {zone.get('label')}: {zone.get('type')} · cambio {change_text}"
+                    f"• {zone.get('label')}: {zone.get('type')} · "
+                    f"{ui_text(language, 'cambio', 'change')} {change_text}"
                 )
         else:
-            detail_lines.append("No hay zonas deterministas disponibles.")
+            detail_lines.append(ui_text(
+                language,
+                "No hay zonas deterministas disponibles.",
+                "No deterministic areas are available.",
+            ))
         rendered = (view.get("llm") or {}).get("rendered") or ""
         if rendered:
-            detail_lines.extend(("", "Lectura histórica validada:", rendered))
+            detail_lines.extend((
+                "",
+                ui_text(language, "Lectura histórica validada:", "Validated historical reading:"),
+                rendered,
+            ))
     detail_text = "\n".join(detail_lines) if detail_lines else (
-        "Esta sesión no tiene una comparación histórica H5.2 disponible."
+        ui_text(
+            language,
+            "Esta sesión no tiene una comparación histórica H5.2 disponible.",
+            "This session has no historical comparison available.",
+        )
     )
     return summary, hist_text, current_text, detail_text
 
@@ -2892,7 +2950,10 @@ class RaceEngineerApp:
         history_frame = self.primary_section_frames["Historial"]
         self.history_notebook = ttk.Notebook(history_frame)
         self.history_notebook.pack(fill="both", expand=True)
-        self.historical_reference_text = self._text_tab(self.history_notebook, "Referencia")
+        self.historical_reference_text = self._text_tab(
+            self.history_notebook,
+            secondary_view_label("Referencia", self.interface_language),
+        )
         self._comparison_tab(self.history_notebook)
         self._register_secondary_notebook("Historial", self.history_notebook)
 
@@ -3289,7 +3350,10 @@ class RaceEngineerApp:
 
     def _comparison_tab(self, notebook):
         frame = self.ttk.Frame(notebook, style="Panel.TFrame", padding=5)
-        notebook.add(frame, text="Comparación")
+        notebook.add(
+            frame,
+            text=secondary_view_label("Comparación", self.interface_language),
+        )
         self.comparison_summary_var = self.tk.StringVar(value="")
         self.ttk.Label(
             frame,
@@ -3303,12 +3367,12 @@ class RaceEngineerApp:
         columns.pack(fill="both", expand=True)
         self.comparison_hist_text = self._readonly_pane(
             columns,
-            "Histórica",
+            self._ui("Histórica", "Historical"),
             side="left",
         )
         self.comparison_current_text = self._readonly_pane(
             columns,
-            "Sesión actual",
+            self._ui("Sesión actual", "Current session"),
             side="right",
         )
 
@@ -3316,7 +3380,7 @@ class RaceEngineerApp:
         detail_holder.pack(fill="both", expand=True, pady=(6, 0))
         self.comparison_detail_text = self._readonly_pane(
             detail_holder,
-            "Detalle y lectura validada",
+            self._ui("Detalle y lectura validada", "Details and validated reading"),
             side="top",
         )
         return frame
@@ -3639,7 +3703,9 @@ class RaceEngineerApp:
         self.secondary_notebooks[section] = notebook
         preferred = self.secondary_view_preferences.get(section)
         for tab_id in notebook.tabs():
-            if notebook.tab(tab_id, "text") == preferred:
+            if secondary_view_value(
+                notebook.tab(tab_id, "text"), self.interface_language
+            ) == preferred:
                 notebook.select(tab_id)
                 break
         notebook.bind(
@@ -3654,7 +3720,9 @@ class RaceEngineerApp:
         selected = notebook.select()
         if not selected:
             return
-        view = notebook.tab(selected, "text")
+        view = secondary_view_value(
+            notebook.tab(selected, "text"), self.interface_language
+        )
         if view not in SECTION_VIEWS.get(section, ()):
             return
         self.secondary_view_preferences[section] = view
@@ -3669,10 +3737,14 @@ class RaceEngineerApp:
         if notebook is None:
             return "break"
         selected = notebook.select()
-        current = notebook.tab(selected, "text") if selected else ""
+        current = secondary_view_value(
+            notebook.tab(selected, "text"), self.interface_language
+        ) if selected else ""
         target = adjacent_secondary_view(section, current, step)
         for tab_id in notebook.tabs():
-            if notebook.tab(tab_id, "text") == target:
+            if secondary_view_value(
+                notebook.tab(tab_id, "text"), self.interface_language
+            ) == target:
                 notebook.select(tab_id)
                 break
         return "break"
@@ -3766,9 +3838,11 @@ class RaceEngineerApp:
     def _statistics_value(value: str | None) -> str:
         return value or "—"
 
-    @staticmethod
-    def _statistics_km(value: float) -> str:
-        return f"{value:,.1f}".replace(",", "_").replace(".", ",").replace("_", ".")
+    def _statistics_km(self, value: float) -> str:
+        rendered = f"{value:,.1f}"
+        if self.interface_language == "en":
+            return rendered
+        return rendered.replace(",", "_").replace(".", ",").replace("_", ".")
 
     def _statistics_panel(self, parent):
         ttk = self.ttk
@@ -3777,7 +3851,7 @@ class RaceEngineerApp:
         shell = ttk.Frame(parent, style="Workspace.TFrame")
         shell.pack(fill="both", expand=True)
         self.statistics_status_var = tk.StringVar(
-            value=ui_state_message("STATISTICS_EMPTY", compact=True)
+            value=self._state("STATISTICS_EMPTY", compact=True)
         )
         ttk.Label(
             shell,
@@ -3789,20 +3863,24 @@ class RaceEngineerApp:
         self.statistics_notebook.pack(fill="both", expand=True)
         general = ttk.Frame(self.statistics_notebook, style="Workspace.TFrame", padding=(0, 10, 0, 0))
         monthly = ttk.Frame(self.statistics_notebook, style="Workspace.TFrame", padding=(0, 10, 0, 0))
-        self.statistics_notebook.add(general, text="General")
-        self.statistics_notebook.add(monthly, text="Mensual")
+        self.statistics_notebook.add(
+            general, text=secondary_view_label("General", self.interface_language)
+        )
+        self.statistics_notebook.add(
+            monthly, text=secondary_view_label("Mensual", self.interface_language)
+        )
         self._register_secondary_notebook("Estadísticas", self.statistics_notebook)
 
         cards = ttk.Frame(general, style="Workspace.TFrame")
         cards.pack(fill="x", pady=(0, 16))
         self.statistics_value_vars = {}
         card_specs = (
-            ("sessions", "SESIONES"),
-            ("laps", "VUELTAS VÁLIDAS"),
-            ("distance", "KILÓMETROS"),
-            ("track", "CIRCUITO PREFERIDO"),
-            ("category", "CATEGORÍA PREFERIDA"),
-            ("car", "AUTO / ENTRADA PREFERIDA"),
+            ("sessions", self._ui("SESIONES", "SESSIONS")),
+            ("laps", self._ui("VUELTAS VÁLIDAS", "VALID LAPS")),
+            ("distance", self._ui("KILÓMETROS", "KILOMETERS")),
+            ("track", self._ui("CIRCUITO PREFERIDO", "FAVORITE TRACK")),
+            ("category", self._ui("CATEGORÍA PREFERIDA", "FAVORITE CATEGORY")),
+            ("car", self._ui("AUTO / ENTRADA PREFERIDA", "FAVORITE CAR / ENTRY")),
         )
         for index, (key, title) in enumerate(card_specs):
             cards.columnconfigure(index, weight=1, uniform="statistics")
@@ -3831,9 +3909,9 @@ class RaceEngineerApp:
         self.statistics_distributions = {}
         for index, (key, title) in enumerate(
             (
-                ("track", "CIRCUITOS"),
-                ("category", "CATEGORÍAS"),
-                ("car", "AUTOS / ENTRADAS"),
+                ("track", self._ui("CIRCUITOS", "TRACKS")),
+                ("category", self._ui("CATEGORÍAS", "CATEGORIES")),
+                ("car", self._ui("AUTOS / ENTRADAS", "CARS / ENTRIES")),
             )
         ):
             charts.columnconfigure(index, weight=1, uniform="statistics_charts")
@@ -3860,7 +3938,10 @@ class RaceEngineerApp:
 
         ttk.Label(
             monthly,
-            text="HISTORIAL MENSUAL · DOBLE CLIC PARA VER SESIONES",
+            text=self._ui(
+                "HISTORIAL MENSUAL · DOBLE CLIC PARA VER SESIONES",
+                "MONTHLY HISTORY · DOUBLE-CLICK TO VIEW SESSIONS",
+            ),
             style="WorkspaceSubtitle.TLabel",
         ).pack(anchor="w", pady=(0, 8))
         table = ttk.Frame(monthly, style="Workspace.TFrame")
@@ -3873,13 +3954,13 @@ class RaceEngineerApp:
             selectmode="browse",
         )
         for name, title, width, stretch in (
-            ("month", "Mes", 90, False),
-            ("sessions", "Sesiones", 80, False),
-            ("laps", "Vueltas", 80, False),
-            ("km", "Kilómetros", 95, False),
-            ("track", "Circuito preferido", 190, True),
-            ("category", "Categoría", 135, False),
-            ("car", "Auto / entrada", 220, True),
+            ("month", self._ui("Mes", "Month"), 90, False),
+            ("sessions", self._ui("Sesiones", "Sessions"), 80, False),
+            ("laps", self._ui("Vueltas", "Laps"), 80, False),
+            ("km", self._ui("Kilómetros", "Kilometers"), 95, False),
+            ("track", self._ui("Circuito preferido", "Favorite track"), 190, True),
+            ("category", self._ui("Categoría", "Category"), 135, False),
+            ("car", self._ui("Auto / entrada", "Car / entry"), 220, True),
         ):
             self.statistics_tree.heading(name, text=title)
             self.statistics_tree.column(name, width=width, minwidth=65, stretch=stretch)
@@ -3890,6 +3971,7 @@ class RaceEngineerApp:
         self.statistics_tree.bind("<Double-1>", self._open_statistics_month)
         self.statistics_tree.bind("<Return>", self._open_statistics_month)
         self.statistics_sessions_by_month = {}
+        self.statistics_month_keys = {}
 
     def _refresh_statistics(self, *, force: bool = False):
         if self._closing or self.statistics_loading:
@@ -3899,13 +3981,18 @@ class RaceEngineerApp:
             stat = history_db.stat()
             fingerprint = (stat.st_mtime_ns, stat.st_size)
         except OSError as exc:
-            self.statistics_status_var.set(f"History no disponible: {exc}")
+            self.statistics_status_var.set(self._ui(
+                f"History no disponible: {exc}", f"History unavailable: {exc}"
+            ))
             return
         if not force and self.statistics_fingerprint == fingerprint:
             return
 
         self.statistics_loading = True
-        self.statistics_status_var.set("Calculando estadísticas desde History…")
+        self.statistics_status_var.set(self._ui(
+            "Calculando estadísticas desde History…",
+            "Calculating statistics from History…",
+        ))
 
         def worker():
             try:
@@ -3934,7 +4021,7 @@ class RaceEngineerApp:
         self.statistics_loading = False
         if kind == "error":
             self.statistics_status_var.set(
-                ui_state_message("LOAD_FAILED", detail=str(payload), compact=True)
+                self._state("LOAD_FAILED", detail=str(payload), compact=True)
             )
             return
         fingerprint, statistics = payload
@@ -3955,9 +4042,9 @@ class RaceEngineerApp:
             self.statistics_value_vars[key].set(value)
 
         self.statistics_distributions = {
-            "track": ("CIRCUITOS", statistics.track_distribution),
-            "category": ("CATEGORÍAS", statistics.category_distribution),
-            "car": ("AUTOS / ENTRADAS", statistics.car_distribution),
+            "track": (self._ui("CIRCUITOS", "TRACKS"), statistics.track_distribution),
+            "category": (self._ui("CATEGORÍAS", "CATEGORIES"), statistics.category_distribution),
+            "car": (self._ui("AUTOS / ENTRADAS", "CARS / ENTRIES"), statistics.car_distribution),
         }
         for key in self.statistics_chart_canvases:
             self._redraw_statistics_chart(key)
@@ -3966,11 +4053,14 @@ class RaceEngineerApp:
             self.statistics_tree.delete(item)
         for index, monthly in enumerate(statistics.monthly):
             summary = monthly.summary
+            displayed_month = statistics_month_label(
+                monthly.month, self.interface_language
+            )
             self.statistics_tree.insert(
                 "",
                 "end",
                 values=(
-                    monthly.month,
+                    displayed_month,
                     summary.session_count,
                     summary.valid_lap_count,
                     self._statistics_km(summary.total_distance_km),
@@ -3991,8 +4081,15 @@ class RaceEngineerApp:
             )
             for monthly in statistics.monthly
         }
+        self.statistics_month_keys = {
+            statistics_month_label(monthly.month, self.interface_language): monthly.month
+            for monthly in statistics.monthly
+        }
         self.statistics_status_var.set(
-            "Estadísticas read-only · sólo vueltas válidas; kilómetros sumados desde Lap Dist."
+            self._ui(
+                "Estadísticas read-only · sólo vueltas válidas; kilómetros sumados desde Lap Dist.",
+                "Read-only statistics · valid laps only; kilometers summed from Lap Dist.",
+            )
         )
 
     def _redraw_statistics_chart(self, key: str):
@@ -4007,7 +4104,7 @@ class RaceEngineerApp:
             14,
             13,
             anchor="nw",
-            text=f"{title} · POR VUELTAS VÁLIDAS",
+            text=f"{title} · {self._ui('POR VUELTAS VÁLIDAS', 'BY VALID LAPS')}",
             fill=COLORS["text_muted"],
             font=("Segoe UI Semibold", 9),
         )
@@ -4016,7 +4113,7 @@ class RaceEngineerApp:
             canvas.create_text(
                 width / 2,
                 height / 2,
-                text=ui_state_message("STATISTICS_EMPTY", compact=True),
+                text=self._state("STATISTICS_EMPTY", compact=True),
                 fill=COLORS["text_card_label"],
                 font=("Segoe UI", 10),
             )
@@ -4024,7 +4121,7 @@ class RaceEngineerApp:
         if len(items) > 5:
             top = items[:5]
             other_laps = sum(item.valid_lap_count for item in items[5:])
-            items = top + [("Otros", other_laps)]
+            items = top + [(self._ui("Otros", "Other"), other_laps)]
         else:
             items = [(item.label, item.valid_lap_count) for item in items]
         items = [
@@ -4103,11 +4200,15 @@ class RaceEngineerApp:
         values = self.statistics_tree.item(selection[0], "values")
         if not values:
             return
-        month = str(values[0])
+        displayed_month = str(values[0])
+        month = self.statistics_month_keys.get(displayed_month, displayed_month)
         sessions = self.statistics_sessions_by_month.get(month, ())
 
         window = self.tk.Toplevel(self.root)
-        window.title(f"Estadísticas {month} · {len(sessions)} sesiones")
+        window.title(self._ui(
+            f"Estadísticas {displayed_month} · {len(sessions)} sesiones",
+            f"Statistics {displayed_month} · {len(sessions)} sessions",
+        ))
         window.geometry("1120x620")
         window.minsize(820, 420)
         window.configure(background=COLORS["app"])
@@ -4115,7 +4216,10 @@ class RaceEngineerApp:
         shell.pack(fill="both", expand=True)
         self.ttk.Label(
             shell,
-            text=f"{month} · {len(sessions)} sesiones",
+            text=self._ui(
+                f"{displayed_month} · {len(sessions)} sesiones",
+                f"{displayed_month} · {len(sessions)} sessions",
+            ),
             style="WorkspaceTitle.TLabel",
         ).pack(anchor="w", pady=(0, 12))
 
@@ -4124,12 +4228,12 @@ class RaceEngineerApp:
         columns = ("date", "track", "category", "car", "laps", "km")
         tree = self.ttk.Treeview(table, columns=columns, show="headings")
         for name, title, width, stretch in (
-            ("date", "Fecha", 145, False),
-            ("track", "Circuito", 220, True),
-            ("category", "Categoría", 130, False),
-            ("car", "Auto / entrada", 230, True),
-            ("laps", "Vueltas", 75, False),
-            ("km", "Kilómetros", 95, False),
+            ("date", self._ui("Fecha", "Date"), 145, False),
+            ("track", self._ui("Circuito", "Track"), 220, True),
+            ("category", self._ui("Categoría", "Category"), 130, False),
+            ("car", self._ui("Auto / entrada", "Car / entry"), 230, True),
+            ("laps", self._ui("Vueltas", "Laps"), 75, False),
+            ("km", self._ui("Kilómetros", "Kilometers"), 95, False),
         ):
             tree.heading(name, text=title)
             tree.column(name, width=width, minwidth=65, stretch=stretch)
@@ -4851,13 +4955,22 @@ class RaceEngineerApp:
 
     def _set_comparison_view(self, view: dict, fallback_text: str):
         if not isinstance(view, dict) or not view.get("available"):
-            self.comparison_summary_var.set("Comparación histórica no disponible")
+            self.comparison_summary_var.set(self._ui(
+                "Comparación histórica no disponible",
+                "Historical comparison unavailable",
+            ))
             self._set_text(self.comparison_hist_text, "")
             self._set_text(self.comparison_current_text, "")
-            self._set_text(self.comparison_detail_text, fallback_text)
+            self._set_text(
+                self.comparison_detail_text,
+                self._ui(
+                    fallback_text,
+                    "This session has no historical comparison available.",
+                ),
+            )
             return
         summary, hist_text, current_text, detail_text = format_comparison_columns(
-            view
+            view, language=self.interface_language
         )
         self.comparison_summary_var.set(summary)
         self._set_text(self.comparison_hist_text, hist_text)
@@ -6956,7 +7069,9 @@ class RaceEngineerApp:
             self._show_detail(record)
 
     def _show_detail(self, record: SessionRecord):
-        detail: SessionDetail = load_session_detail(record)
+        detail: SessionDetail = load_session_detail(
+            record, language=self.interface_language
+        )
         self.detail_title.set(f"{record.track} · {format_lap_time(record.reference_time_s)}")
         self.detail_subtitle.set(
             self._ui(

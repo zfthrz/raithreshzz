@@ -1,5 +1,15 @@
 # Project Status
 
+## Public interface localization R3c.5 — 2026-09-08
+
+- Main-window History and Statistics now render their tabs, headings, cards, charts,
+  tables, monthly detail and dynamic states in the active public language.
+- Structured historical-reference facts render in English when selected; validated
+  narrative bodies remain in their stored artifact language.
+- Fixed localized secondary-tab navigation and persistence by resolving visible
+  labels back to stable keys. The no-date statistics bucket follows the same rule.
+- Remaining R3c work is public dialogs and the final residual-string audit.
+
 ## Public interface localization R3c.4 — 2026-09-08
 
 - Telemetry controls, map/chart legends, playback, lap/reference selection, zoom,

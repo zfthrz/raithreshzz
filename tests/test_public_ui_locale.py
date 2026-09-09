@@ -9,17 +9,22 @@ from public_ui_locale import (
 )
 from race_engineer_gui import (
     RaceEngineerApp,
+    format_comparison_columns,
     navigation_button_label,
     session_change_rows,
     plan_item_traceability_lines,
     session_status_detail_text,
     session_summary_values,
+    secondary_view_label,
+    secondary_view_value,
+    statistics_month_label,
     telemetry_choice_label,
     telemetry_choice_value,
     telemetry_comparison_sample_text,
     track_zone_summary_text,
     ui_state_message,
 )
+from race_engineer_ui_model import _historical_reference_text
 
 
 def test_public_sections_translate_without_changing_internal_keys():
@@ -220,3 +225,46 @@ def test_telemetry_workspace_uses_the_active_interface_language():
         assert expected in build
     assert "Local delta · green gains time" in render
     assert "telemetry_choice_value(" in preferences
+
+
+def test_secondary_view_labels_round_trip_to_stable_preference_keys():
+    assert secondary_view_label("Referencia", "en") == "Reference"
+    assert secondary_view_label("Mensual", "en") == "Monthly"
+    assert secondary_view_value("Comparison", "en") == "Comparación"
+    assert secondary_view_value("Overview", "en") == "General"
+    assert statistics_month_label("Sin fecha", "en") == "No date"
+    assert statistics_month_label("2026-09", "en") == "2026-09"
+
+
+def test_main_history_comparison_has_explicit_english_chrome():
+    summary, historical, current, detail = format_comparison_columns(
+        {
+            "available": True,
+            "delta_text": "+0.120 s",
+            "historical": {"session_id": 4, "lap": 2, "duration_text": "1:31.000"},
+            "current": {"session_id": 8, "lap": 3, "duration_text": "1:31.120"},
+            "zones": [],
+        },
+        language="en",
+    )
+    assert summary == "Current − historical delta: +0.120 s"
+    assert historical.startswith("Historical session: #4\nLap: 2")
+    assert current.startswith("Current session: #8\nLap: 3")
+    assert detail == "No deterministic areas are available."
+    assert _historical_reference_text(None, language="en") == (
+        "This session does not have a historical reference yet."
+    )
+
+
+def test_main_statistics_workspace_uses_active_language_and_stable_month_key():
+    import inspect
+
+    panel = inspect.getsource(RaceEngineerApp._statistics_panel)
+    apply = inspect.getsource(RaceEngineerApp._apply_statistics)
+    month = inspect.getsource(RaceEngineerApp._open_statistics_month)
+    navigation = inspect.getsource(RaceEngineerApp._remember_secondary_view)
+    for expected in ("VALID LAPS", "FAVORITE TRACK", "MONTHLY HISTORY"):
+        assert expected in panel
+    assert "statistics_month_label(" in apply
+    assert "self.statistics_month_keys.get(" in month
+    assert "secondary_view_value(" in navigation

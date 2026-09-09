@@ -752,9 +752,15 @@ def _pipeline_text(record: SessionRecord) -> str:
     return "\n".join(lines)
 
 
-def _historical_reference_text(path: Path | None) -> str:
+def _historical_reference_text(path: Path | None, *, language: str = "es") -> str:
+    def text(spanish: str, english: str) -> str:
+        return english if language == "en" else spanish
+
     if path is None:
-        return "Esta sesión todavía no tiene una selección H4 disponible."
+        return text(
+            "Esta sesión todavía no tiene una selección H4 disponible.",
+            "This session does not have a historical reference yet.",
+        )
     payload = _json(path)
     status = str(payload.get("selection_status") or "UNKNOWN")
     target = _dict(payload.get("target_session"))
@@ -762,14 +768,16 @@ def _historical_reference_text(path: Path | None) -> str:
     summary = _dict(payload.get("candidate_summary"))
     selected = _dict(payload.get("selected_historical_reference"))
     lines = [
-        f"Estado H4: {status}",
+        f"{text('Estado H4', 'Reference status')}: {status}",
         "",
-        f"Referencia de la sesión: vuelta {target_reference.get('lap', '—')} / "
+        f"{text('Referencia de la sesión', 'Session reference')}: "
+        f"{text('vuelta', 'lap')} {target_reference.get('lap', '—')} / "
         f"{format_lap_time(_number(target_reference.get('duration_s')))}",
-        f"Contexto: {target.get('track', '—')} / {target.get('track_layout', '—')}",
-        f"Vehículo: {target.get('vehicle_variant', '—')} / {target.get('car_name_raw', '—')}",
-        f"Candidatas consideradas: {summary.get('candidate_sessions_considered', 0)} · "
-        f"elegibles: {summary.get('eligible', 0)} · rechazadas: {summary.get('rejected', 0)}",
+        f"{text('Contexto', 'Context')}: {target.get('track', '—')} / {target.get('track_layout', '—')}",
+        f"{text('Vehículo', 'Vehicle')}: {target.get('vehicle_variant', '—')} / {target.get('car_name_raw', '—')}",
+        f"{text('Candidatas consideradas', 'Candidates considered')}: {summary.get('candidate_sessions_considered', 0)} · "
+        f"{text('elegibles', 'eligible')}: {summary.get('eligible', 0)} · "
+        f"{text('rechazadas', 'rejected')}: {summary.get('rejected', 0)}",
     ]
     if selected:
         delta = _number(selected.get("historical_minus_session_reference_s"))
@@ -777,16 +785,22 @@ def _historical_reference_text(path: Path | None) -> str:
         lines.extend(
             (
                 "",
-                "Referencia histórica seleccionada:",
-                f"  History #{selected.get('session_id', '—')} · vuelta {selected.get('lap', '—')}",
-                f"  Tiempo: {format_lap_time(_number(selected.get('duration_s')))}",
-                f"  Histórico - sesión: {delta_text}",
-                f"  Fecha: {selected.get('timestamp_utc', '—')}",
+                text("Referencia histórica seleccionada:", "Selected historical reference:"),
+                f"  History #{selected.get('session_id', '—')} · {text('vuelta', 'lap')} {selected.get('lap', '—')}",
+                f"  {text('Tiempo', 'Time')}: {format_lap_time(_number(selected.get('duration_s')))}",
+                f"  {text('Histórico - sesión', 'Historical - session')}: {delta_text}",
+                f"  {text('Fecha', 'Date')}: {selected.get('timestamp_utc', '—')}",
             )
         )
     else:
-        lines.extend(("", "No existe una referencia histórica compatible bajo los gates H4."))
-    lines.extend(("", "Autoridad: observacional; no reemplaza la referencia de la sesión."))
+        lines.extend(("", text(
+            "No existe una referencia histórica compatible bajo los gates H4.",
+            "No compatible historical reference is available.",
+        )))
+    lines.extend(("", text(
+        "Autoridad: observacional; no reemplaza la referencia de la sesión.",
+        "Authority: observational; it does not replace the session reference.",
+    )))
     return "\n".join(lines)
 
 
@@ -1165,6 +1179,8 @@ def unavailable_session_change_view(
 def load_session_detail(
     record: SessionRecord,
     sessions: list[SessionRecord] | None = None,
+    *,
+    language: str = "es",
 ) -> SessionDetail:
     warnings = []
     debrief = "Esta sesión todavía no tiene un debrief determinista validado."
@@ -1172,7 +1188,11 @@ def load_session_detail(
     plan_items: tuple[dict[str, Any], ...] = ()
     focus_plan_labels: tuple[str, ...] = ()
     laps = "No hay tiempos de vuelta disponibles en el análisis determinista."
-    historical_reference = "Esta sesión todavía no tiene una selección H4 disponible."
+    historical_reference = (
+        "This session does not have a historical reference yet."
+        if language == "en"
+        else "Esta sesión todavía no tiene una selección H4 disponible."
+    )
     historical_comparison_raw: dict[str, Any] = {}
     historical_comparison_llm: dict[str, Any] = {}
     if record.debrief_path:
@@ -1215,7 +1235,9 @@ def load_session_detail(
     if record.analysis_path:
         laps = _laps_text(_json(record.analysis_path))
     try:
-        historical_reference = _historical_reference_text(record.reference_selection_path)
+        historical_reference = _historical_reference_text(
+            record.reference_selection_path, language=language
+        )
     except (OSError, UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
         warnings.append(f"No se pudo leer la selección H4: {exc}")
     if record.cross_session_path:

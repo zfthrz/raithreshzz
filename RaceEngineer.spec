@@ -115,7 +115,7 @@ gui_analysis = analysis(
     runtime_hooks=[str(root / "packaging_runtime_tk.py")],
 )
 analyzer_analysis = analysis("RaceEngineerAnalyze.py")
-cli_analysis = analysis("RaceEngineerCLI.py")
+cli_analysis = analysis("RaceEngineerCLI.py", hiddenimports=["uuid"])
 worker_analysis = analysis("RaceEngineerWorker.py", hiddenimports=worker_modules)
 
 gui = executable("RaceEngineer", gui_analysis, console=False)

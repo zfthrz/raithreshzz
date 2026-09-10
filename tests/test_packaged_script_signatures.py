@@ -24,3 +24,9 @@ def test_source_script_signature_still_requires_real_file(tmp_path, monkeypatch)
 
     with pytest.raises(FileNotFoundError):
         race_engineer.script_signature(tmp_path / "missing.py")
+
+
+def test_packaged_cli_includes_duckdb_dynamic_uuid_dependency():
+    spec = (Path(__file__).parents[1] / "RaceEngineer.spec").read_text(encoding="utf-8")
+
+    assert 'cli_analysis = analysis("RaceEngineerCLI.py", hiddenimports=["uuid"])' in spec

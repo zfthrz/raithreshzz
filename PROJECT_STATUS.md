@@ -1,5 +1,15 @@
 # Project Status
 
+## Portable update and rollback QA — 2026-09-10
+
+- Packaged sources `423707f` and `7e0181b` ran previous → current → previous against
+  one isolated public data root.
+- The exact state digest remained
+  `d6830369dbb6dc7596d894402ab08de2caadd23e61e609d885af9e426a78a9e9`
+  after all three read-only starts; both application folders remained intact.
+- This closes the automated P3 new-folder update/rollback path. Clean-account visual
+  installation and removal remain pending native R4 checks and were not simulated.
+
 ## Public version/about surface — 2026-09-09
 
 - GUI v1.75 reads the packaged `RELEASE_VERSION.txt` for its public window title and

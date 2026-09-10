@@ -506,6 +506,10 @@ La primera versión se prepara como `Race Engineer 0.1.0`; sus notas están en
 pasó con telemetría real. La publicación permanece pendiente del sign-off visual,
 DPI y coexistencia con LMU registrado en R4.
 
+La ruta portable de actualización y rollback entre carpetas separadas conserva el
+estado por usuario; la evidencia reproducible está en
+[`docs/PUBLIC_RELEASE_UPDATE_QA_2026_09_10.md`](docs/PUBLIC_RELEASE_UPDATE_QA_2026_09_10.md).
+
 Para retomar el desarrollo de forma independiente con un LLM local, usar
 [`docs/LOCAL_LLM_DEVELOPMENT_ROADMAP_V1_0.md`](docs/LOCAL_LLM_DEVELOPMENT_ROADMAP_V1_0.md).
 Incluye el checkpoint, límites de autonomía y un plan integral para evolucionar motor

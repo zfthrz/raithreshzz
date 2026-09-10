@@ -120,11 +120,12 @@ Objective: let coverage and fixes improve without risking user data.
 
 ### P3a — Application updates
 
-- Keep the current new-folder update model for early versions.
+- [x] Keep and exercise the current new-folder update model for early versions.
 - [x] Add an in-app read-only version/about surface to identify the exact build and
   public support channel without consulting user data or the network.
 - Define compatibility and migration tests before any persistent-state schema change.
-- Keep rollback possible by retaining the prior application folder.
+- [x] Keep rollback possible by retaining the prior application folder. The packaged
+  previous → current → previous sequence preserved the exact isolated-state hash.
 
 ### P3b — Profile delivery decision
 
@@ -144,6 +145,10 @@ If profile packages become justified, the required contract is:
 - recovery to the last valid catalog after interruption.
 
 Exit: at least one update path has passed install, rollback and retained-data tests.
+
+Current result (2026-09-10): the portable new-folder path passed packaged update,
+rollback and retained-state checks. Clean-account visual installation and application-
+folder removal remain part of the pending native R4 lifecycle sign-off.
 
 ## Stage P4 — Personalization foundation, observational only
 

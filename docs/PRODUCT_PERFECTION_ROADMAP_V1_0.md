@@ -35,10 +35,10 @@ Objective: complete R4 with evidence from the actual packaged application.
 - [x] Reproducible Windows package with embedded Python.
 - [x] Public-only navigation and isolated per-user state.
 - [x] Complete English/Spanish public interface and deterministic new-report language.
-- [x] Full automated suite, deterministic regressions and 12-profile validation.
+- [x] Full automated suite, deterministic regressions and 13-profile validation.
 - [x] Package manifest, dependency lock, licenses and installation lifecycle.
-- [ ] Run one packaged end-to-end analysis from a retained QA `.duckdb` fixture.
-- [ ] Verify short/long, no-debrief, History-only and load-error sessions.
+- [x] Run one packaged end-to-end analysis from a retained QA `.duckdb` fixture.
+- [x] Verify functional short/long, no-debrief, History-only and load-error states.
 - [ ] Complete clipboard, debrief navigation, Detail-to-Telemetry and FOCUS checks.
 - [ ] Complete clean-account install/reopen/retained-data uninstall.
 - [ ] Test another supported DPI scale.
@@ -47,10 +47,17 @@ Objective: complete R4 with evidence from the actual packaged application.
 Exit: the R4 QA report contains every result, has no unresolved blocker and is marked
 approved for publication.
 
+Current result (2026-09-09): functional packaged QA passes after three reproduced
+packaging fixes. Native session UI, alternate DPI and LMU coexistence remain the only
+sign-off gate because the current automation environment cannot control native apps.
+
 ## Stage P1 — Complete initial circuit coverage
 
-Objective: add the four remaining exact circuit/layout profiles before the owner's
-chosen first public release.
+Objective: maintain exact circuit/layout coverage for the owner's target catalog.
+
+The first-release scope was frozen at the 13 identities already validated when R4
+functional QA passed. The three still unnamed targets move to later application
+versions; no identity or profile is inferred merely to enlarge version 0.1.0.
 
 ### P1a — Exact inventory
 
@@ -73,36 +80,39 @@ Completed as `barcelona-lmu-fia14-v0.1`: source plus three independent
 pipeline analysis remains part of P0 packaged end-to-end QA rather than profile
 geometry authority.
 
-### P1c — Other three profiles
+### P1c — Other three profiles after 0.1.0
 
 - Wait for real source sessions and confirmed identities.
 - Apply the same calibration and independent-validation workflow to each profile.
 - Never lower the gate to complete the catalog sooner.
 
-### P1d — Catalog freeze
+### P1d — 0.1.0 catalog freeze
 
 - Publish the exact track/layout/profile-version matrix selected by the release audit.
 - Rebuild the candidate from the frozen source commit.
 - Re-run profile hashes, full tests, deterministic regressions and the packaged smoke.
 
-Exit: all four target identities have validated top-level profiles, and the release
-manifest includes the intended frozen catalog with no shadow or calibration data.
+Exit for 0.1.0: the release manifest includes the 13-profile frozen catalog with no
+shadow or calibration data. Later targets enter only through the same gate.
 
 ## Stage P2 — Publish version 0.1
 
 Objective: produce the first immutable public artifact after P0 and P1 pass.
 
-- Choose the displayed product name, initial semantic version and support channel.
-- Add a concise privacy/data statement: processing is local, telemetry location is
+- [x] Choose `Race Engineer`, semantic version `0.1.0` and public GitHub Issues support.
+- [x] Add a concise privacy/data statement: processing is local, telemetry location is
   user-selected, and no automatic LLM or telemetry upload occurs.
-- Freeze known limitations, supported Windows versions and supported LMU layouts.
+- [x] Freeze known limitations, validated Windows platform and supported LMU layouts.
 - Build from the final tagged commit in a new empty directory.
-- Generate release notes, checksums and the exact profile catalog.
+- [x] Prepare release notes and the exact profile catalog; final checksums follow the tag.
 - Verify installation on a clean account before signing the QA report.
 - Publish only after explicit owner approval.
 
 Exit: one immutable downloadable artifact is traceable to its tag, source commit,
 dependency lock and profile manifest.
+
+Current result (2026-09-09): R5 content is prepared as `0.1.0-rc.1`. The immutable
+tag, final artifact and publication remain gated by the pending native R4 checks.
 
 ## Stage P3 — Make releases maintainable
 

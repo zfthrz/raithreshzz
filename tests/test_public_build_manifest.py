@@ -83,3 +83,12 @@ def test_public_package_requires_installation_and_data_retention_guide():
     assert "%LOCALAPPDATA%\\RaceEngineer" in guide
     assert "never deletes the LMU telemetry folder" in guide
     assert "nunca elimina la carpeta de telemetría de LMU" in guide
+
+
+def test_public_package_includes_version_and_release_notes():
+    root = Path(__file__).parents[1]
+    spec = (root / "RaceEngineer.spec").read_text(encoding="utf-8")
+
+    assert (root / "RELEASE_VERSION.txt").read_text(encoding="utf-8").strip() == "0.1.0-rc.1"
+    assert 'root / "RELEASE_VERSION.txt"' in spec
+    assert 'root / "docs" / "RELEASE_NOTES_V0_1_0.md"' in spec

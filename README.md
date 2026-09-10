@@ -493,12 +493,17 @@ en [`docs/PUBLIC_RELEASE_R4_QA_2026_09_09.md`](docs/PUBLIC_RELEASE_R4_QA_2026_09
 El estado `READY` del auditor confirma el contrato del árbol fuente; la publicación
 requiere además cerrar y firmar R4.
 
-La secuencia posterior al candidato, incluidos los cuatro perfiles restantes,
-publicación, actualizaciones y personalización histórica, está definida en
+La secuencia posterior al candidato, incluida la publicación con el catálogo actual,
+los perfiles futuros, actualizaciones y personalización histórica, está definida en
 [`docs/PRODUCT_PERFECTION_ROADMAP_V1_0.md`](docs/PRODUCT_PERFECTION_ROADMAP_V1_0.md).
 Barcelona ya integra el catálogo como `barcelona-lmu-fia14-v0.1`, validado sobre
 tres sesiones `LMP2_ELMS` independientes además de su vuelta fuente. El catálogo
 público contiene ahora 13 identidades exactas.
+
+La primera versión se prepara como `Race Engineer 0.1.0`; sus notas están en
+[`docs/RELEASE_NOTES_V0_1_0.md`](docs/RELEASE_NOTES_V0_1_0.md). El RC funcional ya
+pasó con telemetría real. La publicación permanece pendiente del sign-off visual,
+DPI y coexistencia con LMU registrado en R4.
 
 Para retomar el desarrollo de forma independiente con un LLM local, usar
 [`docs/LOCAL_LLM_DEVELOPMENT_ROADMAP_V1_0.md`](docs/LOCAL_LLM_DEVELOPMENT_ROADMAP_V1_0.md).

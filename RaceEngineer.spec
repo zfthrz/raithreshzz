@@ -23,6 +23,8 @@ worker_modules = [
 ]
 common_datas = [
     (str(root / "track_profiles"), "track_profiles"),
+    (str(root / "RELEASE_VERSION.txt"), "."),
+    (str(root / "docs" / "RELEASE_NOTES_V0_1_0.md"), "."),
     (str(root / "LICENSE.txt"), "."),
     (str(root / "THIRD_PARTY_NOTICES.md"), "."),
     (str(root / "PUBLIC_INSTALLATION.md"), "."),

@@ -1,5 +1,18 @@
 # Project Status
 
+## Public R4 functional pass / R5 prepared — 2026-09-09
+
+- Packaged candidate `880d3bf` completed a real Le Mans run with 8 valid laps through
+  Analysis, History, deterministic debrief and validator; a separate Paul Ricard run
+  stored the validated English presentation in isolated state.
+- Three reproduced package defects were fixed in `90c897d`, `b39b69e` and `880d3bf`.
+- Source telemetry hashes remained identical. The package called no LLM and the
+  isolated History validator passed.
+- `Race Engineer 0.1.0`, GitHub Issues support and release notes are prepared as RC1.
+- R4 cannot be signed off or tagged yet: native session UI, alternate DPI and LMU
+  coexistence are still unverified because the current environment cannot control
+  native applications. These results were not simulated.
+
 ## Local-LLM independent development roadmap — 2026-09-09
 
 - Added a canonical operational roadmap for continuing future work with a local coding
@@ -43,6 +56,8 @@
 - The first public release waits for those four profiles. Barcelona is the only target
   currently identified from real local state; the other three require explicit names
   and source sessions rather than inference.
+- Superseded for the 0.1.0 scope by the newer R4/R5 entry above: 0.1.0 freezes the 13
+  profiles currently validated and defers the three unnamed targets to later versions.
 - Profile-only packages remain conditional on demonstrated update burden. Adaptive
   recommendations begin observationally and cannot change production coaching before
   a separate longitudinal promotion gate.

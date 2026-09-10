@@ -1669,6 +1669,14 @@ public executable.
 Using a local model as a coding agent does not enable an LLM in the public runtime or
 grant promotion authority to shadow policies.
 
+Public R4 functional QA on real telemetry exposed three release-only integration gaps:
+frozen script signatures could not depend on loose source files, the CLI needed the
+dynamic standard-library `uuid` dependency used by DuckDB, and the packaged validator
+needed neutral deterministic renderers instead of the deliberately excluded legacy LLM
+module. Those fixes preserve source behavior and let the packaged Analysis → History →
+debrief → validator path complete without an LLM. Release `0.1.0` remains gated by
+native visual, alternate-DPI and LMU-coexistence sign-off.
+
 Completed after the integration checkpoint:
 
 1. The H5.2 observational narrative passed on the real Fuji pair with DeepSeek and its dedicated validator.

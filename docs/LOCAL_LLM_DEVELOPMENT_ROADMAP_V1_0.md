@@ -37,6 +37,12 @@ Antes de iniciar trabajo futuro se debe verificar este checkpoint contra `git lo
 `git status`, los documentos canónicos y el código. Si el repositorio avanzó, el
 estado nuevo reemplaza esta fotografía.
 
+R4/R5 update (2026-09-09): packaged functional QA reached PASS on real Le Mans and
+Paul Ricard telemetry after fixing three packaging-only defects. Version `0.1.0`, its
+release notes and support channel are prepared. The first public tag and publication
+remain blocked only by native visual/DPI/LMU sign-off; a future agent must not infer
+those results from structural tests.
+
 ## Reglas de autonomía
 
 El LLM local puede realizar sin consulta intermedia:

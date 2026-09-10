@@ -143,8 +143,9 @@ Exit: signed QA report with every required check and no unresolved release block
   make the first-party application open source.
 - [x] Record third-party license families and require their complete notices in the
   final package.
-- Choose public product name, semantic version and support channel.
-- Write the user installation guide, privacy/data statement and known limitations.
+- [x] Choose public product name (`Race Engineer`), semantic version (`0.1.0`) and
+  support channel (public GitHub Issues).
+- [x] Write the user installation guide, privacy/data statement and known limitations.
 - Create the versioned artifact, checksums and release notes from a tagged commit.
 - Publishing or pushing remains an explicit owner action.
 

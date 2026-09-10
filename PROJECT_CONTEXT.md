@@ -1660,6 +1660,15 @@ the largest apex offset was 20 m under the unchanged 35 m PASS tolerance. The pu
 catalog therefore contains 13 exact identities, leaving the other three owner-selected
 targets unnamed and pending real data.
 
+`docs/LOCAL_LLM_DEVELOPMENT_ROADMAP_V1_0.md` translates that sequence into bounded
+work units for a future local coding LLM. It defines autonomy limits, stop conditions,
+validation commands, a 0–30+ month sequence and reusable start/finish prompts. Its scope
+includes the deterministic engine, coaching quality, longitudinal personalization,
+coverage, bilingual UX, architecture, performance and distribution beyond the initial
+public executable.
+Using a local model as a coding agent does not enable an LLM in the public runtime or
+grant promotion authority to shadow policies.
+
 Completed after the integration checkpoint:
 
 1. The H5.2 observational narrative passed on the real Fuji pair with DeepSeek and its dedicated validator.

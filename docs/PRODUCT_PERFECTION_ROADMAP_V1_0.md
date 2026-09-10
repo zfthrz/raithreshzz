@@ -1,5 +1,8 @@
 # Race Engineer product perfection roadmap v1.0
 
+For independent execution by a future local coding LLM, use
+`docs/LOCAL_LLM_DEVELOPMENT_ROADMAP_V1_0.md` together with this product sequence.
+
 ## Purpose
 
 This roadmap starts from the current public candidate instead of reopening completed

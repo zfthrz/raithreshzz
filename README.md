@@ -500,6 +500,12 @@ Barcelona ya integra el catálogo como `barcelona-lmu-fia14-v0.1`, validado sobr
 tres sesiones `LMP2_ELMS` independientes además de su vuelta fuente. El catálogo
 público contiene ahora 13 identidades exactas.
 
+Para retomar el desarrollo de forma independiente con un LLM local, usar
+[`docs/LOCAL_LLM_DEVELOPMENT_ROADMAP_V1_0.md`](docs/LOCAL_LLM_DEVELOPMENT_ROADMAP_V1_0.md).
+Incluye el checkpoint, límites de autonomía y un plan integral para evolucionar motor
+determinista, coaching, historial, perfiles, UX bilingüe, arquitectura y distribución,
+además de comandos y un prompt maestro.
+
 La distribución incluye `PUBLIC_INSTALLATION.md` en Español e inglés. Las
 actualizaciones se extraen en una carpeta nueva y reutilizan el estado aislado en
 `%LOCALAPPDATA%\RaceEngineer`. Eliminar la carpeta de la aplicación conserva ese

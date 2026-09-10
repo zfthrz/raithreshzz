@@ -1,5 +1,18 @@
 # Project Status
 
+## Local-LLM independent development roadmap — 2026-09-09
+
+- Added a canonical operational roadmap for continuing future work with a local coding
+  LLM from published checkpoint `e71bac3`.
+- The plan covers the project beyond the executable and first release: telemetry facts,
+  coaching evaluation, longitudinal personalization, track/context coverage, bilingual
+  UX, architecture, performance, data distribution and optional research.
+- It sequences those areas into bounded horizons with an indicative 0–30+ month order,
+  evidence gates and criteria for stopping an unhelpful hypothesis.
+- It includes autonomy boundaries, exact validation commands, stop conditions, a
+  reusable startup prompt and a mandatory session-close report. A local coding model
+  receives no runtime coaching authority and cannot promote shadow policy by itself.
+
 ## Barcelona profile v0.1 promoted — 2026-09-09
 
 - Added `barcelona-lmu-fia14-v0.1` for exact LMU identity

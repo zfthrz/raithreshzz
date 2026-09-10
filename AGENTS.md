@@ -10,6 +10,10 @@ Before any non-trivial code change, architecture proposal, debugging session, re
 4. Inspect the exact current code before editing; do not infer current behavior from `legacy/` or an old versioned note.
 5. If architecture/contracts/version baselines change, update `PROJECT_CONTEXT.md` in the same change.
 
+For medium/long-term work performed by a local coding LLM, also follow
+`docs/LOCAL_LLM_DEVELOPMENT_ROADMAP_V1_0.md`. It operationalizes the current product
+roadmap but does not replace these instructions or the current code and tests.
+
 If `PROJECT_CONTEXT.md` is missing, report that before making a broad project-level change.
 
 ## Project mental model

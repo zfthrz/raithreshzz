@@ -1,9 +1,44 @@
 import json
+import importlib
 import os
 import re
 import sys
+from types import SimpleNamespace
 
-import llm_analysis as llm_renderer
+
+def _build_packaged_renderer(base_dir):
+    from coaching_precision import render_track_reference_section
+    from deterministic_coaching import (
+        build_deterministic_next_session_priorities,
+        build_deterministic_repeated_observations,
+    )
+    from deterministic_comparison_render import render_comparison_analysis
+    from deterministic_global_render import render_global_analysis
+    from deterministic_track_context import load_track_location_context
+
+    return SimpleNamespace(
+        render_comparison_analysis=render_comparison_analysis,
+        build_deterministic_repeated_observations=(
+            build_deterministic_repeated_observations
+        ),
+        build_deterministic_next_session_priorities=(
+            build_deterministic_next_session_priorities
+        ),
+        render_global_analysis=render_global_analysis,
+        load_track_location_context=lambda metadata: load_track_location_context(
+            metadata,
+            base_dir=base_dir,
+        ),
+        render_track_reference_section=render_track_reference_section,
+    )
+
+
+if getattr(sys, "frozen", False):
+    llm_renderer = _build_packaged_renderer(
+        getattr(sys, "_MEIPASS", os.path.dirname(sys.executable))
+    )
+else:
+    llm_renderer = importlib.import_module("llm_analysis")
 
 
 # ============================================================

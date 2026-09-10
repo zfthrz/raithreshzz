@@ -3,6 +3,7 @@ from pathlib import Path
 import pytest
 
 import race_engineer
+import validate_llm_analysis_output as output_validator
 
 
 def test_frozen_script_signature_uses_packaged_executable(tmp_path, monkeypatch):
@@ -30,3 +31,14 @@ def test_packaged_cli_includes_duckdb_dynamic_uuid_dependency():
     spec = (Path(__file__).parents[1] / "RaceEngineer.spec").read_text(encoding="utf-8")
 
     assert 'cli_analysis = analysis("RaceEngineerCLI.py", hiddenimports=["uuid"])' in spec
+
+
+def test_packaged_validator_uses_neutral_deterministic_renderer(tmp_path):
+    renderer = output_validator._build_packaged_renderer(tmp_path)
+
+    assert renderer.render_comparison_analysis.__module__ == "deterministic_comparison_render"
+    assert renderer.render_global_analysis.__module__ == "deterministic_global_render"
+    assert (
+        renderer.build_deterministic_next_session_priorities.__module__
+        == "deterministic_coaching"
+    )

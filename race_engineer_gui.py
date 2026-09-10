@@ -92,10 +92,12 @@ from race_engineer_track_map import (
 )
 
 
-GUI_VERSION = "1.74"
+GUI_VERSION = "1.75"
 DEFAULT_RUNS_ROOT = generated_root() / "runs"
 STATE_REFRESH_INTERVAL_MS = 5_000
 PROJECT_ROOT = Path(__file__).resolve().parent
+PUBLIC_RELEASE_VERSION_PATH = PROJECT_ROOT / "RELEASE_VERSION.txt"
+PUBLIC_SUPPORT_URL = "https://github.com/zfthrz/raithreshzz/issues"
 SESSION_FILTER_LABELS = {
     "Todas": "ALL",
     "Con debrief": "DEBRIEF_READY",
@@ -117,6 +119,15 @@ PUBLIC_PRIMARY_SECTIONS = (
     "Historial",
     "Estadísticas",
 )
+
+
+def public_release_version(path: Path = PUBLIC_RELEASE_VERSION_PATH) -> str:
+    """Return the packaged release identity without consulting user state or network."""
+    try:
+        value = path.read_text(encoding="utf-8").strip()
+    except OSError:
+        return "development"
+    return value if value else "development"
 
 
 def primary_sections(*, public_release: bool) -> tuple[str, ...]:
@@ -1975,7 +1986,8 @@ class RaceEngineerApp:
         self.settings_warning = ""
 
         product = "Race Engineer" if public_release else "Threshzz's Telemetry Analysis LMU"
-        root.title(f"{product} v{GUI_VERSION}")
+        displayed_version = public_release_version() if public_release else GUI_VERSION
+        root.title(f"{product} v{displayed_version}")
         root.geometry("1600x1040")
         root.minsize(1240, 760)
         root.configure(background=COLORS["app"])
@@ -2714,6 +2726,12 @@ class RaceEngineerApp:
             command=self._show_shortcut_help,
         )
         self.shortcut_help_button.pack(fill="x", pady=(7, 0))
+        if self.public_release:
+            ttk.Button(
+                sidebar_bottom,
+                text=self._ui("Acerca de Race Engineer", "About Race Engineer"),
+                command=self._show_public_about,
+            ).pack(fill="x", pady=(7, 0))
 
         header = ttk.Frame(main, style="WorkspaceHeader.TFrame")
         header.pack(fill="x", pady=(0, 14))
@@ -9257,6 +9275,19 @@ class RaceEngineerApp:
         if elapsed is not None:
             self._set_playback_time_status(float(elapsed))
         return "break"
+
+    def _show_public_about(self):
+        from tkinter import messagebox
+
+        version = public_release_version()
+        messagebox.showinfo(
+            self._ui("Acerca de Race Engineer", "About Race Engineer"),
+            self._ui(
+                f"Race Engineer {version}\n\nSoporte y reporte de errores:\n{PUBLIC_SUPPORT_URL}",
+                f"Race Engineer {version}\n\nSupport and bug reports:\n{PUBLIC_SUPPORT_URL}",
+            ),
+            parent=self.root,
+        )
 
     def _reset_telemetry_zoom(self):
         self.telemetry_zoom_range = None

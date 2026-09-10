@@ -10,15 +10,58 @@ import runtime_paths
 from public_release_contract import DEVELOPMENT_GUI_SECTIONS, PUBLIC_GUI_SECTIONS
 from public_runtime import configure_public_runtime, public_data_root
 from race_engineer_gui import (
+    PUBLIC_SUPPORT_URL,
     RaceEngineerApp,
     _complete_public_first_run,
     global_shortcuts,
     primary_sections,
+    public_release_version,
     track_zone_summary_text,
 )
 from public_first_run import PublicPreferences
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def test_public_release_version_is_read_only_and_fails_closed(tmp_path):
+    version_file = tmp_path / "RELEASE_VERSION.txt"
+    assert public_release_version(version_file) == "development"
+
+    version_file.write_text("0.1.0-rc.1\n", encoding="utf-8")
+    assert public_release_version(version_file) == "0.1.0-rc.1"
+
+
+def test_public_about_reports_release_and_support(monkeypatch, tmp_path):
+    from tkinter import messagebox
+
+    version_file = tmp_path / "RELEASE_VERSION.txt"
+    version_file.write_text("0.1.0-rc.1\n", encoding="utf-8")
+    captured = {}
+    monkeypatch.setattr(
+        "race_engineer_gui.public_release_version",
+        lambda: public_release_version(version_file),
+    )
+    monkeypatch.setattr(
+        messagebox,
+        "showinfo",
+        lambda title, message, **kwargs: captured.update(
+            title=title, message=message, **kwargs
+        ),
+    )
+    app = RaceEngineerApp.__new__(RaceEngineerApp)
+    app.interface_language = "en"
+    app.root = object()
+    app._show_public_about()
+
+    assert captured["title"] == "About Race Engineer"
+    assert "Race Engineer 0.1.0-rc.1" in captured["message"]
+    assert PUBLIC_SUPPORT_URL in captured["message"]
+    assert captured["parent"] is app.root
+
+
+def test_public_window_title_uses_release_identity():
+    source = inspect.getsource(RaceEngineerApp.__init__)
+    assert "public_release_version() if public_release else GUI_VERSION" in source
 
 
 def test_public_runtime_uses_fresh_per_user_paths(tmp_path, monkeypatch):

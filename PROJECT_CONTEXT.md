@@ -155,6 +155,9 @@ width, and English shortcut help labels the space key as `Ctrl+Space`.
 GUI v1.74 localizes the packaged deterministic CLI and safe-launcher help in
 ASCII-safe English; command names, arguments, defaults and runtime behavior are
 unchanged.
+GUI v1.75 reads the packaged release identity for the public title and bilingual About
+dialog, which also shows the support URL without reading user state or opening the
+network.
 The portable public package ships a bilingual `PUBLIC_INSTALLATION.md`. Updates are
 installed into a new empty application directory and reuse the isolated per-user
 state under `%LOCALAPPDATA%\RaceEngineer`; uninstalling the application directory

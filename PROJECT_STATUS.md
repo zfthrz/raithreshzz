@@ -1,5 +1,13 @@
 # Project Status
 
+## Public version/about surface — 2026-09-09
+
+- GUI v1.75 reads the packaged `RELEASE_VERSION.txt` for its public window title and
+  exposes the exact build plus GitHub Issues URL in a bilingual read-only About dialog.
+- The dialog reads no user state and makes no network request.
+- The product roadmap immediate order now reflects the frozen 13-profile 0.1.0 scope;
+  the three unidentified future profiles no longer appear as a release prerequisite.
+
 ## Public R4 functional pass / R5 prepared — 2026-09-09
 
 - Packaged candidate `880d3bf` completed a real Le Mans run with 8 valid laps through

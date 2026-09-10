@@ -121,7 +121,8 @@ Objective: let coverage and fixes improve without risking user data.
 ### P3a — Application updates
 
 - Keep the current new-folder update model for early versions.
-- Add an in-app read-only version/about surface only if it reduces support ambiguity.
+- [x] Add an in-app read-only version/about surface to identify the exact build and
+  public support channel without consulting user data or the network.
 - Define compatibility and migration tests before any persistent-state schema change.
 - Keep rollback possible by retaining the prior application folder.
 
@@ -210,14 +211,11 @@ Objective: improve reliability and clarity using evidence from actual users.
 
 ## Immediate execution order
 
-1. Finish the remaining P0 checks when native control and a retained QA session are
-   available.
-2. Inventory the four P1 targets exactly and start Barcelona from its existing files.
-3. Prepare the P2 product identity, privacy statement and limitations without tagging
-   or publishing.
-4. Freeze the first-release catalog only after the four profiles close.
-5. Publish version 0.1 after owner sign-off.
-6. Gather real longitudinal evidence before implementing P4 personalization logic.
+1. Finish the remaining P0 native checks when native control and LMU are available.
+2. Publish version 0.1 from the frozen 13-profile catalog after owner sign-off.
+3. Validate the early-release new-folder update and retained-data rollback workflow.
+4. Add later circuit profiles only from identified real sessions through the P1 gate.
+5. Gather real longitudinal evidence before implementing P4 personalization logic.
 
 P3 profile packages and P5 adaptive coaching are deliberately conditional. They are
 implemented only when release operations or shadow evidence demonstrate a concrete

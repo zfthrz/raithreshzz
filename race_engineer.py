@@ -67,6 +67,12 @@ def stat_signature(path: Path) -> dict[str, Any]:
 
 
 def script_signature(path: Path) -> dict[str, str]:
+    if not path.is_file() and getattr(sys, "frozen", False):
+        executable = Path(sys.executable).resolve()
+        return {
+            "path": f"packaged:{path.name}",
+            "sha256": sha256_file(executable),
+        }
     return {
         "path": str(path.resolve()),
         "sha256": sha256_file(path),
@@ -1408,28 +1414,28 @@ def analyze_command(args: argparse.Namespace) -> int:
                             "h5_1_sha256": sha256_file(h5_output),
                             "h5_2_sha256": sha256_file(h5_2_output),
                             "candidates_sha256": sha256_file(h5_3_candidates),
-                            "pipeline_sha256": sha256_file(
+                            "pipeline_sha256": script_signature(
                                 Path(_h5_3_shadow_pipeline.__file__)
-                            ),
+                            )["sha256"],
                             "pipeline_dependencies_sha256": {
-                                "eligibility": sha256_file(Path(
+                                "eligibility": script_signature(Path(
                                     _h5_3_shadow_pipeline.eligibility_module.__file__
-                                )),
-                                "selection": sha256_file(Path(
+                                ))["sha256"],
+                                "selection": script_signature(Path(
                                     _h5_3_shadow_pipeline.selection_module.__file__
-                                )),
-                                "action_policy": sha256_file(Path(
+                                ))["sha256"],
+                                "action_policy": script_signature(Path(
                                     _h5_3_shadow_pipeline.action_policy_module.__file__
-                                )),
-                                "eligibility_validator": sha256_file(Path(
+                                ))["sha256"],
+                                "eligibility_validator": script_signature(Path(
                                     _h5_3_shadow_pipeline.eligibility_validator.__file__
-                                )),
-                                "selection_validator": sha256_file(Path(
+                                ))["sha256"],
+                                "selection_validator": script_signature(Path(
                                     _h5_3_shadow_pipeline.selection_validator.__file__
-                                )),
-                                "action_validator": sha256_file(Path(
+                                ))["sha256"],
+                                "action_validator": script_signature(Path(
                                     _h5_3_shadow_pipeline.action_validator.__file__
-                                )),
+                                ))["sha256"],
                             },
                         }
                         reuse_h5_3_shadow = (

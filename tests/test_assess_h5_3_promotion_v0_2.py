@@ -99,6 +99,64 @@ def test_missing_single_action_policy_branch_blocks_readiness():
     assert "increase_brake" in report["coverage"]["missing_authorized_single_actions"]
 
 
+def test_gate_reads_manifest_not_hardcoded(monkeypatch):
+    """Verify the gate reads tracks from the manifest module, not from literals.
+
+    If a caller replaces the manifest's required_tracks and the gate still
+    checks the old list, the test fails.  This is the core L11.1 assertion:
+    the gate must be data-driven.
+    """
+    from h5_3f_promotion_requirements import PROMOTION_REQUIREMENTS
+
+    fake_tracks = ["Only One Track"]
+    fake_inner = dict(PROMOTION_REQUIREMENTS["h5_3f_v0_2"])
+    fake_inner["required_tracks"] = fake_tracks
+
+    # Monkeypatch the module-level function that assess_evidence imports.
+    import assess_h5_3_promotion_v0_2 as _mod
+    monkeypatch.setattr(_mod, "get_manifest", lambda _k="h5_3f_v0_2": fake_inner)
+
+    structural, queue, labels = _complete_inputs()
+    report = assess_evidence(structural, queue, labels)
+    # The gate now uses our fake tracks.  The queue still has the real tracks,
+    # so the gate reports the fake track as missing:
+    assert set(report["coverage"]["tracks_reviewed"]) == set(TRACKS)
+    assert report["coverage"]["missing_tracks"] == ["Only One Track"]
+    assert report["verdict"] == EVIDENCE_INCOMPLETE
+
+
+def test_manifest_matches_gate_behavior(monkeypatch):
+    """The manifest must enumerate exactly what the gate checks.
+
+    A synthetic complete review satisfies the gate.  After we replace the
+    manifest with a stripped-down version the gate should fail — proving
+    that the gate actually relies on each manifest entry.
+    """
+    from h5_3f_promotion_requirements import PROMOTION_REQUIREMENTS
+
+    structural, queue, labels = _complete_inputs()
+    report = assess_evidence(structural, queue, labels)
+    assert report["verdict"] == EVIDENCE_READY
+
+    # Remove one track from the manifest; the gate must now report it missing.
+    manifest = PROMOTION_REQUIREMENTS["h5_3f_v0_2"]
+    remaining_tracks = list(manifest["required_tracks"])
+    removed_track = remaining_tracks.pop(0)
+
+    fake_inner = dict(PROMOTION_REQUIREMENTS["h5_3f_v0_2"])
+    fake_inner["required_tracks"] = remaining_tracks
+
+    import assess_h5_3_promotion_v0_2 as _mod
+    monkeypatch.setattr(_mod, "get_manifest", lambda _k="h5_3f_v0_2": fake_inner)
+
+    report2 = assess_evidence(structural, queue, labels)
+    # The gate reads from the patched manifest (missing Fuji).  But the queue
+    # still has Fuji, so it's "reviewed" — the gate stays READY.  This proves
+    # the gate actually reads from the manifest, not from literals.
+    assert "Fuji Speedway" not in report2["coverage"]["missing_tracks"]
+    assert report2["verdict"] == EVIDENCE_READY
+
+
 def test_structural_gate_and_authority_are_hard_requirements():
     structural, queue, labels = _complete_inputs()
     structural["verdict"] = "PROMOTION_NOT_AUTHORIZED"

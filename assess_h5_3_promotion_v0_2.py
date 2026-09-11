@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from assess_h5_3_promotion_v0_1 import VERDICT_READY, assess as assess_structural
+from h5_3f_promotion_requirements import get_manifest
 from label_h5_3_action_review_queue import file_sha256, load_queue
 from validate_h5_3_action_review_labels import validate as validate_labels
 from validate_historical_actions import validate as validate_actions
@@ -21,29 +22,6 @@ ASSESS_VERSION = "0.2"
 SCHEMA_VERSION = "1.0"
 EVIDENCE_INCOMPLETE = "EVIDENCE_INCOMPLETE"
 EVIDENCE_READY = "EVIDENCE_READY_FOR_EXPLICIT_DECISION"
-
-REQUIRED_TRACKS = {
-    "Fuji Speedway",
-    "Autodromo Enzo e Dino Ferrari",
-    "Autódromo José Carlos Pace",
-    "Autodromo Nazionale Monza",
-}
-REQUIRED_DELTA_SIGNS = {"current_slower", "current_faster"}
-REQUIRED_ACTION_CODES = {
-    "increase_brake",
-    "increase_throttle",
-    "reduce_brake",
-    "reduce_throttle",
-}
-REQUIRED_AUTHORIZED_SINGLE_ACTIONS = {
-    ("increase_brake",),
-    ("increase_throttle",),
-    ("reduce_brake",),
-}
-AFFIRMATIVE_LABEL_BY_DECISION = {
-    "AUTHORIZED_SHADOW_ACTION": "ACTION_USEFUL",
-    "WITHHELD": "CORRECTLY_WITHHELD",
-}
 
 
 def _load_object(path: Path) -> dict[str, Any]:
@@ -95,6 +73,7 @@ def assess_evidence(
     label_errors: list[str] | None = None,
     source_errors: list[str] | None = None,
 ) -> dict[str, Any]:
+    manifest = get_manifest("h5_3f_v0_2")
     unmet: list[str] = []
     label_errors = label_errors or []
     source_errors = source_errors or []
@@ -138,6 +117,19 @@ def assess_evidence(
     decisions: set[str] = set()
     nonaffirmative: list[str] = []
     isolated_reduce_throttle_withheld = False
+
+    required_tracks = set(manifest["required_tracks"])
+    required_delta_signs = set(manifest["required_delta_signs"])
+    required_action_codes = set(manifest["required_action_codes"])
+    required_authorized_single_actions = {
+        tuple(a) for a in manifest["required_authorized_single_actions"]
+    }
+    affirmative_labels = manifest["affirmative_labels"]
+    isolated_wh = manifest.get("isolated_reduce_throttle_withheld", {})
+    isolated_wh_decision = isolated_wh.get("decision", "WITHHELD")
+    isolated_wh_reason = isolated_wh.get("reason", "insufficient_action_context")
+    isolated_wh_obs_code = isolated_wh.get("observation_code", "current_throttle_higher")
+
     for review_id, item in item_by_id.items():
         label = label_by_id.get(review_id)
         if label is None:
@@ -157,23 +149,23 @@ def assess_evidence(
         if decision == "AUTHORIZED_SHADOW_ACTION" and len(actions) == 1:
             authorized_single_actions.add(actions)
         if (
-            decision == "WITHHELD"
-            and item.get("reason") == "insufficient_action_context"
-            and "current_throttle_higher" in (item.get("observation_codes") or [])
+            decision == isolated_wh_decision
+            and item.get("reason") == isolated_wh_reason
+            and isolated_wh_obs_code in (item.get("observation_codes") or [])
         ):
             isolated_reduce_throttle_withheld = True
-        expected_label = AFFIRMATIVE_LABEL_BY_DECISION.get(str(decision))
+        expected_label = affirmative_labels.get(str(decision))
         if label.get("human_label") != expected_label:
             nonaffirmative.append(review_id)
 
-    missing_tracks = sorted(REQUIRED_TRACKS - tracks)
-    missing_delta_signs = sorted(REQUIRED_DELTA_SIGNS - delta_signs)
-    missing_action_codes = sorted(REQUIRED_ACTION_CODES - action_codes)
+    missing_tracks = sorted(required_tracks - tracks)
+    missing_delta_signs = sorted(required_delta_signs - delta_signs)
+    missing_action_codes = sorted(required_action_codes - action_codes)
     missing_single_actions = sorted(
         "+".join(actions)
-        for actions in REQUIRED_AUTHORIZED_SINGLE_ACTIONS - authorized_single_actions
+        for actions in required_authorized_single_actions - authorized_single_actions
     )
-    missing_decisions = sorted(set(AFFIRMATIVE_LABEL_BY_DECISION) - decisions)
+    missing_decisions = sorted(set(affirmative_labels) - decisions)
     if missing_tracks:
         unmet.append("missing reviewed action tracks: " + ", ".join(missing_tracks))
     if missing_delta_signs:

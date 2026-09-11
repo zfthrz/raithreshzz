@@ -318,7 +318,7 @@ an inferred correction or steering instruction.
 Validated checkpoints relevant to the current working tree:
 
 ```text
-full pytest (current working tree):  1359 PASS / 0 FAIL / 0 SKIP
+full pytest (current working tree):  2073 PASS / 0 FAIL / 0 SKIP
 Objective Python regressions:         55 PASS / 0 FAIL / 0 SKIP
 Objective recovery check:             READY
 ```
@@ -1663,7 +1663,7 @@ the largest apex offset was 20 m under the unchanged 35 m PASS tolerance. The pu
 catalog therefore contains 13 exact identities, leaving the other three owner-selected
 targets unnamed and pending real data.
 
-`docs/LOCAL_LLM_DEVELOPMENT_ROADMAP_V1_0.md` translates that sequence into bounded
+`docs/LOCAL_LLM_DEVELOPMENT_ROADMAP_V1_1.md` translates that sequence into bounded
 work units for a future local coding LLM. It defines autonomy limits, stop conditions,
 validation commands, a 0–30+ month sequence and reusable start/finish prompts. Its scope
 includes the deterministic engine, coaching quality, longitudinal personalization,

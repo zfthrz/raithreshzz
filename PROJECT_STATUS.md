@@ -1,5 +1,11 @@
 # Project Status
 
+## Roadmap v1.1 agregado — 2026-09-11
+
+- L11 (cierre semi-automático de evidencia shadow) y L12 (ciclo
+  de vida de la base analítica) definidos.
+- v1.0 preservado como procedencia.
+
 ## Portable update and rollback QA — 2026-09-10
 
 - Packaged sources `423707f` and `7e0181b` ran previous → current → previous against

@@ -511,7 +511,7 @@ estado por usuario; la evidencia reproducible está en
 [`docs/PUBLIC_RELEASE_UPDATE_QA_2026_09_10.md`](docs/PUBLIC_RELEASE_UPDATE_QA_2026_09_10.md).
 
 Para retomar el desarrollo de forma independiente con un LLM local, usar
-[`docs/LOCAL_LLM_DEVELOPMENT_ROADMAP_V1_0.md`](docs/LOCAL_LLM_DEVELOPMENT_ROADMAP_V1_0.md).
+[`docs/LOCAL_LLM_DEVELOPMENT_ROADMAP_V1_1.md`](docs/LOCAL_LLM_DEVELOPMENT_ROADMAP_V1_1.md).
 Incluye el checkpoint, límites de autonomía y un plan integral para evolucionar motor
 determinista, coaching, historial, perfiles, UX bilingüe, arquitectura y distribución,
 además de comandos y un prompt maestro.

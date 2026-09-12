@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "profile_id": "lusail-lmu-v0.1",
+  "status": "DRAFT",
+  "track": "Lusail International Circuit",
+  "layout": "Lusail International Circuit",
+  "distance_coordinate": "LMU Lap Dist",
+  "lap_length_m": 5402.79,
+  "calibration": {
+    "source_session": "Lusail International Circuit_P_2026-09-12T01_01_30Z",
+    "source_lap_internal_index": 1,
+    "source_lap_time_s_approx": 112.3,
+    "source_lap_dist_max_m": 5397.8,
+    "source_gps_path_m_approx": 5365.6,
+    "gps_coverage": 1.0,
+    "geometry_method": "GPS trajectory + signed curvature",
+    "numbering_scheme": "LMU/WEC Lusail 16-turn",
+    "requires_cross_session_validation": true,
+    "validation_status": "PENDING",
+    "same_session_validation_laps": [],
+    "excluded_laps": [],
+    "validation_summary": {
+      "independent_sessions": []
+    },
+    "interpretation": "DRAFT — 16 turn candidates extracted from detector with overlapping complexes (T1 right 694-906m; T2 left 1004-1246m; complex 1666-2004m; T6 double apex 2510-2708m). Not yet validated against an independent session. Cross-session validation required before promotion."
+  },
+  "turns": [
+    {"turn": 1, "name": "Turn 1", "group": "Turn 1", "direction": "right", "start_m": 694.0, "apex_m": 730.0, "end_m": 906.0},
+    {"turn": 2, "name": "Turn 2", "group": "Turn 2", "direction": "left", "start_m": 1004.0, "apex_m": 1088.0, "end_m": 1246.0},
+    {"turn": 3, "name": "Turn 3", "group": "Turn 3", "direction": "right", "start_m": 1666.0, "apex_m": 1700.0, "end_m": 2004.0},
+    {"turn": 4, "name": "Turn 4", "group": "Turn 4", "direction": "right", "start_m": 1666.0, "apex_m": 1748.0, "end_m": 2004.0},
+    {"turn": 5, "name": "Turn 5", "group": "Turn 5", "direction": "right", "start_m": 1666.0, "apex_m": 1946.0, "end_m": 2004.0},
+    {"turn": 6, "name": "Turn 6", "group": "Turn 6-8", "direction": "left", "start_m": 2148.0, "apex_m": 2210.0, "end_m": 2270.0},
+    {"turn": 7, "name": "Turn 7", "group": "Turn 7", "direction": "right", "start_m": 2510.0, "apex_m": 2592.0, "end_m": 2708.0},
+    {"turn": 8, "name": "Turn 8", "group": "Turn 7", "direction": "right", "start_m": 2512.0, "apex_m": 2660.0, "end_m": 2706.0},
+    {"turn": 9, "name": "Turn 9", "group": "Turn 9", "direction": "left", "start_m": 3118.0, "apex_m": 3172.0, "end_m": 3226.0},
+    {"turn": 10, "name": "Turn 10", "group": "Turn 10", "direction": "right", "start_m": 3928.0, "apex_m": 3978.0, "end_m": 4026.0},
+    {"turn": 11, "name": "Turn 11", "group": "Turn 11", "direction": "left", "start_m": 4454.0, "apex_m": 4504.0, "end_m": 4580.0},
+    {"turn": 12, "name": "Turn 12", "group": "Turn 12", "direction": "right", "start_m": 4906.0, "apex_m": 4962.0, "end_m": 5074.0},
+    {"turn": 13, "name": "Turn 13", "group": "Turn 12", "direction": "right", "start_m": 4906.0, "apex_m": 5022.0, "end_m": 5074.0}
+  ],
+  "display_policy": {
+    "prefer_corner_name": true,
+    "turn_number_is_secondary": false,
+    "turn_number_suffix": "WEC",
+    "always_preserve_lmu_distance_m": true
+  },
+  "provenance": {
+    "gps_exports": [
+      "track_exports/lusail_profile/Lusail International Circuit_P_2026-09-12T01_01_30Z_track_gps.csv",
+      "track_exports/lusail_profile/Lusail International Circuit_P_2026-09-12T01_01_30Z_track_gps_summary.json",
+      "track_exports/lusail_profile/Lusail International Circuit_P_2026-09-12T01_01_30Z_turn_candidates.json"
+    ],
+    "reference_urls": []
+  }
+}

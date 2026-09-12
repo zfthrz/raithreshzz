@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "profile_id": "paul_ricard_elms-lmu-v0.1",
+  "status": "DRAFT",
+  "track": "Paul Ricard Circuit",
+  "layout": "Paul Ricard - ELMS",
+  "distance_coordinate": "LMU Lap Dist",
+  "lap_length_m": 5802.59,
+  "calibration": {
+    "source_session": "Paul Ricard Circuit_P_2026-09-05T04_27_57Z",
+    "source_lap_internal_index": 1,
+    "source_lap_time_s_approx": 120.5,
+    "source_lap_dist_max_m": 5798.3,
+    "source_gps_path_m_approx": 5762.0,
+    "gps_coverage": 1.0,
+    "geometry_method": "GPS trajectory + signed curvature",
+    "numbering_scheme": "LMU/ELMS Paul Ricard 15-turn",
+    "requires_cross_session_validation": true,
+    "validation_status": "PENDING",
+    "same_session_validation_laps": [],
+    "excluded_laps": [],
+    "validation_summary": {
+      "independent_sessions": []
+    },
+    "interpretation": "DRAFT — 15 turn candidates extracted from detector with overlapping complexes (T1-T2 Verrerie 578-836m; T8-T9 Chicane Mistral 2912-3086m; T10 Signes 4212-4572m; T11 Beausset 4220-4568m; final left complex 5296-5524m). Not yet validated against an independent session. Cross-session validation required before promotion."
+  },
+  "turns": [
+    {"turn": 1, "name": "Verrerie", "group": "Verrerie", "direction": "right", "start_m": 578.0, "apex_m": 670.0, "end_m": 836.0},
+    {"turn": 2, "name": "Verrerie", "group": "Verrerie", "direction": "right", "start_m": 706.0, "apex_m": 776.0, "end_m": 828.0},
+    {"turn": 3, "name": "Turn 3", "group": "Turn 3", "direction": "right", "start_m": 1256.0, "apex_m": 1312.0, "end_m": 1556.0},
+    {"turn": 4, "name": "Turn 4", "group": "Turn 4", "direction": "left", "start_m": 1350.0, "apex_m": 1398.0, "end_m": 1458.0},
+    {"turn": 5, "name": "Turn 5", "group": "Turn 5", "direction": "right", "start_m": 1480.0, "apex_m": 1528.0, "end_m": 1550.0},
+    {"turn": 6, "name": "Turn 6", "group": "Turn 6-7", "direction": "right", "start_m": 1570.0, "apex_m": 1612.0, "end_m": 1784.0},
+    {"turn": 7, "name": "Turn 7", "group": "Turn 6-7", "direction": "right", "start_m": 1574.0, "apex_m": 1670.0, "end_m": 1776.0},
+    {"turn": 8, "name": "Chicane Mistral", "group": "Chicane Mistral", "direction": "right", "start_m": 2912.0, "apex_m": 2974.0, "end_m": 3086.0},
+    {"turn": 9, "name": "Chicane Mistral", "group": "Chicane Mistral", "direction": "right", "start_m": 2996.0, "apex_m": 3046.0, "end_m": 3082.0},
+    {"turn": 10, "name": "Signes", "group": "Signes", "direction": "right", "start_m": 4212.0, "apex_m": 4452.0, "end_m": 4572.0},
+    {"turn": 11, "name": "Beausset", "group": "Beausset", "direction": "right", "start_m": 4220.0, "apex_m": 4498.0, "end_m": 4568.0},
+    {"turn": 12, "name": "Turn 12", "group": "Turn 12", "direction": "left", "start_m": 4712.0, "apex_m": 4836.0, "end_m": 4880.0},
+    {"turn": 13, "name": "Turn 13", "group": "Turn 13-15", "direction": "left", "start_m": 5296.0, "apex_m": 5352.0, "end_m": 5364.0},
+    {"turn": 14, "name": "Turn 14", "group": "Turn 13-15", "direction": "left", "start_m": 5394.0, "apex_m": 5422.0, "end_m": 5432.0},
+    {"turn": 15, "name": "Turn 15", "group": "Turn 13-15", "direction": "left", "start_m": 5370.0, "apex_m": 5488.0, "end_m": 5524.0}
+  ],
+  "display_policy": {
+    "prefer_corner_name": true,
+    "turn_number_is_secondary": false,
+    "turn_number_suffix": "ELMS",
+    "always_preserve_lmu_distance_m": true
+  },
+  "provenance": {
+    "gps_exports": [
+      "track_exports/paul_ricard_elms_profile/Paul Ricard Circuit_P_2026-09-05T04_27_57Z_track_gps.csv",
+      "track_exports/paul_ricard_elms_profile/Paul Ricard Circuit_P_2026-09-05T04_27_57Z_track_gps_summary.json",
+      "track_exports/paul_ricard_elms_profile/Paul Ricard Circuit_P_2026-09-05T04_27_57Z_turn_candidates.json"
+    ],
+    "reference_urls": []
+  }
+}
